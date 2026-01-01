@@ -1,6 +1,15 @@
 module.exports = {
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+      tsconfig: {
+        module: 'ESNext',
+        target: 'ES2020',
+      },
+    },
+  },
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
       useESM: true,
@@ -24,4 +33,5 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
+  setupFilesAfterEnv: [],
 };
