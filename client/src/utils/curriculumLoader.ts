@@ -67,8 +67,15 @@ class CurriculumLoader {
 
   private async importWeekData(weekNumber: number): Promise<Week> {
     try {
-      // Import the specific week lessons (without .ts extension for Vite compatibility)
-      const lessonsModule = await import(`../data/week${weekNumber}Lessons`);
+      // Use explicit imports with glob pattern for Vite compatibility
+      const modules = import.meta.glob('../data/week*Lessons.ts');
+      const modulePath = `../data/week${weekNumber}Lessons.ts`;
+      
+      if (!modules[modulePath]) {
+        throw new Error(`Module ${modulePath} not found`);
+      }
+      
+      const lessonsModule = await modules[modulePath]() as Record<string, unknown>;
       const weekLessons = lessonsModule[`WEEK_${weekNumber}_LESSONS`];
 
       // Get the base week structure
@@ -81,7 +88,7 @@ class CurriculumLoader {
       // Merge the lessons into the week data
       return {
         ...weekData,
-        lessons: weekLessons || []
+        lessons: (weekLessons as Week['lessons']) || []
       };
     } catch (error) {
       console.error(`Failed to load week ${weekNumber}:`, error);
@@ -91,18 +98,24 @@ class CurriculumLoader {
 
   private async importAllWeeksData(): Promise<Week[]> {
     try {
-      // Load all week lesson files (without .ts extension for Vite compatibility)
-      const lessonPromises = [];
+      // Use explicit imports with glob pattern for Vite compatibility
+      const modules = import.meta.glob('../data/week*Lessons.ts');
+      
+      const lessonModules: Record<string, unknown>[] = [];
       for (let i = 1; i <= 12; i++) {
-        lessonPromises.push(import(`../data/week${i}Lessons`));
+        const modulePath = `../data/week${i}Lessons.ts`;
+        if (modules[modulePath]) {
+          const mod = await modules[modulePath]() as Record<string, unknown>;
+          lessonModules.push(mod);
+        } else {
+          lessonModules.push({});
+        }
       }
-
-      const lessonModules = await Promise.all(lessonPromises);
 
       // Merge lessons into base week data
       return baseWeeks.map((week, index) => ({
         ...week,
-        lessons: lessonModules[index][`WEEK_${week.weekNumber}_LESSONS`] || []
+        lessons: (lessonModules[index]?.[`WEEK_${week.weekNumber}_LESSONS`] as Week['lessons']) || []
       }));
     } catch (error) {
       console.error('Failed to load all weeks data:', error);
