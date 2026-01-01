@@ -1,12 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import type {
   AfterActionReview,
   AARFormData,
   AARValidationResult,
   AARStats,
   AARPattern
-} from '../../../client/src/types/aar';
-import { AAR_REQUIREMENTS } from '../../../client/src/types/aar';
+} from '../types/aar';
+import { AAR_REQUIREMENTS } from '../types/aar';
 
 const prisma = new PrismaClient();
 
@@ -50,11 +50,11 @@ export class AARService {
     }
 
     // Check for empty items
-    if (formData.whatWorkedWell.some(item => !item.trim())) {
+    if (formData.whatWorkedWell.some((item: string) => !item.trim())) {
       errors.whatWorkedWell = 'All items must have content';
     }
 
-    if (formData.whatDidNotWork.some(item => !item.trim())) {
+    if (formData.whatDidNotWork.some((item: string) => !item.trim())) {
       errors.whatDidNotWork = 'All items must have content';
     }
 
@@ -188,8 +188,8 @@ export class AARService {
           updateData.whatWouldIDoDifferently || updateData.whatDidILearn) {
         const formData = {
           whatWasAccomplished: updateData.whatWasAccomplished || existingAAR.whatWasAccomplished,
-          whatWorkedWell: updateData.whatWorkedWell || existingAAR.whatWorkedWell,
-          whatDidNotWork: updateData.whatDidNotWork || existingAAR.whatDidNotWork,
+          whatWorkedWell: updateData.whatWorkedWell || (existingAAR.whatWorkedWell as string[]),
+          whatDidNotWork: updateData.whatDidNotWork || (existingAAR.whatDidNotWork as string[]),
           whyDidNotWork: updateData.whyDidNotWork || existingAAR.whyDidNotWork,
           whatWouldIDoDifferently: updateData.whatWouldIDoDifferently || existingAAR.whatWouldIDoDifferently,
           whatDidILearn: updateData.whatDidILearn || existingAAR.whatDidILearn
@@ -302,7 +302,7 @@ export class AARService {
       where: { id: aarId },
       data: {
         aiReview,
-        patterns,
+        patterns: patterns as unknown as Prisma.InputJsonValue,
         qualityScore,
         updatedAt: new Date()
       }
@@ -542,10 +542,10 @@ export class AARService {
   private extractStrengths(aars: AfterActionReview[]): string[] {
     const strengths: string[] = [];
     aars.forEach(aar => {
-      if (aar.whatWorkedWell.some(item => item.toLowerCase().includes('planning'))) {
+      if (aar.whatWorkedWell.some((item: string) => item.toLowerCase().includes('planning'))) {
         strengths.push('Strategic Planning');
       }
-      if (aar.whatWorkedWell.some(item => item.toLowerCase().includes('documentation'))) {
+      if (aar.whatWorkedWell.some((item: string) => item.toLowerCase().includes('documentation'))) {
         strengths.push('Documentation');
       }
     });
@@ -555,7 +555,7 @@ export class AARService {
   private extractAreasForImprovement(aars: AfterActionReview[]): string[] {
     const improvements: string[] = [];
     aars.forEach(aar => {
-      if (aar.whatDidNotWork.some(item => item.toLowerCase().includes('time'))) {
+      if (aar.whatDidNotWork.some((item: string) => item.toLowerCase().includes('time'))) {
         improvements.push('Time Management');
       }
       if (aar.whyDidNotWork.toLowerCase().includes('understanding')) {
