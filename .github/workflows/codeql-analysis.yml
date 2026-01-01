@@ -20,25 +20,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript', 'typescript', 'python' ]
+        language: [ 'javascript', 'python' ]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
+        # Note: 'javascript' covers both JavaScript and TypeScript files
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
         languages: ${{ matrix.language }}
         config-file: .github/codeql-config.yml
 
     - name: Setup Node.js
-      if: matrix.language == 'javascript' || matrix.language == 'typescript'
+      if: matrix.language == 'javascript'
       uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
+        cache-dependency-path: |
+          client/package-lock.json
+          server/package-lock.json
 
     - name: Setup Python
       if: matrix.language == 'python'
@@ -47,7 +51,7 @@ jobs:
         python-version: '3.9'
 
     - name: Install dependencies (JavaScript/TypeScript)
-      if: matrix.language == 'javascript' || matrix.language == 'typescript'
+      if: matrix.language == 'javascript'
       run: |
         if [ -f client/package-lock.json ]; then
           cd client && npm ci
@@ -64,6 +68,6 @@ jobs:
         fi
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{matrix.language}}"
