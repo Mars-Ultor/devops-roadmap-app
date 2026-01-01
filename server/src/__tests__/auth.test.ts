@@ -1,9 +1,12 @@
+import './setup.js';
 import request from 'supertest';
 import express from 'express';
 import authRoutes from '../routes/auth.js';
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasourceUrl: 'file:./test.db',
+});
 
 // Create test app with auth routes
 const createTestApp = () => {
@@ -68,17 +71,19 @@ describe('Authentication', () => {
       expect(response.body.error).toBe('User already exists');
     });
 
-    it('should return 500 for invalid data', async () => {
+    it('should return 400 for invalid data', async () => {
       const invalidData = {
         email: 'invalid-email',
         password: '',
         name: ''
       };
 
-      await request(app)
+      const response = await request(app)
         .post('/api/auth/register')
         .send(invalidData)
-        .expect(500);
+        .expect(400);
+
+      expect(response.body).toHaveProperty('errors');
     });
   });
 

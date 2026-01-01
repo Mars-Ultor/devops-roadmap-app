@@ -7,7 +7,8 @@ This guide covers the testing setup for the DevOps Roadmap API backend.
 ✅ **Testing Infrastructure**: Jest and TypeScript testing setup is installed and configured
 ✅ **Test Files**: Basic test structure created with examples for different test types
 ✅ **Configuration**: Jest configured for TypeScript with ES module support
-⚠️ **ES Module Issues**: Full integration testing requires additional Jest configuration refinement
+✅ **ES Module Configuration**: Full integration testing with Supertest is now working
+✅ **Database Setup**: Test database isolation and cleanup implemented
 
 ## Test Setup
 
@@ -55,7 +56,11 @@ src/__tests__/
 ## Current Working Tests
 
 - ✅ `basic.test.ts` - Demonstrates Jest is properly configured
-- ⚠️ Other tests require ES module configuration refinement
+- ✅ `health.test.ts` - Health check endpoint integration tests
+- ✅ `auth.test.ts` - Authentication route integration tests
+- ✅ `middleware.test.ts` - Authentication middleware tests
+- ✅ `utils.test.ts` - Utility function tests
+- ⚠️ `aarService.test.ts` - AAR service tests (2 failing tests due to validation logic)
 
 ### Database
 - Tests use an in-memory SQLite database (`test.db`)
@@ -102,47 +107,51 @@ describe('MyService', () => {
 });
 ```
 
-## Test Coverage
+## Jest Configuration
 
-Current test coverage includes:
-- ✅ Health check endpoints
-- ✅ User authentication (register/login)
-- ✅ JWT middleware validation
-- ✅ AAR form validation
-- ✅ Database operations
-
-## Best Practices
-
-1. **Test Isolation**: Each test should be independent
-2. **Database Cleanup**: Tables are automatically cleared between tests
-3. **Mock External Services**: Use mocks for external APIs
-4. **Descriptive Test Names**: Use clear, descriptive test names
-5. **Arrange-Act-Assert**: Follow AAA pattern in tests
-
-## Next Steps for Full Testing
-
-### 1. ES Module Configuration
-The current Jest configuration has issues with ES modules. To complete the setup:
+The current working Jest configuration in `jest.config.cjs`:
 
 ```javascript
-// jest.config.cjs - needs refinement
 module.exports = {
-  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
+      useESM: true,
+      tsconfig: {
+        module: 'ESNext',
+        target: 'ES2020',
+      },
+    }],
+  },
   transformIgnorePatterns: [
-    'node_modules/(?!(supertest|@prisma)/)',
+    'node_modules/(?!(@prisma|supertest)/)',
   ],
-  // Additional configuration may be needed
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
+  testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.d.ts',
+    '!src/index.ts',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
 };
 ```
 
-### 2. Database Testing Setup
-- Implement proper test database initialization
-- Add database seeding for consistent test data
-- Configure test-specific Prisma client
+## Next Steps for Full Testing
 
-### 3. Integration Tests
+### 1. Fix AAR Service Tests
+The `aarService.test.ts` has 2 failing tests due to validation logic issues:
+- Word count calculation for text with multiple spaces
+- AAR form validation logic
+
+### 2. Additional Integration Tests
+- Add tests for all API routes
+- Test error handling scenarios
+- Add performance/load testing
 - API endpoint testing with Supertest
 - Authentication flow testing
 - Database integration testing

@@ -1,15 +1,18 @@
 module.exports = {
-  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
-  transformIgnorePatterns: [
-    'node_modules/(?!(supertest)/)',
-  ],
-  globals: {
-    'ts-jest': {
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
       useESM: true,
-    },
+      tsconfig: {
+        module: 'ESNext',
+        target: 'ES2020',
+      },
+    }],
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(@prisma|supertest)/)',
+  ],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
