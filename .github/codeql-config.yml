@@ -1,0 +1,24 @@
+name: "CodeQL Configuration"
+
+disable-default-queries: false
+
+queries:
+  - uses: security-and-quality
+  - uses: security-experimental
+
+paths-ignore:
+  - node_modules
+  - dist
+  - build
+  - coverage
+  - .next
+  - .nuxt
+  - .vuepress
+  - .cache
+  - .pytest_cache
+  - __pycache__
+
+paths:
+  - client/src
+  - server/src
+  - ml-service
