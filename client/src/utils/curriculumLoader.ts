@@ -67,8 +67,8 @@ class CurriculumLoader {
 
   private async importWeekData(weekNumber: number): Promise<Week> {
     try {
-      // Import the specific week lessons
-      const lessonsModule = await import(`../data/week${weekNumber}Lessons.ts`);
+      // Import the specific week lessons (without .ts extension for Vite compatibility)
+      const lessonsModule = await import(`../data/week${weekNumber}Lessons`);
       const weekLessons = lessonsModule[`WEEK_${weekNumber}_LESSONS`];
 
       // Get the base week structure
@@ -81,7 +81,7 @@ class CurriculumLoader {
       // Merge the lessons into the week data
       return {
         ...weekData,
-        lessons: weekLessons
+        lessons: weekLessons || []
       };
     } catch (error) {
       console.error(`Failed to load week ${weekNumber}:`, error);
@@ -91,10 +91,10 @@ class CurriculumLoader {
 
   private async importAllWeeksData(): Promise<Week[]> {
     try {
-      // Load all week lesson files
+      // Load all week lesson files (without .ts extension for Vite compatibility)
       const lessonPromises = [];
       for (let i = 1; i <= 12; i++) {
-        lessonPromises.push(import(`../data/week${i}Lessons.ts`));
+        lessonPromises.push(import(`../data/week${i}Lessons`));
       }
 
       const lessonModules = await Promise.all(lessonPromises);
@@ -102,7 +102,7 @@ class CurriculumLoader {
       // Merge lessons into base week data
       return baseWeeks.map((week, index) => ({
         ...week,
-        lessons: lessonModules[index][`WEEK_${week.weekNumber}_LESSONS`]
+        lessons: lessonModules[index][`WEEK_${week.weekNumber}_LESSONS`] || []
       }));
     } catch (error) {
       console.error('Failed to load all weeks data:', error);
