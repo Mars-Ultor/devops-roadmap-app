@@ -41,7 +41,7 @@ function App() {
 
   useEffect(() => {
     initAuth();
-  }, []);
+  }, [initAuth]);
 
   if (loading) {
     return (

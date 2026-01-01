@@ -4,7 +4,7 @@
  * Phase 6: Daily Drill Requirement
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Zap, AlertTriangle, Clock, Target } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
@@ -50,7 +50,7 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
     return exemptRoutes;
   };
 
-  const checkDrillStatus = async () => {
+  const checkDrillStatus = useCallback(async () => {
     if (!user || isExemptRoute()) {
       console.log('DailyDrillBlocker: No user or exempt route, allowing access');
       setIsBlocked(false);
@@ -77,12 +77,12 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, location.pathname, location.search]);
 
   // Initial check
   useEffect(() => {
     checkDrillStatus();
-  }, [user, location.pathname]);
+  }, [checkDrillStatus]);
 
   // Re-check every 10 seconds when blocked
   useEffect(() => {
@@ -94,7 +94,7 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
 
       return () => clearInterval(interval);
     }
-  }, [isBlocked, loading]);
+  }, [isBlocked, loading, checkDrillStatus]);
 
   // Re-check when window gains focus (user returns from another tab)
   useEffect(() => {
@@ -106,7 +106,7 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
 
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
-  }, [isBlocked]);
+  }, [isBlocked, checkDrillStatus]);
 
   const handleStartDrill = () => {
     console.log('DailyDrillBlocker: handleStartDrill called, navigating to /training?tab=daily');
