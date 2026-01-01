@@ -691,7 +691,7 @@ Fault Tolerance:
             label: 'What does user request?',
             hint: 'External DNS name',
             correctValue: 'DNS name (myapp.example.com) pointing to cloud load balancer IP',
-            validationPattern: 'dns|domain|load.*balancer.*ip|example\.com'
+            validationPattern: 'dns|domain|load.*balancer.*ip|example\\.com' // eslint-disable-line no-useless-escape
           },
           {
             id: 'cloud_lb_forwards',

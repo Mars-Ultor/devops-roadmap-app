@@ -29,7 +29,7 @@ export default function EnhancedAICoachPanel({
 }: EnhancedAICoachPanelProps) {
   const [feedback, setFeedback] = useState<CoachFeedback | null>(null);
   const [loading, setLoading] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date()); // eslint-disable-line @typescript-eslint/no-unused-vars
   const [codeAnalysis, setCodeAnalysis] = useState<CodeAnalysis | null>(null);
   const [disciplineAlerts, setDisciplineAlerts] = useState<string[]>([]);
   const intervalRef = useRef<number | null>(null);

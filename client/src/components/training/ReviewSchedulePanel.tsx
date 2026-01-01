@@ -20,7 +20,12 @@ export default function ReviewSchedulePanel() {
   const { getAllLessonProgress } = useProgress();
   const [reviews, setReviews] = useState<ReviewSchedule[]>([]);
   const [dueToday, setDueToday] = useState<ReviewSchedule[]>([]);
-  const [dailyLoad, setDailyLoad] = useState<any>(null);
+  const [dailyLoad, setDailyLoad] = useState<{
+    recommended: number;
+    minimum: number;
+    maximum: number;
+    reasoning: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -56,7 +56,7 @@ export default function FailureLogList({ contentId, showFilters = true }: Failur
     setShowResolutionForm(true);
   };
 
-  const handleResolutionSubmit = async (updates: any) => {
+  const handleResolutionSubmit = async (updates: Partial<Pick<FailureLog, 'rootCause' | 'resolution' | 'preventionStrategy' | 'lessonsLearned' | 'resolvedAt'>>) => {
     if (!selectedFailure) return;
 
     await updateFailure(selectedFailure.id, updates);
@@ -127,7 +127,7 @@ export default function FailureLogList({ contentId, showFilters = true }: Failur
                 <label className="text-sm text-slate-400 mb-1 block">Category</label>
                 <select
                   value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value as any)}
+                  onChange={(e) => setCategoryFilter(e.target.value as FailureCategory | 'all')}
                   className="w-full bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-white text-sm focus:outline-none focus:border-indigo-500"
                 >
                   <option value="all">All Categories</option>
@@ -148,7 +148,7 @@ export default function FailureLogList({ contentId, showFilters = true }: Failur
                 <label className="text-sm text-slate-400 mb-1 block">Status</label>
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as any)}
+                  onChange={(e) => setStatusFilter(e.target.value as 'all' | 'resolved' | 'unresolved')}
                   className="w-full bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-white text-sm focus:outline-none focus:border-indigo-500"
                 >
                   <option value="all">All</option>
