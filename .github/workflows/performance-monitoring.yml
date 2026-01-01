@@ -1,0 +1,145 @@
+name: Performance Monitoring
+
+on:
+  schedule:
+    # Run weekly on Wednesdays at 9 AM UTC
+    - cron: '0 9 * * 3'
+  workflow_dispatch:
+
+jobs:
+  lighthouse-audit:
+    name: Lighthouse Performance Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Build client for audit
+        run: |
+          cd client
+          npm ci
+          npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_ML_API_URL: ${{ secrets.VITE_ML_API_URL }}
+
+      - name: Setup Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy to temporary Firebase channel
+        id: deploy
+        run: |
+          cd client
+          CHANNEL_URL=$(firebase hosting:channel:deploy temp-audit-channel --expires 1h --token ${{ secrets.FIREBASE_TOKEN }} | grep -o 'https://.*\.web\.app')
+          echo "url=$CHANNEL_URL" >> $GITHUB_OUTPUT
+
+      - name: Run Lighthouse audit
+        id: lighthouse
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: ${{ steps.deploy.outputs.url }}
+          configPath: .lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Format results
+        run: |
+          echo "## Lighthouse Performance Results" >> performance-report.md
+          echo "" >> performance-report.md
+          echo "### Scores:" >> performance-report.md
+          echo "- Performance: ${{ steps.lighthouse.outputs.performance }}" >> performance-report.md
+          echo "- Accessibility: ${{ steps.lighthouse.outputs.accessibility }}" >> performance-report.md
+          echo "- Best Practices: ${{ steps.lighthouse.outputs.best-practices }}" >> performance-report.md
+          echo "- SEO: ${{ steps.lighthouse.outputs.seo }}" >> performance-report.md
+          echo "" >> performance-report.md
+          echo "### URL: ${{ steps.deploy.outputs.url }}" >> performance-report.md
+          echo "### Date: $(date -Iseconds)" >> performance-report.md
+
+      - name: Upload performance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: performance-report.md
+          retention-days: 30
+
+      - name: Check performance thresholds
+        run: |
+          PERFORMANCE=${{ steps.lighthouse.outputs.performance }}
+          ACCESSIBILITY=${{ steps.lighthouse.outputs.accessibility }}
+
+          if (( $(echo "$PERFORMANCE < 80" | bc -l) )); then
+            echo "performance_below_threshold=true" >> $GITHUB_OUTPUT
+          fi
+
+          if (( $(echo "$ACCESSIBILITY < 90" | bc -l) )); then
+            echo "accessibility_below_threshold=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create performance issue
+        if: steps.check-threshold.outputs.performance_below_threshold == 'true' || steps.check-threshold.outputs.accessibility_below_threshold == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const performance = ${{ steps.lighthouse.outputs.performance }};
+            const accessibility = ${{ steps.lighthouse.outputs.accessibility }};
+
+            const title = `📊 Performance Alert: Scores Below Threshold`;
+            const body = `
+            ## Performance Audit Results
+
+            ### Current Scores:
+            - **Performance:** ${performance}/100 ${performance < 80 ? '❌' : '✅'}
+            - **Accessibility:** ${accessibility}/100 ${accessibility < 90 ? '❌' : '✅'}
+            - **Best Practices:** ${{ steps.lighthouse.outputs.best-practices }}/100
+            - **SEO:** ${{ steps.lighthouse.outputs.seo }}/100
+
+            ### Thresholds:
+            - Performance: ≥80 (currently ${performance < 80 ? 'failing' : 'passing'})
+            - Accessibility: ≥90 (currently ${accessibility < 90 ? 'failing' : 'passing'})
+
+            ### Actions Required:
+            1. Review the Lighthouse report in artifacts
+            2. Optimize performance issues
+            3. Fix accessibility problems
+            4. Test on staging before production
+
+            ### Audit Details:
+            - Audit Date: ${new Date().toISOString()}
+            - Repository: ${{ github.repository }}
+            - Branch: ${{ github.ref_name }}
+            - URL: ${{ steps.deploy.outputs.url }}
+
+            ---
+            🤖 This issue was automatically created by the performance monitoring workflow.
+            `;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['performance', 'accessibility', 'monitoring']
+            });
+
+      - name: Slack notification for performance issues
+        if: steps.check-threshold.outputs.performance_below_threshold == 'true' || steps.check-threshold.outputs.accessibility_below_threshold == 'true'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: warning
+          webhook_url: ${{ secrets.SLACK_PERFORMANCE_WEBHOOK }}
+          text: |
+            📊 *Performance Alert* 📊
+
+            Performance: ${{ steps.lighthouse.outputs.performance }}/100
+            Accessibility: ${{ steps.lighthouse.outputs.accessibility }}/100
+
+            Repository: ${{ github.repository }}
+            Report: Check workflow artifacts
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_PERFORMANCE_WEBHOOK }}

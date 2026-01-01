@@ -1,16 +1,22 @@
-name: Deploy Client to Firebase
+name: Firebase Deploy (Legacy)
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'client/**'
-      - '.github/workflows/firebase-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
 
 jobs:
-  build-and-deploy:
+  deploy-client:
+    name: Deploy Client to Firebase
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
 
     steps:
     - name: Checkout code
@@ -42,4 +48,18 @@ jobs:
     - name: Deploy to Firebase
       run: |
         cd client
-        firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
+        if [ "${{ github.event.inputs.environment }}" = "staging" ]; then
+          firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID_STAGING }} --token ${{ secrets.FIREBASE_TOKEN_STAGING }}
+        else
+          firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
+        fi
+
+    - name: Notify deployment
+      uses: 8398a7/action-slack@v3
+      if: always()
+      with:
+        status: ${{ job.status }}
+        webhook_url: ${{ github.event.inputs.environment == 'staging' && secrets.SLACK_WEBHOOK_STAGING || secrets.SLACK_WEBHOOK_PRODUCTION }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+      env:
+        SLACK_WEBHOOK_URL: ${{ github.event.inputs.environment == 'staging' && secrets.SLACK_WEBHOOK_STAGING || secrets.SLACK_WEBHOOK_PRODUCTION }}

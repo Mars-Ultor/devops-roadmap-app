@@ -1,0 +1,92 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run weekly on Mondays at 8 AM UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Update Client Dependencies
+      - name: Update Client Dependencies
+        run: |
+          cd client
+          npm update
+          npm audit fix
+
+      # Update Server Dependencies
+      - name: Update Server Dependencies
+        run: |
+          cd server
+          npm update
+          npm audit fix
+
+      # Setup Python for ML Service
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Update ML Service Dependencies
+      - name: Update ML Service Dependencies
+        run: |
+          cd ml-service
+          python -m pip install --upgrade pip
+          pip install --upgrade -r requirements.txt
+
+      - name: Run tests after updates
+        run: |
+          cd client && npm run test:ci
+          cd ../server && npm test
+          cd ../ml-service && python -m pytest
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update dependencies
+
+- Updated client dependencies
+- Updated server dependencies
+- Updated ML service dependencies
+- Ran tests to ensure compatibility"
+          title: "chore: update dependencies"
+          body: |
+            ## Dependency Updates
+
+            This PR updates dependencies across all services:
+
+            ### Client
+            - Updated npm packages
+            - Fixed security vulnerabilities
+
+            ### Server
+            - Updated npm packages
+            - Fixed security vulnerabilities
+
+            ### ML Service
+            - Updated Python packages
+
+            ### Testing
+            - All tests pass after updates
+            - No breaking changes detected
+
+            ---
+            🤖 This PR was automatically created by the dependency update workflow.
+          branch: automated/dependency-updates
+          delete-branch: true

@@ -1,0 +1,36 @@
+# Code Owners
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global owners
+* @Mars-Ultor
+
+# Client (Frontend)
+client/ @Mars-Ultor
+
+# Server (Backend API)
+/server/ @Mars-Ultor
+
+# ML Service
+ml-service/ @Mars-Ultor
+
+# CI/CD and DevOps
+.github/ @Mars-Ultor
+*.yml @Mars-Ultor
+*.yaml @Mars-Ultor
+
+# Documentation
+*.md @Mars-Ultor
+docs/ @Mars-Ultor
+
+# Deployment configurations
+render.yaml @Mars-Ultor
+railway.json @Mars-Ultor
+deploy.ps1 @Mars-Ultor
+deploy.sh @Mars-Ultor
+
+# Database
+server/prisma/ @Mars-Ultor
+
+# Testing
+**/test*/ @Mars-Ultor
+**/__tests__/ @Mars-Ultor

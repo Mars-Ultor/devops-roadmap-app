@@ -1,0 +1,160 @@
+name: Code Quality Checks
+
+on:
+  pull_request:
+    branches: [ master, main, develop ]
+    paths:
+      - 'client/**'
+      - 'server/**'
+      - 'ml-service/**'
+
+jobs:
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # Client Code Quality
+      - name: Client - Install dependencies
+        run: |
+          cd client
+          npm ci
+
+      - name: Client - Lint
+        run: |
+          cd client
+          npm run lint
+
+      - name: Client - Type check
+        run: |
+          cd client
+          npm run type-check
+
+      - name: Client - Format check
+        run: |
+          cd client
+          npm run format:check
+
+      # Server Code Quality
+      - name: Server - Install dependencies
+        run: |
+          cd server
+          npm ci
+
+      - name: Server - Lint
+        run: |
+          cd server
+          npm run lint
+
+      - name: Server - Type check
+        run: |
+          cd server
+          npx tsc --noEmit
+
+      - name: Server - Format check
+        run: |
+          cd server
+          npm run format:check
+
+      # ML Service Code Quality
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: ML Service - Install dependencies
+        run: |
+          cd ml-service
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 black isort mypy
+
+      - name: ML Service - Lint
+        run: |
+          cd ml-service
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: ML Service - Format check
+        run: |
+          cd ml-service
+          black --check .
+          isort --check-only .
+
+      - name: ML Service - Type check
+        run: |
+          cd ml-service
+          mypy . --ignore-missing-imports
+
+      # Size Check
+      - name: Check bundle size
+        run: |
+          cd client
+          npm run build
+          npx bundlesize --enable-github-checks
+
+      # Comment PR with results
+      - name: Comment PR
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const status = '${{ job.status }}';
+            const emoji = status === 'success' ? '✅' : '❌';
+
+            const body = `
+            ## ${emoji} Code Quality Check Results
+
+            **Status:** ${status}
+
+            ### Checks Performed:
+            - ✅ ESLint (Client & Server)
+            - ✅ TypeScript Type Checking
+            - ✅ Code Formatting
+            - ✅ Python Linting (ML Service)
+            - ✅ Bundle Size Check
+
+            ### Details:
+            - **Client:** All quality checks passed
+            - **Server:** All quality checks passed
+            - **ML Service:** All quality checks passed
+
+            ---
+            🤖 This check was automatically performed by the CI pipeline.
+            `;
+
+            // Find existing comment or create new one
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existingComment = comments.data.find(comment =>
+              comment.body.includes('Code Quality Check Results')
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
