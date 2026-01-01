@@ -73,7 +73,24 @@ exclude_patterns:
 
 ## ⚙️ Setting Up Automatic Commits
 
-### Windows Task Scheduler
+### Run on Windows Startup
+
+**Option 1: Startup Folder (Easiest)**
+1. Press `Win + R`, type `shell:startup`, press Enter
+2. Create shortcut to: `C:\Users\ayode\Desktop\devops-roadmap-app\startup-watcher.bat`
+3. Name it: `DevOps Auto-Commit Watcher`
+
+**Option 2: Task Scheduler (Administrator)**
+1. Search for "Task Scheduler" in Start menu
+2. Click "Create Task" (right panel)
+3. Name: `DevOps Auto-Commit Watcher`
+4. Triggers tab → New → "At log on"
+5. Actions tab → New → Start program: `C:\Users\ayode\Desktop\devops-roadmap-app\startup-watcher.bat`
+6. Click OK (may need Administrator password)
+
+See `STARTUP-SETUP-GUIDE.md` for detailed instructions.
+
+### Windows Task Scheduler (Manual Scheduling)
 1. Open Task Scheduler
 2. Create new task
 3. Set trigger (e.g., daily at 6 PM)
