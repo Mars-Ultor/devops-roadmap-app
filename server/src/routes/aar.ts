@@ -1,7 +1,7 @@
 import express, { Router, Request, Response } from 'express';
 import { body, param, validationResult } from 'express-validator';
-import { authenticateToken } from '../middleware/auth';
-import { AARService } from '../services/aarService';
+import { authenticateToken } from '../middleware/auth.js';
+import { AARService } from '../services/aarService.js';
 
 const router: Router = express.Router();
 const aarService = new AARService();

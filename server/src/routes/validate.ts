@@ -122,8 +122,8 @@ router.post('/command', async (req: Request, res: Response) => {
     }
 
     // Execute command with timeout
-    exec(command, { timeout: 10000, maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
-      const exitCode = error ? error.code || 1 : 0;
+    exec(command, { timeout: 10000, maxBuffer: 1024 * 1024 }, (error: Error | null, stdout: string, stderr: string) => {
+      const exitCode = error ? (error as any).code || 1 : 0;
       res.json({
         exitCode,
         stdout: stdout.toString(),
@@ -154,7 +154,7 @@ router.get('/image-exists', async (req: Request, res: Response) => {
     }
 
     // Check if image exists using docker inspect
-    exec(`docker inspect ${imageName}`, { timeout: 5000 }, (error, stdout, stderr) => {
+    exec(`docker inspect ${imageName}`, { timeout: 5000 }, (error: Error | null, stdout: string, stderr: string) => {
       const exists = !error && !stderr.toString().includes('Error: No such image');
       res.json({ exists });
     });

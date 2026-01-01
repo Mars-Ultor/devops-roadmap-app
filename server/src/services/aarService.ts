@@ -5,8 +5,8 @@ import type {
   AARValidationResult,
   AARStats,
   AARPattern
-} from '../types/aar';
-import { AAR_REQUIREMENTS } from '../types/aar';
+} from '../types/aar.js';
+import { AAR_REQUIREMENTS } from '../types/aar.js';
 
 const prisma = new PrismaClient();
 
@@ -246,6 +246,7 @@ export class AARService {
         totalAARs: 0,
         averageQualityScore: 0,
         commonPatterns: [],
+        completionRate: 0,
         improvementTrends: [],
         strengths: [],
         areasForImprovement: []
@@ -261,6 +262,7 @@ export class AARService {
         .filter(aar => aar.aiReview?.score)
         .reduce((sum, aar) => sum + (aar.aiReview?.score || 0), 0) / aars.length,
       commonPatterns: patterns,
+      completionRate: 1, // TODO: calculate based on total lessons
       improvementTrends: this.calculateImprovementTrends(aars),
       strengths: this.extractStrengths(aars),
       areasForImprovement: this.extractAreasForImprovement(aars)
@@ -302,7 +304,7 @@ export class AARService {
       where: { id: aarId },
       data: {
         aiReview,
-        patterns: patterns as unknown as Prisma.InputJsonValue,
+        patterns: patterns as any,
         qualityScore,
         updatedAt: new Date()
       }
