@@ -1,22 +1,16 @@
 module.exports = {
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
   globals: {
     'ts-jest': {
       useESM: true,
-      tsconfig: {
-        module: 'ESNext',
-        target: 'ES2020',
-      },
+      tsconfig: 'tsconfig.json',
     },
   },
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
       useESM: true,
-      tsconfig: {
-        module: 'ESNext',
-        target: 'ES2020',
-      },
     }],
   },
   transformIgnorePatterns: [
@@ -33,5 +27,4 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
-  setupFilesAfterEnv: [],
 };
