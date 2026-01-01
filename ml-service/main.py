@@ -1,6 +1,6 @@
 """
 DevOps Roadmap ML Service
-Real ML models for intelligent DevOps learning using XGBoost and Random Forest
+Simplified version for deployment - using rule-based logic instead of complex ML models
 """
 
 from fastapi import FastAPI, HTTPException
@@ -11,14 +11,10 @@ from datetime import datetime
 import os
 from pathlib import Path
 
-# Import our real ML models
-from models.learning_path_predictor import LearningPathPredictor
-from models.performance_predictor import PerformancePredictor
-
 app = FastAPI(
     title="DevOps Roadmap ML Service",
-    description="Real ML models for intelligent DevOps learning using XGBoost and Random Forest",
-    version="2.0.0"
+    description="Simplified ML service for intelligent DevOps learning",
+    version="1.0.0"
 )
 
 # CORS middleware
@@ -30,52 +26,63 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Real ML models are loaded dynamically below
+# Simple rule-based "models" instead of complex ML
+class SimpleLearningPathPredictor:
+    def predict(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+        # Simple rule-based prediction
+        experience = user_data.get('experience_level', 'beginner')
+        interests = user_data.get('interests', [])
 
-# Initialize real ML models
-models = {}
+        if experience == 'beginner':
+            path = ['week1', 'week2', 'week3']
+        elif experience == 'intermediate':
+            path = ['week4', 'week5', 'week6']
+        else:
+            path = ['week7', 'week8', 'week9']
 
-def load_models():
-    """Load trained ML models"""
-    global models
-
-    try:
-        print("🔄 Loading real ML models...")
-
-        # Initialize models
-        learning_predictor = LearningPathPredictor()
-        performance_predictor = PerformancePredictor()
-
-        # Try to load trained models
-        try:
-            learning_predictor.load_model()
-            print("✅ Learning Path Predictor loaded")
-        except:
-            print("⚠️  Learning Path Predictor not trained yet")
-
-        try:
-            performance_predictor.load_model()
-            print("✅ Performance Predictor loaded")
-        except:
-            print("⚠️  Performance Predictor not trained yet")
-
-        models = {
-            'learning_path_predictor': learning_predictor,
-            'performance_predictor': performance_predictor,
+        return {
+            'recommended_path': path,
+            'estimated_completion_days': len(path) * 7,
+            'confidence': 0.8
         }
 
-        print("✅ ML models initialized")
+    def is_loaded(self) -> bool:
+        return True
 
-    except Exception as e:
-        print(f"❌ Error loading models: {e}")
-        # Fallback to simple models if ML models fail
-        models = {
-            'learning_path_predictor': SimpleLearningPathPredictor(),
-            'performance_predictor': SimplePerformancePredictor(),
+class SimplePerformancePredictor:
+    def predict(self, quiz_data: Dict[str, Any]) -> Dict[str, Any]:
+        # Simple performance prediction based on quiz scores
+        scores = quiz_data.get('scores', [])
+        if not scores:
+            avg_score = 0.5
+        else:
+            avg_score = sum(scores) / len(scores)
+
+        if avg_score > 0.8:
+            performance = 'excellent'
+            next_difficulty = 'advanced'
+        elif avg_score > 0.6:
+            performance = 'good'
+            next_difficulty = 'intermediate'
+        else:
+            performance = 'needs_improvement'
+            next_difficulty = 'beginner'
+
+        return {
+            'performance_level': performance,
+            'next_difficulty': next_difficulty,
+            'predicted_score': avg_score,
+            'recommendations': ['practice_more', 'review_materials'] if avg_score < 0.7 else []
         }
 
-# Load models on startup
-load_models()
+    def is_loaded(self) -> bool:
+        return True
+
+# Initialize simple models
+models = {
+    'learning_path_predictor': SimpleLearningPathPredictor(),
+    'performance_predictor': SimplePerformancePredictor(),
+}
 
 # Pydantic models for API
 class MLInput(BaseModel):
