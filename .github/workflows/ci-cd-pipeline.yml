@@ -38,7 +38,7 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
@@ -169,6 +169,7 @@ jobs:
           path: |
             server/coverage/
             server/test-results.xml
+            server/junit.xml
           retention-days: 7
 
   # ML Service Testing and Building
@@ -222,6 +223,7 @@ jobs:
           path: |
             ml-service/coverage.xml
             ml-service/test-results.xml
+            ml-service/htmlcov/
           retention-days: 7
 
   # Code Quality Checks

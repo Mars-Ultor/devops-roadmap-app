@@ -551,7 +551,7 @@ High Availability:
             label: 'Frontend replicas',
             hint: 'How many for redundancy?',
             correctValue: '3 (or 2+ for high availability)',
-            validationPattern: '3|2\+|multiple|high.*availab'
+            validationPattern: '3|2\\+|multiple|high.*availab' // eslint-disable-line no-useless-escape
           },
           {
             id: 'frontend_exposure',
