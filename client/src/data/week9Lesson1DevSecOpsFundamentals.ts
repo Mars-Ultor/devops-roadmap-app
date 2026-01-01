@@ -381,7 +381,7 @@ export const week9Lesson1DevSecOpsFundamentals: LeveledLessonContent = {
       {
         exerciseNumber: 4,
         scenario: 'Implement security headers in web application.',
-        template: 'Express.js middleware:\n\nconst helmet = require(\'__HELMET__\');\napp.use(helmet());\n\n// Custom headers\napp.use((req, res, next) => {\n  // Prevent clickjacking\n  res.setHeader(\'X-Frame-Options\', \'__DENY__\');\n  \n  // Prevent MIME sniffing\n  res.setHeader(\'__X_CONTENT_TYPE_OPTIONS__\', \'nosniff\');\n  \n  // Enable HSTS (force HTTPS)\n  res.setHeader(\'Strict-Transport-Security\', \'max-age=__31536000__; includeSubDomains\');\n  \n  // Content Security Policy\n  res.setHeader(\'Content-Security-Policy\', \"default-src \'self\'; script-src \'self\' \'__UNSAFE_INLINE__\'; style-src \'self\' \'unsafe-inline\'\");\n  \n  next();\n});\n\nVerify:\ncurl -I https://myapp.com | grep -E "(__X_FRAME__|Content-Security|Strict-Transport)"',
+        template: 'Express.js middleware:\n\nconst helmet = require(\'__HELMET__\');\napp.use(helmet());\n\n// Custom headers\napp.use((req, res, next) => {\n  // Prevent clickjacking\n  res.setHeader(\'X-Frame-Options\', \'__DENY__\');\n  \n  // Prevent MIME sniffing\n  res.setHeader(\'__X_CONTENT_TYPE_OPTIONS__\', \'nosniff\');\n  \n  // Enable HSTS (force HTTPS)\n  res.setHeader(\'Strict-Transport-Security\', \'max-age=__31536000__; includeSubDomains\');\n  \n  // Content Security Policy\n  res.setHeader(\'Content-Security-Policy\', "default-src \'self\'; script-src \'self\' \'__UNSAFE_INLINE__\'; style-src \'self\' \'unsafe-inline\'");\n  \n  next();\n});\n\nVerify:\ncurl -I https://myapp.com | grep -E "(__X_FRAME__|Content-Security|Strict-Transport)"',
         blanks: [
           {
             id: 'HELMET',
@@ -426,7 +426,7 @@ export const week9Lesson1DevSecOpsFundamentals: LeveledLessonContent = {
             validationPattern: 'x.*frame'
           }
         ],
-        solution: 'const helmet = require(\'helmet\');\napp.use(helmet());\n\nres.setHeader(\'X-Frame-Options\', \'DENY\');\nres.setHeader(\'X-Content-Type-Options\', \'nosniff\');\nres.setHeader(\'Strict-Transport-Security\', \'max-age=31536000; includeSubDomains\');\nres.setHeader(\'Content-Security-Policy\', \"default-src \'self\'\");',
+        solution: 'const helmet = require(\'helmet\');\napp.use(helmet());\n\nres.setHeader(\'X-Frame-Options\', \'DENY\');\nres.setHeader(\'X-Content-Type-Options\', \'nosniff\');\nres.setHeader(\'Strict-Transport-Security\', \'max-age=31536000; includeSubDomains\');\nres.setHeader(\'Content-Security-Policy\', "default-src \'self\'");',
         explanation: 'Security headers protect against XSS, clickjacking, MITM attacks'
       },
       {

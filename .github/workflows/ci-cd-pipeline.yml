@@ -16,6 +16,13 @@ on:
           - staging
           - production
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  checks: write
+  pull-requests: write
+
 env:
   NODE_VERSION: '18'
   PYTHON_VERSION: '3.9'
