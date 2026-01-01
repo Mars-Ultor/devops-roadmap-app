@@ -71,11 +71,22 @@ class CurriculumLoader {
       const modules = import.meta.glob('../data/week*Lessons.ts');
       const modulePath = `../data/week${weekNumber}Lessons.ts`;
       
+      console.log(`CurriculumLoader: Loading week ${weekNumber}, path: ${modulePath}`);
+      console.log(`CurriculumLoader: Available modules:`, Object.keys(modules));
+      
       if (!modules[modulePath]) {
+        console.error(`CurriculumLoader: Module ${modulePath} not found in available modules`);
+        // Return base week data without lessons if module not found
+        const weekData = baseWeeks.find(w => w.weekNumber === weekNumber);
+        if (weekData) {
+          return { ...weekData, lessons: [] };
+        }
         throw new Error(`Module ${modulePath} not found`);
       }
       
       const lessonsModule = await modules[modulePath]() as Record<string, unknown>;
+      console.log(`CurriculumLoader: Loaded module for week ${weekNumber}:`, Object.keys(lessonsModule));
+      
       const weekLessons = lessonsModule[`WEEK_${weekNumber}_LESSONS`];
 
       // Get the base week structure
@@ -92,6 +103,11 @@ class CurriculumLoader {
       };
     } catch (error) {
       console.error(`Failed to load week ${weekNumber}:`, error);
+      // Return base week data without lessons on error
+      const weekData = baseWeeks.find(w => w.weekNumber === weekNumber);
+      if (weekData) {
+        return { ...weekData, lessons: [] };
+      }
       throw error;
     }
   }
@@ -101,25 +117,40 @@ class CurriculumLoader {
       // Use explicit imports with glob pattern for Vite compatibility
       const modules = import.meta.glob('../data/week*Lessons.ts');
       
-      const lessonModules: Record<string, unknown>[] = [];
+      console.log('CurriculumLoader: Loading all weeks, available modules:', Object.keys(modules));
+      
+      const results: Week[] = [];
+      
       for (let i = 1; i <= 12; i++) {
         const modulePath = `../data/week${i}Lessons.ts`;
-        if (modules[modulePath]) {
-          const mod = await modules[modulePath]() as Record<string, unknown>;
-          lessonModules.push(mod);
-        } else {
-          lessonModules.push({});
+        const weekData = baseWeeks.find(w => w.weekNumber === i);
+        
+        if (!weekData) {
+          console.warn(`CurriculumLoader: Week ${i} not found in base weeks`);
+          continue;
+        }
+        
+        try {
+          if (modules[modulePath]) {
+            const mod = await modules[modulePath]() as Record<string, unknown>;
+            const lessons = mod[`WEEK_${i}_LESSONS`] as Week['lessons'] || [];
+            results.push({ ...weekData, lessons });
+          } else {
+            console.warn(`CurriculumLoader: Module ${modulePath} not found, using empty lessons`);
+            results.push({ ...weekData, lessons: [] });
+          }
+        } catch (moduleError) {
+          console.error(`CurriculumLoader: Error loading module for week ${i}:`, moduleError);
+          results.push({ ...weekData, lessons: [] });
         }
       }
-
-      // Merge lessons into base week data
-      return baseWeeks.map((week, index) => ({
-        ...week,
-        lessons: (lessonModules[index]?.[`WEEK_${week.weekNumber}_LESSONS`] as Week['lessons']) || []
-      }));
+      
+      console.log(`CurriculumLoader: Loaded ${results.length} weeks`);
+      return results;
     } catch (error) {
       console.error('Failed to load all weeks data:', error);
-      throw error;
+      // Return base weeks without lessons on error
+      return baseWeeks.map(week => ({ ...week, lessons: [] }));
     }
   }
 }
