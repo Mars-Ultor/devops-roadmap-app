@@ -1,21 +1,26 @@
 """
-Base ML Model Class - Simplified version without sklearn dependencies
+Base ML Model Class - Real ML models using scikit-learn
 """
 
 import numpy as np
+import pandas as pd
 import joblib
 import os
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 from abc import ABC, abstractmethod
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.preprocessing import StandardScaler
 
 
 class BaseMLModel(ABC):
-    """Base class for all ML models"""
+    """Base class for all ML models using scikit-learn"""
 
     def __init__(self, model_name: str):
         self.model_name = model_name
         self.model = None
+        self.scaler = StandardScaler()
         self.is_trained = False
         self.metrics = {
             'accuracy': 0.0,
@@ -34,20 +39,136 @@ class BaseMLModel(ABC):
         """Create the specific ML model"""
         pass
 
-    @abstractmethod
     def _preprocess_features(self, features: List[float]) -> np.ndarray:
         """Preprocess input features"""
-        pass
+        features_array = np.array(features).reshape(1, -1)
+        if self.is_trained:
+            return self.scaler.transform(features_array)
+        return features_array
 
-    def train(self, X: np.ndarray, y: np.ndarray, test_size: float = 0.2):
-        """Train the model"""
+    def train(self, X: np.ndarray, y: np.ndarray, test_size: float = 0.2, random_state: int = 42):
+        """Train the model using scikit-learn"""
         try:
-            # Simple train/test split (without sklearn)
-            n_samples = len(X)
-            n_test = int(n_samples * test_size)
-            indices = np.random.permutation(n_samples)
-            test_indices = indices[:n_test]
-            train_indices = indices[n_test:]
+            # Create model if not exists
+            if self.model is None:
+                self._create_model()
+
+            # Split data
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y, test_size=test_size, random_state=random_state
+            )
+
+            # Fit scaler on training data
+            self.scaler.fit(X_train)
+
+            # Scale training data
+            X_train_scaled = self.scaler.transform(X_train)
+            X_test_scaled = self.scaler.transform(X_test)
+
+            # Train model
+            self.model.fit(X_train_scaled, y_train)
+
+            # Make predictions on test set
+            y_pred = self.model.predict(X_test_scaled)
+
+            # Calculate metrics
+            self.metrics['accuracy'] = accuracy_score(y_test, y_pred)
+
+            # Handle different types of classification
+            if len(np.unique(y)) > 2:  # Multi-class
+                self.metrics['precision'] = precision_score(y_test, y_pred, average='weighted')
+                self.metrics['recall'] = recall_score(y_test, y_pred, average='weighted')
+                self.metrics['f1_score'] = f1_score(y_test, y_pred, average='weighted')
+            else:  # Binary
+                self.metrics['precision'] = precision_score(y_test, y_pred)
+                self.metrics['recall'] = recall_score(y_test, y_pred)
+                self.metrics['f1_score'] = f1_score(y_test, y_pred)
+
+            self.is_trained = True
+            print(f"✅ {self.model_name} trained successfully!")
+            print(f"   Accuracy: {self.metrics['accuracy']:.3f}")
+            print(f"   F1-Score: {self.metrics['f1_score']:.3f}")
+
+        except Exception as e:
+            print(f"❌ Training failed for {self.model_name}: {e}")
+            raise
+
+    def predict(self, features: List[float]) -> Dict[str, Any]:
+        """Make prediction"""
+        if not self.is_trained or self.model is None:
+            raise ValueError(f"Model {self.model_name} is not trained")
+
+        try:
+            # Preprocess features
+            X = self._preprocess_features(features)
+
+            # Make prediction
+            prediction = self.model.predict(X)
+
+            # Get prediction probabilities if available
+            probabilities = None
+            if hasattr(self.model, 'predict_proba'):
+                probabilities = self.model.predict_proba(X)[0]
+
+            return {
+                'prediction': prediction.tolist() if hasattr(prediction, 'tolist') else prediction,
+                'probabilities': probabilities.tolist() if probabilities is not None and hasattr(probabilities, 'tolist') else probabilities,
+                'confidence': float(np.max(probabilities)) if probabilities is not None else 0.8,
+                'model_name': self.model_name
+            }
+
+        except Exception as e:
+            raise ValueError(f"Prediction failed: {e}")
+
+    def save_model(self, filename: Optional[str] = None):
+        """Save trained model to disk"""
+        if not self.is_trained:
+            raise ValueError("Cannot save untrained model")
+
+        if filename is None:
+            filename = f"{self.model_name}.joblib"
+
+        model_path = self.models_dir / filename
+
+        # Save model and scaler
+        model_data = {
+            'model': self.model,
+            'scaler': self.scaler,
+            'metrics': self.metrics,
+            'feature_names': self.feature_names,
+            'is_trained': self.is_trained
+        }
+
+        joblib.dump(model_data, model_path)
+        print(f"💾 Model saved to {model_path}")
+
+    def load_model(self, filename: Optional[str] = None):
+        """Load trained model from disk"""
+        if filename is None:
+            filename = f"{self.model_name}.joblib"
+
+        model_path = self.models_dir / filename
+
+        if not model_path.exists():
+            raise FileNotFoundError(f"Model file not found: {model_path}")
+
+        model_data = joblib.load(model_path)
+
+        self.model = model_data['model']
+        self.scaler = model_data['scaler']
+        self.metrics = model_data['metrics']
+        self.feature_names = model_data['feature_names']
+        self.is_trained = model_data['is_trained']
+
+        print(f"📂 Model loaded from {model_path}")
+
+    def is_loaded(self) -> bool:
+        """Check if model is loaded and trained"""
+        return self.is_trained and self.model is not None
+
+    def get_metrics(self) -> Dict[str, float]:
+        """Get model performance metrics"""
+        return self.metrics.copy()
 
             X_train = X[train_indices]
             X_test = X[test_indices]
