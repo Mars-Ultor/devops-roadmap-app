@@ -21,11 +21,11 @@ export default function AARHistory() {
 
   useEffect(() => {
     loadAARs();
-  }, [user?.uid]);
+  }, [user?.uid, loadAARs]);
 
   useEffect(() => {
     filterAARs();
-  }, [aars, searchTerm, selectedLevel, selectedLesson, sortBy]);
+  }, [aars, searchTerm, selectedLevel, selectedLesson, sortBy, filterAARs]);
 
   const loadAARs = async () => {
     if (!user?.uid) return;

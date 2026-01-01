@@ -132,7 +132,7 @@ export function MLModelManagementDashboard() {
 
   useEffect(() => {
     loadModels();
-  }, []);
+  }, [loadModels]);
 
   const loadModels = async () => {
     setLoading(true);

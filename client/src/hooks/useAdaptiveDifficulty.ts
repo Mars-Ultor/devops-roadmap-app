@@ -392,7 +392,7 @@ export function useAdaptiveDifficulty() {
     const newSettings = createSettingsForLevel(newLevel);
 
     // Update settings
-    await updateDoc(doc(db, 'difficultySettings', user.uid), newSettings as any);
+    await updateDoc(doc(db, 'difficultySettings', user.uid), newSettings);
 
     // Record adjustment
     const adjustment: Omit<DifficultyAdjustment, 'id'> = {

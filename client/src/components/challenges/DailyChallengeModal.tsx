@@ -42,7 +42,7 @@ export const DailyChallengeModal: FC<DailyChallengeModalProps> = ({
     if (isOpen) {
       loadTodaysChallenge();
     }
-  }, [isOpen]);
+  }, [isOpen, loadTodaysChallenge]);
 
   // Countdown timer
   useEffect(() => {

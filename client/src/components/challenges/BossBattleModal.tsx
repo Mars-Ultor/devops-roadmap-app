@@ -52,7 +52,7 @@ export const BossBattleModal: FC<BossBattleModalProps> = ({
     if (isOpen) {
       loadBossBattle();
     }
-  }, [isOpen, week]);
+  }, [isOpen, week, loadBossBattle]);
 
   // Countdown timer
   useEffect(() => {
@@ -69,7 +69,7 @@ export const BossBattleModal: FC<BossBattleModalProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isActive, timeRemaining]);
+  }, [isActive, timeRemaining, handleTimeExpired]);
 
   const loadBossBattle = async () => {
     if (!user) return;

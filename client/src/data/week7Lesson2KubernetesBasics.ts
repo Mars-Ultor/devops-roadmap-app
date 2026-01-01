@@ -302,7 +302,7 @@ spec:
             label: 'Number of replicas',
             hint: 'How many for high availability?',
             correctValue: '3',
-            validationPattern: '3|2\+'
+            validationPattern: '3|2\\+' // eslint-disable-line no-useless-escape
           },
           {
             id: 'selector_key',
