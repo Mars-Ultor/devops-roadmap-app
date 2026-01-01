@@ -1,55 +1,67 @@
 /**
- * Lazy Curriculum Data Loader
- * Loads curriculum data on-demand to reduce initial bundle size
+ * Curriculum Data Loader
+ * Uses eager loading via Vite's import.meta.glob to avoid circular dependency issues
  */
 
 import { baseWeeks, type Week } from '../data/baseWeeks';
 
+// Eagerly load all lesson modules at build time to avoid runtime circular dependency issues
+const lessonModules = import.meta.glob('../data/week*Lessons.ts', { eager: true }) as Record<string, Record<string, unknown>>;
+
 class CurriculumLoader {
-  private cache = new Map<number, Promise<Week>>();
-  private allWeeksCache: Promise<Week[]> | null = null;
+  private cache = new Map<number, Week>();
+  private allWeeksCache: Week[] | null = null;
+
+  constructor() {
+    // Pre-populate cache on initialization
+    console.log('CurriculumLoader: Initialized with modules:', Object.keys(lessonModules));
+  }
 
   /**
    * Load a specific week's data
    */
   async loadWeek(weekNumber: number): Promise<Week> {
+    // Check cache first
     if (this.cache.has(weekNumber)) {
       return this.cache.get(weekNumber)!;
     }
 
-    const weekPromise = this.importWeekData(weekNumber);
-    this.cache.set(weekNumber, weekPromise);
-    return weekPromise;
+    const week = this.getWeekData(weekNumber);
+    this.cache.set(weekNumber, week);
+    return week;
   }
 
   /**
-   * Load all weeks data (use sparingly - loads everything)
+   * Load all weeks data
    */
   async loadAllWeeks(): Promise<Week[]> {
     if (this.allWeeksCache) {
       return this.allWeeksCache;
     }
 
-    this.allWeeksCache = this.importAllWeeksData();
+    this.allWeeksCache = this.getAllWeeksData();
     return this.allWeeksCache;
   }
 
   /**
-   * Get week data synchronously if already loaded
+   * Get week data synchronously
    */
   getWeekSync(weekNumber: number): Week | null {
-    // This would require preloading, but for now return null
-    // Parameter is intentionally unused in current implementation
-    void weekNumber;
-    return null;
+    if (this.cache.has(weekNumber)) {
+      return this.cache.get(weekNumber)!;
+    }
+    return this.getWeekData(weekNumber);
   }
 
   /**
    * Preload critical weeks (current + adjacent)
    */
   async preloadWeeks(weekNumbers: number[]): Promise<void> {
-    const promises = weekNumbers.map(weekNum => this.loadWeek(weekNum));
-    await Promise.all(promises);
+    weekNumbers.forEach(weekNum => {
+      if (!this.cache.has(weekNum)) {
+        this.cache.set(weekNum, this.getWeekData(weekNum));
+      }
+    });
   }
 
   /**
@@ -65,93 +77,49 @@ class CurriculumLoader {
     await this.preloadWeeks(weeksToPreload);
   }
 
-  private async importWeekData(weekNumber: number): Promise<Week> {
+  private getWeekData(weekNumber: number): Week {
+    const modulePath = `../data/week${weekNumber}Lessons.ts`;
+    const weekData = baseWeeks.find(w => w.weekNumber === weekNumber);
+
+    if (!weekData) {
+      console.error(`CurriculumLoader: Week ${weekNumber} not found in base weeks`);
+      throw new Error(`Week ${weekNumber} not found in base weeks data`);
+    }
+
     try {
-      // Use explicit imports with glob pattern for Vite compatibility
-      const modules = import.meta.glob('../data/week*Lessons.ts');
-      const modulePath = `../data/week${weekNumber}Lessons.ts`;
-      
-      console.log(`CurriculumLoader: Loading week ${weekNumber}, path: ${modulePath}`);
-      console.log(`CurriculumLoader: Available modules:`, Object.keys(modules));
-      
-      if (!modules[modulePath]) {
-        console.error(`CurriculumLoader: Module ${modulePath} not found in available modules`);
-        // Return base week data without lessons if module not found
-        const weekData = baseWeeks.find(w => w.weekNumber === weekNumber);
-        if (weekData) {
-          return { ...weekData, lessons: [] };
-        }
-        throw new Error(`Module ${modulePath} not found`);
-      }
-      
-      const lessonsModule = await modules[modulePath]() as Record<string, unknown>;
-      console.log(`CurriculumLoader: Loaded module for week ${weekNumber}:`, Object.keys(lessonsModule));
-      
-      const weekLessons = lessonsModule[`WEEK_${weekNumber}_LESSONS`];
-
-      // Get the base week structure
-      const weekData = baseWeeks.find(w => w.weekNumber === weekNumber);
-
-      if (!weekData) {
-        throw new Error(`Week ${weekNumber} not found in base weeks data`);
-      }
-
-      // Merge the lessons into the week data
-      return {
-        ...weekData,
-        lessons: (weekLessons as Week['lessons']) || []
-      };
-    } catch (error) {
-      console.error(`Failed to load week ${weekNumber}:`, error);
-      // Return base week data without lessons on error
-      const weekData = baseWeeks.find(w => w.weekNumber === weekNumber);
-      if (weekData) {
+      const module = lessonModules[modulePath];
+      if (module) {
+        const lessons = module[`WEEK_${weekNumber}_LESSONS`] as Week['lessons'] || [];
+        console.log(`CurriculumLoader: Loaded week ${weekNumber} with ${lessons.length} lessons`);
+        return { ...weekData, lessons };
+      } else {
+        console.warn(`CurriculumLoader: Module ${modulePath} not found, using empty lessons`);
         return { ...weekData, lessons: [] };
       }
-      throw error;
+    } catch (error) {
+      console.error(`CurriculumLoader: Error loading week ${weekNumber}:`, error);
+      return { ...weekData, lessons: [] };
     }
   }
 
-  private async importAllWeeksData(): Promise<Week[]> {
-    try {
-      // Use explicit imports with glob pattern for Vite compatibility
-      const modules = import.meta.glob('../data/week*Lessons.ts');
-      
-      console.log('CurriculumLoader: Loading all weeks, available modules:', Object.keys(modules));
-      
-      const results: Week[] = [];
-      
-      for (let i = 1; i <= 12; i++) {
-        const modulePath = `../data/week${i}Lessons.ts`;
+  private getAllWeeksData(): Week[] {
+    console.log('CurriculumLoader: Loading all weeks data');
+    const results: Week[] = [];
+
+    for (let i = 1; i <= 12; i++) {
+      try {
+        results.push(this.getWeekData(i));
+      } catch (error) {
+        console.error(`CurriculumLoader: Error loading week ${i}:`, error);
         const weekData = baseWeeks.find(w => w.weekNumber === i);
-        
-        if (!weekData) {
-          console.warn(`CurriculumLoader: Week ${i} not found in base weeks`);
-          continue;
-        }
-        
-        try {
-          if (modules[modulePath]) {
-            const mod = await modules[modulePath]() as Record<string, unknown>;
-            const lessons = mod[`WEEK_${i}_LESSONS`] as Week['lessons'] || [];
-            results.push({ ...weekData, lessons });
-          } else {
-            console.warn(`CurriculumLoader: Module ${modulePath} not found, using empty lessons`);
-            results.push({ ...weekData, lessons: [] });
-          }
-        } catch (moduleError) {
-          console.error(`CurriculumLoader: Error loading module for week ${i}:`, moduleError);
+        if (weekData) {
           results.push({ ...weekData, lessons: [] });
         }
       }
-      
-      console.log(`CurriculumLoader: Loaded ${results.length} weeks`);
-      return results;
-    } catch (error) {
-      console.error('Failed to load all weeks data:', error);
-      // Return base weeks without lessons on error
-      return baseWeeks.map(week => ({ ...week, lessons: [] }));
     }
+
+    console.log(`CurriculumLoader: Loaded ${results.length} weeks total`);
+    return results;
   }
 }
 
