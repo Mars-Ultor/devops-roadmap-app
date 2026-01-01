@@ -41,7 +41,7 @@ export interface MLTrainingData {
   metadata?: Record<string, any>[];
 }
 
-const ML_SERVICE_URL = import.meta.env.VITE_ML_SERVICE_URL || 'http://localhost:8000';
+const ML_SERVICE_URL = import.meta.env.VITE_ML_API_URL || 'http://localhost:8000';
 
 export class MLModelService {
   private static instance: MLModelService;
