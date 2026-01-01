@@ -210,59 +210,6 @@ async def get_coach_insights(context: CoachContext):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate insights: {str(e)}")
-        performance_result = models['performance_predictor'].predict(performance_features)
-        predictions['performance'] = performance_result
-
-        # Learning path prediction
-        path_result = models['learning_path_predictor'].predict(path_features)
-        predictions['path'] = path_result
-
-        # Motivational analysis
-        motivational_result = models['motivational_analyzer'].predict(performance_features + learning_style_features)
-        predictions['motivational'] = motivational_result
-
-        # Format insights
-        insights = {
-            "learningStyle": {
-                "primary": ["visual", "kinesthetic", "reading", "auditory"][np.argmax(learning_style_result['prediction'])],
-                "confidence": learning_style_result['confidence'],
-                "recommendations": learning_style_result.get('explanation', '').split('. ')
-            },
-            "skillGaps": [
-                {
-                    "topic": topic,
-                    "gapSize": gap,
-                    "priority": "high" if gap > 0.7 else "medium" if gap > 0.4 else "low",
-                    "recommendedActions": [f"Focus on {topic} fundamentals", f"Practice {topic} exercises"]
-                }
-                for topic, gap in zip(['git', 'linux', 'docker', 'kubernetes', 'aws', 'terraform', 'jenkins', 'monitoring'],
-                                    skill_gap_result['prediction'][:8])
-                if gap > 0.3
-            ],
-            "optimalPath": {
-                "nextTopics": [f"Week {int(pred)+1}" for pred in path_result['prediction'][:3] if pred > 0.5],
-                "estimatedTime": int(np.mean(path_result['prediction']) * 40),  # Estimate hours
-                "confidence": path_result['confidence'],
-                "reasoning": path_result.get('explanation', 'Based on current performance and skill assessment')
-            },
-            "performancePrediction": {
-                "completionProbability": performance_result['prediction'][0],
-                "estimatedCompletionDate": (datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) +
-                                          pd.Timedelta(days=int(12 * (1 - performance_result['prediction'][0])))).isoformat(),
-                "riskFactors": ["Low study streak", "High error rate"] if performance_result['prediction'][0] < 0.6 else [],
-                "interventions": ["Increase daily practice", "Focus on weak topics"] if performance_result['prediction'][0] < 0.7 else ["Continue current pace"]
-            },
-            "motivationalProfile": {
-                "type": "achievement" if motivational_result['prediction'][0] > 0.5 else "mastery",
-                "strengths": ["Persistent", "Goal-oriented"] if motivational_result['prediction'][0] > 0.5 else ["Detail-focused", "Knowledge-driven"],
-                "recommendations": motivational_result.get('explanation', '').split('. ')
-            }
-        }
-
-        return insights
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate insights: {str(e)}")
 
 @app.get("/models")
 async def list_models():

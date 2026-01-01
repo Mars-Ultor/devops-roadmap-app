@@ -46,7 +46,7 @@ export default function MasteryLesson() {
   const [completed, setCompleted] = useState(false);
   const [aarSubmitted, setAarSubmitted] = useState(false);
   const [weekNumber, setWeekNumber] = useState<number | null>(null);
-  const [hintsUsed, setHintsUsed] = useState(0);
+  const [hintsUsed] = useState(0);
   const [validationErrors, setValidationErrors] = useState(0);
   const [startTime] = useState<number>(Date.now());
   const [completedExercises, setCompletedExercises] = useState<number[]>([]);

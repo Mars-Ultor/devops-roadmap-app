@@ -73,9 +73,10 @@ export default function AARHistory() {
           return a.createdAt.getTime() - b.createdAt.getTime();
         case 'lesson':
           return a.lessonId.localeCompare(b.lessonId);
-        case 'level':
+        case 'level': {
           const levelOrder: Record<string, number> = { crawl: 1, walk: 2, 'run-guided': 3, 'run-independent': 4 };
           return levelOrder[a.level] - levelOrder[b.level];
+        }
         default:
           return 0;
       }

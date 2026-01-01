@@ -3750,7 +3750,7 @@ terraform apply  # Done!
 ### With IaC (Terraform) ✅
 \`\`\`hcl
 resource "aws_s3_bucket" "resume" {
-  bucket = "my-resume-${var.environment}"
+  bucket = "my-resume-\${var.environment}"
 }
 
 resource "aws_cloudfront_distribution" "cdn" {
@@ -3925,7 +3925,7 @@ variable "environment" {
 
 # main.tf
 resource "aws_s3_bucket" "resume" {
-  bucket = "${var.bucket_name}-${var.environment}"
+  bucket = "\${var.bucket_name}-\${var.environment}"
 }
 \`\`\`
 

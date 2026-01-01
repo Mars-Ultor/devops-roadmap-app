@@ -257,7 +257,7 @@ export function getScenarioById(id: string): StressScenario | undefined {
  * Returns 0-100 score representing current stress level
  */
 export function calculateStressScore(
-  conditions: any[],
+  conditions: unknown[],
   elapsedSeconds: number,
   errorsCount: number,
   tasksRemaining: number
@@ -267,12 +267,13 @@ export function calculateStressScore(
   // Base stress from conditions
   conditions.forEach(condition => {
     switch (condition.type) {
-      case 'time-pressure':
+      case 'time-pressure': {
         const timeProgress = elapsedSeconds / condition.targetTimeSeconds;
         if (timeProgress > 0.75) score += 30;
         else if (timeProgress > 0.5) score += 20;
         else score += 10;
         break;
+      }
       
       case 'multi-tasking':
         score += condition.simultaneousTasks * 15;
