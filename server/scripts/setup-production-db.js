@@ -36,9 +36,9 @@ async function setupProductionDb() {
     console.log('🔧 Generating Prisma client...');
     execSync('npx prisma generate', { stdio: 'inherit' });
 
-    // Run database migrations
-    console.log('🗃️  Running database migrations...');
-    execSync('npx prisma migrate deploy', { stdio: 'inherit' });
+    // Push database schema (better for production than migrate deploy)
+    console.log('🗃️  Pushing database schema...');
+    execSync('npx prisma db push --force-reset', { stdio: 'inherit' });
 
     // Check if we need to migrate from SQLite
     const sqliteDbPath = process.env.SQLITE_DB_PATH || './dev.db';
