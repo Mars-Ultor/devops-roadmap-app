@@ -8,7 +8,6 @@ import sys
 import os
 from pathlib import Path
 import numpy as np
-import pandas as pd
 from typing import List, Dict, Any
 
 # Add the models directory to the path
@@ -181,16 +180,14 @@ def train_all_models():
     print("\n📊 Training Summary:")
     for model in models:
         print(f"  • {model.model_name}:")
-        print(".3f"        print(".3f"        print(".3f"
+        print(f"    - Accuracy: {model.metrics['accuracy']:.3f}")
+        print(f"    - F1-Score: {model.metrics['f1_score']:.3f}")
+        print(f"    - Precision: {model.metrics['precision']:.3f}")
     print("\n🎯 Ready for deployment!")
 
 
 if __name__ == "__main__":
     train_all_models()
-            continue
-
-    print("\n✅ All models trained successfully!")
-    print("💾 Models saved to models/saved_models/")
 
 def test_models():
     """Test trained models with sample predictions"""

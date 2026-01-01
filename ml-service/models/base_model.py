@@ -3,7 +3,6 @@ Base ML Model Class - Real ML models using scikit-learn
 """
 
 import numpy as np
-import pandas as pd
 import joblib
 import os
 from pathlib import Path
@@ -169,34 +168,6 @@ class BaseMLModel(ABC):
     def get_metrics(self) -> Dict[str, float]:
         """Get model performance metrics"""
         return self.metrics.copy()
-
-            X_train = X[train_indices]
-            X_test = X[test_indices]
-            y_train = y[train_indices]
-            y_test = y[test_indices]
-
-            # Fit scaler on training data
-            self._fit_scaler(X_train)
-
-            # Scale features
-            X_train_scaled = self._scale_features(X_train)
-            X_test_scaled = self._scale_features(X_test)
-
-            # Create and train model
-            self._create_model()
-            self._train_model(X_train_scaled, y_train)
-
-            # Evaluate
-            self._evaluate(X_test_scaled, y_test)
-
-            self.is_trained = True
-            self.save_model()
-
-            return True
-
-        except Exception as e:
-            print(f"Training failed for {self.model_name}: {e}")
-            return False
 
     def predict(self, features: List[float]) -> np.ndarray:
         """Make prediction for single input"""
