@@ -3,8 +3,7 @@
  * Handles AAR creation, storage, analysis, and pattern recognition
  */
 
-import { collection, doc, addDoc, updateDoc, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import axios from 'axios';
 import type {
   AfterActionReview,
   AARFormData,
@@ -13,6 +12,8 @@ import type {
   AARPattern
 } from '../types/aar';
 import { AAR_REQUIREMENTS } from '../types/aar';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 export class AARService {
   private static instance: AARService;
@@ -93,409 +94,209 @@ export class AARService {
       throw new Error('AAR form validation failed: ' + Object.values(validation.errors).join(', '));
     }
 
-    const now = new Date();
-    const aar: Omit<AfterActionReview, 'id'> = {
-      userId,
-      lessonId,
-      level,
-      labId,
-      completedAt: now,
-      whatWasAccomplished: formData.whatWasAccomplished,
-      whatWorkedWell: formData.whatWorkedWell,
-      whatDidNotWork: formData.whatDidNotWork,
-      whyDidNotWork: formData.whyDidNotWork,
-      whatWouldIDoDifferently: formData.whatWouldIDoDifferently,
-      whatDidILearn: formData.whatDidILearn,
-      wordCounts: validation.wordCounts as {
-        whatWasAccomplished: number;
-        whyDidNotWork: number;
-        whatWouldIDoDifferently: number;
-        whatDidILearn: number;
-      },
-      createdAt: now,
-      updatedAt: now
-    };
+    try {
+      const response = await axios.post(`${API_BASE_URL}/aar`, {
+        lessonId,
+        level,
+        labId,
+        ...formData
+      }, {
+        headers: {
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        }
+      });
 
-    const docRef = await addDoc(collection(db, 'afterActionReviews'), aar);
-
-    // Trigger AI analysis (async)
-    this.analyzeAAR(docRef.id, aar).catch(console.error);
-
-    return { ...aar, id: docRef.id };
+      return response.data.data;
+    } catch (error: any) {
+      console.error('Error creating AAR:', error);
+      throw new Error(error.response?.data?.message || 'Failed to create AAR');
+    }
   }
 
   /**
    * Get AARs for a specific user
    */
   async getUserAARs(userId: string, limitCount?: number): Promise<AfterActionReview[]> {
-    const q = query(
-      collection(db, 'afterActionReviews'),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc'),
-      ...(limitCount ? [limit(limitCount)] : [])
-    );
+    try {
+      const params = limitCount ? { limit: limitCount } : {};
+      const response = await axios.get(`${API_BASE_URL}/aar`, {
+        params,
+        headers: {
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        }
+      });
 
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      ...doc.data(),
-      id: doc.id,
-      createdAt: doc.data().createdAt?.toDate() || new Date()
-    } as AfterActionReview));
+      return response.data.data.map((aar: any) => ({
+        ...aar,
+        createdAt: new Date(aar.createdAt),
+        updatedAt: new Date(aar.updatedAt),
+        completedAt: new Date(aar.completedAt)
+      }));
+    } catch (error: any) {
+      console.error('Error fetching user AARs:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch AARs');
+    }
   }
 
   /**
    * Get AARs for a specific lesson
    */
   async getLessonAARs(userId: string, lessonId: string): Promise<AfterActionReview[]> {
-    const q = query(
-      collection(db, 'afterActionReviews'),
-      where('userId', '==', userId),
-      where('lessonId', '==', lessonId),
-      orderBy('createdAt', 'desc')
-    );
+    try {
+      const response = await axios.get(`${API_BASE_URL}/aar`, {
+        params: { lessonId },
+        headers: {
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        }
+      });
 
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      ...doc.data(),
-      id: doc.id,
-      createdAt: doc.data().createdAt?.toDate() || new Date()
-    } as AfterActionReview));
+      return response.data.data.map((aar: any) => ({
+        ...aar,
+        createdAt: new Date(aar.createdAt),
+        updatedAt: new Date(aar.updatedAt),
+        completedAt: new Date(aar.completedAt)
+      }));
+    } catch (error: any) {
+      console.error('Error fetching lesson AARs:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch lesson AARs');
+    }
   }
 
   /**
    * Get AAR statistics for a user
    */
   async getUserAARStats(userId: string): Promise<AARStats> {
-    const aars = await this.getUserAARs(userId);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/aar/stats/overview`, {
+        headers: {
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        }
+      });
 
-    if (aars.length === 0) {
+      return response.data.data;
+    } catch (error: any) {
+      console.error('Error fetching AAR stats:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch AAR statistics');
+    }
+  }
+
+  /**
+   * Validate AAR form data without saving
+   */
+  async validateAARFormRemote(formData: AARFormData): Promise<AARValidationResult> {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/aar/validate`, formData, {
+        headers: {
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        }
+      });
+
+      return response.data.data;
+    } catch (error: any) {
+      console.error('Error validating AAR form:', error);
+      throw new Error(error.response?.data?.message || 'Failed to validate AAR form');
+    }
+  }
+
+  /**
+   * Get common patterns across user's AARs
+   */
+  async getCommonPatterns(minFrequency: number = 2): Promise<AARPattern[]> {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/aar/patterns/common`, {
+        params: { minFrequency },
+        headers: {
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        }
+      });
+
+      return response.data.data;
+    } catch (error: any) {
+      console.error('Error fetching common patterns:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch common patterns');
+    }
+  }
+
+  /**
+   * Get a specific AAR by ID
+   */
+  async getAARById(aarId: string): Promise<AfterActionReview | null> {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/aar/${aarId}`, {
+        headers: {
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        }
+      });
+
+      const aar = response.data.data;
       return {
-        totalAARs: 0,
-        averageQualityScore: 0,
-        commonPatterns: [],
-        improvementTrends: [],
-        strengths: [],
-        areasForImprovement: []
+        ...aar,
+        createdAt: new Date(aar.createdAt),
+        updatedAt: new Date(aar.updatedAt),
+        completedAt: new Date(aar.completedAt)
       };
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      console.error('Error fetching AAR:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch AAR');
     }
-
-    // Analyze patterns (simplified version - in real implementation, use AI/ML)
-    const patterns = this.analyzePatterns(aars);
-
-    return {
-      totalAARs: aars.length,
-      averageQualityScore: aars
-        .filter(aar => aar.aiReview?.score)
-        .reduce((sum, aar) => sum + (aar.aiReview?.score || 0), 0) / aars.length,
-      commonPatterns: patterns,
-      improvementTrends: this.calculateImprovementTrends(aars),
-      strengths: this.extractStrengths(aars),
-      areasForImprovement: this.extractAreasForImprovement(aars)
-    };
   }
 
   /**
-   * AI-powered AAR analysis (enhanced implementation)
+   * Update an existing AAR
    */
-  private async analyzeAAR(aarId: string, aar: Omit<AfterActionReview, 'id'>): Promise<void> {
-    // Enhanced quality assessment
-    const qualityScore = this.calculateAARQuality(aar);
-    const patterns: AARPattern[] = [];
+  async updateAAR(aarId: string, updateData: Partial<AARFormData>): Promise<AfterActionReview | null> {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/aar/${aarId}`, updateData, {
+        headers: {
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        }
+      });
 
-    // Advanced pattern detection
-    patterns.push(...this.detectAdvancedPatterns(aar));
-
-    // Generate detailed feedback based on quality
-    const aiReview = {
-      reviewedAt: new Date(),
-      reviewer: 'ai' as const,
-      score: qualityScore,
-      feedback: this.generateDetailedFeedback(aar, qualityScore),
-      suggestions: this.generatePersonalizedSuggestions(aar, qualityScore),
-      followUpQuestions: this.generateFollowUpQuestions(aar, qualityScore)
-    };
-
-    // Update the AAR with enhanced analysis
-    await updateDoc(doc(db, 'afterActionReviews', aarId), {
-      aiReview,
-      patterns,
-      qualityScore,
-      updatedAt: new Date()
-    });
+      const aar = response.data.data;
+      return {
+        ...aar,
+        createdAt: new Date(aar.createdAt),
+        updatedAt: new Date(aar.updatedAt),
+        completedAt: new Date(aar.completedAt)
+      };
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      console.error('Error updating AAR:', error);
+      throw new Error(error.response?.data?.message || 'Failed to update AAR');
+    }
   }
 
   /**
-   * Calculate comprehensive AAR quality score (1-10)
+   * Delete an AAR
    */
-  private calculateAARQuality(aar: Omit<AfterActionReview, 'id'>): number {
-    let score = 5; // Base score
-
-    // Word count quality (up to 2 points)
-    const totalWords = aar.wordCounts.whatWasAccomplished +
-                      aar.wordCounts.whyDidNotWork +
-                      aar.wordCounts.whatWouldIDoDifferently +
-                      aar.wordCounts.whatDidILearn;
-
-    if (totalWords > 200) score += 2;
-    else if (totalWords > 100) score += 1;
-
-    // Content depth analysis (up to 2 points)
-    const hasSpecificExamples = this.hasSpecificExamples(aar);
-    const hasRootCauseAnalysis = this.hasRootCauseAnalysis(aar);
-    const hasActionableImprovements = this.hasActionableImprovements(aar);
-
-    if (hasSpecificExamples) score += 0.5;
-    if (hasRootCauseAnalysis) score += 0.8;
-    if (hasActionableImprovements) score += 0.7;
-
-    // Self-reflection quality (up to 1 point)
-    if (this.hasSelfReflection(aar)) score += 1;
-
-    // Balance check (up to 0.5 points)
-    const balanceRatio = this.calculateBalanceRatio(aar);
-    if (balanceRatio > 0.7) score += 0.5;
-
-    return Math.min(Math.max(score, 1), 10);
-  }
-
-  private hasSpecificExamples(aar: Omit<AfterActionReview, 'id'>): boolean {
-    const text = `${aar.whatWasAccomplished} ${aar.whyDidNotWork} ${aar.whatWouldIDoDifferently}`;
-    const specificIndicators = [
-      'command', 'error', 'config', 'file', 'port', 'version',
-      'docker', 'kubernetes', 'aws', 'azure', 'gcp',
-      '--', 'sudo', 'chmod', 'chown'
-    ];
-    return specificIndicators.some(indicator =>
-      text.toLowerCase().includes(indicator.toLowerCase())
-    );
-  }
-
-  private hasRootCauseAnalysis(aar: Omit<AfterActionReview, 'id'>): boolean {
-    const text = aar.whyDidNotWork.toLowerCase();
-    const rootCauseIndicators = [
-      'because', 'due to', 'caused by', 'reason', 'root cause',
-      'misconfigured', 'missing', 'incorrect', 'wrong',
-      'should have', 'forgot to', 'didn\'t'
-    ];
-    return rootCauseIndicators.some(indicator => text.includes(indicator));
-  }
-
-  private hasActionableImprovements(aar: Omit<AfterActionReview, 'id'>): boolean {
-    const text = aar.whatWouldIDoDifferently.toLowerCase();
-    const actionableIndicators = [
-      'check', 'verify', 'test', 'validate', 'use',
-      'create', 'add', 'remove', 'update', 'configure',
-      'read', 'review', 'practice', 'learn'
-    ];
-    return actionableIndicators.some(indicator => text.includes(indicator));
-  }
-
-  private hasSelfReflection(aar: Omit<AfterActionReview, 'id'>): boolean {
-    const text = aar.whatDidILearn.toLowerCase();
-    const reflectionIndicators = [
-      'learned', 'understand', 'realized', 'important',
-      'need to', 'should', 'better', 'improve',
-      'next time', 'going forward'
-    ];
-    return reflectionIndicators.some(indicator => text.includes(indicator));
-  }
-
-  private calculateBalanceRatio(aar: Omit<AfterActionReview, 'id'>): number {
-    const positiveWords = aar.whatWorkedWell.length;
-    const negativeWords = aar.whatDidNotWork.length;
-    const total = positiveWords + negativeWords;
-    if (total === 0) return 0;
-
-    // Ideal balance is roughly 40% positive, 60% negative
-    const positiveRatio = positiveWords / total;
-    return 1 - Math.abs(positiveRatio - 0.4);
-  }
-
-  private detectAdvancedPatterns(aar: Omit<AfterActionReview, 'id'>): AARPattern[] {
-    const patterns: AARPattern[] = [];
-    const fullText = `${aar.whatWasAccomplished} ${aar.whatWorkedWell.join(' ')} ${aar.whatDidNotWork.join(' ')} ${aar.whyDidNotWork} ${aar.whatWouldIDoDifferently} ${aar.whatDidILearn}`.toLowerCase();
-
-    // Technical skill gaps
-    if (fullText.includes('docker') && (fullText.includes('volume') || fullText.includes('network'))) {
-      patterns.push({
-        patternId: 'docker-advanced-concepts',
-        type: 'skill_gap',
-        description: 'Struggling with advanced Docker concepts (volumes/networking)',
-        frequency: 1,
-        relatedLessons: [aar.lessonId],
-        recommendation: 'Focus on Docker networking and persistent storage patterns',
-        confidence: 0.85
+  async deleteAAR(aarId: string): Promise<boolean> {
+    try {
+      await axios.delete(`${API_BASE_URL}/aar/${aarId}`, {
+        headers: {
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        }
       });
+
+      return true;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        return false;
+      }
+      console.error('Error deleting AAR:', error);
+      throw new Error(error.response?.data?.message || 'Failed to delete AAR');
     }
-
-    // Process issues
-    if (fullText.includes('time') && fullText.includes('ran out')) {
-      patterns.push({
-        patternId: 'time-management',
-        type: 'process_issue',
-        description: 'Time management challenges during exercises',
-        frequency: 1,
-        relatedLessons: [aar.lessonId],
-        recommendation: 'Break complex tasks into smaller, time-boxed steps',
-        confidence: 0.9
-      });
-    }
-
-    // Documentation habits
-    if (fullText.includes('documentation') || fullText.includes('docs')) {
-      patterns.push({
-        patternId: 'documentation-awareness',
-        type: 'strength',
-        description: 'Growing awareness of documentation importance',
-        frequency: 1,
-        relatedLessons: [aar.lessonId],
-        recommendation: 'Continue building documentation-first habits',
-        confidence: 0.8
-      });
-    }
-
-    return patterns;
-  }
-
-  private generateDetailedFeedback(aar: Omit<AfterActionReview, 'id'>, score: number): string {
-    if (score >= 9) {
-      return 'Excellent AAR! Your analysis shows deep understanding and actionable insights. This level of reflection will accelerate your learning significantly.';
-    } else if (score >= 7) {
-      return 'Good AAR with solid analysis. You\'ve identified key issues and potential improvements. Consider adding more specific examples next time.';
-    } else if (score >= 5) {
-      return 'Decent AAR that covers the basics. Try to be more specific about what went wrong and why, and focus on actionable improvements.';
-    } else {
-      return 'This AAR needs more depth. Focus on specific problems encountered, their root causes, and concrete steps for improvement.';
-    }
-  }
-
-  private generatePersonalizedSuggestions(aar: Omit<AfterActionReview, 'id'>, score: number): string[] {
-    const suggestions: string[] = [];
-
-    if (!this.hasSpecificExamples(aar)) {
-      suggestions.push('Include specific commands, error messages, or configurations that caused issues');
-    }
-
-    if (!this.hasRootCauseAnalysis(aar)) {
-      suggestions.push('Analyze why problems occurred - go beyond "it didn\'t work" to identify root causes');
-    }
-
-    if (!this.hasActionableImprovements(aar)) {
-      suggestions.push('Suggest specific, actionable changes you can implement next time');
-    }
-
-    if (score < 7) {
-      suggestions.push('Take more time to reflect deeply on each question before submitting');
-    }
-
-    if (this.calculateBalanceRatio(aar) < 0.5) {
-      suggestions.push('Balance your analysis between what worked and what didn\'t work');
-    }
-
-    return suggestions.length > 0 ? suggestions : ['Keep up the good work! Your AAR shows thoughtful analysis.'];
-  }
-
-  private generateFollowUpQuestions(aar: Omit<AfterActionReview, 'id'>, score: number): string[] {
-    const questions: string[] = [];
-
-    if (score < 8) {
-      questions.push('What specific error messages or symptoms did you encounter?');
-      questions.push('How might you test your solution before implementing it in production?');
-    }
-
-    questions.push('How does this experience change how you\'ll approach similar tasks in the future?');
-    questions.push('What resources (documentation, tools, people) could help you avoid this issue next time?');
-
-    return questions;
   }
 
   /**
-   * Analyze patterns across multiple AARs
+   * Get authentication token from localStorage
    */
-  private analyzePatterns(aars: AfterActionReview[]): AARPattern[] {
-    const patternCounts: Record<string, number> = {};
-
-    aars.forEach(aar => {
-      // Simple keyword-based pattern detection
-      const text = `${aar.whyDidNotWork} ${aar.whatDidILearn}`.toLowerCase();
-
-      if (text.includes('docker') && text.includes('error')) {
-        patternCounts['docker-issues'] = (patternCounts['docker-issues'] || 0) + 1;
-      }
-      if (text.includes('kubernetes') || text.includes('k8s')) {
-        patternCounts['k8s-complexity'] = (patternCounts['k8s-complexity'] || 0) + 1;
-      }
-      if (text.includes('network') || text.includes('connection')) {
-        patternCounts['networking-problems'] = (patternCounts['networking-problems'] || 0) + 1;
-      }
-    });
-
-    return Object.entries(patternCounts)
-      .filter(([, count]) => count >= 2)
-      .map(([patternId, frequency]) => ({
-        patternId,
-        type: 'recurring_issue' as const,
-        description: this.getPatternDescription(patternId),
-        frequency,
-        relatedLessons: aars.map(a => a.lessonId),
-        recommendation: this.getPatternRecommendation(patternId),
-        confidence: Math.min(frequency / aars.length, 0.9)
-      }));
-  }
-
-  private calculateImprovementTrends(_aars: AfterActionReview[]): AARStats['improvementTrends'] {
-    // Simplified trend analysis - in real implementation, use time-series analysis
-    return [
-      {
-        category: 'Problem Solving',
-        trend: 'improving' as const,
-        dataPoints: [3, 4, 5, 6, 7] // Mock data
-      }
-    ];
-  }
-
-  private extractStrengths(aars: AfterActionReview[]): string[] {
-    const strengths: string[] = [];
-    aars.forEach(aar => {
-      if (aar.whatWorkedWell.some(item => item.toLowerCase().includes('planning'))) {
-        strengths.push('Strategic Planning');
-      }
-      if (aar.whatWorkedWell.some(item => item.toLowerCase().includes('documentation'))) {
-        strengths.push('Documentation');
-      }
-    });
-    return [...new Set(strengths)];
-  }
-
-  private extractAreasForImprovement(aars: AfterActionReview[]): string[] {
-    const improvements: string[] = [];
-    aars.forEach(aar => {
-      if (aar.whatDidNotWork.some(item => item.toLowerCase().includes('time'))) {
-        improvements.push('Time Management');
-      }
-      if (aar.whyDidNotWork.toLowerCase().includes('understanding')) {
-        improvements.push('Requirements Analysis');
-      }
-    });
-    return [...new Set(improvements)];
-  }
-
-  private getPatternDescription(patternId: string): string {
-    const descriptions: Record<string, string> = {
-      'docker-issues': 'Recurring Docker configuration and runtime issues',
-      'k8s-complexity': 'Challenges with Kubernetes complexity',
-      'networking-problems': 'Frequent networking and connectivity issues'
-    };
-    return descriptions[patternId] || 'Unknown pattern';
-  }
-
-  private getPatternRecommendation(patternId: string): string {
-    const recommendations: Record<string, string> = {
-      'docker-issues': 'Create a Docker troubleshooting checklist and review container basics',
-      'k8s-complexity': 'Focus on understanding Kubernetes fundamentals before advanced features',
-      'networking-problems': 'Build a systematic network debugging methodology'
-    };
-    return recommendations[patternId] || 'Review related documentation and practice fundamentals';
+  private getAuthToken(): string | null {
+    return localStorage.getItem('authToken');
   }
 
   private countWords(text: string): number {
