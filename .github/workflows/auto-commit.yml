@@ -6,7 +6,7 @@ on:
       commit_message:
         description: 'Commit message'
         required: false
-        default: 'Auto-commit: ${{ github.event.head_commit.message || github.run_id }}'
+        default: 'Auto-commit: Manual trigger'
         type: string
       branch:
         description: 'Target branch'
@@ -47,12 +47,12 @@ jobs:
       if: steps.check_changes.outputs.has_changes == 'true'
       run: |
         git add .
-        git commit -m "${{ github.event.inputs.commit_message }}"
+        git commit -m "${{ inputs.commit_message }}"
 
     - name: Push changes
       if: steps.check_changes.outputs.has_changes == 'true'
       run: |
-        git push origin ${{ github.event.inputs.branch }}
+        git push origin ${{ inputs.branch }}
 
     - name: Notify success
       if: steps.check_changes.outputs.has_changes == 'true'
