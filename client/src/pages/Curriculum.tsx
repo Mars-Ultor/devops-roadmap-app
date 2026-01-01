@@ -81,8 +81,11 @@ export default function Curriculum() {
   useEffect(() => {
     async function fetchCurriculum() {
       try {
+        console.log('Curriculum: Starting to fetch curriculum...');
         // Load all weeks data
         const weeksData = await curriculumLoader.loadAllWeeks();
+        console.log('Curriculum: Received weeks data:', weeksData.length, 'weeks');
+        console.log('Curriculum: Week numbers:', weeksData.map(w => w.weekNumber));
         setWeeks(weeksData);
 
         // Fetch progress for each week
@@ -90,8 +93,9 @@ export default function Curriculum() {
           await fetchProgress(weeksData);
         }
       } catch (error) {
-        console.error('Error fetching curriculum:', error);
+        console.error('Curriculum: Error fetching curriculum:', error);
       } finally {
+        console.log('Curriculum: Finished loading, setting loading to false');
         setLoading(false);
       }
     }
