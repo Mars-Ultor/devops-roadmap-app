@@ -24,7 +24,7 @@ import { ScenarioChallengeService } from '../services/scenarioChallenge';
 import { getScenarioById } from '../data/scenarios';
 import type { ChallengeScenario, ChallengeAttempt } from '../types/scenarios';
 import { useAuthStore } from '../store/authStore';
-import TimerCountdown from '../components/stress/TimerCountdown';
+import { TimerCountdown } from '../components/stress/TimerCountdown';
 
 export default function DailyChallenge() {
   const navigate = useNavigate();
@@ -42,16 +42,18 @@ export default function DailyChallenge() {
   const challengeService = ScenarioChallengeService.getInstance();
 
   useEffect(() => {
+    console.log('DailyChallenge: user =', user);
     if (!user) {
-      navigate('/login');
-      return;
+      console.log('DailyChallenge: No user, would redirect to login');
+      // navigate('/login');
+      // return;
     }
 
     // Get user's current week from their profile
-    const userCurrentWeek = user.currentWeek || 1;
+    const userCurrentWeek = user?.currentWeek || 1;
 
     // Get daily challenge for user based on their unlocked week
-    const dailyScenario = challengeService.getDailyChallenge(user.uid, userCurrentWeek);
+    const dailyScenario = challengeService.getDailyChallenge(user?.uid || 'test-user', userCurrentWeek);
 
     if (dailyScenario) {
       setScenario(dailyScenario);

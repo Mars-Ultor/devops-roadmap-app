@@ -20,6 +20,8 @@ export default function Training() {
   const [activeTab, setActiveTab] = useState(tabFromUrl);
   const [activeSubTab, setActiveSubTab] = useState(subTabFromUrl);
 
+  console.log('Training: tabFromUrl =', tabFromUrl, 'activeTab =', activeTab);
+
   // Update active tab and subtab when URL parameters change
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -84,6 +86,8 @@ export default function Training() {
   const ActiveComponent = activeTabData?.component as React.ComponentType | null;
   const activeSubTabData = advancedSubTabs.find(subtab => subtab.id === activeSubTab);
   const ActiveSubComponent = activeSubTabData?.component as React.ComponentType | null;
+
+  console.log('Training: activeTabData =', activeTabData, 'ActiveComponent =', ActiveComponent);
 
   // Render active component safely
   const renderActiveComponent = () => {

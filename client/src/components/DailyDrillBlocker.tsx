@@ -35,11 +35,24 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
   const [checkCount, setCheckCount] = useState(0);
 
   const isExemptRoute = () => {
-    return EXEMPT_ROUTES.some(route => location.pathname.startsWith(route));
+    const exemptRoutes = EXEMPT_ROUTES.some(route => location.pathname.startsWith(route));
+    
+    // Allow access to training page when accessing daily drill
+    if (location.pathname === '/training') {
+      const urlParams = new URLSearchParams(location.search);
+      const tab = urlParams.get('tab');
+      console.log('DailyDrillBlocker: pathname =', location.pathname, 'tab =', tab, 'isExempt =', tab === 'daily');
+      if (tab === 'daily') {
+        return true;
+      }
+    }
+    
+    return exemptRoutes;
   };
 
   const checkDrillStatus = async () => {
     if (!user || isExemptRoute()) {
+      console.log('DailyDrillBlocker: No user or exempt route, allowing access');
       setIsBlocked(false);
       setLoading(false);
       return;
@@ -96,7 +109,14 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
   }, [isBlocked]);
 
   const handleStartDrill = () => {
-    navigate('/training?tab=daily');
+    console.log('DailyDrillBlocker: handleStartDrill called, navigating to /training?tab=daily');
+    try {
+      navigate('/training?tab=daily');
+      console.log('DailyDrillBlocker: navigation successful');
+    } catch (error) {
+      console.error('DailyDrillBlocker: navigation failed:', error);
+      window.location.href = '/training?tab=daily';
+    }
   };
 
   if (loading) {

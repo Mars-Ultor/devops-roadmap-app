@@ -2,6 +2,8 @@
 
 A comprehensive learning platform for DevOps engineers with interactive lessons, hands-on labs, and AI-powered learning assistance.
 
+<!-- Auto-commit watcher test - Jan 1, 2026 -->
+
 ## 🚀 Features
 
 - **Interactive Learning**: Step-by-step DevOps curriculum
@@ -87,6 +89,23 @@ The application uses GitHub Actions for CI/CD:
 
 - **Staging**: Push to `develop` branch
 - **Production**: Push to `master` branch
+
+### Auto-Commit Scripts
+
+Automatically commit and push code changes to trigger CI/CD:
+
+```batch
+# Windows: One-time commit and push
+auto-commit.bat
+
+# Windows: Continuous file watcher
+auto-commit-watcher.bat
+
+# Linux/Mac: One-time commit and push
+./auto-commit.sh
+```
+
+See `AUTO-COMMIT-README.md` for detailed usage instructions.
 
 ### Manual Deployment
 

@@ -73,7 +73,14 @@ export default function ContentGate({ children }: ContentGateProps) {
   }, [checkDailyDrillStatus]);
 
   const handleStartDrill = () => {
-    navigate('/training?tab=daily');
+    console.log('ContentGate: handleStartDrill called, navigating to /training?tab=daily');
+    try {
+      navigate('/training?tab=daily');
+      console.log('ContentGate: navigation successful');
+    } catch (error) {
+      console.error('ContentGate: navigation failed:', error);
+      window.location.href = '/training?tab=daily';
+    }
   };
 
   if (loading) {
