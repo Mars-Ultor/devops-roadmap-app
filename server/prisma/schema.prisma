@@ -1,0 +1,77 @@
+// Prisma schema for DevOps Roadmap App
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // Use PostgreSQL in production
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String
+  name        String
+  createdAt   DateTime  @default(now())
+  currentWeek Int       @default(1)
+  totalXP     Int       @default(0)
+  
+  progress    Progress[]
+  projects    Project[]
+  badges      Badge[]
+  labSessions LabSession[]
+}
+
+model Progress {
+  id          String    @id @default(uuid())
+  userId      String
+  weekId      Int
+  lessonId    String
+  completed   Boolean   @default(false)
+  score       Int?
+  completedAt DateTime?
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, weekId, lessonId])
+}
+
+model Project {
+  id          String    @id @default(uuid())
+  userId      String
+  projectId   String    // "project-1", "project-2", "project-3"
+  title       String
+  description String?
+  githubUrl   String?
+  deployUrl   String?
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, projectId])
+}
+
+model Badge {
+  id          String    @id @default(uuid())
+  userId      String
+  badgeType   String    // "linux-explorer", "git-master", etc.
+  badgeName   String
+  earnedAt    DateTime  @default(now())
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LabSession {
+  id          String    @id @default(uuid())
+  userId      String
+  exerciseId  String    // "lab-1", "lab-2", etc.
+  code        String?   // User's submitted code
+  output      String?   // Lab output/result
+  passed      Boolean   @default(false)
+  submittedAt DateTime  @default(now())
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

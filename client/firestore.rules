@@ -1,0 +1,397 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Users collection - users can only read/write their own data
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+      
+      // User progress subcollection - users can only read/write their own progress
+      match /dailyDrills/{drillId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // Master training subcollection - users can only read/write their own progress
+      match /masterTraining/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+    
+    // User progress collection - users can only read/write their own progress
+    match /userProgress/{userId} {
+      allow read, write: if isOwner(userId);
+      
+      // Daily drills subcollection
+      match /dailyDrills/{drillId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // Master training subcollection
+      match /masterTraining/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+    
+    // Failure logs - users can only read/write their own logs
+    match /failureLogs/{logId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Progress collection - users can only read/write their own progress
+    match /progress/{progressId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Projects collection - users can only read/write their own projects
+    match /projects/{projectId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Badges collection - users can only read/write their own badges
+    match /badges/{badgeId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Notes collection - users can only read/write their own notes
+    match /notes/{noteId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Study sessions collection - users can only read/write their own sessions
+    match /studySessions/{sessionId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Diagnostics collection - users can only read/write their own results
+    match /diagnostics/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Master training progress - users can only read/write their own progress
+    match /masterTrainingProgress/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Learning preferences - users can only read/write their own preferences
+    match /learningPreferences/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Project progress - users can only read/write their own project submissions
+    match /projectProgress/{progressId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Assessments - users can only read/write their own assessment results
+    match /assessments/{assessmentId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Lab sessions - users can only read/write their own sessions
+    match /labSessions/{sessionId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Struggle sessions - users can only read/write their own struggle sessions
+    match /struggleSessions/{sessionId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Failure log - users can only read/write their own failure entries
+    match /failureLog/{entryId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Lesson mastery - users can only read/write their own mastery data
+    match /lessonMastery/{masteryId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Daily drills - users can only read/write their own drill completions
+    match /dailyDrills/{drillId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Reset tokens - users can read/write their own token usage and query their history
+    match /resetTokens/{tokenId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Token allocations - users can only read/write their own allocations
+    match /tokenAllocations/{allocationId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Token resets - users can only read/write their own token reset history
+    match /tokenResets/{resetId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Quiz attempts - users can only read/write their own quiz attempts
+    match /quizAttempts/{attemptId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Battle drill performance - users can only read/write their own performance
+    match /battleDrillPerformance/{performanceId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Stress training sessions - users can only read/write their own sessions
+    match /stressTrainingSessions/{sessionId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Scenario attempts - users can only read/write their own attempts
+    match /scenarioAttempts/{attemptId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Battle drill attempts - users can only read/write their own attempts
+    match /battleDrillAttempts/{attemptId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Drill sessions - users can only read/write their own drill sessions
+    match /drillSessions/{sessionId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Accountability partners - users can read/write their own accountability data
+    match /accountability/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Week commitments - users can only read/write their own commitments
+    match /weekCommitments/{commitmentId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Weekly commitments - users can only read/write their own commitments
+    match /weeklyCommitments/{commitmentId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Accountability check-ins - users can only read/write their own check-ins
+    match /accountabilityCheckIns/{checkInId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Public commitments - authenticated users can read, users can only write their own
+    match /publicCommitments/{commitmentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Accountability partners - users can read/write their own partner relationships
+    match /accountabilityPartners/{partnerId} {
+      allow read: if isAuthenticated() && (
+        resource == null || 
+        isOwner(resource.data.userId) || 
+        resource.data.partnerId == request.auth.uid
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && (
+        isOwner(resource.data.userId) || 
+        resource.data.partnerId == request.auth.uid
+      );
+    }
+    
+    // Difficulty settings - users can only read/write their own settings
+    match /difficultySettings/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Difficulty adjustments - users can only read/write their own adjustment history
+    match /difficultyAdjustments/{adjustmentId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Recertifications - users can only read/write their own recertification data
+    match /recertifications/{recertId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // After Action Reviews - users can only read/write their own AARs
+    match /afterActionReviews/{aarId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // AARs collection - users can only read/write their own AARs
+    match /aars/{aarId} {
+      allow read: if isAuthenticated() && (
+        resource == null || isOwner(resource.data.userId)
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Mastery progress - users can only read/write their own mastery data
+    match /masteryProgress/{masteryId} {
+      allow read: if isAuthenticated() && (
+        resource == null || masteryId.split('_')[0] == request.auth.uid
+      );
+      allow create, update: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Struggle sessions - users can read/write their own and subcollections
+    match /users/{userId}/struggleSessions/{sessionId} {
+      allow read, write: if isOwner(userId);
+      
+      // Hints subcollection
+      match /hints/{hintId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+    
+    // Curriculum - read for authenticated users only
+    match /curriculum/{weekId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // No client writes - use Admin SDK for updates
+      
+      // Lessons subcollection - read for authenticated users
+      match /lessons/{lessonId} {
+        allow read: if isAuthenticated();
+        allow write: if false; // No client writes - use Admin SDK for updates
+      }
+      
+      // Labs subcollection - read for authenticated users
+      match /labs/{labId} {
+        allow read: if isAuthenticated();
+        allow write: if false; // No client writes - use Admin SDK for updates
+      }
+    }
+    
+    // Cloud Resume Challenge document - read for authenticated users
+    match /cloudResumeChallenge/{documentId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // No client writes - use Admin SDK for updates
+    }
+  }
+}

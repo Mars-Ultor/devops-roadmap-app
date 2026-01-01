@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #0f172a;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobile optimizations */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+}
+
+/* Ensure proper touch targets */
+button, a, input, select, textarea {
+  min-height: 44px; /* iOS Human Interface Guidelines minimum */
+}
+
+/* Improve scrolling on mobile */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Better text selection on mobile */
+* {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Prevent zoom on input focus on iOS */
+@media screen and (max-width: 767px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Safe area support for notched devices */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #0f172a;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+#root {
+  min-height: 100vh;
+  min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
