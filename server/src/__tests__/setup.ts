@@ -2,25 +2,27 @@ import { PrismaClient } from '@prisma/client';
 
 // Setup test database
 beforeAll(async () => {
-  // Set test database URL
-  process.env.DATABASE_URL = 'file:./test.db';
+  // Use environment DATABASE_URL for tests (set by CI or defaults to file)
+  if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = 'file:./test.db';
+  }
 });
 
 afterAll(async () => {
-  // Clean up test database file
-  const fs = await import('fs');
-  try {
-    fs.unlinkSync('./test.db');
-  } catch (error) {
-    // Ignore if file doesn't exist
+  // Clean up test database file only if using file-based DB
+  if (process.env.DATABASE_URL?.startsWith('file:')) {
+    const fs = await import('fs');
+    try {
+      fs.unlinkSync('./test.db');
+    } catch (error) {
+      // Ignore if file doesn't exist
+    }
   }
 });
 
 // Clean up after each test
 afterEach(async () => {
-  const prisma = new PrismaClient({
-    datasourceUrl: 'file:./test.db',
-  });
+  const prisma = new PrismaClient();
   try {
     // Clear all tables in reverse order of dependencies
     await prisma.afterActionReview.deleteMany();

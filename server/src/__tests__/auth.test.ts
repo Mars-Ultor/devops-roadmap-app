@@ -4,9 +4,7 @@ import express from 'express';
 import authRoutes from '../routes/auth.js';
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient({
-  datasourceUrl: 'file:./test.db',
-});
+const prisma = new PrismaClient();
 
 // Create test app with auth routes
 const createTestApp = () => {
