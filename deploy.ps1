@@ -5,16 +5,18 @@ param(
     [switch]$SkipClient,
     [switch]$SkipServer,
     [switch]$SkipML,
-    [switch]$Production
+    [switch]$Production,
+    [ValidateSet("railway", "render")]
+    [string]$Platform = "render"
 )
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🚀 Starting full deployment process..." -ForegroundColor Cyan
+Write-Host "🚀 Starting full deployment process using $Platform..." -ForegroundColor Cyan
 Write-Host "Services to deploy:" -ForegroundColor Yellow
 if (-not $SkipClient) { Write-Host "  ✅ Client (Firebase Hosting)" -ForegroundColor Green }
-if (-not $SkipServer) { Write-Host "  ✅ Server (Railway)" -ForegroundColor Green }
-if (-not $SkipML) { Write-Host "  ✅ ML Service (Railway)" -ForegroundColor Green }
+if (-not $SkipServer) { Write-Host "  ✅ Server ($Platform)" -ForegroundColor Green }
+if (-not $SkipML) { Write-Host "  ✅ ML Service ($Platform)" -ForegroundColor Green }
 
 # Function to check if Railway CLI is installed
 function Test-RailwayCLI {
@@ -26,34 +28,44 @@ function Test-RailwayCLI {
     }
 }
 
-# Function to deploy to Railway
-function Deploy-Railway {
-    param([string]$ServiceName, [string]$Directory)
+# Function to deploy to Railway or Render
+function Deploy-Cloud {
+    param([string]$ServiceName, [string]$Directory, [string]$Platform)
 
-    Write-Host "🚂 Deploying $ServiceName to Railway..." -ForegroundColor Yellow
+    Write-Host "☁️  Deploying $ServiceName to $Platform..." -ForegroundColor Yellow
 
-    if (-not (Test-RailwayCLI)) {
-        Write-Host "❌ Railway CLI not found. Please install it first:" -ForegroundColor Red
-        Write-Host "npm install -g @railway/cli" -ForegroundColor Yellow
-        exit 1
-    }
-
-    Push-Location $Directory
-
-    try {
-        # Check if already logged in
-        $loginStatus = railway status 2>$null
-        if ($LASTEXITCODE -ne 0) {
-            Write-Host "🔑 Please login to Railway:" -ForegroundColor Yellow
-            railway login
+    if ($Platform -eq "railway") {
+        if (-not (Test-RailwayCLI)) {
+            Write-Host "❌ Railway CLI not found. Please install it first:" -ForegroundColor Red
+            Write-Host "npm install -g @railway/cli" -ForegroundColor Yellow
+            exit 1
         }
 
-        # Deploy
-        railway deploy
+        Push-Location $Directory
 
-        Write-Host "✅ $ServiceName deployed successfully!" -ForegroundColor Green
-    } finally {
-        Pop-Location
+        try {
+            # Check if already logged in
+            $loginStatus = railway status 2>$null
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "🔑 Please login to Railway:" -ForegroundColor Yellow
+                railway login
+            }
+
+            # Deploy
+            railway deploy
+
+            Write-Host "✅ $ServiceName deployed successfully to Railway!" -ForegroundColor Green
+        } finally {
+            Pop-Location
+        }
+    } elseif ($Platform -eq "render") {
+        Write-Host "📋 $ServiceName ready for Render deployment!" -ForegroundColor Cyan
+        Write-Host "   1. Go to https://dashboard.render.com" -ForegroundColor White
+        Write-Host "   2. Connect your GitHub repository" -ForegroundColor White
+        Write-Host "   3. Use render.yaml in $Directory for configuration" -ForegroundColor White
+        Write-Host "   4. Set environment variables from .env.example" -ForegroundColor White
+        Write-Host "   5. Deploy!" -ForegroundColor White
+        Write-Host "✅ $ServiceName configuration prepared for Render!" -ForegroundColor Green
     }
 }
 
@@ -92,23 +104,23 @@ if (-not $SkipClient) {
     Set-Location $PSScriptRoot
 }
 
-# Deploy Server (Railway)
+# Deploy Server
 if (-not $SkipServer) {
-    Write-Host "`n🖥️  Deploying Server to Railway..." -ForegroundColor Cyan
-    Deploy-Railway -ServiceName "Server" -Directory "$PSScriptRoot\server"
+    Write-Host "`n🖥️  Deploying Server to $Platform..." -ForegroundColor Cyan
+    Deploy-Cloud -ServiceName "Server" -Directory "$PSScriptRoot\server" -Platform $Platform
 }
 
-# Deploy ML Service (Railway)
+# Deploy ML Service
 if (-not $SkipML) {
-    Write-Host "`n🤖 Deploying ML Service to Railway..." -ForegroundColor Cyan
-    Deploy-Railway -ServiceName "ML Service" -Directory "$PSScriptRoot\ml-service"
+    Write-Host "`n🤖 Deploying ML Service to $Platform..." -ForegroundColor Cyan
+    Deploy-Cloud -ServiceName "ML Service" -Directory "$PSScriptRoot\ml-service" -Platform $Platform
 }
 
 Write-Host "`n✨ Full deployment complete!" -ForegroundColor Green
 Write-Host "🔗 Services:" -ForegroundColor Cyan
 Write-Host "  🌐 Client: https://my-devops-journey-d3a08.web.app" -ForegroundColor White
-if (-not $SkipServer) { Write-Host "  🖥️  Server: Check Railway dashboard for URL" -ForegroundColor White }
-if (-not $SkipML) { Write-Host "  🤖 ML Service: Check Railway dashboard for URL" -ForegroundColor White }
+if (-not $SkipServer) { Write-Host "  🖥️  Server: Check $Platform dashboard for URL" -ForegroundColor White }
+if (-not $SkipML) { Write-Host "  🤖 ML Service: Check $Platform dashboard for URL" -ForegroundColor White }
 
 Write-Host "`n📝 Next steps:" -ForegroundColor Yellow
 Write-Host "  1. Update client .env.production with deployed service URLs" -ForegroundColor White

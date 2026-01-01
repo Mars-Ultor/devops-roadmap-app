@@ -10,6 +10,7 @@ SKIP_CLIENT=false
 SKIP_SERVER=false
 SKIP_ML=false
 PRODUCTION=false
+PLATFORM="render"
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -17,16 +18,17 @@ while [[ $# -gt 0 ]]; do
     --skip-server) SKIP_SERVER=true ;;
     --skip-ml) SKIP_ML=true ;;
     --production) PRODUCTION=true ;;
+    --platform) PLATFORM="$2"; shift ;;
     *) echo "Unknown option: $1"; exit 1 ;;
   esac
   shift
 done
 
-echo "🚀 Starting full deployment process..."
+echo "🚀 Starting full deployment process using $PLATFORM..."
 echo "Services to deploy:"
 [ "$SKIP_CLIENT" = false ] && echo "  ✅ Client (Firebase Hosting)"
-[ "$SKIP_SERVER" = false ] && echo "  ✅ Server (Railway)"
-[ "$SKIP_ML" = false ] && echo "  ✅ ML Service (Railway)"
+[ "$SKIP_SERVER" = false ] && echo "  ✅ Server ($PLATFORM)"
+[ "$SKIP_ML" = false ] && echo "  ✅ ML Service ($PLATFORM)"
 
 # Function to check if Railway CLI is installed
 check_railway_cli() {
@@ -37,29 +39,40 @@ check_railway_cli() {
     fi
 }
 
-# Function to deploy to Railway
-deploy_railway() {
+# Function to deploy to Railway or Render
+deploy_cloud() {
     local service_name=$1
     local directory=$2
+    local platform=$3
 
-    echo "🚂 Deploying $service_name to Railway..."
+    echo "☁️  Deploying $service_name to $platform..."
 
-    check_railway_cli
+    if [ "$platform" = "railway" ]; then
+        check_railway_cli
 
-    cd "$directory"
+        cd "$directory"
 
-    # Check if already logged in
-    if ! railway status &> /dev/null; then
-        echo "🔑 Please login to Railway:"
-        railway login
+        # Check if already logged in
+        if ! railway status &> /dev/null; then
+            echo "🔑 Please login to Railway:"
+            railway login
+        fi
+
+        # Deploy
+        railway deploy
+
+        echo "✅ $service_name deployed successfully to Railway!"
+
+        cd - > /dev/null
+    elif [ "$platform" = "render" ]; then
+        echo "📋 $service_name ready for Render deployment!"
+        echo "   1. Go to https://dashboard.render.com"
+        echo "   2. Connect your GitHub repository"
+        echo "   3. Use render.yaml in $directory for configuration"
+        echo "   4. Set environment variables from .env.example"
+        echo "   5. Deploy!"
+        echo "✅ $service_name configuration prepared for Render!"
     fi
-
-    # Deploy
-    railway deploy
-
-    echo "✅ $service_name deployed successfully!"
-
-    cd - > /dev/null
 }
 
 # Deploy Client (Firebase)
@@ -98,26 +111,26 @@ if [ "$SKIP_CLIENT" = false ]; then
     cd "$(dirname "$0")"
 fi
 
-# Deploy Server (Railway)
+# Deploy Server
 if [ "$SKIP_SERVER" = false ]; then
     echo ""
-    echo "🖥️  Deploying Server to Railway..."
-    deploy_railway "Server" "$(dirname "$0")/server"
+    echo "🖥️  Deploying Server to $PLATFORM..."
+    deploy_cloud "Server" "$(dirname "$0")/server" "$PLATFORM"
 fi
 
-# Deploy ML Service (Railway)
+# Deploy ML Service
 if [ "$SKIP_ML" = false ]; then
     echo ""
-    echo "🤖 Deploying ML Service to Railway..."
-    deploy_railway "ML Service" "$(dirname "$0")/ml-service"
+    echo "🤖 Deploying ML Service to $PLATFORM..."
+    deploy_cloud "ML Service" "$(dirname "$0")/ml-service" "$PLATFORM"
 fi
 
 echo ""
 echo "✨ Full deployment complete!"
 echo "🔗 Services:"
 echo "  🌐 Client: https://my-devops-journey-d3a08.web.app"
-[ "$SKIP_SERVER" = false ] && echo "  🖥️  Server: Check Railway dashboard for URL"
-[ "$SKIP_ML" = false ] && echo "  🤖 ML Service: Check Railway dashboard for URL"
+[ "$SKIP_SERVER" = false ] && echo "  🖥️  Server: Check $PLATFORM dashboard for URL"
+[ "$SKIP_ML" = false ] && echo "  🤖 ML Service: Check $PLATFORM dashboard for URL"
 
 echo ""
 echo "📝 Next steps:"
