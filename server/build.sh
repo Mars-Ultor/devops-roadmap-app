@@ -1,14 +1,16 @@
 #!/bin/bash
-echo "Installing all dependencies (including dev dependencies)..."
-NODE_ENV=development npm install
+set -e
 
-echo "Ensuring type definitions are available..."
-npm install @types/node @types/express @types/cors @types/jsonwebtoken @types/bcrypt @types/jest @types/supertest @jest/globals --save-dev --force
+echo "Installing all dependencies (including dev dependencies)..."
+npm install --include=dev
+
+echo "Verifying type definitions are installed..."
+npm list @types/node @types/express || echo "Some types may need to be installed"
+
+echo "Force installing type definitions..."
+npm install @types/node@latest @types/express@latest @types/cors@latest @types/jsonwebtoken@latest @types/bcrypt@latest --save-dev
 
 echo "Building application..."
-if ! npm run build; then
-  echo "TypeScript compilation failed!"
-  exit 1
-fi
+npm run build
 
 echo "Build completed successfully!"
