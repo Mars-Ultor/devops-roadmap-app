@@ -8,7 +8,4 @@ npm install @types/node @types/express @types/cors @types/jsonwebtoken @types/bc
 echo "Building application..."
 npm run build
 
-echo "Setting up database..."
-npm run db:setup
-
 echo "Build completed successfully!"
