@@ -1,6 +1,6 @@
 """
 DevOps Roadmap ML Service
-Simplified version for deployment - using rule-based logic instead of complex ML models
+Full ML service using trained models from the models directory
 """
 
 from fastapi import FastAPI, HTTPException
@@ -11,9 +11,16 @@ from datetime import datetime
 import os
 from pathlib import Path
 
+# Import ML models
+from models.learning_path_predictor import LearningPathPredictor
+from models.performance_predictor import PerformancePredictor
+from models.learning_style_detector import LearningStyleDetector
+from models.skill_gap_analyzer import SkillGapAnalyzer
+from models.motivational_analyzer import MotivationalAnalyzer
+
 app = FastAPI(
     title="DevOps Roadmap ML Service",
-    description="Simplified ML service for intelligent DevOps learning",
+    description="ML service for intelligent DevOps learning",
     version="1.0.0"
 )
 
@@ -26,28 +33,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Simple rule-based "models" instead of complex ML
-class SimpleLearningPathPredictor:
-    def predict(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
-        # Simple rule-based prediction
-        experience = user_data.get('experience_level', 'beginner')
-        interests = user_data.get('interests', [])
-
-        if experience == 'beginner':
-            path = ['week1', 'week2', 'week3']
-        elif experience == 'intermediate':
-            path = ['week4', 'week5', 'week6']
-        else:
-            path = ['week7', 'week8', 'week9']
-
-        return {
-            'recommended_path': path,
-            'estimated_completion_days': len(path) * 7,
-            'confidence': 0.8
-        }
-
-    def is_loaded(self) -> bool:
-        return True
+# Initialize ML models with correct naming (hyphens to match client expectations)
+models = {
+    'learning-path-predictor': LearningPathPredictor(),
+    'performance-predictor': PerformancePredictor(),
+    'learning-style-detector': LearningStyleDetector(),
+    'skill-gap-analyzer': SkillGapAnalyzer(),
+    'motivational-analyzer': MotivationalAnalyzer(),
+}
 
 class SimplePerformancePredictor:
     def predict(self, quiz_data: Dict[str, Any]) -> Dict[str, Any]:
