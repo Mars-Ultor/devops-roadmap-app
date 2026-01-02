@@ -144,7 +144,7 @@ export default function RecertificationDashboard() {
       <div className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
-        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Recertification Center</h1>
             <p className="text-blue-100 mt-2">
