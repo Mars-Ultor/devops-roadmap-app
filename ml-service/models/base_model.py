@@ -186,6 +186,10 @@ class BaseMLModel(ABC):
             'type': self.__class__.__name__
         }
 
+    def is_loaded(self) -> bool:
+        """Check if model is loaded (same as is_trained for now)"""
+        return self.is_trained
+
     def generate_synthetic_data(self, n_samples: int = 1000, n_features: int = 10) -> tuple:
         """Generate synthetic training data"""
         X = np.random.randn(n_samples, n_features)
