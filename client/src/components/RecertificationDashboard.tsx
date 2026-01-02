@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import RecertificationDrillComponent from './RecertificationDrill';
 import { RECERTIFICATION_DRILLS, CERTIFICATION_REQUIREMENTS, SKILL_DECAY_MODELS } from '../data/recertificationDrills';
+import { CertificationService } from '../services/certificationService';
 import type {
   CertificationStatus,
   CertificationLevel,
@@ -28,39 +29,37 @@ export default function RecertificationDashboard() {
   const [selectedDrill, setSelectedDrill] = useState<RecertificationDrill | null>(null);
   const [certificationStatus, setCertificationStatus] = useState<CertificationStatus[]>([]);
   const [recentAttempts, setRecentAttempts] = useState<RecertificationAttempt[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock certification status - in real app, this would come from database
+  // Load real data from API
   useEffect(() => {
-    if (user) {
-      // Simulate some certifications for demo
-      const mockCertifications: CertificationStatus[] = [
-        {
-          userId: user.uid,
-          skillId: 'docker-basics',
-          certificationLevel: 'bronze',
-          earnedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-          expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
-          lastRecertifiedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-          recertificationRequired: false,
-          gracePeriodDays: 30,
-          consecutivePasses: 2,
-          totalAttempts: 3
-        },
-        {
-          userId: user.uid,
-          skillId: 'kubernetes-fundamentals',
-          certificationLevel: 'silver',
-          earnedAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
-          expiresAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // Expires soon
-          lastRecertifiedAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
-          recertificationRequired: true,
-          gracePeriodDays: 15,
-          consecutivePasses: 1,
-          totalAttempts: 2
-        }
-      ];
-      setCertificationStatus(mockCertifications);
-    }
+    const loadData = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [certifications, attempts] = await Promise.all([
+          CertificationService.getUserCertifications(),
+          CertificationService.getRecertificationAttempts(),
+        ]);
+
+        setCertificationStatus(certifications);
+        setRecentAttempts(attempts);
+      } catch (err) {
+        console.error('Error loading certification data:', err);
+        setError('Failed to load certification data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, [user]);
 
   const handleDrillComplete = (attempt: RecertificationAttempt) => {
