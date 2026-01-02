@@ -42,41 +42,6 @@ models = {
     'motivational-analyzer': MotivationalAnalyzer(),
 }
 
-class SimplePerformancePredictor:
-    def predict(self, quiz_data: Dict[str, Any]) -> Dict[str, Any]:
-        # Simple performance prediction based on quiz scores
-        scores = quiz_data.get('scores', [])
-        if not scores:
-            avg_score = 0.5
-        else:
-            avg_score = sum(scores) / len(scores)
-
-        if avg_score > 0.8:
-            performance = 'excellent'
-            next_difficulty = 'advanced'
-        elif avg_score > 0.6:
-            performance = 'good'
-            next_difficulty = 'intermediate'
-        else:
-            performance = 'needs_improvement'
-            next_difficulty = 'beginner'
-
-        return {
-            'performance_level': performance,
-            'next_difficulty': next_difficulty,
-            'predicted_score': avg_score,
-            'recommendations': ['practice_more', 'review_materials'] if avg_score < 0.7 else []
-        }
-
-    def is_loaded(self) -> bool:
-        return True
-
-# Initialize simple models
-models = {
-    'learning_path_predictor': SimpleLearningPathPredictor(),
-    'performance_predictor': SimplePerformancePredictor(),
-}
-
 # Pydantic models for API
 class MLInput(BaseModel):
     features: List[float]
@@ -141,25 +106,66 @@ async def predict(model_name: str, input_data: MLInput):
 
     try:
         model = models[model_name]
-        # For simple models, use metadata if available, otherwise create basic input
-        if input_data.metadata:
-            result = model.predict(input_data.metadata)
-        else:
-            # Create basic input from features
-            basic_input = {'scores': input_data.features} if model_name == 'performance_predictor' else {'experience_level': 'beginner', 'interests': []}
-            result = model.predict(basic_input)
 
-        # Convert result to PredictionResponse format
-        return PredictionResponse(
-            prediction=[result.get('predicted_score', 0.5)],
-            confidence=result.get('confidence', 0.8),
-            probabilities=None,
-            explanation=str(result),
-            feature_importance=None
-        )
+        # Use the ML model's predict method with features array
+        prediction_result = model.predict(input_data.features)
+
+        # Convert numpy array to list if needed
+        if hasattr(prediction_result, 'tolist'):
+            prediction_list = prediction_result.tolist()
+        else:
+            prediction_list = list(prediction_result) if isinstance(prediction_result, (list, tuple)) else [float(prediction_result)]
+
+        # Create response based on model type
+        response_data = {
+            'prediction': prediction_list,
+            'confidence': 0.8,  # Default confidence
+            'probabilities': None,
+            'explanation': f'Prediction from {model_name} model',
+            'feature_importance': None
+        }
+
+        # Add model-specific explanations
+        if model_name == 'learning-path-predictor':
+            response_data['explanation'] = 'Recommended learning path based on user performance data'
+        elif model_name == 'performance-predictor':
+            response_data['explanation'] = 'Performance prediction for completion probability'
+        elif model_name == 'learning-style-detector':
+            response_data['explanation'] = 'Detected learning style preferences (visual, kinesthetic, reading, auditory)'
+        elif model_name == 'skill-gap-analyzer':
+            response_data['explanation'] = 'Identified skill gaps and areas needing improvement'
+        elif model_name == 'motivational-analyzer':
+            response_data['explanation'] = 'Motivational analysis and engagement predictions'
+
+class MLTrainingData(BaseModel):
+    inputs: List[List[float]]
+    outputs: List[List[float]]
+    metadata: Optional[Dict[str, Any]] = None
+
+@app.post("/train/{model_name}")
+async def train_model(model_name: str, training_data: MLTrainingData):
+    """Train or fine-tune a model with new data"""
+    if model_name not in models:
+        raise HTTPException(status_code=404, detail=f"Model {model_name} not found")
+
+    try:
+        model = models[model_name]
+
+        # Convert to numpy arrays
+        import numpy as np
+        X = np.array(training_data.inputs)
+        y = np.array(training_data.outputs)
+
+        # Train the model
+        model.train(X, y)
+
+        return {
+            "message": f"Model {model_name} training completed successfully",
+            "status": "success"
+        }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Training failed: {str(e)}")
 
 @app.post("/coach/insights")
 async def get_coach_insights(context: CoachContext):
@@ -212,9 +218,9 @@ async def list_models():
             {
                 "name": name,
                 "type": model.__class__.__name__,
-                "loaded": model.is_loaded(),
-                "features": ["Simple rule-based predictions"],
-                "metrics": {"simplicity": 1.0, "reliability": 0.8}
+                "loaded": model.is_trained,
+                "features": getattr(model, 'feature_names', []),
+                "metrics": getattr(model, 'metrics', {"accuracy": 0.0})
             }
             for name, model in models.items()
         ]
