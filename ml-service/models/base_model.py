@@ -29,6 +29,10 @@ class BaseMLModel(ABC):
         self.models_dir = Path(__file__).parent / "saved_models"
         self.models_dir.mkdir(exist_ok=True)
 
+        # Try to load existing model, otherwise create new one
+        if not self.load_model():
+            self._create_model()
+
     @abstractmethod
     def _create_model(self):
         """Create the specific ML model"""

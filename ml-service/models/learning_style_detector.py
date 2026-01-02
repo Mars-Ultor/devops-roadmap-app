@@ -12,13 +12,12 @@ class LearningStyleDetector(BaseMLModel):
     """Detects user's learning style preferences"""
 
     def __init__(self):
+        self.learning_styles = ['visual', 'kinesthetic', 'reading', 'auditory']
         super().__init__("learning_style_detector")
         self.feature_names = [
             'performance_score', 'time_spent_hours', 'hints_used',
             'error_rate', 'study_streak'
         ]
-
-        self.learning_styles = ['visual', 'kinesthetic', 'reading', 'auditory']
 
         # Simple classification weights
         self.weights = None

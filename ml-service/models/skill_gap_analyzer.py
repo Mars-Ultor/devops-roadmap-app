@@ -12,10 +12,9 @@ class SkillGapAnalyzer(BaseMLModel):
     """Analyzes skill gaps across DevOps topics"""
 
     def __init__(self):
-        super().__init__("skill_gap_analyzer")
-
         # Topics to analyze
         self.topics = ['git', 'linux', 'docker', 'kubernetes', 'aws', 'terraform', 'jenkins', 'monitoring']
+        super().__init__("skill_gap_analyzer")
 
         # Create feature names for each topic
         self.feature_names = []

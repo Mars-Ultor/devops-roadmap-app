@@ -12,13 +12,12 @@ class MotivationalAnalyzer(BaseMLModel):
     """Analyzes user motivation and learning engagement"""
 
     def __init__(self):
+        self.motivation_types = ['achievement', 'mastery', 'social', 'autonomy']
         super().__init__("motivational_analyzer")
         self.feature_names = [
             'study_streak', 'avg_score', 'completion_rate', 'struggle_time_hours',
             'performance_score', 'time_spent_hours', 'hints_used', 'error_rate'
         ]
-
-        self.motivation_types = ['achievement', 'mastery', 'social', 'autonomy']
 
         # Simple classification weights
         self.weights = None

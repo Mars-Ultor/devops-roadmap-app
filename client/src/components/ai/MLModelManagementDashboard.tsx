@@ -28,27 +28,27 @@ interface ModelCardProps {
 function ModelCard({ model, onRunInference, onTrain, loading }: ModelCardProps) {
   const getModelIcon = (type: string) => {
     switch (type) {
-      case 'tensorflow': return <Brain className="w-5 h-5 text-orange-500" />;
-      case 'onnx': return <BarChart3 className="w-5 h-5 text-blue-500" />;
-      default: return <Settings className="w-5 h-5 text-gray-500" />;
+      case 'tensorflow': return <Brain className="w-5 h-5 text-orange-400" />;
+      case 'onnx': return <BarChart3 className="w-5 h-5 text-blue-400" />;
+      default: return <Settings className="w-5 h-5 text-gray-400" />;
     }
   };
 
   const getAccuracyColor = (accuracy: number) => {
-    if (accuracy >= 0.9) return 'text-green-600';
-    if (accuracy >= 0.8) return 'text-yellow-600';
-    return 'text-red-600';
+    if (accuracy >= 0.9) return 'text-green-400';
+    if (accuracy >= 0.8) return 'text-yellow-400';
+    return 'text-red-400';
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-      <div className="p-6 border-b border-gray-200">
+    <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+      <div className="p-6 border-b border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {getModelIcon(model.type)}
-            <span className="text-lg font-semibold">{model.name}</span>
+            <span className="text-lg font-semibold text-white">{model.name}</span>
           </div>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-white">
             {model.version}
           </span>
         </div>
@@ -57,35 +57,35 @@ function ModelCard({ model, onRunInference, onTrain, loading }: ModelCardProps) 
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-gray-600">Type</p>
-              <p className="font-medium capitalize">{model.type}</p>
+              <p className="text-gray-400">Type</p>
+              <p className="font-medium text-white capitalize">{model.type}</p>
             </div>
             <div>
-              <p className="text-gray-600">Accuracy</p>
+              <p className="text-gray-400">Accuracy</p>
               <p className={`font-medium ${getAccuracyColor(model.metadata.accuracy)}`}>
                 {Math.round(model.metadata.accuracy * 100)}%
               </p>
             </div>
             <div>
-              <p className="text-gray-600">Training Data</p>
-              <p className="font-medium">{model.metadata.trainingDataSize.toLocaleString()}</p>
+              <p className="text-gray-400">Training Data</p>
+              <p className="font-medium text-white">{model.metadata.trainingDataSize.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-gray-600">Last Trained</p>
-              <p className="font-medium">{model.metadata.lastTrained.toLocaleDateString()}</p>
+              <p className="text-gray-400">Last Trained</p>
+              <p className="font-medium text-white">{model.metadata.lastTrained.toLocaleDateString()}</p>
             </div>
           </div>
 
           <div>
-            <p className="text-sm text-gray-600 mb-2">Features ({model.metadata.features.length})</p>
+            <p className="text-sm text-gray-400 mb-2">Features ({model.metadata.features.length})</p>
             <div className="flex flex-wrap gap-1">
               {model.metadata.features.slice(0, 3).map((feature, index) => (
-                <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-700 text-white">
                   {feature}
                 </span>
               ))}
               {model.metadata.features.length > 3 && (
-                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-700 text-white">
                   +{model.metadata.features.length - 3} more
                 </span>
               )}
@@ -95,7 +95,7 @@ function ModelCard({ model, onRunInference, onTrain, loading }: ModelCardProps) 
           <div className="flex gap-2">
             {onRunInference && (
               <button
-                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center px-3 py-2 border border-gray-600 rounded-md text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => onRunInference(model.id)}
                 disabled={loading}
               >
@@ -105,7 +105,7 @@ function ModelCard({ model, onRunInference, onTrain, loading }: ModelCardProps) 
             )}
             {onTrain && (
               <button
-                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center px-3 py-2 border border-gray-600 rounded-md text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => onTrain(model.id)}
                 disabled={loading}
               >
@@ -312,16 +312,16 @@ export function MLModelManagementDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Brain className="w-8 h-8 text-indigo-600" />
+          <Brain className="w-8 h-8 text-indigo-400" />
           <div>
             <h2 className="text-2xl font-bold">ML Model Management</h2>
-            <p className="text-gray-600">Monitor and manage machine learning models</p>
+            <p className="text-gray-300">Monitor and manage machine learning models</p>
           </div>
         </div>
         <button
           onClick={loadModels}
           disabled={loading}
-          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center px-4 py-2 border border-gray-600 rounded-md text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           Refresh Models
@@ -330,9 +330,9 @@ export function MLModelManagementDashboard() {
 
       {/* Error Display */}
       {error && (
-        <div className="border border-red-200 bg-red-50 rounded-lg">
+        <div className="border border-red-800 bg-red-900/20 rounded-lg">
           <div className="p-4">
-            <div className="flex items-center gap-2 text-red-600">
+            <div className="flex items-center gap-2 text-red-400">
               <AlertTriangle className="w-4 h-4" />
               <p className="text-sm">{error}</p>
             </div>
@@ -355,41 +355,41 @@ export function MLModelManagementDashboard() {
 
       {/* Inference Results */}
       {selectedModel && inferenceResult && (
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-700">
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              <h3 className="text-lg font-semibold">Inference Results - {selectedModel.name}</h3>
+              <CheckCircle className="w-5 h-5 text-green-400" />
+              <h3 className="text-lg font-semibold text-white">Inference Results - {selectedModel.name}</h3>
             </div>
           </div>
           <div className="p-6">
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-indigo-600">
+                  <div className="text-2xl font-bold text-indigo-400">
                     {Math.round(inferenceResult.confidence * 100)}%
                   </div>
-                  <p className="text-sm text-gray-600">Confidence</p>
+                  <p className="text-sm text-gray-400">Confidence</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">
+                  <div className="text-2xl font-bold text-green-400">
                     {inferenceResult.prediction.length}
                   </div>
-                  <p className="text-sm text-gray-600">Outputs</p>
+                  <p className="text-sm text-gray-400">Outputs</p>
                 </div>
                 <div className="text-center">
                   <Clock className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Real-time</p>
+                  <p className="text-sm text-gray-400">Real-time</p>
                 </div>
               </div>
 
               <div>
-                <p className="text-sm font-medium mb-2">Prediction Values:</p>
+                <p className="text-sm font-medium text-white mb-2">Prediction Values:</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {inferenceResult.prediction.map((value, index) => (
-                    <div key={index} className="text-center p-2 bg-gray-50 rounded">
-                      <p className="text-sm font-mono">{value.toFixed(3)}</p>
-                      <p className="text-xs text-gray-500">Output {index}</p>
+                    <div key={index} className="text-center p-2 bg-gray-700 rounded">
+                      <p className="text-sm font-mono text-white">{value.toFixed(3)}</p>
+                      <p className="text-xs text-gray-400">Output {index}</p>
                     </div>
                   ))}
                 </div>
@@ -397,18 +397,18 @@ export function MLModelManagementDashboard() {
 
               {inferenceResult.probabilities && (
                 <div>
-                  <p className="text-sm font-medium mb-2">Probabilities:</p>
+                  <p className="text-sm font-medium text-white mb-2">Probabilities:</p>
                   <div className="space-y-2">
                     {inferenceResult.probabilities.map((prob, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <span className="text-sm w-16">Class {index}:</span>
-                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <span className="text-sm text-white w-16">Class {index}:</span>
+                        <div className="flex-1 bg-gray-700 rounded-full h-2">
                           <div
                             className="bg-indigo-600 h-2 rounded-full"
                             style={{ width: `${prob * 100}%` }}
                           ></div>
                         </div>
-                        <span className="text-sm font-mono w-12">{Math.round(prob * 100)}%</span>
+                        <span className="text-sm font-mono text-white w-12">{Math.round(prob * 100)}%</span>
                       </div>
                     ))}
                   </div>
@@ -416,28 +416,28 @@ export function MLModelManagementDashboard() {
               )}
 
               {inferenceResult.explanation && (
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-sm text-blue-800">{inferenceResult.explanation}</p>
+                <div className="bg-blue-900/20 p-4 rounded-lg">
+                  <p className="text-sm text-blue-400">{inferenceResult.explanation}</p>
                 </div>
               )}
 
               {inferenceResult.featureImportance && (
                 <div>
-                  <p className="text-sm font-medium mb-2">Feature Importance:</p>
+                  <p className="text-sm font-medium text-white mb-2">Feature Importance:</p>
                   <div className="space-y-2">
                     {Object.entries(inferenceResult.featureImportance)
                       .sort(([,a], [,b]) => b - a)
                       .slice(0, 5)
                       .map(([feature, importance]) => (
                         <div key={feature} className="flex items-center gap-2">
-                          <span className="text-sm w-32 truncate">{feature}:</span>
-                          <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <span className="text-sm text-white w-32 truncate">{feature}:</span>
+                          <div className="flex-1 bg-gray-700 rounded-full h-2">
                             <div
                               className="bg-green-600 h-2 rounded-full"
                               style={{ width: `${importance * 100}%` }}
                             ></div>
                           </div>
-                          <span className="text-sm font-mono w-12">{Math.round(importance * 100)}%</span>
+                          <span className="text-sm font-mono text-white w-12">{Math.round(importance * 100)}%</span>
                         </div>
                       ))}
                   </div>
@@ -449,40 +449,40 @@ export function MLModelManagementDashboard() {
       )}
 
       {/* Model Information */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+        <div className="p-6 border-b border-gray-700">
           <div className="flex items-center gap-2">
-            <Info className="w-5 h-5" />
-            <h3 className="text-lg font-semibold">ML Model Information</h3>
+            <Info className="w-5 h-5 text-gray-400" />
+            <h3 className="text-lg font-semibold text-white">ML Model Information</h3>
           </div>
         </div>
         <div className="p-6">
           <div className="space-y-4">
             <div>
-              <h4 className="font-medium mb-2">Available Models:</h4>
-              <ul className="space-y-1 text-sm text-gray-600">
-                <li><strong>Learning Path Predictor:</strong> Recommends optimal next topics based on current progress</li>
-                <li><strong>Performance Predictor:</strong> Estimates completion probability and timeline</li>
-                <li><strong>Learning Style Detector:</strong> Identifies preferred learning approaches</li>
-                <li><strong>Skill Gap Analyzer:</strong> Detects knowledge deficiencies and areas needing attention</li>
+              <h4 className="font-medium text-white mb-2">Available Models:</h4>
+              <ul className="space-y-1 text-sm text-gray-400">
+                <li><strong className="text-white">Learning Path Predictor:</strong> Recommends optimal next topics based on current progress</li>
+                <li><strong className="text-white">Performance Predictor:</strong> Estimates completion probability and timeline</li>
+                <li><strong className="text-white">Learning Style Detector:</strong> Identifies preferred learning approaches</li>
+                <li><strong className="text-white">Skill Gap Analyzer:</strong> Detects knowledge deficiencies and areas needing attention</li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-medium mb-2">How It Works:</h4>
-              <p className="text-sm text-gray-600">
+              <h4 className="font-medium text-white mb-2">How It Works:</h4>
+              <p className="text-sm text-gray-400">
                 These ML models analyze your learning patterns, performance data, and interaction history
                 to provide personalized coaching and recommendations. Models are continuously trained
                 with anonymized user data to improve accuracy over time.
               </p>
             </div>
 
-            <div className="bg-yellow-50 p-4 rounded-lg">
+            <div className="bg-yellow-900/20 p-4 rounded-lg">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-yellow-800">Note:</p>
-                  <p className="text-sm text-yellow-700">
+                  <p className="text-sm font-medium text-yellow-400">Note:</p>
+                  <p className="text-sm text-yellow-300">
                     This is a demonstration of ML-powered coaching. In a production environment,
                     models would be trained on real user data and hosted on dedicated ML infrastructure.
                   </p>

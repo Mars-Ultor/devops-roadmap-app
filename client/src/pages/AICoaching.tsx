@@ -160,7 +160,7 @@ export default function AICoachingPage() {
                       <Target className="w-3 h-3 mr-1" />
                       Adaptive Learning
                     </span>
-                    <span className="inline-flex items-3 py-1 rounded-full text-sm font-medium bg-purple-900/30 text-purple-400 border border-purple-400">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-900/30 text-purple-400 border border-purple-400">
                       <Sparkles className="w-3 h-3 mr-1" />
                       ML-Powered
                     </span>
@@ -253,18 +253,18 @@ export default function AICoachingPage() {
                 to provide personalized guidance. The system analyzes your performance patterns, learning style,
                 and progress trajectory to offer targeted recommendations and interventions.
               </p>
-              <div className="flex justify-center gap-6 text-sm text-gray-500">
+              <div className="flex justify-center gap-6 text-sm text-gray-400">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  Continuously Learning
+                  <div className="w-2 h-2 bg-green-500/60 rounded-full"></div>
+                  <span>Continuously Learning</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  Privacy-First
+                  <div className="w-2 h-2 bg-blue-500/60 rounded-full"></div>
+                  <span>Privacy-First</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  Research-Backed
+                  <div className="w-2 h-2 bg-purple-500/60 rounded-full"></div>
+                  <span>Research-Backed</span>
                 </div>
               </div>
             </div>
