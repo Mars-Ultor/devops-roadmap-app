@@ -30,6 +30,13 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup_event():
     print("Application startup event triggered")
+    try:
+        # Test database connection
+        test_user = db_manager.get_user_data("test")
+        print("Database/mock data connection successful")
+    except Exception as e:
+        print(f"Warning: Database connection issue: {e}")
+        print("Continuing with mock data mode")
 
 # CORS middleware
 app.add_middleware(
