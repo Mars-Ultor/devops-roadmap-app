@@ -117,6 +117,7 @@ export function useProductionScenario(): UseProductionScenarioReturn {
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const identifyRootCause = (_causeId: string): boolean => {
     if (!currentAttempt) return false;
 

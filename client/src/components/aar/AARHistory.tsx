@@ -3,7 +3,7 @@
  * Searchable database of past After Action Reviews
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter, Calendar, BookOpen, TrendingUp, AlertCircle, CheckCircle, Lightbulb, Target } from 'lucide-react';
 import { aarService } from '../../services/aarService';
 import { useAuthStore } from '../../store/authStore';

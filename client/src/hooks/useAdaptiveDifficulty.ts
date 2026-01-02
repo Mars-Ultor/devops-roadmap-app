@@ -29,6 +29,7 @@ export function useAdaptiveDifficulty() {
       loadDifficultySettings();
       loadRecentAdjustments();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
 
   const loadDifficultySettings = async () => {

@@ -30,6 +30,7 @@ export default function ReviewSchedulePanel() {
 
   useEffect(() => {
     loadReviewSchedule();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadReviewSchedule = async () => {

@@ -30,6 +30,7 @@ export function useAccountability() {
       loadPartners();
       loadPublicCommitments();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
 
   const getCurrentWeek = (): { weekNumber: number; weekStart: Date; weekEnd: Date } => {

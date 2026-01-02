@@ -45,6 +45,7 @@ export const StepValidator: FC<StepValidatorProps> = ({
     if (autoValidate && !isValidating) {
       runValidation();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoValidate]);
 
   const runValidation = async () => {

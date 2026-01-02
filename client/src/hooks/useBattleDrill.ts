@@ -27,6 +27,7 @@ export function useBattleDrill(drillId?: string) {
     }
 
     loadPerformance();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid, drillId]);
 
   const loadPerformance = async () => {

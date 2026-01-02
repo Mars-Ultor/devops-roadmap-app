@@ -240,7 +240,8 @@ export function usePredictiveAnalytics() {
     return predictions;
   };
 
-  const forecastPerformance = (progressDocs: { data: () => { masteryLevel?: string } }[], sessionDocs: { data: () => { startTime?: { toDate: () => Date } } }[]): PredictiveData['performanceForecast'] => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const forecastPerformance = (progressDocs: { data: () => { masteryLevel?: string } }[], _sessionDocs: { data: () => { startTime?: { toDate: () => Date } } }[]): PredictiveData['performanceForecast'] => {
     // Next week prediction
     const recentProgress = progressDocs.slice(-10); // Last 10 items
     const avgItemsPerWeek = recentProgress.length / 2; // Assuming 2 weeks of data
@@ -274,7 +275,7 @@ export function usePredictiveAnalytics() {
     };
   };
 
-  const analyzeLearningTrajectory = (progressDocs: any[]): PredictiveData['learningTrajectory'] => {
+  const analyzeLearningTrajectory = (progressDocs: { data: () => { score?: number } }[]): PredictiveData['learningTrajectory'] => {
     if (progressDocs.length < 5) {
       return {
         currentTrajectory: 'steady',
@@ -356,7 +357,7 @@ export function usePredictiveAnalytics() {
     return actions.slice(0, 3); // Limit to 3 actions
   };
 
-  const identifySkillImprovements = (recentProgress: any[]): string[] => {
+  const identifySkillImprovements = (recentProgress: { data: () => { masteryLevel?: string; score?: number; timeSpentMinutes?: number } }[]): string[] => {
     const improvements: string[] = [];
     const masteryLevels = recentProgress.map(doc => doc.data().masteryLevel);
 
@@ -383,8 +384,9 @@ export function usePredictiveAnalytics() {
 
   const generateTrajectoryAdjustments = (
     current: string,
-    optimal: string,
-    improvement: number
+    _optimal: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _improvement: number
   ): string[] => {
     const adjustments: string[] = [];
 

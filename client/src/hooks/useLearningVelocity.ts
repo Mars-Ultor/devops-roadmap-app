@@ -33,6 +33,7 @@ export function useLearningVelocity() {
     if (user) {
       analyzeLearningVelocity();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const analyzeLearningVelocity = async () => {

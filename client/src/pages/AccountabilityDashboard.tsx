@@ -371,7 +371,7 @@ export default function AccountabilityDashboard() {
                             value={commitment.type}
                             onChange={(e) => {
                               const updated = [...newCommitments];
-                              updated[index].type = e.target.value as any;
+                              updated[index].type = e.target.value as 'study-hours' | 'battle-drills' | 'labs-completed' | 'custom';
                               setNewCommitments(updated);
                             }}
                             className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"

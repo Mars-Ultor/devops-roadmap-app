@@ -49,7 +49,7 @@ export function useStruggleSession(lessonId: string): UseStruggleSessionReturn {
             hintsUnlockAt: data.hintsUnlockAt?.toDate(),
             endedAt: data.endedAt?.toDate(),
             solutionUnlockedAt: data.solutionUnlockedAt?.toDate(),
-            hintsRequested: data.hintsRequested?.map((hr: any) => ({
+            hintsRequested: data.hintsRequested?.map((hr: { requestedAt?: { toDate: () => Date } }) => ({
               ...hr,
               requestedAt: hr.requestedAt?.toDate()
             })) || [],

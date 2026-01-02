@@ -274,7 +274,7 @@ export function useResetTokens(config: TokenConfig = DEFAULT_TOKEN_CONFIG) {
 
       // Calculate average per week (rough estimate)
       const firstReset = allResets.length > 0 ? 
-        new Date(Math.min(...allResets.map(r => new Date(r.usedAt as any).getTime()))) : 
+        new Date(Math.min(...allResets.map(r => new Date(r.usedAt as string | number | Date).getTime()))) : 
         new Date();
       const weeksSinceFirst = Math.max(1, Math.ceil(
         (new Date().getTime() - firstReset.getTime()) / (7 * 24 * 60 * 60 * 1000)

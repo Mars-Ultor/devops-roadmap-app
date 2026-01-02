@@ -50,6 +50,7 @@ export function useLearningPatternAnalysis() {
     if (user) {
       analyzeLearningPatterns();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const analyzeLearningPatterns = async () => {
