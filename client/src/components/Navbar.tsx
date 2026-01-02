@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { BookOpen, Target, LogOut, BarChart3, FileText, Settings as SettingsIcon, Flame, Book, Menu, X, Brain } from 'lucide-react';
+import { BookOpen, Target, LogOut, BarChart3, FileText, Settings as SettingsIcon, Flame, Book, Menu, X, Brain, Award } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Navbar() {
@@ -70,6 +70,13 @@ export default function Navbar() {
             >
               <Brain className="w-4 h-4 mr-2" />
               AI Coaching
+            </Link>
+            <Link
+              to="/recertification"
+              className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-slate-700 hover:text-white"
+            >
+              <Award className="w-4 h-4 mr-2" />
+              Recertification
             </Link>
             <Link
               to="/settings"
