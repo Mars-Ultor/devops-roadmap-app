@@ -41,6 +41,7 @@ export default function StruggleSessionManager({
     const newSession = hintService.initializeStruggleSession(labId, userId);
     newSession.hintSystem.availableHints = availableHints;
     setSession(newSession);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [labId, userId, availableHints]);
 
   // Update timer every second

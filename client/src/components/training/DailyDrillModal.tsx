@@ -32,6 +32,7 @@ export default function DailyDrillModal({
     if (isOpen && user) {
       selectTodaysDrill();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, user]);
 
   const selectTodaysDrill = async () => {

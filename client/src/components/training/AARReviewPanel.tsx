@@ -35,6 +35,7 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
     }
 
     analyze();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {

@@ -73,6 +73,7 @@ export default function EnhancedAICoachPanel({
         clearInterval(intervalRef.current);
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context.contentId, context.userProgress.attempts, context.userProgress.timeSpent]);
 
   // Military mode styling

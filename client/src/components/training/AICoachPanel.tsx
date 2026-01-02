@@ -43,6 +43,7 @@ export default function AICoachPanel({
       const interval = setInterval(fetchFeedback, updateInterval);
       return () => clearInterval(interval);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context.contentId, context.userProgress.attempts]);
 
   const getIconColor = () => {

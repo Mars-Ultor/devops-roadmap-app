@@ -24,10 +24,12 @@ export default function FailureLogList({ contentId, showFilters = true }: Failur
 
   useEffect(() => {
     loadFailures();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contentId]);
 
   useEffect(() => {
     applyFilters();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [failures, categoryFilter, statusFilter]);
 
   const loadFailures = async () => {

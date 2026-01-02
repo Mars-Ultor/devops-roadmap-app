@@ -130,6 +130,7 @@ export default function EnhancedFailureLogForm({
       const runbook = generateRunbook();
       setGeneratedRunbook(runbook);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [validation.isValid, category, whatTried, rootCause]);
 
   const generateRunbook = (): string => {
