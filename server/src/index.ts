@@ -8,6 +8,7 @@ import labRoutes from './routes/lab.js';
 import projectRoutes from './routes/project.js';
 import validateRoutes from './routes/validate.js';
 import aarRoutes from './routes/aar.js';
+import certificationRoutes from './routes/certification.js';
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use('/api/lab', labRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/validate', validateRoutes);
 app.use('/api/aar', aarRoutes);
+app.use('/api/certifications', certificationRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
