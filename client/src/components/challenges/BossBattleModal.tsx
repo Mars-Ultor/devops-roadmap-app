@@ -144,21 +144,6 @@ export const BossBattleModal: FC<BossBattleModalProps> = ({
     }
   };
 
-  const calculateScore = (): number => {
-    await setDoc(battleRef, {
-      battle,
-      completedAt: new Date().toISOString(),
-      passed,
-      score,
-      timeUsed: battle.timeLimit,
-      phaseCompletion
-    }, { merge: true });
-
-    onComplete(passed);
-    
-    alert('Time expired! Submitting what you\'ve completed...');
-  };
-
   const toggleTask = (phaseIndex: number, taskIndex: number) => {
     setPhaseCompletion(prev => {
       const newState = [...prev];

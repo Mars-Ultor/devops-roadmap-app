@@ -91,35 +91,6 @@ export const DailyChallengeModal: FC<DailyChallengeModalProps> = ({
     return () => clearInterval(timer);
   }, [isActive, timeRemaining]);
 
-  const loadTodaysChallenge = async () => {
-    if (!user) return;
-
-    const today = new Date().toISOString().split('T')[0];
-    const challengeRef = doc(db, 'dailyChallenges', `${user.uid}_${today}`);
-    const challengeDoc = await getDoc(challengeRef);
-
-    if (challengeDoc.exists()) {
-      const data = challengeDoc.data();
-      setChallenge(data.challenge);
-      setTimeRemaining(data.challenge.timeLimit);
-      setCompletedCriteria(new Array(data.challenge.successCriteria.length).fill(false));
-    } else {
-      // Generate new challenge
-      const newChallenge = generateRandomChallenge(user.currentWeek);
-      setChallenge(newChallenge);
-      setTimeRemaining(newChallenge.timeLimit);
-      setCompletedCriteria(new Array(newChallenge.successCriteria.length).fill(false));
-
-      // Save to Firestore
-      await setDoc(challengeRef, {
-        challenge: newChallenge,
-        startedAt: null,
-        completedAt: null,
-        success: false
-      });
-    }
-  };
-
   const handleStart = async () => {
     if (!user || !challenge) return;
 
@@ -153,22 +124,6 @@ export const DailyChallengeModal: FC<DailyChallengeModalProps> = ({
 
     onComplete(allComplete, timeUsed);
     onClose();
-  };
-
-  const handleTimeExpired = async () => {
-    if (!user || !challenge) return;
-
-    const today = new Date().toISOString().split('T')[0];
-    const challengeRef = doc(db, 'dailyChallenges', `${user.uid}_${today}`);
-    
-    await setDoc(challengeRef, {
-      challenge,
-      completedAt: new Date().toISOString(),
-      success: false,
-      timeUsed: challenge.timeLimit
-    }, { merge: true });
-
-    onComplete(false, challenge.timeLimit);
   };
 
   const toggleCriterion = (index: number) => {
