@@ -35,6 +35,7 @@ const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const Projects = lazy(() => import('./pages/Projects'));
 const AICoaching = lazy(() => import('./pages/AICoaching'));
+const RecertificationDashboard = lazy(() => import('./pages/RecertificationDashboard'));
 
 function App() {
   const { user, loading, initAuth } = useAuthStore();
@@ -107,6 +108,7 @@ function App() {
               <Route path="/scenarios" element={user ? <ProductionScenarios /> : <Navigate to="/login" />} />
               <Route path="/scenario/:scenarioId" element={user ? <ScenarioExecution /> : <Navigate to="/login" />} />
               <Route path="/ai-coaching" element={user ? <AICoaching /> : <Navigate to="/login" />} />
+              <Route path="/recertification" element={user ? <RecertificationDashboard /> : <Navigate to="/login" />} />
               
               <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
             </Routes>
