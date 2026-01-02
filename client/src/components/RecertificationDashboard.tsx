@@ -421,5 +421,6 @@ export default function RecertificationDashboard() {
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
