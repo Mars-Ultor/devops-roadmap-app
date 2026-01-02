@@ -23,6 +23,93 @@ export interface LessonMastery {
   fullyMastered: boolean;
 }
 
+// Recertification System
+export type CertificationLevel = 'bronze' | 'silver' | 'gold' | 'platinum' | 'master';
+
+export interface RecertificationDrill {
+  id: string;
+  title: string;
+  description: string;
+  category: 'deployment' | 'troubleshooting' | 'security' | 'scaling' | 'cicd' | 'recovery' | 'infrastructure' | 'monitoring';
+  certificationLevel: CertificationLevel;
+  recertificationIntervalDays: number; // How often recertification is required
+  timeLimitMinutes: number;
+  passingScore: number; // Percentage required to pass
+  questions: RecertificationQuestion[];
+  practicalTasks?: RecertificationTask[];
+  prerequisites: string[]; // Skill IDs required before taking this drill
+}
+
+export interface RecertificationQuestion {
+  id: string;
+  question: string;
+  type: 'multiple-choice' | 'true-false' | 'fill-blank' | 'scenario';
+  options?: string[]; // For multiple choice
+  correctAnswer: string | number | boolean;
+  explanation: string;
+  difficulty: 'basic' | 'intermediate' | 'advanced';
+  timeLimitSeconds?: number;
+}
+
+export interface RecertificationTask {
+  id: string;
+  description: string;
+  commands: string[]; // Expected commands or steps
+  validationCriteria: string[];
+  hints: string[];
+  timeLimitMinutes: number;
+}
+
+export interface RecertificationAttempt {
+  id: string;
+  drillId: string;
+  userId: string;
+  startedAt: Date;
+  completedAt?: Date;
+  score: number;
+  passed: boolean;
+  timeSpentMinutes: number;
+  answers: RecertificationAnswer[];
+  taskCompletions?: TaskCompletion[];
+  feedback?: string;
+}
+
+export interface RecertificationAnswer {
+  questionId: string;
+  answer: string | number | boolean;
+  correct: boolean;
+  timeSpentSeconds: number;
+}
+
+export interface TaskCompletion {
+  taskId: string;
+  completed: boolean;
+  commandsUsed: string[];
+  timeSpentMinutes: number;
+  score: number;
+}
+
+export interface CertificationStatus {
+  userId: string;
+  skillId: string;
+  certificationLevel: CertificationLevel;
+  earnedAt: Date;
+  expiresAt: Date;
+  lastRecertifiedAt: Date;
+  recertificationRequired: boolean;
+  gracePeriodDays: number; // Days until certification expires
+  consecutivePasses: number;
+  totalAttempts: number;
+}
+
+export interface SkillDecayModel {
+  skillId: string;
+  baseRetentionRate: number; // How much knowledge is retained over time (0-1)
+  decayRatePerDay: number; // How fast knowledge decays
+  recertificationBoost: number; // Knowledge boost from recertification (0-1)
+  minimumCompetence: number; // Minimum knowledge level before recertification required
+}
+
 // Battle Drill System
 export interface BattleDrill {
   id: string;
