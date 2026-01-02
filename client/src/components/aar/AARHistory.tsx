@@ -57,7 +57,7 @@ export default function AARHistory() {
     filterAARData();
   }, [aars, searchTerm, selectedLevel, selectedLesson, sortBy]);
 
-  const filterAARs = () => {
+  const filterAARs = useCallback(() => {
     let filtered = [...aars];
 
     // Search filter
