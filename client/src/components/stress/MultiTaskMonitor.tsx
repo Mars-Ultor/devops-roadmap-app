@@ -44,6 +44,7 @@ export const MultiTaskMonitor: React.FC<MultiTaskMonitorProps> = ({
     } else {
       setIsEnabled(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
   const initializeTasks = (taskCount: number) => {

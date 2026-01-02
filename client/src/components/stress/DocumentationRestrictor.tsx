@@ -27,6 +27,7 @@ export const DocumentationRestrictor: React.FC<DocumentationRestrictorProps> = (
   useEffect(() => {
     const urls = stressService.getAllowedDocumentationUrls(sessionId);
     setAllowedUrls(urls);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
   // Intercept external link clicks
@@ -60,6 +61,7 @@ export const DocumentationRestrictor: React.FC<DocumentationRestrictorProps> = (
 
     document.addEventListener('click', handleLinkClick, true);
     return () => document.removeEventListener('click', handleLinkClick, true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allowedUrls, sessionId, onAccessBlocked]);
 
   const getDocumentationLevel = () => {
