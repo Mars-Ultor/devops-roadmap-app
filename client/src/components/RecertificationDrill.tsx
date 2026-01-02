@@ -299,135 +299,27 @@ export default function RecertificationDrillComponent({
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg shadow-xl overflow-hidden border border-slate-700">
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-white">{currentDrill.title}</h2>
-              <p className="text-blue-100">{currentDrill.description}</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-white">{currentDrill.title}</h2>
+                <p className="text-blue-100">{currentDrill.description}</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className={`px-3 py-1 rounded-full text-sm font-medium ${getCertificationColor(currentDrill.certificationLevel)}`}>
+                  {currentDrill.certificationLevel.toUpperCase()}
+                </div>
+                <div className="flex items-center text-white">
+                  <Timer className="h-5 w-5 mr-2" />
+                  <span className={timeRemaining < 300 ? 'text-red-300 font-bold' : ''}>
+                    {formatTime(timeRemaining)}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className={`px-3 py-1 rounded-full text-sm font-medium ${getCertificationColor(currentDrill.certificationLevel)}`}>
-                {currentDrill.certificationLevel.toUpperCase()}
-              </div>
-              <div className="flex items-center text-white">
-                <Timer className="h-5 w-5 mr-2" />
-                <span className={timeRemaining < 300 ? 'text-red-300 font-bold' : ''}>
-                  {formatTime(timeRemaining)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="bg-slate-800 px-6 py-3 border-b border-slate-700">
-          <div className="flex items-center justify-between text-sm text-gray-300">
-            <span>Question {currentQuestionIndex + 1} of {currentDrill.questions.length}</span>
-            <span>{Math.round(((currentQuestionIndex + 1) / currentDrill.questions.length) * 100)}% Complete</span>
-          </div>
-          <div className="mt-2 bg-slate-700 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentQuestionIndex + 1) / currentDrill.questions.length) * 100}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Question */}
-        <div className="p-6">
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold text-white mb-4">
-              {currentQuestion.question}
-            </h3>
-
-            {/* Answer Options */}
-            {currentQuestion.type === 'multiple-choice' && currentQuestion.options && (
-              <div className="space-y-3">
-                {currentQuestion.options.map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleAnswer(index)}
-                    className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                      currentAnswer?.answer === index
-                        ? 'border-blue-500 bg-blue-900/50'
-                        : 'border-slate-600 hover:border-slate-500 bg-slate-800 hover:bg-slate-700'
-                    }`}
-                  >
-                    <span className="font-medium text-white">
-                      {String.fromCharCode(65 + index)}. {option}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {currentQuestion.type === 'true-false' && (
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => handleAnswer(true)}
-                  className={`flex-1 p-4 rounded-lg border-2 transition-all ${
-                    currentAnswer?.answer === true
-                      ? 'border-green-500 bg-green-900/50'
-                      : 'border-slate-600 hover:border-slate-500 bg-slate-800 hover:bg-slate-700'
-                  }`}
-                >
-                  <span className="font-medium text-white">True</span>
-                </button>
-                <button
-                  onClick={() => handleAnswer(false)}
-                  className={`flex-1 p-4 rounded-lg border-2 transition-all ${
-                    currentAnswer?.answer === false
-                      ? 'border-red-500 bg-red-900/50'
-                      : 'border-slate-600 hover:border-slate-500 bg-slate-800 hover:bg-slate-700'
-                  }`}
-                >
-                  <span className="font-medium text-white">False</span>
-                </button>
-              </div>
-            )}
           </div>
 
-          {/* Navigation */}
-          <div className="flex justify-between items-center">
-            <button
-              onClick={handlePrevious}
-              disabled={currentQuestionIndex === 0}
-              className="px-6 py-2 bg-slate-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 transition-colors"
-            >
-              Previous
-            </button>
-
-            <div className="flex space-x-2">
-              {currentDrill.questions.map((_, index) => (
-                <div
-                  key={index}
-                  className={`w-3 h-3 rounded-full ${
-                    index === currentQuestionIndex
-                      ? 'bg-blue-600'
-                      : answers[index]
-                      ? 'bg-green-500'
-                      : 'bg-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-
-            {currentQuestionIndex === currentDrill.questions.length - 1 ? (
-              <button
-                onClick={() => handleSubmit()}
-                disabled={answers.length !== currentDrill.questions.length}
-                className="px-6 py-2 bg-green-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-700 transition-colors"
-              >
-                Submit Drill
-              </button>
-            ) : (
-              <button
-                onClick={handleNext}
-                disabled={!currentAnswer}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
-              >
-                Next
-              </button>
-            )}
+          <div className="text-center p-8">
+            <h2 className="text-white">Drill Interface</h2>
           </div>
         </div>
       </div>
