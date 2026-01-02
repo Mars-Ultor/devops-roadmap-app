@@ -12,7 +12,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "test:ci": "vitest run --passWithNoTests",
+    "test:ci": "vitest run --passWithNoTests --reporter=verbose",
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc --noEmit",
     "deploy": "npm run build && firebase deploy --only hosting",
