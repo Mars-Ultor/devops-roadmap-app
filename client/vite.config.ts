@@ -52,7 +52,18 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     css: true,
     watch: false,
-    testTimeout: 10000,
-    hookTimeout: 10000,
+    testTimeout: 5000,
+    hookTimeout: 5000,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
+    server: {
+      deps: {
+        inline: ['firebase'],
+      },
+    },
   },
 })
