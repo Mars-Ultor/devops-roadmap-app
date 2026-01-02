@@ -726,7 +726,7 @@ Fault Tolerance:
             label: 'Application calls for database',
             hint: 'How does pod reach database?',
             correctValue: 'Database Service DNS name (e.g., postgres.default.svc.cluster.local)',
-            validationPattern: 'service.*dns|postgres|cluster\.local|dns.*name'
+            validationPattern: 'service.*dns|postgres|cluster[.]local|dns.*name'
           },
           {
             id: 'db_service_type',
