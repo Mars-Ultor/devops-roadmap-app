@@ -47,7 +47,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         continue-on-error: true
         with:
@@ -385,10 +385,9 @@ jobs:
 
       - name: Notify deployment
         uses: 8398a7/action-slack@v3
-        if: always()
+        if: always() && env.SLACK_WEBHOOK_URL != ''
         with:
           status: ${{ job.status }}
-          webhook_url: ${{ secrets.SLACK_WEBHOOK_PRODUCTION }}
           fields: repo,message,commit,author,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_PRODUCTION }}
@@ -411,9 +410,9 @@ jobs:
 
       - name: Notify rollback
         uses: 8398a7/action-slack@v3
+        if: env.SLACK_WEBHOOK_URL != ''
         with:
           status: success
-          webhook_url: ${{ secrets.SLACK_WEBHOOK_PRODUCTION }}
           text: "🚨 Deployment rolled back to version ${{ github.event.inputs.rollback_version }}"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_PRODUCTION }}

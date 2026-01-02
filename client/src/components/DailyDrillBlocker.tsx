@@ -34,7 +34,7 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
   const [loading, setLoading] = useState(true);
   const [checkCount, setCheckCount] = useState(0);
 
-  const isExemptRoute = () => {
+  const isExemptRoute = useCallback(() => {
     const exemptRoutes = EXEMPT_ROUTES.some(route => location.pathname.startsWith(route));
     
     // Allow access to training page when accessing daily drill
@@ -48,7 +48,7 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
     }
     
     return exemptRoutes;
-  };
+  }, [location.pathname, location.search]);
 
   const checkDrillStatus = useCallback(async () => {
     if (!user || isExemptRoute()) {
@@ -77,7 +77,7 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
     } finally {
       setLoading(false);
     }
-  }, [user, location.pathname, location.search]);
+  }, [user, isExemptRoute]);
 
   // Initial check
   useEffect(() => {
