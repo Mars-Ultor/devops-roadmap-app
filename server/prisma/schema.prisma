@@ -6,13 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  extensions = [uuid_ossp(map: "uuid-ossp")]
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   email       String    @unique
   password    String
   name        String
@@ -30,7 +29,7 @@ model User {
 }
 
 model Progress {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   userId      String
   weekId      Int
   lessonId    String
@@ -44,7 +43,7 @@ model Progress {
 }
 
 model Project {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   userId      String
   projectId   String    // "project-1", "project-2", "project-3"
   title       String
@@ -60,7 +59,7 @@ model Project {
 }
 
 model Badge {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   userId      String
   badgeType   String    // "linux-explorer", "git-master", etc.
   badgeName   String
@@ -70,7 +69,7 @@ model Badge {
 }
 
 model LabSession {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   userId      String
   exerciseId  String    // "lab-1", "lab-2", etc.
   code        String?   // User's submitted code
