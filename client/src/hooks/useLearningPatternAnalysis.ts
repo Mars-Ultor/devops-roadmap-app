@@ -108,7 +108,7 @@ export function useLearningPatternAnalysis() {
     }
   };
 
-  const analyzeStudyConsistency = (sessions: any[]): LearningPatternData['patterns']['studyConsistency'] => {
+  const analyzeStudyConsistency = (sessions: { data: () => { startTime?: { toDate: () => Date } } }[]): LearningPatternData['patterns']['studyConsistency'] => {
     if (sessions.length === 0) {
       return {
         score: 0,
@@ -159,7 +159,7 @@ export function useLearningPatternAnalysis() {
     };
   };
 
-  const analyzeTimeOptimization = (sessions: any[], progress: any[]): LearningPatternData['patterns']['timeOptimization'] => {
+  const analyzeTimeOptimization = (sessions: { data: () => { startTime?: { toDate: () => Date } } }[], progress: { data: () => { score?: number; startTime?: { toDate: () => Date } } }[]): LearningPatternData['patterns']['timeOptimization'] => {
     const hourlyPerformance: Record<number, { sessions: number; scores: number[] }> = {};
 
     // Initialize all hours
@@ -211,7 +211,7 @@ export function useLearningPatternAnalysis() {
     };
   };
 
-  const analyzeTopicStruggles = (failures: any[]): LearningPatternData['patterns']['topicStruggles'] => {
+  const analyzeTopicStruggles = (failures: { data: () => { topic?: string; contentId?: string; failureType?: string; createdAt?: { toDate: () => Date } } }[]): LearningPatternData['patterns']['topicStruggles'] => {
     const topicFailures: Record<string, { count: number; patterns: string[]; lastFailure: Date }> = {};
 
     // Analyze failures by topic
@@ -246,7 +246,7 @@ export function useLearningPatternAnalysis() {
       .slice(0, 5);
   };
 
-  const analyzePerformanceCorrelations = (sessions: any[], progress: any[]): LearningPatternData['patterns']['performanceCorrelations'] => {
+  const analyzePerformanceCorrelations = (sessions: { data: () => { startTime?: { toDate: () => Date } } }[], progress: { data: () => { timeSpentMinutes?: number; score?: number } }[]): LearningPatternData['patterns']['performanceCorrelations'] => {
     const correlations: Array<{ factor: string; correlation: number; insight: string }> = [];
 
     // Time spent vs score correlation
@@ -326,10 +326,10 @@ export function useLearningPatternAnalysis() {
   };
 
   const generateAdaptiveRecommendations = (
-    consistency: any,
-    timeOpt: any,
-    struggles: any[],
-    correlations: any[]
+    consistency: LearningPatternData['patterns']['studyConsistency'],
+    timeOpt: LearningPatternData['patterns']['timeOptimization'],
+    struggles: LearningPatternData['patterns']['topicStruggles'],
+    correlations: LearningPatternData['patterns']['performanceCorrelations']
   ): string[] => {
     const recommendations: string[] = [];
 

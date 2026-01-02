@@ -92,7 +92,7 @@ export function useFailureLog(): UseFailureLogReturn {
     try {
       const failureRef = doc(db, 'failureLogs', failureId);
       
-      const updateData: any = { ...updates };
+      const updateData: Partial<FailureLog> & { timeToResolveMinutes?: number } = { ...updates };
       
       // Calculate resolution time if marking as resolved
       if (updates.resolvedAt) {
