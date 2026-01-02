@@ -326,23 +326,17 @@ jobs:
           cd client
           firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID_STAGING }} --token ${{ secrets.FIREBASE_TOKEN_STAGING }}
 
-      # Deploy Server to Railway (Staging)
-      - name: Deploy Server to Railway (Staging)
+      # Deploy Server to Render (Staging)
+      - name: Deploy Server to Render (Staging)
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"serviceId": "${{ secrets.RAILWAY_SERVER_SERVICE_ID_STAGING }}"}' \
-            https://backboard.railway.app/graphql
+          curl -X POST ${{ secrets.RENDER_SERVER_DEPLOY_HOOK_STAGING }}
+        continue-on-error: true
 
-      # Deploy ML Service to Railway (Staging)
-      - name: Deploy ML Service to Railway (Staging)
+      # Deploy ML Service to Render (Staging)
+      - name: Deploy ML Service to Render (Staging)
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"serviceId": "${{ secrets.RAILWAY_ML_SERVICE_ID_STAGING }}"}' \
-            https://backboard.railway.app/graphql
+          curl -X POST ${{ secrets.RENDER_ML_DEPLOY_HOOK_STAGING }}
+        continue-on-error: true
 
       - name: Notify deployment
         uses: 8398a7/action-slack@v3
@@ -383,23 +377,15 @@ jobs:
           cd client
           firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
 
-      # Deploy Server to Railway (Production)
-      - name: Deploy Server to Railway (Production)
+      # Deploy Server to Render (Production)
+      - name: Deploy Server to Render (Production)
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"serviceId": "${{ secrets.RAILWAY_SERVER_SERVICE_ID }}"}' \
-            https://backboard.railway.app/graphql
+          curl -X POST ${{ secrets.RENDER_SERVER_DEPLOY_HOOK }}
 
-      # Deploy ML Service to Railway (Production)
-      - name: Deploy ML Service to Railway (Production)
+      # Deploy ML Service to Render (Production)
+      - name: Deploy ML Service to Render (Production)
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"serviceId": "${{ secrets.RAILWAY_ML_SERVICE_ID }}"}' \
-            https://backboard.railway.app/graphql
+          curl -X POST ${{ secrets.RENDER_ML_DEPLOY_HOOK }}
 
       # Health Check
       - name: Health Check
