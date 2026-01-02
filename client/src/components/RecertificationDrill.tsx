@@ -335,7 +335,7 @@ export default function RecertificationDrillComponent({
         {/* Question */}
         <div className="p-6">
           <div className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <h3 className="text-xl font-semibold text-white mb-4">
               {currentQuestion.question}
             </h3>
 
@@ -348,11 +348,11 @@ export default function RecertificationDrillComponent({
                     onClick={() => handleAnswer(index)}
                     className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                       currentAnswer?.answer === index
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-blue-500 bg-blue-900/50'
+                        : 'border-slate-600 hover:border-slate-500 bg-slate-800 hover:bg-slate-700'
                     }`}
                   >
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-white">
                       {String.fromCharCode(65 + index)}. {option}
                     </span>
                   </button>
@@ -366,21 +366,21 @@ export default function RecertificationDrillComponent({
                   onClick={() => handleAnswer(true)}
                   className={`flex-1 p-4 rounded-lg border-2 transition-all ${
                     currentAnswer?.answer === true
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-green-500 bg-green-900/50'
+                      : 'border-slate-600 hover:border-slate-500 bg-slate-800 hover:bg-slate-700'
                   }`}
                 >
-                  <span className="font-medium text-gray-900">True</span>
+                  <span className="font-medium text-white">True</span>
                 </button>
                 <button
                   onClick={() => handleAnswer(false)}
                   className={`flex-1 p-4 rounded-lg border-2 transition-all ${
                     currentAnswer?.answer === false
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-red-500 bg-red-900/50'
+                      : 'border-slate-600 hover:border-slate-500 bg-slate-800 hover:bg-slate-700'
                   }`}
                 >
-                  <span className="font-medium text-gray-900">False</span>
+                  <span className="font-medium text-white">False</span>
                 </button>
               </div>
             )}
@@ -391,7 +391,7 @@ export default function RecertificationDrillComponent({
             <button
               onClick={handlePrevious}
               disabled={currentQuestionIndex === 0}
-              className="px-6 py-2 bg-gray-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors"
+              className="px-6 py-2 bg-slate-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 transition-colors"
             >
               Previous
             </button>

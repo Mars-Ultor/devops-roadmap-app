@@ -140,7 +140,8 @@ export default function RecertificationDashboard() {
   const availableDrills = getAvailableDrills();
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
+    <div className="min-h-screen bg-slate-900">
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
         <div className="flex items-center justify-between">
@@ -165,23 +166,23 @@ export default function RecertificationDashboard() {
 
       {/* Urgent Recertifications */}
       {upcomingRecertifications.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <div className="bg-red-900/50 border border-red-700 rounded-lg p-6">
           <div className="flex items-center mb-4">
             <AlertTriangle className="h-6 w-6 text-red-600 mr-3" />
-            <h2 className="text-xl font-semibold text-red-900">Urgent Recertification Required</h2>
+            <h2 className="text-xl font-semibold text-red-300">Urgent Recertification Required</h2>
           </div>
           <div className="space-y-3">
             {upcomingRecertifications.map(cert => {
               const daysLeft = calculateDaysUntilExpiry(cert.expiresAt);
               return (
-                <div key={cert.skillId} className="flex items-center justify-between bg-white p-4 rounded-lg">
+                  <div className="flex items-center justify-between bg-slate-800 p-4 rounded-lg border border-slate-700">
                   <div className="flex items-center space-x-3">
                     <div className={`px-3 py-1 rounded-full text-sm font-medium ${getCertificationColor(cert.certificationLevel)}`}>
                       {cert.certificationLevel.toUpperCase()}
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{cert.skillId.replace('-', ' ').toUpperCase()}</h3>
-                      <p className="text-sm text-gray-500">
+                      <h3 className="font-medium text-white">{cert.skillId.replace('-', ' ').toUpperCase()}</h3>
+                      <p className="text-sm text-gray-400">
                         Expires in {daysLeft} days
                       </p>
                     </div>
@@ -271,26 +272,26 @@ export default function RecertificationDashboard() {
         </div>
 
         {/* Available Drills */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg shadow-xl p-6 border border-slate-700">
           <div className="flex items-center mb-6">
-            <Target className="h-6 w-6 text-blue-600 mr-3" />
-            <h2 className="text-xl font-semibold text-gray-900">Available Recertification Drills</h2>
+            <Target className="h-6 w-6 text-blue-400 mr-3" />
+            <h2 className="text-xl font-semibold text-white">Available Recertification Drills</h2>
           </div>
 
           <div className="space-y-4">
             {availableDrills.map(drill => (
-              <div key={drill.id} className="border rounded-lg p-4 hover:border-blue-300 transition-colors">
+              <div key={drill.id} className="border border-slate-600 rounded-lg p-4 hover:border-blue-500 transition-colors bg-slate-800/50">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
-                    <h3 className="font-medium text-gray-900">{drill.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{drill.description}</p>
+                    <h3 className="font-medium text-white">{drill.title}</h3>
+                    <p className="text-sm text-gray-400 mt-1">{drill.description}</p>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-sm font-medium ${getCertificationColor(drill.certificationLevel)}`}>
                     {drill.certificationLevel.toUpperCase()}
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                <div className="flex items-center justify-between text-sm text-gray-400 mb-3">
                   <div className="flex items-center space-x-4">
                     <span className="flex items-center">
                       <Clock className="h-4 w-4 mr-1" />
@@ -308,7 +309,7 @@ export default function RecertificationDashboard() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-400">
                     Recertify every {drill.recertificationIntervalDays} days
                   </div>
                   <button
@@ -324,7 +325,7 @@ export default function RecertificationDashboard() {
             {availableDrills.length === 0 && (
               <div className="text-center py-8">
                 <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No drills available</h3>
+                <h3 className="mt-2 text-sm font-medium text-gray-300">No drills available</h3>
                 <p className="mt-1 text-sm text-gray-500">
                   Complete prerequisite certifications to unlock more recertification drills
                 </p>
@@ -336,17 +337,17 @@ export default function RecertificationDashboard() {
 
       {/* Recent Attempts */}
       {recentAttempts.length > 0 && (
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg shadow-xl p-6 border border-slate-700">
           <div className="flex items-center mb-6">
-            <TrendingUp className="h-6 w-6 text-green-600 mr-3" />
-            <h2 className="text-xl font-semibold text-gray-900">Recent Recertification Attempts</h2>
+            <TrendingUp className="h-6 w-6 text-green-400 mr-3" />
+            <h2 className="text-xl font-semibold text-white">Recent Recertification Attempts</h2>
           </div>
 
           <div className="space-y-3">
             {recentAttempts.slice(0, 5).map(attempt => {
               const drill = RECERTIFICATION_DRILLS.find(d => d.id === attempt.drillId);
               return (
-                <div key={attempt.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div key={attempt.id} className="flex items-center justify-between p-4 border border-slate-600 rounded-lg bg-slate-800/50">
                   <div className="flex items-center space-x-3">
                     {attempt.passed ? (
                       <CheckCircle className="h-5 w-5 text-green-500" />
@@ -354,10 +355,10 @@ export default function RecertificationDashboard() {
                       <XCircle className="h-5 w-5 text-red-500" />
                     )}
                     <div>
-                      <h3 className="font-medium text-gray-900">
+                      <h3 className="font-medium text-white">
                         {drill?.title || 'Unknown Drill'}
                       </h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-400">
                         {attempt.completedAt?.toLocaleDateString()} • {Math.round(attempt.timeSpentMinutes)} minutes
                       </p>
                     </div>
@@ -366,7 +367,7 @@ export default function RecertificationDashboard() {
                     <div className={`text-lg font-bold ${attempt.passed ? 'text-green-600' : 'text-red-600'}`}>
                       {attempt.score}%
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-400">
                       {attempt.passed ? 'PASSED' : 'FAILED'}
                     </div>
                   </div>
@@ -378,10 +379,10 @@ export default function RecertificationDashboard() {
       )}
 
       {/* Skill Decay Information */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-6">
         <div className="flex items-center mb-4">
-          <Zap className="h-6 w-6 text-blue-600 mr-3" />
-          <h2 className="text-xl font-semibold text-blue-900">Knowledge Retention & Recertification</h2>
+          <Zap className="h-6 w-6 text-blue-400 mr-3" />
+          <h2 className="text-xl font-semibold text-blue-300">Knowledge Retention & Recertification</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
