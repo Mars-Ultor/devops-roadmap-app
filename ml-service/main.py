@@ -137,6 +137,11 @@ async def predict(model_name: str, input_data: MLInput):
         elif model_name == 'motivational-analyzer':
             response_data['explanation'] = 'Motivational analysis and engagement predictions'
 
+        return response_data
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
 class MLTrainingData(BaseModel):
     inputs: List[List[float]]
     outputs: List[List[float]]
