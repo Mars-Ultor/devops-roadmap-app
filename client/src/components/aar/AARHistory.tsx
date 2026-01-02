@@ -20,12 +20,42 @@ export default function AARHistory() {
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'lesson' | 'level'>('newest');
 
   useEffect(() => {
-    loadAARs();
-  }, [user?.uid, loadAARs]);
+    const loadAARData = async () => {
+      if (!user?.uid) return;
+
+      try {
+        const userAars = await aarService.getUserAARs(user.uid);
+        setAars(userAars);
+      } catch (error) {
+        console.error('Failed to load AARs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAARData();
+  }, [user?.uid]);
 
   useEffect(() => {
-    filterAARs();
-  }, [aars, searchTerm, selectedLevel, selectedLesson, sortBy, filterAARs]);
+    const filterAARData = () => {
+      let filtered = [...aars];
+
+      // Search filter
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filtered = filtered.filter(aar =>
+          aar.whatWasAccomplished.toLowerCase().includes(term) ||
+          aar.whyDidNotWork.toLowerCase().includes(term) ||
+          aar.whatDidILearn.toLowerCase().includes(term) ||
+          aar.lessonId.toLowerCase().includes(term)
+        );
+      }
+
+      setFilteredAars(filtered);
+    };
+
+    filterAARData();
+  }, [aars, searchTerm, selectedLevel, selectedLesson, sortBy]);
 
   const loadAARs = async () => {
     if (!user?.uid) return;

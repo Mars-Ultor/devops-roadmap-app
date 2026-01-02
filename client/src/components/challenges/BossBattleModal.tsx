@@ -49,10 +49,37 @@ export const BossBattleModal: FC<BossBattleModalProps> = ({
   const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
+    const loadBossBattleData = async () => {
+      if (!user) return;
+
+      const battleRef = doc(db, 'bossBattles', `${user.uid}_week${week}`);
+      const battleDoc = await getDoc(battleRef);
+
+      if (battleDoc.exists()) {
+        const data = battleDoc.data();
+        setBattle(data.battle);
+        setTimeRemaining(data.timeRemaining || data.battle.timeLimit);
+        setHasStarted(data.hasStarted || false);
+        setPhaseCompletion(data.phaseCompletion || initializePhaseCompletion(data.battle));
+        setCurrentPhase(data.currentPhase || 0);
+        
+        if (data.hasStarted && data.timeRemaining > 0) {
+          setIsActive(true);
+        }
+      } else {
+        const newBattle = generateBossBattle(week);
+        setBattle(newBattle);
+        setTimeRemaining(newBattle.timeLimit);
+        setPhaseCompletion(initializePhaseCompletion(newBattle));
+        setCurrentPhase(0);
+      }
+    };
+
     if (isOpen) {
-      loadBossBattle();
+      loadBossBattleData();
     }
-  }, [isOpen, week, loadBossBattle]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, week, user?.uid]);
 
   // Countdown timer
   useEffect(() => {
@@ -61,7 +88,7 @@ export const BossBattleModal: FC<BossBattleModalProps> = ({
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
-          handleTimeExpired();
+          setIsActive(false);
           return 0;
         }
         return prev - 1;
@@ -69,7 +96,7 @@ export const BossBattleModal: FC<BossBattleModalProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isActive, timeRemaining, handleTimeExpired]);
+  }, [isActive, timeRemaining]);
 
   const loadBossBattle = async () => {
     if (!user) return;

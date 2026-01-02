@@ -31,7 +31,7 @@ export const DistractionSimulator: React.FC<DistractionSimulatorProps> = ({
   useEffect(() => {
     const session = stressService.getSessionStatus(sessionId);
     setIsEnabled(session ? session.distractionsEnabled : false);
-  }, [sessionId]);
+  }, [sessionId, stressService]);
 
   useEffect(() => {
     if (!isEnabled) return;
@@ -56,7 +56,7 @@ export const DistractionSimulator: React.FC<DistractionSimulatorProps> = ({
     }, STRESS_CONFIG.distractionInterval);
 
     return () => clearInterval(interval);
-  }, [isEnabled, currentDistraction, sessionId, onDistractionShown]);
+  }, [isEnabled, currentDistraction, sessionId, onDistractionShown, stressService]);
 
   const dismissDistraction = () => {
     if (!currentDistraction || !distractionStartTime) return;

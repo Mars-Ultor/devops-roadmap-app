@@ -39,10 +39,39 @@ export const DailyChallengeModal: FC<DailyChallengeModalProps> = ({
   const [completedCriteria, setCompletedCriteria] = useState<boolean[]>([]);
 
   useEffect(() => {
+    const loadTodaysChallenge = async () => {
+      if (!user) return;
+
+      const today = new Date().toISOString().split('T')[0];
+      const challengeRef = doc(db, 'dailyChallenges', `${user.uid}_${today}`);
+      const challengeDoc = await getDoc(challengeRef);
+
+      if (challengeDoc.exists()) {
+        const data = challengeDoc.data();
+        setChallenge(data.challenge);
+        setTimeRemaining(data.challenge.timeLimit);
+        setCompletedCriteria(new Array(data.challenge.successCriteria.length).fill(false));
+      } else {
+        // Generate new challenge
+        const newChallenge = generateRandomChallenge(user.currentWeek);
+        setChallenge(newChallenge);
+        setTimeRemaining(newChallenge.timeLimit);
+        setCompletedCriteria(new Array(newChallenge.successCriteria.length).fill(false));
+
+        // Save to Firestore
+        await setDoc(challengeRef, {
+          challenge: newChallenge,
+          startedAt: null,
+          completedAt: null,
+          success: false
+        });
+      }
+    };
+
     if (isOpen) {
       loadTodaysChallenge();
     }
-  }, [isOpen, loadTodaysChallenge]);
+  }, [isOpen, user]);
 
   // Countdown timer
   useEffect(() => {
@@ -51,7 +80,8 @@ export const DailyChallengeModal: FC<DailyChallengeModalProps> = ({
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
-          handleTimeExpired();
+          // Time expired handling inline
+          setIsActive(false);
           return 0;
         }
         return prev - 1;
