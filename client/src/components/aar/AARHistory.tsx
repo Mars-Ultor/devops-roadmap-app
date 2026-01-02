@@ -3,7 +3,7 @@
  * Searchable database of past After Action Reviews
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Search, Filter, Calendar, BookOpen, TrendingUp, AlertCircle, CheckCircle, Lightbulb, Target } from 'lucide-react';
 import { aarService } from '../../services/aarService';
 import { useAuthStore } from '../../store/authStore';
@@ -100,7 +100,7 @@ export default function AARHistory() {
     });
 
     setFilteredAars(filtered);
-  };
+  }, [aars, searchTerm, selectedLevel, selectedLesson, sortBy]);
 
   const getUniqueLessons = () => {
     return [...new Set(aars.map(aar => aar.lessonId))].sort();
