@@ -51,55 +51,38 @@ export default function AARHistory() {
         );
       }
 
+      // Level filter
+      if (selectedLevel !== 'all') {
+        filtered = filtered.filter(aar => aar.level === selectedLevel);
+      }
+
+      // Lesson filter
+      if (selectedLesson !== 'all') {
+        filtered = filtered.filter(aar => aar.lessonId === selectedLesson);
+      }
+
+      // Sort
+      filtered.sort((a, b) => {
+        switch (sortBy) {
+          case 'newest':
+            return b.createdAt.getTime() - a.createdAt.getTime();
+          case 'oldest':
+            return a.createdAt.getTime() - b.createdAt.getTime();
+          case 'lesson':
+            return a.lessonId.localeCompare(b.lessonId);
+          case 'level': {
+            const levelOrder: Record<string, number> = { crawl: 1, walk: 2, 'run-guided': 3, 'run-independent': 4 };
+            return levelOrder[a.level] - levelOrder[b.level];
+          }
+          default:
+            return 0;
+        }
+      });
+
       setFilteredAars(filtered);
     };
 
     filterAARData();
-  }, [aars, searchTerm, selectedLevel, selectedLesson, sortBy]);
-
-  const filterAARs = useCallback(() => {
-    let filtered = [...aars];
-
-    // Search filter
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(aar =>
-        aar.whatWasAccomplished.toLowerCase().includes(term) ||
-        aar.whyDidNotWork.toLowerCase().includes(term) ||
-        aar.whatDidILearn.toLowerCase().includes(term) ||
-        aar.lessonId.toLowerCase().includes(term)
-      );
-    }
-
-    // Level filter
-    if (selectedLevel !== 'all') {
-      filtered = filtered.filter(aar => aar.level === selectedLevel);
-    }
-
-    // Lesson filter
-    if (selectedLesson !== 'all') {
-      filtered = filtered.filter(aar => aar.lessonId === selectedLesson);
-    }
-
-    // Sort
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'newest':
-          return b.createdAt.getTime() - a.createdAt.getTime();
-        case 'oldest':
-          return a.createdAt.getTime() - b.createdAt.getTime();
-        case 'lesson':
-          return a.lessonId.localeCompare(b.lessonId);
-        case 'level': {
-          const levelOrder: Record<string, number> = { crawl: 1, walk: 2, 'run-guided': 3, 'run-independent': 4 };
-          return levelOrder[a.level] - levelOrder[b.level];
-        }
-        default:
-          return 0;
-      }
-    });
-
-    setFilteredAars(filtered);
   }, [aars, searchTerm, selectedLevel, selectedLesson, sortBy]);
 
   const getUniqueLessons = () => {

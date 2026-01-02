@@ -91,7 +91,7 @@ export function usePredictiveAnalytics() {
     }
   };
 
-  const calculateCompletionPrediction = (progressDocs: any[]): PredictiveData['completionPrediction'] => {
+  const calculateCompletionPrediction = (progressDocs: { data: () => { completedAt?: { toDate: () => Date }; masteryLevel?: string } }[]): PredictiveData['completionPrediction'] => {
     const totalProgramItems = 200; // Estimated total items in program
     const completedItems = progressDocs.length;
     const remainingItems = Math.max(totalProgramItems - completedItems, 0);
@@ -151,7 +151,7 @@ export function usePredictiveAnalytics() {
     };
   };
 
-  const predictWeakAreas = (progressDocs: any[], failureDocs: any[]): PredictiveData['weakAreaPredictions'] => {
+  const predictWeakAreas = (progressDocs: { data: () => { contentId?: string; lessonId?: string; score?: number; timeSpentMinutes?: number } }[], failureDocs: { data: () => { topic?: string; contentId?: string; createdAt?: { toDate: () => Date } } }[]): PredictiveData['weakAreaPredictions'] => {
     const topicPerformance: Record<string, {
       scores: number[];
       attempts: number;
@@ -240,7 +240,7 @@ export function usePredictiveAnalytics() {
     return predictions;
   };
 
-  const forecastPerformance = (progressDocs: any[], sessionDocs: any[]): PredictiveData['performanceForecast'] => {
+  const forecastPerformance = (progressDocs: { data: () => { masteryLevel?: string } }[], sessionDocs: { data: () => { startTime?: { toDate: () => Date } } }[]): PredictiveData['performanceForecast'] => {
     // Next week prediction
     const recentProgress = progressDocs.slice(-10); // Last 10 items
     const avgItemsPerWeek = recentProgress.length / 2; // Assuming 2 weeks of data

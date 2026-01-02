@@ -49,7 +49,7 @@ export function useLearningVelocity() {
 
       // Group by weeks
       const weeklyData: Record<string, {
-        items: any[];
+        items: { id: string; data: () => Record<string, unknown> }[];
         totalTime: number;
         masteredItems: number;
         weekStart: Date;

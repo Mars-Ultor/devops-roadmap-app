@@ -358,10 +358,10 @@ export function useLearningPatternAnalysis() {
   };
 
   const generateInsights = (
-    consistency: any,
-    timeOpt: any,
-    struggles: any[],
-    correlations: any[]
+    consistency: LearningPatternData['patterns']['studyConsistency'],
+    timeOpt: LearningPatternData['patterns']['timeOptimization'],
+    struggles: LearningPatternData['patterns']['topicStruggles'],
+    correlations: LearningPatternData['patterns']['performanceCorrelations']
   ): LearningPatternData['insights'] => {
     const insights: LearningPatternData['insights'] = [];
 
