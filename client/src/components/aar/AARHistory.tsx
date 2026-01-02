@@ -57,19 +57,6 @@ export default function AARHistory() {
     filterAARData();
   }, [aars, searchTerm, selectedLevel, selectedLesson, sortBy]);
 
-  const loadAARs = async () => {
-    if (!user?.uid) return;
-
-    try {
-      const userAars = await aarService.getUserAARs(user.uid);
-      setAars(userAars);
-    } catch (error) {
-      console.error('Failed to load AARs:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const filterAARs = () => {
     let filtered = [...aars];
 

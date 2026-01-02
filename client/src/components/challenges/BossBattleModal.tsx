@@ -98,32 +98,6 @@ export const BossBattleModal: FC<BossBattleModalProps> = ({
     return () => clearInterval(timer);
   }, [isActive, timeRemaining]);
 
-  const loadBossBattle = async () => {
-    if (!user) return;
-
-    const battleRef = doc(db, 'bossBattles', `${user.uid}_week${week}`);
-    const battleDoc = await getDoc(battleRef);
-
-    if (battleDoc.exists()) {
-      const data = battleDoc.data();
-      setBattle(data.battle);
-      setTimeRemaining(data.timeRemaining || data.battle.timeLimit);
-      setHasStarted(data.hasStarted || false);
-      setPhaseCompletion(data.phaseCompletion || initializePhaseCompletion(data.battle));
-      setCurrentPhase(data.currentPhase || 0);
-      
-      if (data.hasStarted && data.timeRemaining > 0) {
-        setIsActive(true);
-      }
-    } else {
-      const newBattle = generateBossBattle(week);
-      setBattle(newBattle);
-      setTimeRemaining(newBattle.timeLimit);
-      setPhaseCompletion(initializePhaseCompletion(newBattle));
-      setCurrentPhase(0);
-    }
-  };
-
   const initializePhaseCompletion = (battle: BossBattle): boolean[][] => {
     return battle.phases.map(phase => new Array(phase.tasks.length).fill(false));
   };
@@ -170,13 +144,7 @@ export const BossBattleModal: FC<BossBattleModalProps> = ({
     }
   };
 
-  const handleTimeExpired = async () => {
-    if (!user || !battle) return;
-
-    const score = calculateScore();
-    const passed = score >= battle.minimumPassScore;
-
-    const battleRef = doc(db, 'bossBattles', `${user.uid}_week${week}`);
+  const calculateScore = (): number => {
     await setDoc(battleRef, {
       battle,
       completedAt: new Date().toISOString(),

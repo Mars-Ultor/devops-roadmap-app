@@ -162,34 +162,6 @@ export function MLModelManagementDashboard() {
     loadModelData();
   }, [mlService]);
 
-  const loadModels = async () => {
-    setLoading(true);
-    try {
-      const modelIds = [
-        'learning-path-predictor',
-        'performance-predictor',
-        'learning-style-detector',
-        'skill-gap-analyzer'
-      ];
-
-      const loadedModels: MLModel[] = [];
-      for (const modelId of modelIds) {
-        try {
-          const model = await mlService.loadModel(modelId);
-          loadedModels.push(model);
-        } catch (err) {
-          console.error(`Failed to load model ${modelId}:`, err);
-        }
-      }
-
-      setModels(loadedModels);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load models');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const runInference = async (modelId: string) => {
     const model = models.find(m => m.id === modelId);
     if (!model) return;
