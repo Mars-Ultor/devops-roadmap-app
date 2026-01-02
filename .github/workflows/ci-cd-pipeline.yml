@@ -389,7 +389,6 @@ jobs:
 
       # Health Check
       - name: Health Check
-        if: secrets.PRODUCTION_API_URL != ''
         continue-on-error: true
         run: |
           sleep 60
