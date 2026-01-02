@@ -62,28 +62,6 @@ export default function RecertificationDashboard() {
     loadData();
   }, [user]);
 
-  const handleDrillComplete = (attempt: RecertificationAttempt) => {
-    setRecentAttempts(prev => [attempt, ...prev.slice(0, 9)]); // Keep last 10 attempts
-    setSelectedDrill(null);
-
-    // Update certification status based on attempt
-    if (attempt.passed) {
-      setCertificationStatus(prev =>
-        prev.map(cert =>
-          cert.skillId === attempt.drillId.split('-')[2] // Extract skill from drill ID
-            ? {
-                ...cert,
-                lastRecertifiedAt: new Date(),
-                recertificationRequired: false,
-                consecutivePasses: cert.consecutivePasses + 1,
-                totalAttempts: cert.totalAttempts + 1
-              }
-            : cert
-        )
-      );
-    }
-  };
-
   const getCertificationColor = (level: CertificationLevel) => {
     switch (level) {
       case 'bronze': return 'text-amber-600 bg-amber-100 border-amber-200';
@@ -126,6 +104,26 @@ export default function RecertificationDashboard() {
       .sort((a, b) => a.expiresAt.getTime() - b.expiresAt.getTime());
   };
 
+  const handleDrillComplete = async (attempt: RecertificationAttempt) => {
+    try {
+      // Submit the attempt to the API
+      await CertificationService.submitRecertificationAttempt(attempt);
+
+      // Refresh the data to show updated certification status
+      const [certifications, attempts] = await Promise.all([
+        CertificationService.getUserCertifications(),
+        CertificationService.getRecertificationAttempts(),
+      ]);
+
+      setCertificationStatus(certifications);
+      setRecentAttempts(attempts);
+      setSelectedDrill(null);
+    } catch (err) {
+      console.error('Error submitting drill attempt:', err);
+      setError('Failed to submit drill attempt');
+    }
+  };
+
   if (selectedDrill) {
     return (
       <RecertificationDrillComponent
@@ -138,6 +136,31 @@ export default function RecertificationDashboard() {
 
   const upcomingRecertifications = getUpcomingRecertifications();
   const availableDrills = getAvailableDrills();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading certification data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 text-xl mb-4">Error loading certification data</div>
+          <div className="text-gray-400">{error}</div>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-900">
