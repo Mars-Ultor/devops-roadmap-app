@@ -297,8 +297,8 @@ export default function RecertificationDrillComponent({
     <div className="min-h-screen bg-slate-900 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg shadow-xl overflow-hidden border border-slate-700">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-white">{currentDrill.title}</h2>
