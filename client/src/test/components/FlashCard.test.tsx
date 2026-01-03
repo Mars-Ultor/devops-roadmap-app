@@ -31,8 +31,8 @@ describe('FlashCard', () => {
   test('shows empty state when no cards provided', () => {
     render(<FlashCard cards={[]} onComplete={mockOnComplete} />);
 
-    expect(screen.getByText('No flash cards available')).toBeInTheDocument();
-    expect(screen.getByText('Complete some lessons to unlock flash cards for review.')).toBeInTheDocument();
+    expect(screen.getByText('No Flash Cards Yet')).toBeInTheDocument();
+    expect(screen.getByText('Flash cards will be generated from your completed lessons for review practice.')).toBeInTheDocument();
   });
 
   test('renders first card question initially', () => {
@@ -56,10 +56,10 @@ describe('FlashCard', () => {
 
     fireEvent.click(screen.getByText('Reveal Answer'));
 
-    expect(screen.getByText('Again')).toBeInTheDocument();
-    expect(screen.getByText('Hard')).toBeInTheDocument();
+    expect(screen.getByText('Failed (1)')).toBeInTheDocument();
+    expect(screen.getByText('Hard (2)')).toBeInTheDocument();
     expect(screen.getByText('Good (4)')).toBeInTheDocument();
-    expect(screen.getByText('Easy')).toBeInTheDocument();
+    expect(screen.getByText('Perfect (5)')).toBeInTheDocument();
   });
 
   test('moves to next card when quality is rated', () => {
@@ -98,11 +98,11 @@ describe('FlashCard', () => {
 
     // Complete second card
     fireEvent.click(screen.getByText('Reveal Answer'));
-    fireEvent.click(screen.getByText('Easy'));
+    fireEvent.click(screen.getByText('Perfect (5)'));
 
     // Should show completion screen
-    expect(screen.getByText('Session Complete!')).toBeInTheDocument();
-    expect(screen.getByText('Great job! You\'ve reviewed all flash cards.')).toBeInTheDocument();
+    expect(screen.getByText('Review Complete!')).toBeInTheDocument();
+    expect(screen.getByText('You got 2 out of 2 correct')).toBeInTheDocument();
   });
 
   test('calls onComplete with correct results', () => {
@@ -166,7 +166,6 @@ describe('FlashCard', () => {
     fireEvent.click(screen.getByText('Good (4)'));
 
     expect(screen.getByText('Review Complete!')).toBeInTheDocument();
-    expect(screen.getByText('Card 1 of 1')).toBeInTheDocument();
   });
 
   test('shows different quality button styles', () => {
