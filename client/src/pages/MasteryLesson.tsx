@@ -67,16 +67,31 @@ export default function MasteryLesson() {
 
   // Validate level parameter
   const validLevels: MasteryLevel[] = ['crawl', 'walk', 'run-guided', 'run-independent'];
-  if (!lessonId || !levelParam || !validLevels.includes(level)) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Invalid lesson or level</div>
-      </div>
-    );
-  }
+  const isValidParams = lessonId && levelParam && validLevels.includes(level);
 
   useEffect(() => {
-    if (!lessonId) return;
+    if (!lessonId || !isValidParams) return;
+
+    async function fetchLessonData() {
+      try {
+        console.log('🔍 Looking for lessonId:', lessonId);
+
+        // Load all weeks data to find the lesson
+        const allWeeks = await curriculumLoader.loadAllWeeks();
+
+        // Load basic lesson data from local curriculum data
+        let lessonInfo = null;
+        let foundWeek = null;
+        for (const week of allWeeks) {
+          console.log('🔍 Checking week', week.weekNumber, 'lessons:', week.lessons.map(l => ({ id: l.id, lessonId: l.lessonId })));
+          const foundLesson = week.lessons.find(l => l.id === lessonId || l.lessonId === lessonId);
+          if (foundLesson) {
+            console.log('✅ Found lesson:', foundLesson);
+            lessonInfo = foundLesson;
+            foundWeek = week.weekNumber;
+            break;
+          }
+        }
 
     async function fetchLessonData() {
       try {
