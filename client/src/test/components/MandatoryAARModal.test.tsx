@@ -237,10 +237,8 @@ describe('MandatoryAARModal', () => {
       await user.type(textareas[i], sufficientContent[i])
     }
 
-    await waitFor(() => {
-      expect(submitButton).toBeEnabled()
-    })
-
+    // Button should be enabled immediately after filling all fields
+    expect(submitButton).toBeEnabled()
     expect(screen.getByText('All questions answered')).toBeInTheDocument()
   })
 

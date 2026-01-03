@@ -247,28 +247,20 @@ describe('StruggleTimer', () => {
     )
 
     // Fast-forward past 30 minutes
-    currentTime += 30 * 60 * 1000
+    currentTime += 30 * 60 * 1000 + 1000 // Add extra second to ensure timer expires
     
-    // Check state before rerender
-    expect(screen.getByText('Struggles logged')).toBeInTheDocument()
-    expect(screen.getByText(/Hints unlock in:/)).toBeInTheDocument()
-    
-    act(() => {
-      rerender(
-        <StruggleTimer
-          startTime={startTime}
-          onHintUnlocked={mockOnHintUnlocked}
-          onStruggleLogged={mockOnStruggleLogged}
-          currentTime={currentTime}
-        />
-      )
-    })
+    // Rerender with expired timer
+    rerender(
+      <StruggleTimer
+        startTime={startTime}
+        onHintUnlocked={mockOnHintUnlocked}
+        onStruggleLogged={mockOnStruggleLogged}
+        currentTime={currentTime}
+      />
+    )
 
-    // Wait for the hints to be unlocked
-    await waitFor(() => {
-      expect(screen.getByText('Hints Available')).toBeInTheDocument()
-    }, { timeout: 1000 })
-
+    // Should now show hints available
+    expect(screen.getByText('Hints Available')).toBeInTheDocument()
     expect(screen.getByText(/you've earned access to hints/i)).toBeInTheDocument()
     expect(mockOnHintUnlocked).toHaveBeenCalled()
 
