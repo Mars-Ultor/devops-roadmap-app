@@ -3,7 +3,7 @@
  * Shows all available drills with performance stats
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Target, Clock, Trophy, TrendingUp, Lock, CheckCircle, Zap, AlertTriangle } from 'lucide-react';
 import { BATTLE_DRILLS, getBattleDrillsByDifficulty } from '../data/battleDrills';
@@ -21,9 +21,9 @@ export default function BattleDrills() {
 
   useEffect(() => {
     loadPerformance();
-  }, [user?.uid]);
+  }, [user?.uid, loadPerformance]);
 
-  const loadPerformance = async () => {
+  const loadPerformance = useCallback(async () => {
     if (!user?.uid) return;
 
     try {
@@ -43,7 +43,7 @@ export default function BattleDrills() {
     } catch (error) {
       console.error('Error loading performance:', error);
     }
-  };
+  }, [user?.uid]);
 
   const getFilteredDrills = (): BattleDrill[] => {
     let drills = BATTLE_DRILLS;

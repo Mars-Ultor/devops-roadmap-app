@@ -62,7 +62,7 @@ export default function DailyChallenge() {
     }
 
     setLoading(false);
-  }, [user, navigate]);
+  }, [user, navigate, challengeService]);
 
   const startChallenge = () => {
     if (!scenario || !user) return;

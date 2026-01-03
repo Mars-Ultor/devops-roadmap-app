@@ -3,7 +3,7 @@
  * Comprehensive military training performance metrics
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -104,7 +104,7 @@ export default function Analytics() {
 
   useEffect(() => {
     loadAnalytics();
-  }, [user, timeRange]);
+  }, [user, timeRange, loadAnalytics]);
 
   const getDateFilter = () => {
     const now = new Date();
@@ -125,7 +125,7 @@ export default function Analytics() {
     }
   };
 
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     if (!user?.uid) return;
 
     setLoading(true);
@@ -346,7 +346,7 @@ export default function Analytics() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.uid, timeRange, getUsageStats]);
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
