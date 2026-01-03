@@ -84,6 +84,13 @@ export default function MandatoryAARModal({
     }
   };
 
+  /**
+   * Validate a single AAR response against requirements
+   * Checks word count minimums and detects low-effort responses
+   * @param answer - The user's response text
+   * @param minWords - Minimum word count required
+   * @returns Error message string or null if valid
+   */
   const validateResponse = (answer: string, minWords: number): string | null => {
     if (!answer || answer.trim().length === 0) {
       return 'This question is required';
@@ -110,6 +117,12 @@ export default function MandatoryAARModal({
     return null;
   };
 
+  /**
+   * Handle AAR form submission with validation and Firestore save
+   * Validates all responses, saves to database, then allows navigation
+   * Shows user-friendly error messages for validation failures
+   * @returns Promise that resolves when submission is complete
+   */
   const handleSubmit = async () => {
     // Validate all responses
     const newErrors: Record<string, string> = {};

@@ -135,6 +135,14 @@ export function useProgress() {
     };
   };
 
+  /**
+   * Complete a lesson with SM-2 spaced repetition algorithm
+   * Awards XP on first completion, updates review schedule on subsequent reviews
+   * @param lessonId - Unique identifier for the lesson
+   * @param xp - XP to award on first completion (ignored for reviews)
+   * @param quality - Quality of recall (0-5): 0=complete blackout, 5=perfect recall
+   * @returns Promise resolving to SM-2 algorithm results
+   */
   const completeLesson = async (lessonId: string, xp: number, quality: number = 5) => {
     if (!user) return;
 
@@ -193,6 +201,16 @@ export function useProgress() {
     }
   };
 
+  /**
+   * Complete a lab and award XP, automatically marking related lesson as completed
+   * Only awards XP on first completion, prevents duplicate rewards
+   * @param labId - Unique identifier for the lab (e.g., "w1-lab1")
+   * @param xp - XP to award for lab completion
+   * @param tasksCompleted - Number of tasks successfully completed
+   * @param totalTasks - Total number of tasks in the lab
+   * @returns Promise resolving to boolean success status
+   * @throws Error if lab completion fails
+   */
   const completeLab = async (labId: string, xp: number, tasksCompleted: number, totalTasks: number) => {
     if (!user) {
       console.warn('⚠️ No user logged in, cannot save progress');
@@ -285,6 +303,12 @@ export function useProgress() {
     }
   };
 
+  /**
+   * Check and award badges based on user progress and achievements
+   * Evaluates all badge requirements against current user stats
+   * Awards badges automatically when requirements are met
+   * @returns Promise that resolves when badge checking is complete
+   */
   const checkAndAwardBadges = async () => {
     if (!user) return;
 
@@ -371,6 +395,12 @@ export function useProgress() {
     }
   };
 
+  /**
+   * Award a specific badge to the user and update their XP
+   * Saves badge to Firestore and increments user XP
+   * @param badge - Badge configuration object containing XP and metadata
+   * @returns Promise that resolves when badge is awarded
+   */
   const awardBadge = async (badge: Badge) => {
     if (!user) return;
 
@@ -449,6 +479,11 @@ export function useProgress() {
     }
   };
 
+  /**
+   * Get all lessons that are due for review based on SM-2 algorithm
+   * Queries Firestore for lessons where nextReviewDate <= current date
+   * @returns Promise resolving to array of LessonProgress objects due for review
+   */
   const getLessonsDueForReview = async (): Promise<LessonProgress[]> => {
     if (!user) return [];
 
@@ -513,6 +548,11 @@ export function useProgress() {
     }
   };
 
+  /**
+   * Check if a specific lesson is due for review
+   * @param lessonProgress - Lesson progress object or null if not started
+   * @returns True if lesson exists and current date >= nextReviewDate
+   */
   const isLessonDueForReview = (lessonProgress: LessonProgress | null): boolean => {
     if (!lessonProgress) return false;
     return new Date() >= lessonProgress.nextReviewDate;
