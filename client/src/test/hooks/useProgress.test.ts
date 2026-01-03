@@ -192,14 +192,6 @@ describe('useProgress', () => {
       expect(mockUpdateDoc).not.toHaveBeenCalled() // No XP increment for re-completion
     })
 
-      expect(mockSetDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
-        xpEarned: 150, // Still records XP earned, but doesn't increment user total
-      }))
-
-      // Should not call updateDoc for XP increment
-      expect(vi.mocked(updateDoc)).not.toHaveBeenCalled()
-    })
-
     it('marks related lesson as completed', async () => {
       // Mock Firebase functions
       const mockDoc = vi.fn()
@@ -217,14 +209,6 @@ describe('useProgress', () => {
       const { result } = renderHook(() => useProgress())
 
       await result.current.completeLab('w1-lab1', 150, 5, 10)
-
-      // Should create lesson progress
-      expect(mockSetDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
-        lessonId: 'w1-lesson1',
-        type: 'lesson',
-        completedViaLab: true,
-      }))
-    })
 
       // Should create lesson progress
       expect(mockSetDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
@@ -302,23 +286,6 @@ describe('useProgress', () => {
       expect(sm2Result.interval).toBe(6) // Second review should be 6 days
       expect(sm2Result.repetitions).toBe(2)
     })
-          easinessFactor: 2.5,
-          repetitions: 1,
-          interval: 1,
-        }),
-      })
-
-      vi.mocked(doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
-
-      const { result } = renderHook(() => useProgress())
-
-      const sm2Result = await result.current.completeLesson('test-lesson-1', 100, 5)
-
-      expect(sm2Result.interval).toBe(6) // Second review should be 6 days
-      expect(sm2Result.repetitions).toBe(2)
-    })
 
     it('resets repetitions for failed reviews', async () => {
       // Mock Firebase functions for failed review (quality < 3)
@@ -337,14 +304,6 @@ describe('useProgress', () => {
       vi.mocked(doc).mockImplementation(mockDoc)
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
       vi.mocked(getDoc).mockImplementation(mockGetDoc)
-
-      const { result } = renderHook(() => useProgress())
-
-      const sm2Result = await result.current.completeLesson('test-lesson-1', 100, 2) // Quality < 3
-
-      expect(sm2Result.repetitions).toBe(0)
-      expect(sm2Result.interval).toBe(1) // Reset to 1 day
-    })
 
       const { result } = renderHook(() => useProgress())
 
