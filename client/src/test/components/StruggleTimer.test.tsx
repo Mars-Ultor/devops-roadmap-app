@@ -213,7 +213,6 @@ describe('StruggleTimer', () => {
         onHintUnlocked={mockOnHintUnlocked}
         onStruggleLogged={mockOnStruggleLogged}
         currentTime={currentTime}
-        key="initial"
       />
     )
 
@@ -244,7 +243,6 @@ describe('StruggleTimer', () => {
         onHintUnlocked={mockOnHintUnlocked}
         onStruggleLogged={mockOnStruggleLogged}
         currentTime={currentTime}
-        key="after-submit"
       />
     )
 
@@ -257,7 +255,6 @@ describe('StruggleTimer', () => {
           onHintUnlocked={mockOnHintUnlocked}
           onStruggleLogged={mockOnStruggleLogged}
           currentTime={currentTime}
-          key="after-time-jump"
         />
       )
     })
