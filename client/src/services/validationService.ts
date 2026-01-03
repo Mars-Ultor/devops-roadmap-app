@@ -162,7 +162,7 @@ export class ValidationService {
           ? `✅ Syntax valid: ${filePath}`
           : `❌ Syntax error in ${filePath}: ${data.error}`
       };
-    } catch (error) {
+    } catch (_error) {
       console.warn('Syntax validation API not available, using mock data');
       return {
         success: true,

@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { useProgress } from '../../hooks/useProgress'
+import { doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, increment } from '../../lib/firebase'
+import { useAuthStore } from '../../store/authStore'
 
 // Mock Firebase
 vi.mock('../../lib/firebase', () => ({
@@ -35,10 +37,10 @@ describe('useProgress', () => {
       })
       const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(require('../../lib/firebase').getDoc).mockImplementation(mockGetDoc)
-      vi.mocked(require('../../lib/firebase').updateDoc).mockImplementation(mockUpdateDoc)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
 
       const { result } = renderHook(() => useProgress())
 
@@ -74,9 +76,9 @@ describe('useProgress', () => {
         }),
       })
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(require('../../lib/firebase').getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
 
       const { result } = renderHook(() => useProgress())
 
@@ -96,11 +98,11 @@ describe('useProgress', () => {
       const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
       const mockIncrement = vi.fn()
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(require('../../lib/firebase').getDoc).mockImplementation(mockGetDoc)
-      vi.mocked(require('../../lib/firebase').updateDoc).mockImplementation(mockUpdateDoc)
-      vi.mocked(require('../../lib/firebase').increment).mockImplementation(mockIncrement)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
+      vi.mocked(increment).mockImplementation(mockIncrement)
 
       const { result } = renderHook(() => useProgress())
 
@@ -114,8 +116,8 @@ describe('useProgress', () => {
     it('handles errors gracefully', async () => {
       const mockSetDoc = vi.fn().mockRejectedValue(new Error('Firebase error'))
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
 
       const { result } = renderHook(() => useProgress())
 
@@ -167,12 +169,9 @@ describe('useProgress', () => {
 
     it('awards XP only on first completion', async () => {
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
-      const mockGetDoc = vi.fn().mockResolvedValue({
-        exists: () => true, // Already completed
-      })
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
 
       const { result } = renderHook(() => useProgress())
 

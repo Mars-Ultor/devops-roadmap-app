@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import StruggleTimer, { type StruggleLog } from '../../components/StruggleTimer'
+import StruggleTimer from '../../components/StruggleTimer'
 
 describe('StruggleTimer', () => {
   const mockOnHintUnlocked = vi.fn()
