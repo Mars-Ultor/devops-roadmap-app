@@ -105,7 +105,7 @@ describe('ErrorBoundary', () => {
     );
 
     // Check main container styling
-    const errorContainer = screen.getByText('Oops! Something went wrong').closest('div');
+    const errorContainer = screen.getByText('Oops! Something went wrong').parentElement?.parentElement?.parentElement;
     expect(errorContainer).toHaveClass('min-h-screen', 'bg-slate-900', 'flex', 'items-center', 'justify-center');
   });
 
