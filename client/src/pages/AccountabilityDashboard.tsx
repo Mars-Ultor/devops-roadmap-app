@@ -3,7 +3,7 @@
  * Weekly commitments, partners, and public goals
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Target, Users, TrendingUp, CheckCircle,
@@ -36,14 +36,14 @@ export default function AccountabilityDashboard() {
   const [checkInReflection, setCheckInReflection] = useState('');
   const [checkInFocus, setCheckInFocus] = useState('');
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     const accountabilityStats = await getAccountabilityStats();
     setStats(accountabilityStats);
-  };
+  }, [getAccountabilityStats]);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   const handleCreateCommitments = async () => {
     try {

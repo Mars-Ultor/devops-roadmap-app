@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
@@ -25,11 +25,7 @@ export default function Notes() {
   const [selectedTag, setSelectedTag] = useState<string>('');
   const [allTags, setAllTags] = useState<string[]>([]);
 
-  useEffect(() => {
-    loadNotes();
-  }, [user]);
-
-  const loadNotes = async () => {
+  const loadNotes = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -67,7 +63,11 @@ export default function Notes() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    loadNotes();
+  }, [loadNotes]);
 
   const deleteNote = async (noteId: string) => {
     if (!confirm('Are you sure you want to delete this note?')) return;

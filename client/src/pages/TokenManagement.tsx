@@ -3,7 +3,7 @@
  * View token allocation, usage stats, and history
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw, TrendingDown, Clock, AlertTriangle, ArrowLeft, Trophy, Target } from 'lucide-react';
 import { useResetTokens } from '../hooks/useResetTokens';
@@ -16,14 +16,14 @@ export default function TokenManagement() {
   const [stats, setStats] = useState<TokenUsageStats | null>(null);
   const { getUsageStats } = useResetTokens();
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     const usageStats = await getUsageStats();
     setStats(usageStats);
-  };
+  }, [getUsageStats]);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   const formatDate = (date: Date): string => {
     return new Intl.DateTimeFormat('en-US', {

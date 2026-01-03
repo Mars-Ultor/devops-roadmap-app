@@ -3,7 +3,7 @@
  * Real-time performance tracking and learning path optimization
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -32,12 +32,7 @@ export default function PerformanceDashboard({
   const [learningPath, setLearningPath] = useState<LearningPath | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadPerformanceData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, context]);
-
-  const loadPerformanceData = async () => {
+  const loadPerformanceData = useCallback(async () => {
     setLoading(true);
     try {
       // Get performance analytics
@@ -52,7 +47,11 @@ export default function PerformanceDashboard({
     } finally {
       setLoading(false);
     }
-  };
+  }, [context]);
+
+  useEffect(() => {
+    loadPerformanceData();
+  }, [loadPerformanceData]);
 
   const generateLearningPath = async (
     context: CoachContext,
