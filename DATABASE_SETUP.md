@@ -183,25 +183,24 @@ npx prisma db push --force-reset
 - Check `server/backups/` directory
 - Restore from latest backup file
 
-## Schema Management
+## Schema Configuration
 
-### Adding New Models
+**Important**: The Prisma schema is configured for SQLite (development). For production deployment:
 
-1. **Edit `server/prisma/schema.prisma`**
-2. **Generate client**: `npm run prisma:generate`
-3. **Push to database**: `npx prisma db push`
+1. **Change provider in `server/prisma/schema.prisma`**:
+   ```prisma
+   datasource db {
+     provider = "postgresql"  // Change from "sqlite"
+     url      = env("DATABASE_URL")
+   }
+   ```
 
-### Database Migrations
+2. **Regenerate Prisma client**:
+   ```bash
+   npm run prisma:generate
+   ```
 
-For production schema changes:
-
-```bash
-# Create migration
-npx prisma migrate dev --name your-migration-name
-
-# Apply migration
-npx prisma migrate deploy
-```
+The deployment script (`npm run db:deploy`) handles this automatically.
 
 ## Security Best Practices
 

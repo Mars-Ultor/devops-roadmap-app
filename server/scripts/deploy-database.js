@@ -81,11 +81,13 @@ class DatabaseDeployer {
       throw new Error('DATABASE_URL environment variable is required');
     }
 
-    // Validate database URL format
+    // Validate database URL format based on environment
     if (this.isProduction) {
       if (!this.databaseUrl.startsWith('postgresql://')) {
         throw new Error('Production requires PostgreSQL DATABASE_URL');
       }
+      // Update schema provider for production
+      await this.updateSchemaForProduction();
     } else {
       if (!this.databaseUrl.startsWith('file:')) {
         throw new Error('Development requires SQLite DATABASE_URL (file:...)');
@@ -125,13 +127,15 @@ class DatabaseDeployer {
     }
   }
 
-  async checkPostgresData() {
-    try {
-      // Simple check - try to count users table
-      execSync('npx prisma db execute --file scripts/check-data.sql', { stdio: 'pipe' });
-      return true;
-    } catch {
-      return false;
+  async updateSchemaForProduction() {
+    const schemaPath = path.join(__dirname, '..', 'prisma', 'schema.prisma');
+    let schemaContent = fs.readFileSync(schemaPath, 'utf8');
+
+    // Change provider from sqlite to postgresql
+    if (schemaContent.includes('provider = "sqlite"')) {
+      schemaContent = schemaContent.replace('provider = "sqlite"', 'provider = "postgresql"');
+      fs.writeFileSync(schemaPath, schemaContent);
+      this.log('📝 Updated Prisma schema provider to PostgreSQL for production');
     }
   }
 
