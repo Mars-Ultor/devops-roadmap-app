@@ -36,19 +36,27 @@ The DevOps Roadmap application uses a **dual-database strategy**:
    npm run dev
    ```
 
-### Production (PostgreSQL)
+## Automated Production Deployment
 
-1. **Set environment variables**:
-   ```bash
-   export NODE_ENV=production
-   export DATABASE_URL="postgresql://user:password@host:5432/dbname"
-   ```
+The `db:deploy` script automatically handles the complete database setup:
 
-2. **Run automated deployment**:
-   ```bash
-   cd server
-   npm run db:deploy
-   ```
+```bash
+cd server
+npm run db:deploy
+```
+
+**What it does:**
+- ✅ Detects deployment type (fresh install/migration/update)
+- ✅ Updates Prisma schema for production (SQLite → PostgreSQL)
+- ✅ Creates backups before migration
+- ✅ Generates Prisma client
+- ✅ Pushes database schema
+- ✅ Migrates data with integrity checks
+- ✅ Runs health checks
+- ✅ Generates deployment reports
+- ✅ Automatic rollback on failure
+
+**Deployment logs and backups** are stored in `server/backups/`.
 
 ## Environment Variables
 
