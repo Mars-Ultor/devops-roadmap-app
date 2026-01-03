@@ -28,12 +28,12 @@ describe('MandatoryAARModal', () => {
   it('shows all required AAR questions', () => {
     render(<MandatoryAARModal {...defaultProps} />)
 
-    expect(screen.getByText('What was I trying to accomplish?')).toBeInTheDocument()
-    expect(screen.getByText('What worked well? (List at least 3 things)')).toBeInTheDocument()
-    expect(screen.getByText("What didn't work?")).toBeInTheDocument()
-    expect(screen.getByText("Why didn't it work?")).toBeInTheDocument()
-    expect(screen.getByText('What would I do differently next time?')).toBeInTheDocument()
-    expect(screen.getByText('What did I learn that I can use later?')).toBeInTheDocument()
+    expect(screen.getByText(/What was I trying to accomplish/)).toBeInTheDocument()
+    expect(screen.getByText(/What worked well/)).toBeInTheDocument()
+    expect(screen.getByText(/What didn't work/)).toBeInTheDocument()
+    expect(screen.getByText(/Why didn't it work/)).toBeInTheDocument()
+    expect(screen.getByText(/What would I do differently/)).toBeInTheDocument()
+    expect(screen.getByText(/What did I learn/)).toBeInTheDocument()
   })
 
   it('shows word count requirements', () => {

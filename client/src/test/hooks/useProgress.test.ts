@@ -2,6 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useProgress } from '../../hooks/useProgress'
 import { doc, setDoc, getDoc, updateDoc, increment } from 'firebase/firestore'
+import { useAuthStore } from '../../store/authStore'
+
+vi.mock('../../store/authStore', () => ({
+  useAuthStore: vi.fn(() => ({
+    user: { uid: 'test-user-123' },
+  })),
+}))
 
 describe('useProgress', () => {
   beforeEach(() => {
