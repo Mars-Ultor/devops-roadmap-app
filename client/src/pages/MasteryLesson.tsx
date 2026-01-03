@@ -158,6 +158,15 @@ export default function MasteryLesson() {
     fetchLessonData();
   }, [lessonId]);
 
+  // Early return for invalid parameters (after all hooks)
+  if (!isValidParams) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">Invalid lesson or level</div>
+      </div>
+    );
+  }
+
   const getLevelConfig = (level: MasteryLevel) => {
     switch (level) {
       case 'crawl':

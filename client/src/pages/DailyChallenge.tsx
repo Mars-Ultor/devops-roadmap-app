@@ -100,7 +100,7 @@ export default function DailyChallenge() {
     setCurrentCommand('');
   };
 
-  const useHint = (hintId: string) => {
+  const handleUseHint = (hintId: string) => {
     if (!attempt) return;
 
     const penalty = challengeService.useHint(attempt.attemptId, hintId);
@@ -405,7 +405,7 @@ export default function DailyChallenge() {
                       <div key={hint.id} className="bg-slate-700 p-3 rounded border border-slate-600">
                         <p className="text-sm text-gray-300 mb-2">{hint.content}</p>
                         <button
-                          onClick={() => useHint(hint.id)}
+                          onClick={() => handleUseHint(hint.id)}
                           className="text-xs bg-yellow-600 hover:bg-yellow-500 px-2 py-1 rounded transition-colors"
                         >
                           Use Hint (-{Math.round(hint.penalty * 10)}% score)
