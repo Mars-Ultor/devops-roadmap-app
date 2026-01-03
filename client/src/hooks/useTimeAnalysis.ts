@@ -111,6 +111,43 @@ export function useTimeAnalysis() {
     }
   }, [user, analyzeStudyTimes]);
 
+  const formatHour = (hour: number): string => {
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}${period}`;
+  };
+
+  const findPeakWindow = (hours: number[]): number[] => {
+    if (hours.length === 0) return [];
+    if (hours.length === 1) return hours;
+
+    // Find longest consecutive sequence
+    let longestSequence: number[] = [hours[0]];
+    let currentSequence: number[] = [hours[0]];
+
+    for (let i = 1; i < hours.length; i++) {
+      if (hours[i] === hours[i - 1] + 1) {
+        currentSequence.push(hours[i]);
+        if (currentSequence.length > longestSequence.length) {
+          longestSequence = [...currentSequence];
+        }
+      } else {
+        currentSequence = [hours[i]];
+      }
+    }
+
+    return longestSequence;
+  };
+
+  const formatTimeWindow = useCallback((hours: number[]): string => {
+    if (hours.length === 0) return 'Not enough data';
+    if (hours.length === 1) return formatHour(hours[0]);
+    
+    const start = formatHour(hours[0]);
+    const end = formatHour(hours[hours.length - 1] + 1); // End is exclusive
+    return `${start} - ${end}`;
+  }, []);
+
   const generateRecommendation = useCallback((hourlyData: HourlyPerformance[]): TimeRecommendation => {
     // Filter hours with sufficient data (at least 3 sessions)
     const significantHours = hourlyData.filter(h => h.totalSessions >= 3);
@@ -160,7 +197,7 @@ export function useTimeAnalysis() {
       recommendation,
       confidenceLevel
     };
-  }, []);
+  }, [formatTimeWindow]);
 
   const findPeakWindow = (hours: number[]): number[] => {
     if (hours.length === 0) return [];
