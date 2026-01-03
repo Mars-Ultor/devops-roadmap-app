@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useProgress } from '../../hooks/useProgress'
-import { doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, increment } from '../../lib/firebase'
+import { doc, setDoc, getDoc, updateDoc, increment } from '../../lib/firebase'
 import { useAuthStore } from '../../store/authStore'
 
 // Mock Firebase

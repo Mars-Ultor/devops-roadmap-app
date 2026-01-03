@@ -165,7 +165,7 @@ export class AARService {
   /**
    * Get AAR statistics for a user
    */
-  async getUserAARStats(userId: string): Promise<AARStats> {
+  async getUserAARStats(): Promise<AARStats> {
     try {
       const response = await axios.get(`${API_BASE_URL}/aar/stats/overview`, {
         headers: {
