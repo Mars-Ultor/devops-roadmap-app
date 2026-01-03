@@ -118,6 +118,7 @@ export default function HintSystem({
         {/* Hint Progress Bar */}
         <div className="w-full bg-slate-700 rounded-full h-2 mb-4">
           <div
+            data-testid="hint-progress-bar"
             className="bg-yellow-500 h-2 rounded-full transition-all duration-300"
             style={{ width: `${(viewedHints.length / hints.length) * 100}%` }}
           />
