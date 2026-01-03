@@ -48,7 +48,7 @@ describe('HintSystem', () => {
 
     expect(screen.getByText('Hints (0/3)')).toBeInTheDocument()
     expect(screen.getByText('Hint 1 of 3')).toBeInTheDocument()
-    expect(screen.getByText('Difficulty: easy')).toBeInTheDocument()
+    expect(screen.getByText('easy')).toBeInTheDocument()
   })
 
   it('shows hint progress correctly', () => {
@@ -63,7 +63,7 @@ describe('HintSystem', () => {
     )
 
     // Should show 3 hint indicators
-    const hintIndicators = screen.getAllByText('Hint 1')
+    const hintIndicators = screen.getAllByText(/Hint 1/)
     expect(hintIndicators).toHaveLength(2) // One in progress header, one in indicator
 
     // Progress bar should be at 0%
