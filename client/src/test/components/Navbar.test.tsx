@@ -155,9 +155,13 @@ describe('Navbar', () => {
       const menuButton = screen.getByTestId('menu-icon').closest('button');
       fireEvent.click(menuButton!);
 
-      // Find a mobile menu link (they should be visible when menu is open)
-      const trainingLink = screen.getByText('Training');
-      fireEvent.click(trainingLink);
+      // Find the mobile menu training link (should be the one in the mobile menu section)
+      const mobileMenuTrainingLink = screen.getAllByText('Training').find(link => 
+        link.closest('a')?.parentElement?.className.includes('px-2')
+      );
+      
+      expect(mobileMenuTrainingLink).toBeInTheDocument();
+      fireEvent.click(mobileMenuTrainingLink!);
 
       // Menu should close after clicking link
       expect(screen.queryByTestId('x-icon')).not.toBeInTheDocument();
