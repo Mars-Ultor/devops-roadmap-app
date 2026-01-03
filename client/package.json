@@ -8,7 +8,7 @@
     "build": "vite build",
     "build:analyze": "ANALYZE=true vite build",
     "lint": "eslint .",
-    "lint:complexity": "eslint . --format=compact | grep -E '(complexity|cognitive-complexity|max-lines|max-params|max-depth)' || echo 'No complexity issues found'",
+    "lint:complexity": "eslint . --format=compact --no-error-on-unmatched-pattern 2>nul | findstr /R \"complexity cognitive-complexity max-lines max-params max-depth\" || echo No complexity issues found",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
