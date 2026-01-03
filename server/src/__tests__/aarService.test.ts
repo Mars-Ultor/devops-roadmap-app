@@ -11,7 +11,7 @@ describe('AARService', () => {
   describe('validateAARForm', () => {
     it('should validate a complete and valid AAR form', async () => {
       const validFormData: AARFormData = {
-        whatWasAccomplished: 'I successfully completed the Docker containerization task by creating a multi-stage Dockerfile that optimized the image size and improved build performance.',
+        whatWasAccomplished: 'I successfully completed the Docker containerization task by creating a multi-stage Dockerfile that optimized the image size and improved build performance. This involved understanding the different stages of the build process, selecting appropriate base images, and ensuring that the final image contained only the necessary runtime dependencies. The multi-stage approach allowed me to separate the build environment from the runtime environment, resulting in a significantly smaller final image size. I also learned how to use build arguments and environment variables effectively within the Dockerfile. The task required careful consideration of security best practices, such as running the application as a non-root user and minimizing the attack surface by removing unnecessary packages from the final image. Overall, this hands-on experience reinforced my understanding of containerization principles and their importance in modern software deployment pipelines.',
         whatWorkedWell: [
           'Following the step-by-step guide helped me understand each command',
           'The examples were clear and relevant to real-world scenarios',
@@ -21,9 +21,9 @@ describe('AARService', () => {
           'Initial confusion with volume mounting syntax',
           'Network configuration took longer than expected'
         ],
-        whyDidNotWork: 'The volume mounting syntax was not immediately clear from the documentation, and the network configuration required understanding Docker networking concepts that were not covered in the prerequisite lessons.',
-        whatWouldIDoDifferently: 'I would review Docker networking fundamentals before starting the containerization task, and I would test volume mounting with simpler examples first.',
-        whatDidILearn: 'I learned the importance of multi-stage builds for optimizing container images, how to properly configure Docker networks, and the best practices for volume management in containerized applications.'
+        whyDidNotWork: 'The volume mounting syntax was not immediately clear from the documentation, and the network configuration required understanding Docker networking concepts that were not covered in the prerequisite lessons. Additionally, the error messages from Docker were not always descriptive enough to quickly identify the root cause of configuration issues.',
+        whatWouldIDoDifferently: 'I would review Docker networking fundamentals before starting the containerization task, and I would test volume mounting with simpler examples first. Also, I would spend more time reading through Docker documentation and experimenting with basic commands before attempting complex multi-stage builds.',
+        whatDidILearn: 'I learned the importance of multi-stage builds for optimizing container images, how to properly configure Docker networks, and the best practices for volume management in containerized applications. I also gained experience with security considerations in containerization and the benefits of using smaller base images.'
       };
 
       const result: AARValidationResult = await aarService.validateAARForm(validFormData);
@@ -97,7 +97,7 @@ describe('AARService', () => {
       expect(service['countWords']('Hello world')).toBe(2);
       expect(service['countWords']('Single')).toBe(1);
       expect(service['countWords']('')).toBe(0);
-      expect(service['countWords']('  Multiple   spaces   between   words  ')).toBe(5);
+      expect(service['countWords']('  Multiple   spaces   between   words  ')).toBe(4);
       expect(service['countWords']('Word-with-hyphens')).toBe(1);
       expect(service['countWords']('Word.with.periods')).toBe(1);
     });
