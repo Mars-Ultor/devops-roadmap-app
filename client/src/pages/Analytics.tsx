@@ -123,7 +123,7 @@ export default function Analytics() {
       default:
         return new Date(0); // Beginning of time
     }
-  }, [timeRange]);
+  }, []);
 
   const loadAnalytics = useCallback(async () => {
     if (!user?.uid) return;
