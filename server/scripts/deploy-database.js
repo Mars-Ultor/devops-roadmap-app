@@ -254,5 +254,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     });
 }
 
-export { DatabaseDeployer };</content>
+export { DatabaseDeployer };
 <parameter name="filePath">c:\Users\ayode\Desktop\devops-roadmap-app\server\scripts\deploy-database.js
