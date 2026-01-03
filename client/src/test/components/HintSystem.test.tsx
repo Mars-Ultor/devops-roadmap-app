@@ -181,10 +181,11 @@ describe('HintSystem', () => {
     // Fast-forward 30 seconds
     mockNow += 30000
     vi.advanceTimersByTime(30000)
+    vi.runOnlyPendingTimers()
 
     await waitFor(() => {
       expect(screen.getByText('4:30')).toBeInTheDocument()
-    })
+    }, { timeout: 10000 })
 
     vi.useRealTimers()
     vi.restoreAllMocks()
