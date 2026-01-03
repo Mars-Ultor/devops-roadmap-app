@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor, act } from '@testing-library/react'
+import { render, screen, waitFor, act, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import StruggleTimer from '../../components/StruggleTimer'
 
@@ -220,44 +220,39 @@ describe('StruggleTimer', () => {
     const docButton = screen.getByRole('button', { name: /document your struggle/i })
     await user.click(docButton)
 
+    // Fill form using fireEvent for speed
     const attemptInputs = screen.getAllByPlaceholderText(/attempt 1/i)
-    await user.type(attemptInputs[0], 'Attempt 1')
+    fireEvent.change(attemptInputs[0], { target: { value: 'Attempt 1' } })
+    
     const attemptInputs2 = screen.getAllByPlaceholderText(/attempt 2/i)
-    await user.type(attemptInputs2[0], 'Attempt 2')
+    fireEvent.change(attemptInputs2[0], { target: { value: 'Attempt 2' } })
+    
     const attemptInputs3 = screen.getAllByPlaceholderText(/attempt 3/i)
-    await user.type(attemptInputs3[0], 'Attempt 3')
+    fireEvent.change(attemptInputs3[0], { target: { value: 'Attempt 3' } })
 
     const stuckTextarea = screen.getByPlaceholderText(/describe the exact error/i)
-    await user.type(stuckTextarea, 'Stuck point description with enough characters')
+    fireEvent.change(stuckTextarea, { target: { value: 'Stuck point description with enough characters to meet the minimum requirement' } })
 
     const hypothesisTextarea = screen.getByPlaceholderText(/your best guess/i)
-    await user.type(hypothesisTextarea, 'Hypothesis with enough characters to pass validation')
+    fireEvent.change(hypothesisTextarea, { target: { value: 'Hypothesis with enough characters to pass validation and meet requirements' } })
 
     const submitButton = screen.getByRole('button', { name: /submit documentation/i })
     await user.click(submitButton)
 
-    // Rerender after form submission to ensure strugglesLogged state is updated
-    rerender(
-      <StruggleTimer
-        startTime={startTime}
-        onHintUnlocked={mockOnHintUnlocked}
-        onStruggleLogged={mockOnStruggleLogged}
-        currentTime={currentTime}
-      />
-    )
-
     // Fast-forward past 30 minutes
     currentTime += 30 * 60 * 1000 + 1000 // Add extra second to ensure timer expires
     
-    // Rerender with expired timer
-    rerender(
-      <StruggleTimer
-        startTime={startTime}
-        onHintUnlocked={mockOnHintUnlocked}
-        onStruggleLogged={mockOnStruggleLogged}
-        currentTime={currentTime}
-      />
-    )
+    // Rerender with expired timer - wrap in act to ensure state updates
+    await act(async () => {
+      rerender(
+        <StruggleTimer
+          startTime={startTime}
+          onHintUnlocked={mockOnHintUnlocked}
+          onStruggleLogged={mockOnStruggleLogged}
+          currentTime={currentTime}
+        />
+      )
+    })
 
     // Should now show hints available
     expect(screen.getByText('Hints Available')).toBeInTheDocument()

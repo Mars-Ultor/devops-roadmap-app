@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import MandatoryAARModal from '../../components/MandatoryAARModal'
 
@@ -216,8 +216,7 @@ describe('MandatoryAARModal', () => {
     expect(submitButton).toBeDisabled()
   })
 
-  it('enables submit button when all questions meet requirements', async () => {
-    const user = userEvent.setup({ delay: null })
+  it('enables submit button when all questions meet requirements', () => {
     render(<MandatoryAARModal {...defaultProps} />)
 
     const textareas = screen.getAllByRole('textbox')
@@ -234,7 +233,7 @@ describe('MandatoryAARModal', () => {
     ]
 
     for (let i = 0; i < textareas.length; i++) {
-      await user.type(textareas[i], sufficientContent[i])
+      fireEvent.change(textareas[i], { target: { value: sufficientContent[i] } })
     }
 
     // Button should be enabled immediately after filling all fields
