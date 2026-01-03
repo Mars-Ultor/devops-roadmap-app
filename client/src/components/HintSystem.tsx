@@ -241,7 +241,7 @@ export default function HintSystem({
                 You've viewed all available hints. The full solution will unlock after 90 minutes total lab time.
               </p>
               <p className="text-yellow-400 text-sm font-medium">
-                Time remaining: {formatTime(Math.max(0, SOLUTION_UNLOCK_TIME - (Date.now() - labStartTime)))}
+                Time remaining: {formatTime(Math.max(0, SOLUTION_UNLOCK_TIME - ((currentTime || Date.now()) - labStartTime)))}
               </p>
             </div>
           </div>

@@ -158,19 +158,17 @@ describe('HintSystem', () => {
   })
 
   it('updates cooldown timer', async () => {
-    vi.useFakeTimers()
-    let mockNow = Date.now()
-    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
-
     const labStartTime = Date.now()
+    let currentTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
-    render(
+    const { rerender } = render(
       <HintSystem
         hints={mockHints}
         hintsUnlocked={true}
         labStartTime={labStartTime}
         onHintViewed={mockOnHintViewed}
+        currentTime={currentTime}
       />
     )
 
@@ -179,32 +177,34 @@ describe('HintSystem', () => {
     await user.click(viewHintButton)
 
     // Fast-forward 30 seconds
-    mockNow += 30000
-    vi.advanceTimersByTime(30000)
-    vi.runOnlyPendingTimers()
-
-    await waitFor(() => {
-      expect(screen.getByText('4:30')).toBeInTheDocument()
-    }, { timeout: 10000 })
-
-    vi.useRealTimers()
-    vi.restoreAllMocks()
-  })
-
-  it('allows next hint after cooldown expires', async () => {
-    vi.useFakeTimers()
-    let mockNow = Date.now()
-    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
-
-    const labStartTime = Date.now()
-    const user = userEvent.setup({ delay: null })
-
-    render(
+    currentTime += 30000
+    rerender(
       <HintSystem
         hints={mockHints}
         hintsUnlocked={true}
         labStartTime={labStartTime}
         onHintViewed={mockOnHintViewed}
+        currentTime={currentTime}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('4:30')).toBeInTheDocument()
+    }, { timeout: 10000 })
+  })
+
+  it('allows next hint after cooldown expires', async () => {
+    const labStartTime = Date.now()
+    let currentTime = Date.now()
+    const user = userEvent.setup({ delay: null })
+
+    const { rerender } = render(
+      <HintSystem
+        hints={mockHints}
+        hintsUnlocked={true}
+        labStartTime={labStartTime}
+        onHintViewed={mockOnHintViewed}
+        currentTime={currentTime}
       />
     )
 
@@ -213,30 +213,34 @@ describe('HintSystem', () => {
     await user.click(viewHintButton)
 
     // Fast-forward past cooldown
-    mockNow += 5 * 60 * 1000 + 1000
-    vi.advanceTimersByTime(5 * 60 * 1000 + 1000)
-
-    await waitFor(() => {
-      const viewSecondHintButton = screen.getByRole('button', { name: /view hint 2/i })
-      expect(viewSecondHintButton).toBeEnabled()
-    })
-
-    vi.useRealTimers()
-    vi.restoreAllMocks()
-  })
-
-  it('shows solution available after 90 minutes', async () => {
-    vi.useFakeTimers()
-    let mockNow = Date.now()
-    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
-
-    const labStartTime = Date.now()
-    render(
+    currentTime += 5 * 60 * 1000 + 1000
+    rerender(
       <HintSystem
         hints={mockHints}
         hintsUnlocked={true}
         labStartTime={labStartTime}
         onHintViewed={mockOnHintViewed}
+        currentTime={currentTime}
+      />
+    )
+
+    await waitFor(() => {
+      const viewSecondHintButton = screen.getByRole('button', { name: /view hint 2/i })
+      expect(viewSecondHintButton).toBeEnabled()
+    })
+  })
+
+  it('shows solution available after 90 minutes', async () => {
+    const labStartTime = Date.now()
+    let currentTime = Date.now()
+
+    const { rerender } = render(
+      <HintSystem
+        hints={mockHints}
+        hintsUnlocked={true}
+        labStartTime={labStartTime}
+        onHintViewed={mockOnHintViewed}
+        currentTime={currentTime}
       />
     )
 
@@ -244,32 +248,35 @@ describe('HintSystem', () => {
     expect(screen.queryByText('Solution Available')).not.toBeInTheDocument()
 
     // Fast-forward 90 minutes
-    mockNow += 90 * 60 * 1000
-    vi.advanceTimersByTime(90 * 60 * 1000)
-
-    // Wait for solution to become available
-    await waitFor(() => {
-      expect(screen.getByText('Solution Available')).toBeInTheDocument()
-    }, { timeout: 2000 })
-
-    vi.useRealTimers()
-    vi.restoreAllMocks()
-  })
-
-  it('shows all hints used message when no more hints available', async () => {
-    vi.useFakeTimers()
-    let mockNow = Date.now()
-    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
-
-    const labStartTime = Date.now()
-    const user = userEvent.setup({ delay: null })
-
-    render(
+    currentTime += 90 * 60 * 1000
+    rerender(
       <HintSystem
         hints={mockHints}
         hintsUnlocked={true}
         labStartTime={labStartTime}
         onHintViewed={mockOnHintViewed}
+        currentTime={currentTime}
+      />
+    )
+
+    // Wait for solution to become available
+    await waitFor(() => {
+      expect(screen.getByText('Solution Available')).toBeInTheDocument()
+    }, { timeout: 2000 })
+  })
+
+  it('shows all hints used message when no more hints available', async () => {
+    const labStartTime = Date.now()
+    let currentTime = Date.now()
+    const user = userEvent.setup({ delay: null })
+
+    const { rerender } = render(
+      <HintSystem
+        hints={mockHints}
+        hintsUnlocked={true}
+        labStartTime={labStartTime}
+        onHintViewed={mockOnHintViewed}
+        currentTime={currentTime}
       />
     )
 
@@ -280,8 +287,16 @@ describe('HintSystem', () => {
 
       if (i < 3) {
         // Wait for cooldown to expire
-        mockNow += 5 * 60 * 1000 + 1000
-        vi.advanceTimersByTime(5 * 60 * 1000 + 1000)
+        currentTime += 5 * 60 * 1000 + 1000
+        rerender(
+          <HintSystem
+            hints={mockHints}
+            hintsUnlocked={true}
+            labStartTime={labStartTime}
+            onHintViewed={mockOnHintViewed}
+            currentTime={currentTime}
+          />
+        )
         await waitFor(() => {
           expect(screen.getByRole('button', { name: new RegExp(`view hint ${i + 1}`, 'i') })).toBeEnabled()
         })
@@ -291,25 +306,20 @@ describe('HintSystem', () => {
     // Should show all hints used
     expect(screen.getByText('All Hints Used')).toBeInTheDocument()
     expect(screen.getByText(/all available hints\. the full solution will unlock/i)).toBeInTheDocument()
-
-    vi.useRealTimers()
-    vi.restoreAllMocks()
   })
 
   it('shows remaining time until solution when all hints used', async () => {
-    vi.useFakeTimers()
-    let mockNow = Date.now()
-    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
-
     const labStartTime = Date.now()
+    let currentTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
-    render(
+    const { rerender } = render(
       <HintSystem
         hints={mockHints}
         hintsUnlocked={true}
         labStartTime={labStartTime}
         onHintViewed={mockOnHintViewed}
+        currentTime={currentTime}
       />
     )
 
@@ -319,33 +329,36 @@ describe('HintSystem', () => {
       await user.click(viewButton)
 
       if (i < 3) {
-        mockNow += 5 * 60 * 1000 + 1000
-        vi.advanceTimersByTime(5 * 60 * 1000 + 1000)
+        currentTime += 5 * 60 * 1000 + 1000
+        rerender(
+          <HintSystem
+            hints={mockHints}
+            hintsUnlocked={true}
+            labStartTime={labStartTime}
+            onHintViewed={mockOnHintViewed}
+            currentTime={currentTime}
+          />
+        )
       }
     }
 
     // Should show time remaining until solution
     expect(screen.getByText(/time remaining:/i)).toBeInTheDocument()
     expect(screen.getByText('90:00')).toBeInTheDocument()
-
-    vi.useRealTimers()
-    vi.restoreAllMocks()
   })
 
   it('updates solution countdown timer', async () => {
-    vi.useFakeTimers()
-    let mockNow = Date.now()
-    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
-
     const labStartTime = Date.now()
+    let currentTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
-    render(
+    const { rerender } = render(
       <HintSystem
         hints={mockHints}
         hintsUnlocked={true}
         labStartTime={labStartTime}
         onHintViewed={mockOnHintViewed}
+        currentTime={currentTime}
       />
     )
 
@@ -355,21 +368,34 @@ describe('HintSystem', () => {
       await user.click(viewButton)
 
       if (i < 3) {
-        mockNow += 5 * 60 * 1000 + 1000
-        vi.advanceTimersByTime(5 * 60 * 1000 + 1000)
+        currentTime += 5 * 60 * 1000 + 1000
+        rerender(
+          <HintSystem
+            hints={mockHints}
+            hintsUnlocked={true}
+            labStartTime={labStartTime}
+            onHintViewed={mockOnHintViewed}
+            currentTime={currentTime}
+          />
+        )
       }
     }
 
     // Fast-forward 30 minutes
-    mockNow += 30 * 60 * 1000
-    vi.advanceTimersByTime(30 * 60 * 1000)
+    currentTime += 30 * 60 * 1000
+    rerender(
+      <HintSystem
+        hints={mockHints}
+        hintsUnlocked={true}
+        labStartTime={labStartTime}
+        onHintViewed={mockOnHintViewed}
+        currentTime={currentTime}
+      />
+    )
 
     await waitFor(() => {
       expect(screen.getByText('60:00')).toBeInTheDocument()
     })
-
-    vi.useRealTimers()
-    vi.restoreAllMocks()
   })
 
   it('shows correct difficulty indicators', () => {
@@ -387,10 +413,6 @@ describe('HintSystem', () => {
   })
 
   it('shows hint cooldown message', async () => {
-    vi.useFakeTimers()
-    let mockNow = Date.now()
-    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
-
     const labStartTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -409,8 +431,5 @@ describe('HintSystem', () => {
 
     // Should show cooldown message
     expect(screen.getByText(/next hint will be available in 5 minutes/i)).toBeInTheDocument()
-
-    vi.useRealTimers()
-    vi.restoreAllMocks()
   })
 })
