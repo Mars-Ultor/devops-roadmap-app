@@ -1,52 +1,213 @@
-# Database Migration: SQLite to PostgreSQL
+# Database Setup & Migration Guide
 
-This guide covers migrating the DevOps Roadmap application from SQLite (development) to PostgreSQL (production).
+This guide covers database configuration for the DevOps Roadmap application with **SQLite for development** and **PostgreSQL for production**.
 
-## Overview
+## Database Strategy
 
-The application currently uses SQLite for development but PostgreSQL for production deployments. This migration ensures data consistency when moving from development to production.
+- **Development**: SQLite (file-based, easy setup, no external dependencies)
+- **Production**: PostgreSQL (scalable, concurrent, robust)
 
-## Prerequisites
+## Environment Configuration
 
-- Node.js 18+
-- Access to both SQLite and PostgreSQL databases
-- Existing SQLite database with data (optional)
+### Development Setup
 
-## Migration Steps
+1. **Server `.env`** (SQLite):
+   ```env
+   DATABASE_URL="file:./prisma/dev.db"
+   ```
 
-### 1. Backup SQLite Database
+2. **ML Service `.env`** (SQLite):
+   ```env
+   DATABASE_URL="file:../server/prisma/dev.db"
+   ```
 
-Before migration, create a backup of your SQLite database:
+### Production Setup
 
-```bash
-npm run db:backup
-```
+1. **Server `.env`** (PostgreSQL):
+   ```env
+   DATABASE_URL="postgresql://username:password@host:5432/database"
+   ```
 
-This creates a timestamped backup file in the server directory.
+2. **ML Service `.env`** (PostgreSQL):
+   ```env
+   DATABASE_URL="postgresql://username:password@host:5432/database"
+   ```
 
-### 2. Set Environment Variables
+## Quick Start
 
-Ensure your `.env` file has the correct PostgreSQL connection string:
-
-```env
-DATABASE_URL="postgresql://username:password@host:5432/database"
-```
-
-### 3. Generate Prisma Client for PostgreSQL
-
-Update the Prisma schema and generate the client:
-
-```bash
-npx prisma generate
-```
-
-### 4. Run Migration
-
-Execute the migration script:
+### Development
 
 ```bash
-npm run db:migrate
+# Install dependencies
+npm install
+
+# Generate Prisma client
+npm run prisma:generate
+
+# Push schema to SQLite
+npx prisma db push
+
+# Start development server
+npm run dev
 ```
+
+### Production Deployment
+
+```bash
+# Set production environment
+export NODE_ENV=production
+export DATABASE_URL="postgresql://..."
+
+# Run automated deployment
+npm run db:deploy
+```
+
+## Migration Scripts
+
+### Automated Deployment (`db:deploy`)
+
+The `deploy-database.js` script automatically handles:
+
+- **Fresh Install**: Creates new PostgreSQL database with schema
+- **Migration**: Migrates data from SQLite to PostgreSQL
+- **Update**: Updates existing PostgreSQL schema
+- **Rollback**: Automatic rollback on failure
+
+```bash
+npm run db:deploy
+```
+
+### Manual Migration Steps
+
+If you need manual control:
+
+1. **Backup SQLite**:
+   ```bash
+   npm run db:backup
+   ```
+
+2. **Migrate Data**:
+   ```bash
+   npm run db:migrate
+   ```
+
+3. **Verify Migration**:
+   ```bash
+   npm run db:verify
+   ```
+
+## Deployment Platforms
+
+### Render
+
+1. Add PostgreSQL database service
+2. Set `DATABASE_URL` environment variable
+3. Add deployment command: `npm run db:deploy`
+
+### Railway
+
+1. Add PostgreSQL plugin
+2. Set `DATABASE_URL` environment variable
+3. Use build command: `npm run build`
+4. Use start command: `npm run db:deploy && npm start`
+
+### Docker
+
+```dockerfile
+# Multi-stage build with database setup
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+
+FROM node:18-alpine AS runner
+WORKDIR /app
+COPY --from=builder /app/node_modules ./node_modules
+COPY . .
+
+# Run database deployment
+RUN npm run db:deploy
+
+EXPOSE 3001
+CMD ["npm", "start"]
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Connection Refused**
+- Verify `DATABASE_URL` format
+- Check PostgreSQL server status
+- Confirm network connectivity
+
+**Migration Failures**
+- Ensure SQLite database exists
+- Check PostgreSQL permissions
+- Review migration logs
+
+**Schema Conflicts**
+- Backup data before schema changes
+- Use `prisma db push --force-reset` for development
+- Create proper migrations for production
+
+### Recovery
+
+**Rollback Migration**:
+```bash
+# Script automatically creates backups
+# Check ./backups/ directory for recovery options
+```
+
+**Reset Database**:
+```bash
+npx prisma db push --force-reset
+```
+
+## Schema Management
+
+### Development (SQLite)
+
+```bash
+# Update schema
+npx prisma db push
+
+# View data
+npx prisma studio
+```
+
+### Production (PostgreSQL)
+
+```bash
+# Create migration
+npx prisma migrate dev --name your-migration
+
+# Apply migration
+npx prisma migrate deploy
+```
+
+## Monitoring
+
+### Health Checks
+
+```bash
+# Run database health check
+npm test -- health.test.ts
+```
+
+### Key Metrics
+
+- Connection pool utilization
+- Query performance
+- Database size
+- Backup status
+
+## Security
+
+- Never commit `.env` files
+- Use strong passwords for PostgreSQL
+- Enable SSL for production connections
+- Regularly rotate database credentials
 
 This script will:
 - Connect to both SQLite (source) and PostgreSQL (target)
