@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -221,17 +221,7 @@ export default function WeekProject() {
   const [submitting, setSubmitting] = useState(false);
   const [projectCompleted, setProjectCompleted] = useState(false);
 
-  useEffect(() => {
-    const week = parseInt(weekNumber || '1');
-    const weekProject = weekProjects[week];
-    
-    if (weekProject) {
-      setProject(weekProject);
-      loadProgress();
-    }
-  }, [weekNumber]);
-
-  const loadProgress = async () => {
+  const loadProgress = useCallback(async () => {
     if (!user || !weekNumber) return;
 
     try {
@@ -249,7 +239,17 @@ export default function WeekProject() {
     } catch (error) {
       console.error('Error loading project progress:', error);
     }
-  };
+  }, [user, weekNumber]);
+
+  useEffect(() => {
+    const week = parseInt(weekNumber || '1');
+    const weekProject = weekProjects[week];
+    
+    if (weekProject) {
+      setProject(weekProject);
+      loadProgress();
+    }
+  }, [weekNumber, loadProgress]);
 
   const toggleTask = (taskId: string) => {
     const newCompleted = new Set(completedTasks);

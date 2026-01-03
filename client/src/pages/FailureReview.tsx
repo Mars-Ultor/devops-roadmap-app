@@ -3,7 +3,7 @@
  * Military-style incident review for continuous improvement
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AlertTriangle, TrendingDown, Target, Brain } from 'lucide-react';
 import { useFailureLog } from '../hooks/useFailureLog';
 import FailureLogList from '../components/training/FailureLogList';
@@ -15,11 +15,7 @@ export default function FailureReview() {
   const [analytics, setAnalytics] = useState<FailureAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const [detectedPatterns, allFailures] = await Promise.all([
@@ -85,7 +81,11 @@ export default function FailureReview() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [detectPatterns, getFailureLogs]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   if (loading) {
     return (

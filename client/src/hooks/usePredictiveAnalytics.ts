@@ -49,12 +49,6 @@ export function usePredictiveAnalytics() {
   const [predictiveData, setPredictiveData] = useState<PredictiveData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      generatePredictions();
-    }
-  }, [user, generatePredictions]);
-
   const generatePredictions = useCallback(async () => {
     if (!user) return;
 
@@ -90,6 +84,12 @@ export function usePredictiveAnalytics() {
       setLoading(false);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      generatePredictions();
+    }
+  }, [user, generatePredictions]);
 
   const calculateCompletionPrediction = (progressDocs: { data: () => { completedAt?: { toDate: () => Date }; masteryLevel?: string } }[]): PredictiveData['completionPrediction'] => {
     const totalProgramItems = 200; // Estimated total items in program
