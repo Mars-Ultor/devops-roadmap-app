@@ -13,7 +13,8 @@
     "production": {
       "variables": {
         "NODE_ENV": "production",
-        "PORT": "3001"
+        "PORT": "3001",
+        "REDIS_URL": "${{ REDIS_URL }}"
       }
     }
   }

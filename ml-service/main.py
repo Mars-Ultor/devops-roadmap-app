@@ -22,6 +22,9 @@ from models.learning_style_detector import LearningStyleDetector
 from models.skill_gap_analyzer import SkillGapAnalyzer
 from models.motivational_analyzer import MotivationalAnalyzer
 
+# Import Redis cache
+from cache import redis_cache
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
@@ -30,12 +33,16 @@ async def lifespan(app: FastAPI):
         # Test database connection
         test_user = db_manager.get_user_data("test")
         print("Database/mock data connection successful")
+
+        # Initialize Redis connection
+        redis_cache.connect()
+
     except Exception as e:
         print(f"Warning: Database connection issue: {e}")
         print("Continuing with mock data mode")
     yield
-    # Shutdown (if needed)
-    pass
+    # Shutdown
+    redis_cache.disconnect()
 
 app = FastAPI(
     title="DevOps Roadmap ML Service",
@@ -130,6 +137,14 @@ async def predict(model_name: str, input_data: MLInput):
         raise HTTPException(status_code=404, detail=f"Model {model_name} not found")
 
     try:
+        # Create cache key based on model and input features
+        cache_key = f"predict:{model_name}:{hash(str(input_data.features))}"
+
+        # Try to get from cache first
+        cached_result = redis_cache.get(cache_key)
+        if cached_result:
+            return cached_result
+
         model = models[model_name]
 
         # Use the ML model's predict method with features array
@@ -161,6 +176,9 @@ async def predict(model_name: str, input_data: MLInput):
             response_data['explanation'] = 'Identified skill gaps and areas needing improvement'
         elif model_name == 'motivational-analyzer':
             response_data['explanation'] = 'Motivational analysis and engagement predictions'
+
+        # Cache the result for 15 minutes (predictions are relatively stable)
+        redis_cache.set(cache_key, response_data, 900)
 
         return response_data
 
@@ -201,12 +219,22 @@ async def train_model(model_name: str, training_data: MLTrainingData):
 async def get_coach_insights(context: CoachContext):
     """Get comprehensive ML-enhanced coaching insights using real user data"""
     try:
+        # Create cache key based on user ID and context
+        cache_key = f"coach:insights:{context.userId}:{context.currentWeek}:{hash(str(context.dict()))}"
+
+        # Try to get from cache first
+        cached_result = redis_cache.get(cache_key)
+        if cached_result:
+            return cached_result
+
         # Fetch real user data from database
         user_data = db_manager.get_user_data(context.userId)
 
         if not user_data:
             # Fallback to context-based insights if no database data
-            return await get_fallback_insights(context)
+            result = await get_fallback_insights(context)
+            redis_cache.set(cache_key, result, 600)  # Cache for 10 minutes
+            return result
 
         # Extract ML features from real data
         features = db_manager.extract_ml_features(user_data)
@@ -238,12 +266,16 @@ async def get_coach_insights(context: CoachContext):
             'motivationalProfile': motivation_profile
         }
 
+        # Cache the result for 10 minutes
+        redis_cache.set(cache_key, insights, 600)
+
         return insights
 
     except Exception as e:
         print(f"Error generating insights: {e}")
         # Fallback to context-based insights
-        return await get_fallback_insights(context)
+        result = await get_fallback_insights(context)
+        return result
 
 
 def _process_skill_gaps(skill_gap_result):

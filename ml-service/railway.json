@@ -14,7 +14,8 @@
     "production": {
       "variables": {
         "PYTHONUNBUFFERED": "1",
-        "PORT": "8000"
+        "PORT": "8000",
+        "REDIS_URL": "${{ REDIS_URL }}"
       }
     }
   }
