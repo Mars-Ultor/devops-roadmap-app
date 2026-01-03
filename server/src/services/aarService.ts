@@ -279,7 +279,13 @@ export class AARService {
   }
 
   /**
-   * AI-powered AAR analysis (enhanced implementation)
+   * AI-powered AAR analysis with quality assessment and pattern detection
+   * Performs comprehensive analysis including quality scoring, pattern recognition,
+   * and personalized feedback generation
+   * @param aarId - Unique identifier for the AAR
+   * @param aar - AAR data object from database
+   * @returns Promise that resolves when analysis is complete
+   * @private
    */
   private async analyzeAAR(aarId: string, aar: any): Promise<void> {
     // Enhanced quality assessment
@@ -313,6 +319,11 @@ export class AARService {
 
   /**
    * Calculate comprehensive AAR quality score (1-10)
+   * Evaluates word count, content depth, self-reflection, and balance
+   * Higher scores indicate more thoughtful, detailed AARs
+   * @param aar - AAR data object with responses and word counts
+   * @returns Quality score between 1-10
+   * @private
    */
   private calculateAARQuality(aar: any): number {
     let score = 5; // Base score
@@ -398,6 +409,13 @@ export class AARService {
     return 1 - Math.abs(positiveRatio - 0.4);
   }
 
+  /**
+   * Detect advanced patterns in AAR responses for personalized learning insights
+   * Analyzes text for technical skill gaps, process issues, and learning patterns
+   * @param aar - AAR data object with responses
+   * @returns Array of detected patterns with recommendations
+   * @private
+   */
   private detectAdvancedPatterns(aar: any): AARPattern[] {
     const patterns: AARPattern[] = [];
     const fullText = `${aar.whatWasAccomplished} ${aar.whatWorkedWell.join(' ')} ${aar.whatDidNotWork.join(' ')} ${aar.whyDidNotWork} ${aar.whatWouldIDoDifferently} ${aar.whatDidILearn}`.toLowerCase();
