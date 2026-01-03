@@ -81,6 +81,12 @@ jobs:
           npm run lint || true
         continue-on-error: true
 
+      - name: Analyze code complexity
+        run: |
+          cd client
+          npm run lint:complexity || true
+        continue-on-error: true
+
       - name: Type check
         run: |
           cd client
@@ -164,6 +170,12 @@ jobs:
           npm run lint || true
         continue-on-error: true
 
+      - name: Analyze code complexity
+        run: |
+          cd server
+          npm run lint:complexity || true
+        continue-on-error: true
+
       - name: Type check
         run: |
           cd server
@@ -229,6 +241,13 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || true
           black --check . || true
           isort --check-only . || true
+        continue-on-error: true
+
+      - name: Analyze code complexity
+        run: |
+          cd ml-service
+          pip install radon mccabe
+          python analyze_complexity.py || true
         continue-on-error: true
 
       - name: Run tests
