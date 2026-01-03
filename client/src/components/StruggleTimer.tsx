@@ -11,6 +11,7 @@ interface StruggleTimerProps {
   startTime: number;
   onHintUnlocked: () => void;
   onStruggleLogged: (struggles: StruggleLog) => void;
+  currentTime?: number; // For testing
 }
 
 export interface StruggleLog {
@@ -25,7 +26,8 @@ const HINT_UNLOCK_TIME = 30 * 60 * 1000; // 30 minutes
 export default function StruggleTimer({ 
   startTime, 
   onHintUnlocked,
-  onStruggleLogged 
+  onStruggleLogged,
+  currentTime
 }: StruggleTimerProps) {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [hintsUnlocked, setHintsUnlocked] = useState(false);
@@ -39,7 +41,8 @@ export default function StruggleTimer({
 
   useEffect(() => {
     const updateTimer = () => {
-      const elapsed = Date.now() - startTime;
+      const now = currentTime || Date.now();
+      const elapsed = now - startTime;
       const remaining = Math.max(0, HINT_UNLOCK_TIME - elapsed);
       setTimeRemaining(remaining);
 
@@ -52,7 +55,7 @@ export default function StruggleTimer({
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [startTime, hintsUnlocked, strugglesLogged, onHintUnlocked]);
+  }, [startTime, hintsUnlocked, strugglesLogged, onHintUnlocked, currentTime]);
 
   const formatTime = (ms: number): string => {
     const minutes = Math.floor(ms / 60000);

@@ -202,15 +202,17 @@ describe('StruggleTimer', () => {
 
   it('unlocks hints after timer expires and struggles are logged', async () => {
     const startTime = Date.now()
+    let currentTime = startTime
     const user = userEvent.setup({ delay: null })
 
     const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {})
 
-    render(
+    const { rerender } = render(
       <StruggleTimer
         startTime={startTime}
         onHintUnlocked={mockOnHintUnlocked}
         onStruggleLogged={mockOnStruggleLogged}
+        currentTime={currentTime}
       />
     )
 
@@ -235,8 +237,15 @@ describe('StruggleTimer', () => {
     await user.click(submitButton)
 
     // Fast-forward past 30 minutes
-    mockNow += 30 * 60 * 1000 + 1000
-    vi.advanceTimersByTime(30 * 60 * 1000 + 1000)
+    currentTime += 30 * 60 * 1000 + 1000
+    rerender(
+      <StruggleTimer
+        startTime={startTime}
+        onHintUnlocked={mockOnHintUnlocked}
+        onStruggleLogged={mockOnStruggleLogged}
+        currentTime={currentTime}
+      />
+    )
 
     await waitFor(() => {
       expect(mockOnHintUnlocked).toHaveBeenCalled()
