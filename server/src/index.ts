@@ -9,11 +9,15 @@ import projectRoutes from './routes/project.js';
 import validateRoutes from './routes/validate.js';
 import aarRoutes from './routes/aar.js';
 import certificationRoutes from './routes/certification.js';
+import redisCache from './utils/cache.js';
 
 dotenv.config();
 
 const app: Express = express();
 const PORT = process.env.PORT || 3001;
+
+// Initialize Redis connection
+redisCache.connect().catch(console.error);
 
 // Middleware
 app.use(cors());
