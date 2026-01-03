@@ -21,7 +21,6 @@ import {
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { ScenarioChallengeService } from '../services/scenarioChallenge';
-import { getScenarioById } from '../data/scenarios';
 import type { ChallengeScenario, ChallengeAttempt } from '../types/scenarios';
 import { useAuthStore } from '../store/authStore';
 import { TimerCountdown } from '../components/stress/TimerCountdown';

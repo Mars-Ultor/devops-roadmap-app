@@ -384,7 +384,6 @@ export function usePredictiveAnalytics() {
 
   const generateTrajectoryAdjustments = (
     current: string,
-    _optimal: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _improvement: number
   ): string[] => {

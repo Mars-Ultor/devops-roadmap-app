@@ -2520,7 +2520,7 @@ export default function MasterTraining() {
           console.log('Loaded master training progress from Firestore');
         }
       }
-    } catch (_error) {
+    } catch {
       // Silent fail - localStorage is primary storage
     } finally {
       setLoading(false);
@@ -2545,7 +2545,7 @@ export default function MasterTraining() {
         updatedAt: new Date()
       });
       console.log('Saved master training progress to Firestore');
-    } catch (_error) {
+    } catch {
       // Silent fail - localStorage is primary storage
       // Firestore is just a backup
     }

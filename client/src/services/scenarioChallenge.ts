@@ -185,7 +185,7 @@ export class ScenarioChallengeService {
         switch (hint.trigger) {
           case 'time':
             return elapsedSeconds >= (hint.triggerValue || 0);
-          case 'stuck':
+          case 'stuck': {
             // Consider stuck if no commands executed in last 5 minutes
             const lastCommand = attempt.commandsExecuted[attempt.commandsExecuted.length - 1];
             if (!lastCommand) return elapsedSeconds >= (hint.triggerValue || 300);
@@ -193,6 +193,7 @@ export class ScenarioChallengeService {
               (Date.now() - lastCommand.executedAt.getTime()) / 1000
             );
             return timeSinceLastCommand >= (hint.triggerValue || 300);
+          }
           case 'request':
             return true; // Always available on request
           default:

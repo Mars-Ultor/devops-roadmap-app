@@ -70,7 +70,7 @@ export default function Analytics() {
   const { getUsageStats } = useResetTokens();
   const { analysisData, formatHour, loading: timeAnalysisLoading } = useTimeAnalysis();
   const { predictiveData, loading: predictiveLoading } = usePredictiveAnalytics();
-  const { velocityData, loading: velocityLoading } = useLearningVelocity();
+  const { velocityData } = useLearningVelocity();
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('week');
   const [activeTab, setActiveTab] = useState<'overview' | 'velocity' | 'mastery' | 'predictions'>('overview');
