@@ -107,9 +107,9 @@ export class AARService {
       });
 
       return response.data.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating AAR:', error);
-      throw new Error(error.response?.data?.message || 'Failed to create AAR');
+      throw new Error((error as any).response?.data?.message || 'Failed to create AAR');
     }
   }
 
@@ -126,15 +126,15 @@ export class AARService {
         }
       });
 
-      return response.data.data.map((aar: any) => ({
-        ...aar,
-        createdAt: new Date(aar.createdAt),
-        updatedAt: new Date(aar.updatedAt),
-        completedAt: new Date(aar.completedAt)
+      return response.data.data.map((aar: unknown) => ({
+        ...(aar as any),
+        createdAt: new Date((aar as any).createdAt),
+        updatedAt: new Date((aar as any).updatedAt),
+        completedAt: new Date((aar as any).completedAt)
       }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching user AARs:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch AARs');
+      throw new Error((error as any).response?.data?.message || 'Failed to fetch AARs');
     }
   }
 

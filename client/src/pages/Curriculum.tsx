@@ -357,13 +357,13 @@ export default function Curriculum() {
                   {/* Quick Lab Links */}
                   {!isLocked && week.labs.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {week.labs.map((lab: any, idx: number) => (
+                      {week.labs.map((lab: unknown, idx: number) => (
                         <Link
                           key={idx}
-                          to={`/lab/${lab.id}`}
+                          to={`/lab/${(lab as any).id}`}
                           className="text-xs bg-slate-700 hover:bg-indigo-600 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium border border-slate-600 hover:border-indigo-500"
                         >
-                          {lab.title}
+                          {(lab as any).title}
                         </Link>
                       ))}
                     </div>
