@@ -134,7 +134,7 @@ export function useMLLearningPath() {
     } finally {
       setLoading(false);
     }
-  }, [user?.uid]);
+  }, [user?.uid, coachService]);
 
   return {
     optimizedPath,
