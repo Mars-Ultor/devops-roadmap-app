@@ -11,6 +11,7 @@ A comprehensive learning platform for DevOps engineers with interactive lessons,
 - **AI Assistance**: Intelligent learning recommendations
 - **Progress Tracking**: Comprehensive skill assessment
 - **Multi-Platform**: Web application with scalable backend
+- **Performance Caching**: Redis-powered caching for optimal performance
 
 ## 🏗️ Architecture
 
@@ -19,6 +20,7 @@ A comprehensive learning platform for DevOps engineers with interactive lessons,
 - **Client**: React/Vite frontend (Firebase Hosting)
 - **Server**: Node.js/Express API with PostgreSQL (Railway)
 - **ML Service**: Python ML models for learning analytics (Railway)
+- **Redis**: High-performance caching layer (optional)
 
 ### Tech Stack
 
@@ -26,6 +28,7 @@ A comprehensive learning platform for DevOps engineers with interactive lessons,
 - **Backend**: Node.js, Express, TypeScript, Prisma ORM
 - **Database**: PostgreSQL
 - **ML Service**: Python, scikit-learn, TensorFlow
+- **Caching**: Redis (optional, improves performance)
 - **Hosting**: Firebase (Client), Railway (Server/ML)
 - **CI/CD**: GitHub Actions
 
@@ -69,7 +72,20 @@ A comprehensive learning platform for DevOps engineers with interactive lessons,
    npm run prisma:generate
    ```
 
-4. **Start development servers**
+4. **Redis setup (optional, improves performance)**
+   ```bash
+   # Linux/Mac
+   ./setup-redis.sh
+
+   # Windows
+   setup-redis.bat
+
+   # Add REDIS_URL to your .env files
+   echo "REDIS_URL=redis://localhost:6379" >> server/.env
+   echo "REDIS_URL=redis://localhost:6379" >> ml-service/.env
+   ```
+
+5. **Start development servers**
    ```bash
    # Terminal 1: Client
    cd client && npm run dev

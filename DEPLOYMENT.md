@@ -103,7 +103,21 @@ VITE_ML_API_URL="https://your-ml-service-url"
 
 ## Deployment Steps
 
-### Step 1: Deploy Server to Railway
+### Step 1: Set up Redis (Optional but Recommended)
+
+1. Run the Redis setup script:
+   ```bash
+   # Linux/Mac
+   ./setup-redis.sh
+
+   # Windows
+   setup-redis.bat
+   ```
+
+2. For Railway: Add Redis plugin to your project
+3. Update environment variables with REDIS_URL
+
+### Step 2: Deploy Server to Railway
 
 1. Create Railway account
 2. Connect GitHub repository
