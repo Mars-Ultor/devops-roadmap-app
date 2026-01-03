@@ -248,6 +248,11 @@ describe('StruggleTimer', () => {
 
     // Fast-forward past 30 minutes
     currentTime += 30 * 60 * 1000 + 1000
+    
+    // Check state before rerender
+    expect(screen.getByText('Struggles logged')).toBeInTheDocument()
+    expect(screen.getByText(/Hints unlock in:/)).toBeInTheDocument()
+    
     act(() => {
       rerender(
         <StruggleTimer
@@ -258,6 +263,9 @@ describe('StruggleTimer', () => {
         />
       )
     })
+
+    // Debug: check what's actually rendered
+    screen.debug()
 
     // The component should now show hints as unlocked
     expect(screen.getByText('Hints Available')).toBeInTheDocument()
