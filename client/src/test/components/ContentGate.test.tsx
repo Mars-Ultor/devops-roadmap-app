@@ -45,7 +45,7 @@ describe('ContentGate', () => {
     // Mock getDoc to return incomplete drill status
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -70,7 +70,7 @@ describe('ContentGate', () => {
         completedAt: new Date(),
         score: 85,
       }),
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -88,7 +88,7 @@ describe('ContentGate', () => {
   it('prevents modal dismissal via click outside', async () => {
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -111,7 +111,7 @@ describe('ContentGate', () => {
   it('prevents modal dismissal via escape key', async () => {
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -130,7 +130,7 @@ describe('ContentGate', () => {
   it('shows drill details and requirements', async () => {
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
