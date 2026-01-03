@@ -135,7 +135,14 @@ describe('useProgress', () => {
       expect(vi.mocked(setDoc)).not.toHaveBeenCalled()
     })
   })
+
+  describe('completeLab', () => {
     it('completes a lab successfully', async () => {
+      // Mock auth store
+      vi.mocked(useAuthStore).mockReturnValue({
+        user: { uid: 'test-user-123' },
+      })
+
       // Mock Firebase functions
       const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
@@ -143,6 +150,20 @@ describe('useProgress', () => {
         exists: () => false,
         data: () => ({})
       })
+      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
+      const mockIncrement = vi.fn()
+
+      vi.mocked(doc).mockImplementation(mockDoc)
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
+      vi.mocked(increment).mockImplementation(mockIncrement)
+
+      const { result } = renderHook(() => useProgress())
+
+      const resultValue = await result.current.completeLab('w1-lab1', 150, 5, 10)
+
+      expect(resultValue).toBe(true)
       const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
       const mockIncrement = vi.fn()
 
@@ -168,6 +189,11 @@ describe('useProgress', () => {
     })
 
     it('awards XP only on first completion', async () => {
+      // Mock auth store
+      vi.mocked(useAuthStore).mockReturnValue({
+        user: { uid: 'test-user-123' },
+      })
+
       // Mock Firebase functions for already completed lab
       const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
@@ -193,6 +219,11 @@ describe('useProgress', () => {
     })
 
     it('marks related lesson as completed', async () => {
+      // Mock auth store
+      vi.mocked(useAuthStore).mockReturnValue({
+        user: { uid: 'test-user-123' },
+      })
+
       // Mock Firebase functions
       const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
@@ -343,14 +374,6 @@ describe('useProgress', () => {
       vi.mocked(query).mockImplementation(mockQuery)
       vi.mocked(where).mockImplementation(mockWhere)
       vi.mocked(getDocs).mockImplementation(mockGetDocs)
-
-      const { result } = renderHook(() => useProgress())
-
-      await result.current.completeLab('w1-lab1', 150, 5, 10)
-
-      // Should check for badge awards
-      expect(mockGetDoc).toHaveBeenCalledTimes(4)
-    })
 
       const { result } = renderHook(() => useProgress())
 
