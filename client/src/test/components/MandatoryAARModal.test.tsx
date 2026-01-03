@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { addDoc, collection } from 'firebase/firestore'
 import MandatoryAARModal from '../../components/MandatoryAARModal'
 
 describe('MandatoryAARModal', () => {
@@ -47,16 +48,12 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
     render(<MandatoryAARModal {...defaultProps} />)
 
-    // Mock window.alert
-    const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {})
-
     // Try to submit without filling anything
     const submitButton = screen.getByRole('button', { name: /submit aar and continue/i })
     await user.click(submitButton)
 
-    expect(window.alert).toHaveBeenCalledWith('This question is required')
-
-    alertMock.mockRestore()
+    // Should show validation errors
+    expect(screen.getByText('This question is required')).toBeInTheDocument()
   })
 
   it('updates word counts as user types', async () => {
@@ -73,8 +70,6 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
     render(<MandatoryAARModal {...defaultProps} />)
 
-    const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {})
-
     // Fill all textareas with insufficient content
     const textareas = screen.getAllByRole('textbox')
     for (const textarea of textareas) {
@@ -84,9 +79,8 @@ describe('MandatoryAARModal', () => {
     const submitButton = screen.getByRole('button', { name: /submit aar and continue/i })
     await user.click(submitButton)
 
-    expect(window.alert).toHaveBeenCalledWith('This question is required')
-
-    alertMock.mockRestore()
+    // Should show validation errors for insufficient content
+    expect(screen.getByText('Too brief. Need at least 20 words (currently 1)')).toBeInTheDocument()
   })
 
   it('accepts valid AAR submission', async () => {
