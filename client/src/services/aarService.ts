@@ -236,11 +236,11 @@ export class AARService {
         completedAt: new Date(aar.completedAt)
       };
     } catch (error: unknown) {
-      if ((error as any).response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         return null;
       }
       console.error('Error fetching AAR:', error);
-      throw new Error((error as any).response?.data?.message || 'Failed to fetch AAR');
+      throw new Error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch AAR');
     }
   }
 
@@ -263,11 +263,11 @@ export class AARService {
         completedAt: new Date(aar.completedAt)
       };
     } catch (error: unknown) {
-      if ((error as any).response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         return null;
       }
       console.error('Error updating AAR:', error);
-      throw new Error((error as any).response?.data?.message || 'Failed to update AAR');
+      throw new Error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update AAR');
     }
   }
 
@@ -284,11 +284,11 @@ export class AARService {
 
       return true;
     } catch (error: unknown) {
-      if ((error as any).response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         return false;
       }
       console.error('Error deleting AAR:', error);
-      throw new Error((error as any).response?.data?.message || 'Failed to delete AAR');
+      throw new Error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to delete AAR');
     }
   }
 

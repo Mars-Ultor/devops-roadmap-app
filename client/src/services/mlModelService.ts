@@ -68,7 +68,7 @@ export class MLModelService {
       const response = await axios.get(`${ML_SERVICE_URL}/models`);
       const availableModels = response.data.models;
 
-      const modelInfo = availableModels.find((m: unknown) => (m as any).name === modelId);
+      const modelInfo = availableModels.find((m: unknown) => (m as { name: string }).name === modelId);
       if (!modelInfo) {
         throw new Error(`Model ${modelId} not found in ML service`);
       }
@@ -76,7 +76,7 @@ export class MLModelService {
       // Create model object
       const model: MLModel = {
         id: modelId,
-        name: (modelInfo as any).name,
+        name: (modelInfo as { name: string }).name,
         version: '1.0.0',
         type: 'custom',
         inputShape: [modelInfo.features?.length || 10],
@@ -143,8 +143,8 @@ export class MLModelService {
   async getModelMetrics(modelId: string): Promise<unknown> {
     try {
       const response = await axios.get(`${ML_SERVICE_URL}/models`);
-      const modelInfo = response.data.models.find((m: unknown) => (m as any).name === modelId);
-      return (modelInfo as any)?.metrics || {};
+      const modelInfo = response.data.models.find((m: unknown) => (m as { name: string }).name === modelId);
+      return (modelInfo as { metrics?: unknown })?.metrics || {};
     } catch (error: unknown) {
       console.error(`Failed to get metrics for ${modelId}:`, error);
       return {};

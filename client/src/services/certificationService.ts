@@ -28,16 +28,16 @@ export class CertificationService {
 
       const data = await response.json();
       return data.map((cert: unknown) => ({
-        userId: (cert as any).userId,
-        skillId: (cert as any).skillId,
-        certificationLevel: (cert as any).certificationLevel as CertificationLevel,
-        earnedAt: new Date((cert as any).earnedAt),
-        expiresAt: new Date((cert as any).expiresAt),
-        lastRecertifiedAt: new Date(cert.lastRecertifiedAt),
-        recertificationRequired: cert.recertificationRequired,
-        gracePeriodDays: cert.gracePeriodDays,
-        consecutivePasses: cert.consecutivePasses,
-        totalAttempts: cert.totalAttempts,
+        userId: (cert as { userId: string }).userId,
+        skillId: (cert as { skillId: string }).skillId,
+        certificationLevel: (cert as { certificationLevel: string }).certificationLevel as CertificationLevel,
+        earnedAt: new Date((cert as { earnedAt: string }).earnedAt),
+        expiresAt: new Date((cert as { expiresAt: string }).expiresAt),
+        lastRecertifiedAt: new Date((cert as { lastRecertifiedAt: string }).lastRecertifiedAt),
+        recertificationRequired: (cert as { recertificationRequired: boolean }).recertificationRequired,
+        gracePeriodDays: (cert as { gracePeriodDays: number }).gracePeriodDays,
+        consecutivePasses: (cert as { consecutivePasses: number }).consecutivePasses,
+        totalAttempts: (cert as { totalAttempts: number }).totalAttempts,
       }));
     } catch (error) {
       console.error('Error fetching certifications:', error);
@@ -57,13 +57,13 @@ export class CertificationService {
 
       const data = await response.json();
       return data.map((attempt: unknown) => ({
-        id: (attempt as any).id,
-        userId: (attempt as any).userId,
-        drillId: (attempt as any).drillId,
-        score: (attempt as any).score,
-        passed: (attempt as any).passed,
-        timeSpentMinutes: (attempt as any).timeSpentMinutes,
-        completedAt: (attempt as any).completedAt ? new Date((attempt as any).completedAt) : undefined,
+        id: (attempt as { id: string }).id,
+        userId: (attempt as { userId: string }).userId,
+        drillId: (attempt as { drillId: string }).drillId,
+        score: (attempt as { score: number }).score,
+        passed: (attempt as { passed: boolean }).passed,
+        timeSpentMinutes: (attempt as { timeSpentMinutes: number }).timeSpentMinutes,
+        completedAt: (attempt as { completedAt?: string }).completedAt ? new Date((attempt as { completedAt: string }).completedAt) : undefined,
       }));
     } catch (error) {
       console.error('Error fetching recertification attempts:', error);
