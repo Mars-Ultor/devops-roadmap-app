@@ -1,15 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { addDoc, collection } from 'firebase/firestore'
 import MandatoryAARModal from '../../components/MandatoryAARModal'
-
-// Mock Firebase
-vi.mock('../../lib/firebase', () => ({
-  db: {},
-  addDoc: vi.fn(),
-  collection: vi.fn(),
-}))
 
 describe('MandatoryAARModal', () => {
   const mockOnComplete = vi.fn()
