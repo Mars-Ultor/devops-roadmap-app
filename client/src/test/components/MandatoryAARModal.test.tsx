@@ -48,12 +48,24 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
     render(<MandatoryAARModal {...defaultProps} />)
 
-    // Try to submit without filling anything
+    // Button should be disabled when nothing is filled
     const submitButton = screen.getByRole('button', { name: /submit aar and continue/i })
+    expect(submitButton).toBeDisabled()
+
+    // Fill all textareas with insufficient content to enable button
+    const textareas = screen.getAllByRole('textbox')
+    for (const textarea of textareas) {
+      await user.type(textarea, 'Short')
+    }
+
+    // Button should now be enabled
+    expect(submitButton).toBeEnabled()
+
+    // Try to submit
     await user.click(submitButton)
 
     // Should show validation errors
-    expect(screen.getByText('This question is required')).toBeInTheDocument()
+    expect(screen.getByText('Too brief. Need at least 20 words (currently 1)')).toBeInTheDocument()
   })
 
   it('updates word counts as user types', async () => {
