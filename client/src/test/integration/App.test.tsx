@@ -154,7 +154,12 @@ describe('App Integration', () => {
   it('renders lab routes correctly', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { uid: 'test-user' },
+      firebaseUser: null,
       loading: false,
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      initAuth: vi.fn(),
     })
 
     // Mock window.location to simulate routing
@@ -175,7 +180,12 @@ describe('App Integration', () => {
   it('includes ContentGate for protected routes', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { uid: 'test-user' },
+      firebaseUser: null,
       loading: false,
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      initAuth: vi.fn(),
     })
 
     // Mock ContentGate
@@ -200,7 +210,12 @@ describe('App Integration', () => {
   it('handles unknown routes gracefully', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { uid: 'test-user' },
+      firebaseUser: null,
       loading: false,
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      initAuth: vi.fn(),
     })
 
     // Mock window.location for unknown route
