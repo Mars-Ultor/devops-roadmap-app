@@ -89,7 +89,7 @@ describe('HintSystem', () => {
       />
     )
 
-    const viewHintButton = screen.getByRole('button', { name: /view hint 1/i })
+    const viewHintButton = await screen.findByRole('button', { name: /view hint 1/i })
     expect(viewHintButton).toBeEnabled()
 
     await user.click(viewHintButton)
