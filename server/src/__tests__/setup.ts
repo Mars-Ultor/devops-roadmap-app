@@ -26,6 +26,8 @@ afterEach(async () => {
   const prisma = new PrismaClient();
   try {
     // Clear all tables in reverse order of dependencies
+    await prisma.recertificationAttempt.deleteMany();
+    await prisma.certification.deleteMany();
     await prisma.afterActionReview.deleteMany();
     await prisma.labSession.deleteMany();
     await prisma.badge.deleteMany();
