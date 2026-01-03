@@ -16,6 +16,84 @@ export function useResetTokens(config: TokenConfig = DEFAULT_TOKEN_CONFIG) {
   const [recentResets, setRecentResets] = useState<ResetToken[]>([]);
   const [loading, setLoading] = useState(true);
 
+  /**
+   * Load or create current week's token allocation
+   */
+  const loadTokenAllocation = useCallback(async () => {
+    if (!user?.uid) return;
+
+    setLoading(true);
+    try {
+      const { weekStart, weekEnd } = getCurrentWeek();
+
+      // Check if allocation exists for current week
+      const allocQuery = query(
+        collection(db, 'tokenAllocations'),
+        where('userId', '==', user.uid),
+        where('weekStart', '>=', weekStart),
+        where('weekStart', '<=', weekEnd)
+      );
+
+      const snapshot = await getDocs(allocQuery);
+
+      if (!snapshot.empty) {
+        const data = snapshot.docs[0].data();
+        setCurrentAllocation({
+          ...data,
+          weekStart: data.weekStart.toDate(),
+          weekEnd: data.weekEnd.toDate()
+        } as TokenAllocation);
+      } else {
+        // Create new allocation for the week
+        const newAllocation: Omit<TokenAllocation, 'id'> = {
+          userId: user.uid,
+          weekStart,
+          weekEnd,
+          quizResets: config.quizResetsPerWeek,
+          labResets: config.labResetsPerWeek,
+          battleDrillResets: config.battleDrillResetsPerWeek,
+          quizResetsUsed: 0,
+          labResetsUsed: 0,
+          battleDrillResetsUsed: 0
+        };
+
+        await addDoc(collection(db, 'tokenAllocations'), newAllocation);
+        setCurrentAllocation(newAllocation as TokenAllocation);
+      }
+    } catch (error) {
+      console.error('Error loading token allocation:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.uid, config]);
+
+  /**
+   * Load recent reset history
+   */
+  const loadRecentResets = useCallback(async () => {
+    if (!user?.uid) return;
+
+    try {
+      const resetsQuery = query(
+        collection(db, 'resetTokens'),
+        where('userId', '==', user.uid),
+        orderBy('usedAt', 'desc'),
+        limit(10)
+      );
+
+      const snapshot = await getDocs(resetsQuery);
+      const resets = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        usedAt: doc.data().usedAt.toDate()
+      })) as ResetToken[];
+
+      setRecentResets(resets);
+    } catch (error) {
+      console.error('Error loading recent resets:', error);
+    }
+  }, [user?.uid]);
+
   useEffect(() => {
     if (user?.uid) {
       loadTokenAllocation();
@@ -118,7 +196,7 @@ export function useResetTokens(config: TokenConfig = DEFAULT_TOKEN_CONFIG) {
     } catch (error) {
       console.error('Error loading recent resets:', error);
     }
-  }, [user?.uid]);
+  };
 
   /**
    * Check if user can reset an item
