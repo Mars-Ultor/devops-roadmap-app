@@ -146,48 +146,6 @@ export function usePredictiveAnalytics() {
     return adjustments;
   }, []);
 
-  const generatePredictions = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      // Get historical data
-      const [progressSnap, sessionsSnap, failuresSnap] = await Promise.all([
-        getDocs(query(collection(db, 'progress'), where('userId', '==', user.uid))),
-        getDocs(query(collection(db, 'studySessions'), where('userId', '==', user.uid))),
-        getDocs(query(collection(db, 'failureLogs'), where('userId', '==', user.uid)))
-      ]);
-
-      // Calculate completion prediction
-      const completionPrediction = calculateCompletionPrediction(progressSnap.docs);
-
-      // Predict weak areas
-      const weakAreaPredictions = predictWeakAreas(progressSnap.docs, failuresSnap.docs);
-
-      // Generate performance forecast
-      const performanceForecast = forecastPerformance(progressSnap.docs, sessionsSnap.docs);
-
-      // Analyze learning trajectory
-      const learningTrajectory = analyzeLearningTrajectory(progressSnap.docs);
-
-      setPredictiveData({
-        completionPrediction,
-        weakAreaPredictions,
-        performanceForecast,
-        learningTrajectory
-      });
-    } catch (error) {
-      console.error('Error generating predictions:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, calculateCompletionPrediction, predictWeakAreas, forecastPerformance, analyzeLearningTrajectory]);
-
-  useEffect(() => {
-    if (user) {
-      generatePredictions();
-    }
-  }, [user, generatePredictions]);
-
   const calculateCompletionPrediction = useCallback((progressDocs: { data: () => { completedAt?: { toDate: () => Date }; masteryLevel?: string } }[]): PredictiveData['completionPrediction'] => {
     const totalProgramItems = 200; // Estimated total items in program
     const completedItems = progressDocs.length;
@@ -337,7 +295,6 @@ export function usePredictiveAnalytics() {
     return predictions;
   }, [generateStrugglePrediction, generatePreventiveActions]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const forecastPerformance = useCallback((progressDocs: { data: () => { masteryLevel?: string } }[], _sessionDocs: { data: () => { startTime?: { toDate: () => Date } } }[]): PredictiveData['performanceForecast'] => {
     // Next week prediction
     const recentProgress = progressDocs.slice(-10); // Last 10 items
@@ -410,6 +367,48 @@ export function usePredictiveAnalytics() {
       adjustments
     };
   }, [generateTrajectoryAdjustments]);
+
+  const generatePredictions = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      // Get historical data
+      const [progressSnap, sessionsSnap, failuresSnap] = await Promise.all([
+        getDocs(query(collection(db, 'progress'), where('userId', '==', user.uid))),
+        getDocs(query(collection(db, 'studySessions'), where('userId', '==', user.uid))),
+        getDocs(query(collection(db, 'failureLogs'), where('userId', '==', user.uid)))
+      ]);
+
+      // Calculate completion prediction
+      const completionPrediction = calculateCompletionPrediction(progressSnap.docs);
+
+      // Predict weak areas
+      const weakAreaPredictions = predictWeakAreas(progressSnap.docs, failuresSnap.docs);
+
+      // Generate performance forecast
+      const performanceForecast = forecastPerformance(progressSnap.docs, sessionsSnap.docs);
+
+      // Analyze learning trajectory
+      const learningTrajectory = analyzeLearningTrajectory(progressSnap.docs);
+
+      setPredictiveData({
+        completionPrediction,
+        weakAreaPredictions,
+        performanceForecast,
+        learningTrajectory
+      });
+    } catch (error) {
+      console.error('Error generating predictions:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, calculateCompletionPrediction, predictWeakAreas, forecastPerformance, analyzeLearningTrajectory]);
+
+  useEffect(() => {
+    if (user) {
+      generatePredictions();
+    }
+  }, [user, generatePredictions]);
 
   return {
     predictiveData,
