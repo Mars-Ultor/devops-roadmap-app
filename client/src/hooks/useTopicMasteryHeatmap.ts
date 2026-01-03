@@ -3,7 +3,7 @@
  * Provides data for visualizing mastery levels across topics and weeks
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { db } from '../../lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -38,7 +38,7 @@ export function useTopicMasteryHeatmap() {
     }
   }, [user]);
 
-  const loadTopicMasteryData = async () => {
+  const loadTopicMasteryData = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -111,7 +111,7 @@ export function useTopicMasteryHeatmap() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   return {
     heatmapData,

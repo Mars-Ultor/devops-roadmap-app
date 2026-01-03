@@ -100,7 +100,7 @@ export function useStressTraining(): UseStressTrainingReturn {
     setIntervalId(id);
 
     return () => clearInterval(id);
-  }, [currentSession]);
+  }, [currentSession, updatePhysiologicalMetrics]);
 
   const updatePhysiologicalMetrics = useCallback(() => {
     if (!currentSession) return;

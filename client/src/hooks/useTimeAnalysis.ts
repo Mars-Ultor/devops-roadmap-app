@@ -103,7 +103,7 @@ export function useTimeAnalysis() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, generateRecommendation]);
 
   useEffect(() => {
     if (user) {
@@ -111,7 +111,7 @@ export function useTimeAnalysis() {
     }
   }, [user, analyzeStudyTimes]);
 
-  const generateRecommendation = (hourlyData: HourlyPerformance[]): TimeRecommendation => {
+  const generateRecommendation = useCallback((hourlyData: HourlyPerformance[]): TimeRecommendation => {
     // Filter hours with sufficient data (at least 3 sessions)
     const significantHours = hourlyData.filter(h => h.totalSessions >= 3);
 
@@ -160,7 +160,7 @@ export function useTimeAnalysis() {
       recommendation,
       confidenceLevel
     };
-  };
+  }, []);
 
   const findPeakWindow = (hours: number[]): number[] => {
     if (hours.length === 0) return [];

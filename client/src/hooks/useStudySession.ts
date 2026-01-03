@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
@@ -40,9 +40,9 @@ export function useStudySession({ contentId, contentType }: UseStudySessionProps
         logSessionEnd(new Date());
       }
     };
-  }, [user, contentId]);
+  }, [user, contentId, logSessionStart, logSessionEnd]);
 
-  const logSessionStart = async () => {
+  const logSessionStart = useCallback(async () => {
     if (!user || !sessionIdRef.current) return;
 
     try {
@@ -59,9 +59,9 @@ export function useStudySession({ contentId, contentType }: UseStudySessionProps
     } catch (error) {
       console.error('Error logging session start:', error);
     }
-  };
+  }, [user, contentId, contentType]);
 
-  const logSessionEnd = async (endTime: Date) => {
+  const logSessionEnd = useCallback(async (endTime: Date) => {
     if (!user || !sessionIdRef.current || !sessionStartTimeRef.current) return;
 
     const duration = Math.floor((endTime.getTime() - sessionStartTimeRef.current.getTime()) / 1000);
@@ -80,7 +80,7 @@ export function useStudySession({ contentId, contentType }: UseStudySessionProps
     } catch (error) {
       console.error('Error logging session end:', error);
     }
-  };
+  }, [user, contentId, contentType]);
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
