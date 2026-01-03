@@ -9,15 +9,21 @@ vi.mock('../../store/authStore', () => ({
   useAuthStore: vi.fn(),
 }));
 
-// Mock react-router-dom navigation
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
+// Mock lucide-react icons
+vi.mock('lucide-react', () => ({
+  Flame: () => <div data-testid="flame-icon" />,
+  BookOpen: () => <div data-testid="book-open-icon" />,
+  Target: () => <div data-testid="target-icon" />,
+  LogOut: () => <div data-testid="logout-icon" />,
+  BarChart3: () => <div data-testid="bar-chart-icon" />,
+  FileText: () => <div data-testid="file-text-icon" />,
+  Settings: () => <div data-testid="settings-icon" />,
+  Book: () => <div data-testid="book-icon" />,
+  Award: () => <div data-testid="award-icon" />,
+  Menu: () => <div data-testid="menu-icon" />,
+  X: () => <div data-testid="x-icon" />,
+  Brain: () => <div data-testid="brain-icon" />,
+}));
 
 const mockUser = {
   uid: 'test-user-123',

@@ -54,7 +54,7 @@ describe('FlashCard', () => {
   test('displays quality rating buttons after showing answer', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
 
     expect(screen.getByText('Again')).toBeInTheDocument();
     expect(screen.getByText('Hard')).toBeInTheDocument();
@@ -66,7 +66,7 @@ describe('FlashCard', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
     // Show answer and rate
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
     fireEvent.click(screen.getByText('Good'));
 
     // Should show second card
@@ -83,21 +83,21 @@ describe('FlashCard', () => {
   test('updates progress when moving to next card', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
     fireEvent.click(screen.getByText('Good'));
 
-    expect(screen.getByText('2 / 2')).toBeInTheDocument();
+    expect(screen.getByText('Card 2 of 2')).toBeInTheDocument();
   });
 
   test('completes session when all cards are rated', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
     // Complete first card
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
     fireEvent.click(screen.getByText('Good'));
 
     // Complete second card
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
     fireEvent.click(screen.getByText('Easy'));
 
     // Should show completion screen
@@ -109,11 +109,11 @@ describe('FlashCard', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
     // Complete first card with "Good" (quality: 3)
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
     fireEvent.click(screen.getByText('Good'));
 
     // Complete second card with "Easy" (quality: 4)
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
     fireEvent.click(screen.getByText('Easy'));
 
     expect(mockOnComplete).toHaveBeenCalledWith([
@@ -126,9 +126,9 @@ describe('FlashCard', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
     // Complete the session
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
     fireEvent.click(screen.getByText('Good'));
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
     fireEvent.click(screen.getByText('Easy'));
 
     // Click reset
@@ -136,7 +136,7 @@ describe('FlashCard', () => {
 
     // Should be back to first card
     expect(screen.getByText('What is Docker?')).toBeInTheDocument();
-    expect(screen.getByText('1 / 2')).toBeInTheDocument();
+    expect(screen.getByText('Card 1 of 2')).toBeInTheDocument();
     expect(screen.queryByText('Session Complete!')).not.toBeInTheDocument();
   });
 
@@ -150,7 +150,7 @@ describe('FlashCard', () => {
   test('quality ratings map to correct numeric values', () => {
     render(<FlashCard cards={[mockCards[0]]} onComplete={mockOnComplete} />);
 
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
 
     // Test each quality rating
     fireEvent.click(screen.getByText('Again')); // Should be 1
@@ -162,17 +162,17 @@ describe('FlashCard', () => {
   test('handles single card session', () => {
     render(<FlashCard cards={[mockCards[0]]} onComplete={mockOnComplete} />);
 
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
     fireEvent.click(screen.getByText('Good'));
 
     expect(screen.getByText('Session Complete!')).toBeInTheDocument();
-    expect(screen.getByText('1 / 1')).toBeInTheDocument();
+    expect(screen.getByText('Card 1 of 1')).toBeInTheDocument();
   });
 
   test('shows different quality button styles', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
-    fireEvent.click(screen.getByText('Show Answer'));
+    fireEvent.click(screen.getByText('Reveal Answer'));
 
     // Check that buttons have different styling (we can check for presence)
     const againButton = screen.getByText('Again');
