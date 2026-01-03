@@ -393,6 +393,11 @@ describe('useProgress', () => {
           exists: () => true,
           data: () => ({ totalXP: 0, badges: [] })
         })
+        .mockResolvedValueOnce({ // Labs count query
+          docs: [],
+          empty: true,
+          size: 0
+        })
         .mockResolvedValueOnce({ // Badge check 1 (first-lab)
           exists: () => false,
           data: () => ({})
@@ -408,6 +413,11 @@ describe('useProgress', () => {
         .mockResolvedValueOnce({ // Badge check 4 (week-one-warrior)
           exists: () => false,
           data: () => ({})
+        })
+        .mockResolvedValueOnce({ // Week labs query
+          docs: [],
+          empty: true,
+          size: 0
         })
         .mockResolvedValueOnce({ // Badge check 5 (dedicated-learner) - streak check
           exists: () => false,
@@ -434,8 +444,8 @@ describe('useProgress', () => {
 
       await result.current.completeLab('w1-lab1', 150, 5, 10)
 
-      // Should check for badge awards (2 progress checks + 1 user stats + 5 badge checks + 1 streak check)
-      expect(mockGetDoc).toHaveBeenCalledTimes(9)
+      // Should check for badge awards (2 progress checks + 1 user stats + 1 labs count + 5 badge checks + 1 week labs + 1 streak check)
+      expect(mockGetDoc).toHaveBeenCalledTimes(11)
     })
   })
 })
