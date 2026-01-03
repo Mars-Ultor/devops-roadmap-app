@@ -95,6 +95,7 @@ describe('Navbar', () => {
     });
 
     test('logout button calls logout and navigates to login', async () => {
+      mockNavigate = vi.fn(); // Reset mock for this test
       const mockLogout = vi.fn();
       (useAuthStore as any).mockReturnValue({
         user: mockUser,
@@ -174,8 +175,8 @@ describe('Navbar', () => {
     test('dashboard link has correct href', () => {
       renderNavbar();
 
-      const dashboardLink = screen.getByRole('link', { name: /devops training/i });
-      expect(dashboardLink).toHaveAttribute('href', '/dashboard');
+      const dashboardLink = screen.getByText('DevOps Training');
+      expect(dashboardLink.closest('a')).toHaveAttribute('href', '/dashboard');
     });
 
     test('training link has correct href', () => {

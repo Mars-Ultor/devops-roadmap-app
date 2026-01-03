@@ -126,7 +126,7 @@ describe('Quiz', () => {
 
     // Should show results
     await waitFor(() => {
-      expect(screen.getByText('Quiz Complete!')).toBeInTheDocument();
+      expect(screen.getByText('Quiz Passed!')).toBeInTheDocument();
     });
 
     expect(screen.getByText('100%')).toBeInTheDocument(); // Score
@@ -156,7 +156,7 @@ describe('Quiz', () => {
     fireEvent.click(screen.getByText('Submit Quiz'));
 
     await waitFor(() => {
-      expect(screen.getByText('Quiz Complete!')).toBeInTheDocument();
+      expect(screen.getByText('Quiz Passed!')).toBeInTheDocument();
     });
 
     expect(screen.getByText('0%')).toBeInTheDocument();
@@ -174,7 +174,7 @@ describe('Quiz', () => {
     fireEvent.click(screen.getByText('Submit Quiz'));
 
     await waitFor(() => {
-      expect(screen.getByText('DevOps is a culture that promotes collaboration between development and operations teams.')).toBeInTheDocument();
+      expect(screen.getByText('💡 DevOps is a culture that promotes collaboration between development and operations teams.')).toBeInTheDocument();
     });
   });
 
@@ -200,11 +200,11 @@ describe('Quiz', () => {
     fireEvent.click(screen.getByText('Submit Quiz'));
 
     await waitFor(() => {
-      expect(screen.getByText('Failed')).toBeInTheDocument();
+      expect(screen.getByText('Keep Trying!')).toBeInTheDocument();
     });
 
     // Click try again
-    fireEvent.click(screen.getByText('Try Again'));
+    fireEvent.click(screen.getByText('Retake Quiz'));
 
     // Should be back to first question
     expect(screen.getByText('What is DevOps?')).toBeInTheDocument();
