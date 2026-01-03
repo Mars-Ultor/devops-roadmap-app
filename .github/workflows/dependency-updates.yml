@@ -79,34 +79,4 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: update dependencies
-
-- Updated client dependencies
-- Updated server dependencies
-- Updated ML service dependencies
-- Ran tests to ensure compatibility"
-          title: "chore: update dependencies"
-          body: |
-            ## Dependency Updates
-
-            This PR updates dependencies across all services:
-
-            ### Client
-            - Updated npm packages
-            - Fixed security vulnerabilities
-
-            ### Server
-            - Updated npm packages
-            - Fixed security vulnerabilities
-
-            ### ML Service
-            - Updated Python packages
-
-            ### Testing
-            - All tests pass after updates
-            - No breaking changes detected
-
-            ---
-            🤖 This PR was automatically created by the dependency update workflow.
-          branch: automated/dependency-updates
-          delete-branch: true
+          commit-message: "chore: update dependencies"
