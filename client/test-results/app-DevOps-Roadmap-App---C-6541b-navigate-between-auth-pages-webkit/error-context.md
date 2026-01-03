@@ -1,0 +1,65 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - img [ref=e11]
+          - heading "Start Your Journey" [level=1] [ref=e16]
+        - paragraph [ref=e17]: Join thousands learning DevOps the right way
+      - generic [ref=e18]:
+        - heading "What You'll Get:" [level=3] [ref=e19]
+        - generic [ref=e20]:
+          - generic [ref=e21]:
+            - img [ref=e22]
+            - generic [ref=e25]:
+              - paragraph [ref=e26]: 12-Week Structured Curriculum
+              - paragraph [ref=e27]: From Linux basics to Kubernetes and Terraform
+          - generic [ref=e28]:
+            - img [ref=e29]
+            - generic [ref=e32]:
+              - paragraph [ref=e33]: 33 Interactive Browser Labs
+              - paragraph [ref=e34]: No setup required, practice directly in your browser
+          - generic [ref=e35]:
+            - img [ref=e36]
+            - generic [ref=e39]:
+              - paragraph [ref=e40]: Cloud Resume Challenge
+              - paragraph [ref=e41]: Build a portfolio project that impresses recruiters
+          - generic [ref=e42]:
+            - img [ref=e43]
+            - generic [ref=e46]:
+              - paragraph [ref=e47]: Progress Tracking & Badges
+              - paragraph [ref=e48]: Earn 6000+ XP and unlock achievements
+          - generic [ref=e49]:
+            - img [ref=e50]
+            - generic [ref=e53]:
+              - paragraph [ref=e54]: 100% Free Forever
+              - paragraph [ref=e55]: No credit card, no trials, just learning
+    - generic [ref=e57]:
+      - generic [ref=e58]:
+        - heading "Create Your Account 🎉" [level=2] [ref=e59]
+        - paragraph [ref=e60]: Get started for free - no credit card required
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - generic [ref=e64]: Full Name
+            - textbox "Full Name" [ref=e65]:
+              - /placeholder: John Doe
+          - generic [ref=e66]:
+            - generic [ref=e67]: Email Address
+            - textbox "Email Address" [ref=e68]:
+              - /placeholder: you@example.com
+          - generic [ref=e69]:
+            - generic [ref=e70]: Password
+            - textbox "Password" [ref=e71]:
+              - /placeholder: ••••••••
+            - paragraph [ref=e72]: Minimum 6 characters
+        - button "Create Account" [ref=e74]:
+          - generic [ref=e75]: Create Account
+        - link "Already have an account? Sign in →" [ref=e77]:
+          - /url: /login
+  - iframe [ref=e78]:
+    
+```
