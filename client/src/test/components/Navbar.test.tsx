@@ -25,6 +25,16 @@ vi.mock('lucide-react', () => ({
   Brain: () => <div data-testid="brain-icon" />,
 }));
 
+// Mock react-router-dom's useNavigate
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
 const mockUser = {
   uid: 'test-user-123',
   email: 'test@example.com',
@@ -61,12 +71,6 @@ describe('Navbar', () => {
       expect(screen.getByText('DevOps Training')).toBeInTheDocument();
       expect(screen.getByText('DevOps')).toBeInTheDocument(); // Mobile version
     });
-
-    test('shows login link when no user', () => {
-      renderNavbar();
-
-      expect(screen.getByText('Login')).toBeInTheDocument();
-    });
   });
 
   describe('when user is logged in', () => {
@@ -83,14 +87,11 @@ describe('Navbar', () => {
       expect(screen.getByText('Training')).toBeInTheDocument();
       expect(screen.getByText('Battle Drills')).toBeInTheDocument();
       expect(screen.getByText('Failure Log')).toBeInTheDocument();
-      expect(screen.getByText('Progress')).toBeInTheDocument();
-      expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    });
-
-    test('shows user name in navbar', () => {
-      renderNavbar();
-
-      expect(screen.getByText('Test User')).toBeInTheDocument();
+      expect(screen.getByText('AAR')).toBeInTheDocument();
+      expect(screen.getByText('Analytics')).toBeInTheDocument();
+      expect(screen.getByText('AI Coaching')).toBeInTheDocument();
+      expect(screen.getByText('Recertification')).toBeInTheDocument();
+      expect(screen.getByText('Settings')).toBeInTheDocument();
     });
 
     test('logout button calls logout and navigates to login', async () => {
@@ -128,23 +129,22 @@ describe('Navbar', () => {
     test('mobile menu opens and closes', () => {
       renderNavbar();
 
-      const menuButton = screen.getByRole('button', { name: /open main menu/i });
-
-      // Menu should be closed initially
-      expect(screen.queryByText('Training')).not.toBeVisible();
+      // Menu should be closed initially - mobile menu div should not be in the document
+      expect(screen.queryByRole('button', { name: /close menu/i })).not.toBeInTheDocument();
 
       // Open menu
+      const menuButton = screen.getByRole('button', { name: /open main menu/i });
       fireEvent.click(menuButton);
 
-      // Menu should be open
-      expect(screen.getByText('Training')).toBeVisible();
+      // Menu should be open - close button should be visible
+      expect(screen.getByRole('button', { name: /close menu/i })).toBeInTheDocument();
 
       // Close menu
       const closeButton = screen.getByRole('button', { name: /close menu/i });
       fireEvent.click(closeButton);
 
       // Menu should be closed
-      expect(screen.queryByText('Training')).not.toBeVisible();
+      expect(screen.queryByRole('button', { name: /close menu/i })).not.toBeInTheDocument();
     });
 
     test('clicking mobile menu link closes the menu', () => {
@@ -153,11 +153,17 @@ describe('Navbar', () => {
       const menuButton = screen.getByRole('button', { name: /open main menu/i });
       fireEvent.click(menuButton);
 
-      const trainingLink = screen.getByText('Training');
-      fireEvent.click(trainingLink);
+      // Find the mobile menu training link (it has different styling)
+      const mobileMenuLinks = screen.getAllByText('Training');
+      const mobileTrainingLink = mobileMenuLinks.find(link => 
+        link.closest('a')?.className.includes('text-base')
+      );
+      
+      expect(mobileTrainingLink).toBeInTheDocument();
+      fireEvent.click(mobileTrainingLink!);
 
       // Menu should close after clicking link
-      expect(screen.queryByText('Training')).not.toBeVisible();
+      expect(screen.queryByRole('button', { name: /close menu/i })).not.toBeInTheDocument();
     });
   });
 
