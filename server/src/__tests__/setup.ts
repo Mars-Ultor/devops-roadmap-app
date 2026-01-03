@@ -7,6 +7,9 @@ beforeAll(async () => {
   if (!process.env.DATABASE_URL) {
     process.env.DATABASE_URL = 'file:./test.db';
   }
+
+  // Set JWT secret for tests
+  process.env.JWT_SECRET = 'test-secret';
 });
 
 afterAll(async () => {

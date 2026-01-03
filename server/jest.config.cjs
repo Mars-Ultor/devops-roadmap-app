@@ -3,6 +3,7 @@ module.exports = {
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
   setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
+  maxWorkers: 1, // Run tests serially to avoid database conflicts
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
       useESM: true,
