@@ -12,6 +12,12 @@ export interface ValidationResult {
 
 /**
  * Validate TCS structure and content
+ * 
+ * Performs comprehensive validation of Task-Conditions-Standards format including
+ * required fields, content quality, and military standards compliance.
+ * 
+ * @param tcs - TCS task object to validate
+ * @returns Validation result with errors, warnings, and validity status
  */
 export function validateTCS(tcs: TCSTask): ValidationResult {
   const errors: string[] = [];
