@@ -27,12 +27,12 @@ export class CertificationService {
       }
 
       const data = await response.json();
-      return data.map((cert: any) => ({
-        userId: cert.userId,
-        skillId: cert.skillId,
-        certificationLevel: cert.certificationLevel as CertificationLevel,
-        earnedAt: new Date(cert.earnedAt),
-        expiresAt: new Date(cert.expiresAt),
+      return data.map((cert: unknown) => ({
+        userId: (cert as any).userId,
+        skillId: (cert as any).skillId,
+        certificationLevel: (cert as any).certificationLevel as CertificationLevel,
+        earnedAt: new Date((cert as any).earnedAt),
+        expiresAt: new Date((cert as any).expiresAt),
         lastRecertifiedAt: new Date(cert.lastRecertifiedAt),
         recertificationRequired: cert.recertificationRequired,
         gracePeriodDays: cert.gracePeriodDays,

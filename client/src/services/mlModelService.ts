@@ -12,7 +12,7 @@ export interface MLModel {
   type: 'tensorflow' | 'onnx' | 'custom';
   inputShape: number[];
   outputShape: number[];
-  model: any; // TensorFlow.js model or ONNX model
+  model: unknown; // TensorFlow.js model or ONNX model
   metadata: {
     accuracy: number;
     trainingDataSize: number;
@@ -24,7 +24,7 @@ export interface MLModel {
 
 export interface MLInput {
   features: number[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface MLPrediction {
@@ -38,7 +38,7 @@ export interface MLPrediction {
 export interface MLTrainingData {
   inputs: number[][];
   outputs: number[][];
-  metadata?: Record<string, any>[];
+  metadata?: Record<string, unknown>[];
 }
 
 const ML_SERVICE_URL = import.meta.env.VITE_ML_API_URL || 'http://localhost:8000';
@@ -46,7 +46,7 @@ const ML_SERVICE_URL = import.meta.env.VITE_ML_API_URL || 'http://localhost:8000
 export class MLModelService {
   private static instance: MLModelService;
   private models = new Map<string, MLModel>();
-  private modelCache = new Map<string, any>();
+  private modelCache = new Map<string, unknown>();
 
   public static getInstance(): MLModelService {
     if (!MLModelService.instance) {
@@ -68,7 +68,7 @@ export class MLModelService {
       const response = await axios.get(`${ML_SERVICE_URL}/models`);
       const availableModels = response.data.models;
 
-      const modelInfo = availableModels.find((m: any) => m.name === modelId);
+      const modelInfo = availableModels.find((m: unknown) => (m as any).name === modelId);
       if (!modelInfo) {
         throw new Error(`Model ${modelId} not found in ML service`);
       }
@@ -76,7 +76,7 @@ export class MLModelService {
       // Create model object
       const model: MLModel = {
         id: modelId,
-        name: modelInfo.name,
+        name: (modelInfo as any).name,
         version: '1.0.0',
         type: 'custom',
         inputShape: [modelInfo.features?.length || 10],
@@ -94,7 +94,7 @@ export class MLModelService {
       this.models.set(modelId, model);
       return model;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(`Failed to load model ${modelId}:`, error);
       // Return fallback model for development
       return this.createFallbackModel(modelId);
@@ -117,7 +117,7 @@ export class MLModelService {
         featureImportance: result.feature_importance
       };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(`Inference failed for model ${modelId}:`, error);
       // Return fallback prediction
       return this.generateFallbackPrediction(modelId, input);
@@ -131,7 +131,7 @@ export class MLModelService {
     try {
       await axios.post(`${ML_SERVICE_URL}/train/${modelId}`, trainingData);
       console.log(`Model ${modelId} training initiated on ML service`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(`Training failed for model ${modelId}:`, error);
       throw new Error(`Model training failed: ${error.message}`);
     }
@@ -140,12 +140,12 @@ export class MLModelService {
   /**
    * Get model performance metrics
    */
-  async getModelMetrics(modelId: string): Promise<any> {
+  async getModelMetrics(modelId: string): Promise<unknown> {
     try {
       const response = await axios.get(`${ML_SERVICE_URL}/models`);
-      const modelInfo = response.data.models.find((m: any) => m.name === modelId);
-      return modelInfo?.metrics || {};
-    } catch (error: any) {
+      const modelInfo = response.data.models.find((m: unknown) => (m as any).name === modelId);
+      return (modelInfo as any)?.metrics || {};
+    } catch (error: unknown) {
       console.error(`Failed to get metrics for ${modelId}:`, error);
       return {};
     }

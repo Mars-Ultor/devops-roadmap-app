@@ -38,8 +38,8 @@ export class ValidationService {
         default:
           return { success: false, message: `Unknown validation type: ${rule.type}` };
       }
-    } catch (error: any) {
-      return { success: false, message: error.message || 'Validation error' };
+    } catch (error: unknown) {
+      return { success: false, message: (error as any).message || 'Validation error' };
     }
   }
 
