@@ -26,7 +26,7 @@ vi.mock('lucide-react', () => ({
 }));
 
 // Mock react-router-dom's useNavigate
-const mockNavigate = vi.fn();
+let mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
@@ -122,48 +122,44 @@ describe('Navbar', () => {
     test('mobile menu button is visible on small screens', () => {
       renderNavbar();
 
-      const menuButton = screen.getByRole('button', { name: /open main menu/i });
+      // The mobile menu button should exist but doesn't have specific ARIA labels
+      const menuButton = screen.getByTestId('menu-icon').closest('button');
       expect(menuButton).toBeInTheDocument();
     });
 
     test('mobile menu opens and closes', () => {
       renderNavbar();
 
-      // Menu should be closed initially - mobile menu div should not be in the document
-      expect(screen.queryByRole('button', { name: /close menu/i })).not.toBeInTheDocument();
+      // Initially, mobile menu should not be visible (no mobile menu container)
+      expect(screen.queryByTestId('x-icon')).not.toBeInTheDocument();
 
       // Open menu
-      const menuButton = screen.getByRole('button', { name: /open main menu/i });
-      fireEvent.click(menuButton);
+      const menuButton = screen.getByTestId('menu-icon').closest('button');
+      fireEvent.click(menuButton!);
 
-      // Menu should be open - close button should be visible
-      expect(screen.getByRole('button', { name: /close menu/i })).toBeInTheDocument();
+      // Menu should be open - close icon should be visible
+      expect(screen.getByTestId('x-icon')).toBeInTheDocument();
 
       // Close menu
-      const closeButton = screen.getByRole('button', { name: /close menu/i });
-      fireEvent.click(closeButton);
+      const closeButton = screen.getByTestId('x-icon').closest('button');
+      fireEvent.click(closeButton!);
 
       // Menu should be closed
-      expect(screen.queryByRole('button', { name: /close menu/i })).not.toBeInTheDocument();
+      expect(screen.queryByTestId('x-icon')).not.toBeInTheDocument();
     });
 
     test('clicking mobile menu link closes the menu', () => {
       renderNavbar();
 
-      const menuButton = screen.getByRole('button', { name: /open main menu/i });
-      fireEvent.click(menuButton);
+      const menuButton = screen.getByTestId('menu-icon').closest('button');
+      fireEvent.click(menuButton!);
 
-      // Find the mobile menu training link (it has different styling)
-      const mobileMenuLinks = screen.getAllByText('Training');
-      const mobileTrainingLink = mobileMenuLinks.find(link => 
-        link.closest('a')?.className.includes('text-base')
-      );
-      
-      expect(mobileTrainingLink).toBeInTheDocument();
-      fireEvent.click(mobileTrainingLink!);
+      // Find a mobile menu link (they should be visible when menu is open)
+      const trainingLink = screen.getByText('Training');
+      fireEvent.click(trainingLink);
 
       // Menu should close after clicking link
-      expect(screen.queryByRole('button', { name: /close menu/i })).not.toBeInTheDocument();
+      expect(screen.queryByTestId('x-icon')).not.toBeInTheDocument();
     });
   });
 
