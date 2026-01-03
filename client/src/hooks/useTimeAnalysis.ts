@@ -35,82 +35,6 @@ export function useTimeAnalysis() {
   const [analysisData, setAnalysisData] = useState<TimeAnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const analyzeStudyTimes = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      // Get all user progress with timestamps
-      const progressQuery = query(
-        collection(db, 'progress'),
-        where('userId', '==', user.uid)
-      );
-      const progressSnap = await getDocs(progressQuery);
-
-      const hourlyData: Record<number, {
-        scores: number[];
-        completions: number;
-        attempts: number;
-        totalMinutes: number;
-      }> = {};
-
-      // Initialize all 24 hours
-      for (let i = 0; i < 24; i++) {
-        hourlyData[i] = { scores: [], completions: 0, attempts: 0, totalMinutes: 0 };
-      }
-
-      // Aggregate data by hour
-      progressSnap.docs.forEach(doc => {
-        const data = doc.data();
-        const completedAt = data.completedAt?.toDate();
-        if (!completedAt) return;
-
-        const hour = completedAt.getHours();
-        const score = data.score || 0;
-        const timeSpent = data.timeSpentMinutes || 0;
-
-        hourlyData[hour].scores.push(score);
-        hourlyData[hour].attempts++;
-        hourlyData[hour].totalMinutes += timeSpent;
-        
-        if (data.completed) {
-          hourlyData[hour].completions++;
-        }
-      });
-
-      // Calculate hourly performance
-      const hourlyPerformance: HourlyPerformance[] = Object.entries(hourlyData).map(([hour, data]) => ({
-        hour: parseInt(hour),
-        totalSessions: data.attempts,
-        averageScore: data.scores.length > 0 
-          ? data.scores.reduce((sum, s) => sum + s, 0) / data.scores.length 
-          : 0,
-        totalTimeMinutes: data.totalMinutes,
-        completionRate: data.attempts > 0 
-          ? (data.completions / data.attempts) * 100 
-          : 0
-      }));
-
-      // Generate recommendations
-      const recommendation = generateRecommendation(hourlyPerformance);
-
-      setAnalysisData({
-        hourlyPerformance,
-        recommendation,
-        totalDataPoints: progressSnap.size
-      });
-    } catch (error) {
-      console.error('Error analyzing study times:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, generateRecommendation]);
-
-  useEffect(() => {
-    if (user) {
-      analyzeStudyTimes();
-    }
-  }, [user, analyzeStudyTimes]);
-
   const formatHour = (hour: number): string => {
     const period = hour >= 12 ? 'PM' : 'AM';
     const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
@@ -198,6 +122,82 @@ export function useTimeAnalysis() {
       confidenceLevel
     };
   }, [formatTimeWindow]);
+
+  const analyzeStudyTimes = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      // Get all user progress with timestamps
+      const progressQuery = query(
+        collection(db, 'progress'),
+        where('userId', '==', user.uid)
+      );
+      const progressSnap = await getDocs(progressQuery);
+
+      const hourlyData: Record<number, {
+        scores: number[];
+        completions: number;
+        attempts: number;
+        totalMinutes: number;
+      }> = {};
+
+      // Initialize all 24 hours
+      for (let i = 0; i < 24; i++) {
+        hourlyData[i] = { scores: [], completions: 0, attempts: 0, totalMinutes: 0 };
+      }
+
+      // Aggregate data by hour
+      progressSnap.docs.forEach(doc => {
+        const data = doc.data();
+        const completedAt = data.completedAt?.toDate();
+        if (!completedAt) return;
+
+        const hour = completedAt.getHours();
+        const score = data.score || 0;
+        const timeSpent = data.timeSpentMinutes || 0;
+
+        hourlyData[hour].scores.push(score);
+        hourlyData[hour].attempts++;
+        hourlyData[hour].totalMinutes += timeSpent;
+        
+        if (data.completed) {
+          hourlyData[hour].completions++;
+        }
+      });
+
+      // Calculate hourly performance
+      const hourlyPerformance: HourlyPerformance[] = Object.entries(hourlyData).map(([hour, data]) => ({
+        hour: parseInt(hour),
+        totalSessions: data.attempts,
+        averageScore: data.scores.length > 0 
+          ? data.scores.reduce((sum, s) => sum + s, 0) / data.scores.length 
+          : 0,
+        totalTimeMinutes: data.totalMinutes,
+        completionRate: data.attempts > 0 
+          ? (data.completions / data.attempts) * 100 
+          : 0
+      }));
+
+      // Generate recommendations
+      const recommendation = generateRecommendation(hourlyPerformance);
+
+      setAnalysisData({
+        hourlyPerformance,
+        recommendation,
+        totalDataPoints: progressSnap.size
+      });
+    } catch (error) {
+      console.error('Error analyzing study times:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, generateRecommendation]);
+
+  useEffect(() => {
+    if (user) {
+      analyzeStudyTimes();
+    }
+  }, [user, analyzeStudyTimes]);
 
   return {
     analysisData,
