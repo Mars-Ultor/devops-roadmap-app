@@ -10,8 +10,6 @@ vi.mock('../../lib/firebase', () => ({
   addDoc: vi.fn(),
   collection: vi.fn(),
 }))
-  collection: vi.fn(),
-}))
 
 describe('MandatoryAARModal', () => {
   const mockOnComplete = vi.fn()
@@ -170,9 +168,8 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
 
     // Mock Firebase error
-    const mockAddDoc = vi.fn().mockRejectedValue(new Error('Firebase error'))
-    vi.mocked(addDoc).mockImplementation(mockAddDoc)
-    vi.mocked(collection).mockReturnValue('test-collection')
+    ;(addDoc as any).mockRejectedValue(new Error('Firebase error'))
+    ;(collection as any).mockReturnValue('test-collection')
 
     const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {})
 
