@@ -125,7 +125,7 @@ describe('useProgress', () => {
     })
 
     it('skips operations when no user is logged in', async () => {
-      vi.mocked(require('../../store/authStore').useAuthStore).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         user: null,
       })
 
@@ -133,7 +133,7 @@ describe('useProgress', () => {
 
       await result.current.completeLesson('test-lesson-1', 100)
 
-      expect(vi.mocked(require('../../lib/firebase').setDoc)).not.toHaveBeenCalled()
+      expect(vi.mocked(setDoc)).not.toHaveBeenCalled()
     })
   })
 
@@ -146,11 +146,11 @@ describe('useProgress', () => {
       const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
       const mockIncrement = vi.fn()
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(require('../../lib/firebase').getDoc).mockImplementation(mockGetDoc)
-      vi.mocked(require('../../lib/firebase').updateDoc).mockImplementation(mockUpdateDoc)
-      vi.mocked(require('../../lib/firebase').increment).mockImplementation(mockIncrement)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
+      vi.mocked(increment).mockImplementation(mockIncrement)
 
       const { result } = renderHook(() => useProgress())
 
@@ -182,7 +182,7 @@ describe('useProgress', () => {
       }))
 
       // Should not call updateDoc for XP increment
-      expect(vi.mocked(require('../../lib/firebase').updateDoc)).not.toHaveBeenCalled()
+      expect(vi.mocked(updateDoc)).not.toHaveBeenCalled()
     })
 
     it('marks related lesson as completed', async () => {
@@ -191,9 +191,9 @@ describe('useProgress', () => {
         .mockResolvedValueOnce({ exists: () => false }) // Lab progress check
         .mockResolvedValueOnce({ exists: () => false }) // Lesson progress check
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(require('../../lib/firebase').getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
 
       const { result } = renderHook(() => useProgress())
 
@@ -210,8 +210,8 @@ describe('useProgress', () => {
     it('handles lab completion errors', async () => {
       const mockSetDoc = vi.fn().mockRejectedValue(new Error('Firebase error'))
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
 
       const { result } = renderHook(() => useProgress())
 
@@ -219,7 +219,7 @@ describe('useProgress', () => {
     })
 
     it('skips operations when no user is logged in', async () => {
-      vi.mocked(require('../../store/authStore').useAuthStore).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         user: null,
       })
 
@@ -228,7 +228,7 @@ describe('useProgress', () => {
       const resultValue = await result.current.completeLab('w1-lab1', 150, 5, 10)
 
       expect(resultValue).toBeUndefined()
-      expect(vi.mocked(require('../../lib/firebase').setDoc)).not.toHaveBeenCalled()
+      expect(vi.mocked(setDoc)).not.toHaveBeenCalled()
     })
   })
 
@@ -253,9 +253,9 @@ describe('useProgress', () => {
         }),
       })
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(require('../../lib/firebase').getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
 
       const { result } = renderHook(() => useProgress())
 
@@ -276,9 +276,9 @@ describe('useProgress', () => {
         }),
       })
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(require('../../lib/firebase').getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
 
       const { result } = renderHook(() => useProgress())
 
@@ -302,9 +302,9 @@ describe('useProgress', () => {
           data: () => ({ totalXP: 150 })
         })
 
-      vi.mocked(require('../../lib/firebase').doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(require('../../lib/firebase').setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(require('../../lib/firebase').getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
 
       const { result } = renderHook(() => useProgress())
 
