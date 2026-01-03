@@ -17,24 +17,35 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node.js
+      - name: Setup Node.js for Client
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
 
       # Update Client Dependencies
       - name: Update Client Dependencies
         run: |
-          cd client
+          npm install
           npm update
           npm audit fix
+        working-directory: client
+
+      - name: Setup Node.js for Server
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
 
       # Update Server Dependencies
       - name: Update Server Dependencies
         run: |
-          cd server
+          npm install
           npm update
           npm audit fix
+        working-directory: server
 
       # Setup Python for ML Service
       - name: Setup Python
@@ -51,9 +62,18 @@ jobs:
 
       - name: Run tests after updates
         run: |
-          cd client && npm run test:ci
-          cd ../server && npm test
-          cd ../ml-service && python -m pytest
+          npm run test:ci
+        working-directory: client
+
+      - name: Run Server Tests
+        run: |
+          npm test
+        working-directory: server
+
+      - name: Run ML Service Tests
+        run: |
+          python -m pytest
+        working-directory: ml-service
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
