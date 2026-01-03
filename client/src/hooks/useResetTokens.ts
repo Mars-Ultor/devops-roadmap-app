@@ -3,7 +3,7 @@
  * Enforces weekly reset limits and cooldowns
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, query, where, getDocs, addDoc, orderBy, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
@@ -21,7 +21,7 @@ export function useResetTokens(config: TokenConfig = DEFAULT_TOKEN_CONFIG) {
       loadTokenAllocation();
       loadRecentResets();
     }
-  }, [user?.uid]);
+  }, [user?.uid, loadTokenAllocation, loadRecentResets]);
 
   /**
    * Get the current week's date range (Monday to Sunday)
@@ -45,7 +45,7 @@ export function useResetTokens(config: TokenConfig = DEFAULT_TOKEN_CONFIG) {
   /**
    * Load or create current week's token allocation
    */
-  const loadTokenAllocation = async () => {
+  const loadTokenAllocation = useCallback(async () => {
     if (!user?.uid) return;
 
     setLoading(true);
@@ -91,12 +91,12 @@ export function useResetTokens(config: TokenConfig = DEFAULT_TOKEN_CONFIG) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.uid, config]);
 
   /**
    * Load recent reset history
    */
-  const loadRecentResets = async () => {
+  const loadRecentResets = useCallback(async () => {
     if (!user?.uid) return;
 
     try {
@@ -118,7 +118,7 @@ export function useResetTokens(config: TokenConfig = DEFAULT_TOKEN_CONFIG) {
     } catch (error) {
       console.error('Error loading recent resets:', error);
     }
-  };
+  }, [user?.uid]);
 
   /**
    * Check if user can reset an item
