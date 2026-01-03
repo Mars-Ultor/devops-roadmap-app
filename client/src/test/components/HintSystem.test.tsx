@@ -15,14 +15,15 @@ describe('HintSystem', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.useFakeTimers()
-    mockNow = Date.now()
-    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
+    // Don't use fake timers by default - only for timer-specific tests
   })
 
   afterEach(() => {
-    vi.useRealTimers()
-    vi.restoreAllMocks()
+    // Only restore if fake timers were used
+    if (vi.isFakeTimers()) {
+      vi.useRealTimers()
+      vi.restoreAllMocks()
+    }
   })
 
   it('shows locked state when hints are not unlocked', () => {
@@ -89,7 +90,7 @@ describe('HintSystem', () => {
       />
     )
 
-    const viewHintButton = await screen.findByRole('button', { name: /view hint 1/i })
+    const viewHintButton = screen.getByRole('button', { name: /view hint 1/i })
     expect(viewHintButton).toBeEnabled()
 
     await user.click(viewHintButton)
@@ -121,6 +122,10 @@ describe('HintSystem', () => {
   })
 
   it('enforces 5-minute cooldown between hints', async () => {
+    vi.useFakeTimers()
+    let mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
+
     const labStartTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -147,9 +152,16 @@ describe('HintSystem', () => {
     // Should show countdown
     expect(screen.getByText(/next hint available in/i)).toBeInTheDocument()
     expect(screen.getByText('5:00')).toBeInTheDocument()
+
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('updates cooldown timer', async () => {
+    vi.useFakeTimers()
+    let mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
+
     const labStartTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -173,9 +185,16 @@ describe('HintSystem', () => {
     await waitFor(() => {
       expect(screen.getByText('4:30')).toBeInTheDocument()
     })
+
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('allows next hint after cooldown expires', async () => {
+    vi.useFakeTimers()
+    let mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
+
     const labStartTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -200,9 +219,16 @@ describe('HintSystem', () => {
       const viewSecondHintButton = screen.getByRole('button', { name: /view hint 2/i })
       expect(viewSecondHintButton).toBeEnabled()
     })
+
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('shows solution available after 90 minutes', async () => {
+    vi.useFakeTimers()
+    let mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
+
     const labStartTime = Date.now()
     render(
       <HintSystem
@@ -224,9 +250,16 @@ describe('HintSystem', () => {
     await waitFor(() => {
       expect(screen.getByText('Solution Available')).toBeInTheDocument()
     }, { timeout: 2000 })
+
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('shows all hints used message when no more hints available', async () => {
+    vi.useFakeTimers()
+    let mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
+
     const labStartTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -257,9 +290,16 @@ describe('HintSystem', () => {
     // Should show all hints used
     expect(screen.getByText('All Hints Used')).toBeInTheDocument()
     expect(screen.getByText(/all available hints\. the full solution will unlock/i)).toBeInTheDocument()
+
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('shows remaining time until solution when all hints used', async () => {
+    vi.useFakeTimers()
+    let mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
+
     const labStartTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -286,9 +326,16 @@ describe('HintSystem', () => {
     // Should show time remaining until solution
     expect(screen.getByText(/time remaining:/i)).toBeInTheDocument()
     expect(screen.getByText('90:00')).toBeInTheDocument()
+
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('updates solution countdown timer', async () => {
+    vi.useFakeTimers()
+    let mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
+
     const labStartTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -307,6 +354,7 @@ describe('HintSystem', () => {
       await user.click(viewButton)
 
       if (i < 3) {
+        mockNow += 5 * 60 * 1000 + 1000
         vi.advanceTimersByTime(5 * 60 * 1000 + 1000)
       }
     }
@@ -318,6 +366,9 @@ describe('HintSystem', () => {
     await waitFor(() => {
       expect(screen.getByText('60:00')).toBeInTheDocument()
     })
+
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('shows correct difficulty indicators', () => {
@@ -335,6 +386,10 @@ describe('HintSystem', () => {
   })
 
   it('shows hint cooldown message', async () => {
+    vi.useFakeTimers()
+    let mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
+
     const labStartTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -353,5 +408,8 @@ describe('HintSystem', () => {
 
     // Should show cooldown message
     expect(screen.getByText(/next hint will be available in 5 minutes/i)).toBeInTheDocument()
+
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 })
