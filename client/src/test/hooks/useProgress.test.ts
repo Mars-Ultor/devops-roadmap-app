@@ -135,8 +135,6 @@ describe('useProgress', () => {
       expect(vi.mocked(setDoc)).not.toHaveBeenCalled()
     })
   })
-
-  describe('completeLab', () => {
     it('completes a lab successfully', async () => {
       // Mock Firebase functions
       const mockDoc = vi.fn()
@@ -224,14 +222,9 @@ describe('useProgress', () => {
       expect(mockSetDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
         lessonId: 'w1-lesson1',
         type: 'lesson',
-
-      vi.mocked(doc).mockReturnValue('mock-doc-ref')
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
-
-      const { result } = renderHook(() => useProgress())
-
-      await result.current.completeLab('w1-lab1', 150, 5, 10)
+        completedViaLab: true,
+      }))
+    })
 
       // Should create lesson progress
       expect(mockSetDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
@@ -260,6 +253,7 @@ describe('useProgress', () => {
     })
 
     it('skips operations when no user is logged in', async () => {
+      // Mock auth store to return no user
       vi.mocked(useAuthStore).mockReturnValue({
         user: null,
       })
@@ -284,10 +278,30 @@ describe('useProgress', () => {
     })
 
     it('increases intervals for successful reviews', async () => {
+      // Mock Firebase functions for existing lesson with SM-2 data
+      const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => true,
         data: () => ({
+          easinessFactor: 2.5,
+          repetitions: 1,
+          interval: 1,
+          lastReviewQuality: 5
+        })
+      })
+
+      vi.mocked(doc).mockImplementation(mockDoc)
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+
+      const { result } = renderHook(() => useProgress())
+
+      const sm2Result = await result.current.completeLesson('test-lesson-1', 100, 5)
+
+      expect(sm2Result.interval).toBe(6) // Second review should be 6 days
+      expect(sm2Result.repetitions).toBe(2)
+    })
           easinessFactor: 2.5,
           repetitions: 1,
           interval: 1,
@@ -307,6 +321,8 @@ describe('useProgress', () => {
     })
 
     it('resets repetitions for failed reviews', async () => {
+      // Mock Firebase functions for failed review (quality < 3)
+      const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => true,
@@ -314,12 +330,21 @@ describe('useProgress', () => {
           easinessFactor: 2.5,
           repetitions: 2,
           interval: 6,
-        }),
+          lastReviewQuality: 5
+        })
       })
 
-      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(doc).mockImplementation(mockDoc)
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
       vi.mocked(getDoc).mockImplementation(mockGetDoc)
+
+      const { result } = renderHook(() => useProgress())
+
+      const sm2Result = await result.current.completeLesson('test-lesson-1', 100, 2) // Quality < 3
+
+      expect(sm2Result.repetitions).toBe(0)
+      expect(sm2Result.interval).toBe(1) // Reset to 1 day
+    })
 
       const { result } = renderHook(() => useProgress())
 
@@ -332,20 +357,41 @@ describe('useProgress', () => {
 
   describe('Badge System', () => {
     it('checks and awards badges after lab completion', async () => {
+      // Mock Firebase functions for badge checking
+      const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
       const mockGetDoc = vi.fn()
-        .mockResolvedValueOnce({ exists: () => false }) // Lab progress
-        .mockResolvedValueOnce({ exists: () => false }) // Lesson progress
+        .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lab progress
+        .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lesson progress
         .mockResolvedValueOnce({ // User stats
           data: () => ({ totalXP: 0, badges: [] })
         })
         .mockResolvedValueOnce({ // Badge check
           data: () => ({ totalXP: 150 })
         })
+      const mockCollection = vi.fn()
+      const mockQuery = vi.fn()
+      const mockWhere = vi.fn()
+      const mockGetDocs = vi.fn().mockResolvedValue({
+        docs: [],
+        empty: true
+      })
 
-      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(doc).mockImplementation(mockDoc)
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
       vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(collection).mockImplementation(mockCollection)
+      vi.mocked(query).mockImplementation(mockQuery)
+      vi.mocked(where).mockImplementation(mockWhere)
+      vi.mocked(getDocs).mockImplementation(mockGetDocs)
+
+      const { result } = renderHook(() => useProgress())
+
+      await result.current.completeLab('w1-lab1', 150, 5, 10)
+
+      // Should check for badge awards
+      expect(mockGetDoc).toHaveBeenCalledTimes(4)
+    })
 
       const { result } = renderHook(() => useProgress())
 
