@@ -3,32 +3,15 @@ DevOps Roadmap ML Service
 Full ML service using trained models from the models directory
 """
 
-from fastapi import FastAPI, HTTPException
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
-from datetime import datetime
-import os
-from pathlib import Path
 
-# Import database manager
-from database import db_manager
+# ... existing imports ...
 
-# Import ML models
-from models.learning_path_predictor import LearningPathPredictor
-from models.performance_predictor import PerformancePredictor
-from models.learning_style_detector import LearningStyleDetector
-from models.skill_gap_analyzer import SkillGapAnalyzer
-from models.motivational_analyzer import MotivationalAnalyzer
-
-app = FastAPI(
-    title="DevOps Roadmap ML Service",
-    description="ML service for intelligent DevOps learning",
-    version="1.0.0"
-)
-
-@app.on_event("startup")
-async def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
     print("Application startup event triggered")
     try:
         # Test database connection
@@ -37,6 +20,16 @@ async def startup_event():
     except Exception as e:
         print(f"Warning: Database connection issue: {e}")
         print("Continuing with mock data mode")
+    yield
+    # Shutdown (if needed)
+    pass
+
+app = FastAPI(
+    title="DevOps Roadmap ML Service",
+    description="ML service for intelligent DevOps learning",
+    version="1.0.0",
+    lifespan=lifespan
+)
 
 # CORS middleware
 app.add_middleware(
