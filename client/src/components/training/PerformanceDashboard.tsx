@@ -20,7 +20,6 @@ import { aiCoachService } from '../../services/aiCoachEnhanced';
 import type { PerformanceAnalytics, LearningPath, CoachContext } from '../../types/aiCoach';
 
 interface PerformanceDashboardProps {
-  userId: string;
   context: CoachContext;
 }
 
