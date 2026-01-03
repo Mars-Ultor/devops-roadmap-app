@@ -7,13 +7,18 @@ describe('StruggleTimer', () => {
   const mockOnHintUnlocked = vi.fn()
   const mockOnStruggleLogged = vi.fn()
 
+  let mockNow = Date.now()
+
   beforeEach(() => {
     vi.clearAllMocks()
     vi.useFakeTimers()
+    mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
   })
 
   afterEach(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('shows locked state initially', () => {
@@ -56,6 +61,7 @@ describe('StruggleTimer', () => {
     )
 
     // Fast-forward 5 seconds
+    mockNow += 5000
     vi.advanceTimersByTime(5000)
 
     await waitFor(() => {
@@ -194,7 +200,7 @@ describe('StruggleTimer', () => {
     alertMock.mockRestore()
   })
 
-  it('unlocks hints after timer expires and struggles are logged', () => {
+  it('unlocks hints after timer expires and struggles are logged', async () => {
     const startTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -210,29 +216,32 @@ describe('StruggleTimer', () => {
 
     // Document struggles first
     const docButton = screen.getByRole('button', { name: /document your struggle/i })
-    user.click(docButton).then(async () => {
-      const attemptInputs = screen.getAllByPlaceholderText(/attempt/i)
-      await user.type(attemptInputs[0], 'Attempt 1')
-      await user.type(attemptInputs[1], 'Attempt 2')
-      await user.type(attemptInputs[2], 'Attempt 3')
+    await user.click(docButton)
 
-      const stuckTextarea = screen.getByPlaceholderText(/describe the exact error/i)
-      await user.type(stuckTextarea, 'Stuck point description with enough characters')
+    const attemptInputs = screen.getAllByPlaceholderText(/attempt 1/i)
+    await user.type(attemptInputs[0], 'Attempt 1')
+    const attemptInputs2 = screen.getAllByPlaceholderText(/attempt 2/i)
+    await user.type(attemptInputs2[0], 'Attempt 2')
+    const attemptInputs3 = screen.getAllByPlaceholderText(/attempt 3/i)
+    await user.type(attemptInputs3[0], 'Attempt 3')
 
-      const hypothesisTextarea = screen.getByPlaceholderText(/your best guess/i)
-      await user.type(hypothesisTextarea, 'Hypothesis with enough characters to pass validation')
+    const stuckTextarea = screen.getByPlaceholderText(/describe the exact error/i)
+    await user.type(stuckTextarea, 'Stuck point description with enough characters')
 
-      const submitButton = screen.getByRole('button', { name: /submit documentation/i })
-      await user.click(submitButton)
+    const hypothesisTextarea = screen.getByPlaceholderText(/your best guess/i)
+    await user.type(hypothesisTextarea, 'Hypothesis with enough characters to pass validation')
 
-      // Fast-forward past 30 minutes
-      vi.advanceTimersByTime(30 * 60 * 1000 + 1000)
+    const submitButton = screen.getByRole('button', { name: /submit documentation/i })
+    await user.click(submitButton)
 
-      await waitFor(() => {
-        expect(mockOnHintUnlocked).toHaveBeenCalled()
-        expect(screen.getByText('Hints Available')).toBeInTheDocument()
-        expect(screen.getByText(/you've earned access to hints/i)).toBeInTheDocument()
-      })
+    // Fast-forward past 30 minutes
+    mockNow += 30 * 60 * 1000 + 1000
+    vi.advanceTimersByTime(30 * 60 * 1000 + 1000)
+
+    await waitFor(() => {
+      expect(mockOnHintUnlocked).toHaveBeenCalled()
+      expect(screen.getByText('Hints Available')).toBeInTheDocument()
+      expect(screen.getByText(/you've earned access to hints/i)).toBeInTheDocument()
     })
 
     alertMock.mockRestore()

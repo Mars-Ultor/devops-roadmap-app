@@ -11,13 +11,18 @@ describe('HintSystem', () => {
     { id: 3, text: 'Third hint', difficulty: 'hard' as const },
   ]
 
+  let mockNow = Date.now()
+
   beforeEach(() => {
     vi.clearAllMocks()
     vi.useFakeTimers()
+    mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
   })
 
   afterEach(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('shows locked state when hints are not unlocked', () => {
@@ -162,6 +167,7 @@ describe('HintSystem', () => {
     await user.click(viewHintButton)
 
     // Fast-forward 30 seconds
+    mockNow += 30000
     vi.advanceTimersByTime(30000)
 
     await waitFor(() => {
@@ -187,6 +193,7 @@ describe('HintSystem', () => {
     await user.click(viewHintButton)
 
     // Fast-forward past cooldown
+    mockNow += 5 * 60 * 1000 + 1000
     vi.advanceTimersByTime(5 * 60 * 1000 + 1000)
 
     await waitFor(() => {
@@ -210,6 +217,7 @@ describe('HintSystem', () => {
     expect(screen.queryByText('Solution Available')).not.toBeInTheDocument()
 
     // Fast-forward 90 minutes
+    mockNow += 90 * 60 * 1000
     vi.advanceTimersByTime(90 * 60 * 1000)
 
     // Wait for solution to become available
@@ -238,6 +246,7 @@ describe('HintSystem', () => {
 
       if (i < 3) {
         // Wait for cooldown to expire
+        mockNow += 5 * 60 * 1000 + 1000
         vi.advanceTimersByTime(5 * 60 * 1000 + 1000)
         await waitFor(() => {
           expect(screen.getByRole('button', { name: new RegExp(`view hint ${i + 1}`, 'i') })).toBeEnabled()
@@ -269,6 +278,7 @@ describe('HintSystem', () => {
       await user.click(viewButton)
 
       if (i < 3) {
+        mockNow += 5 * 60 * 1000 + 1000
         vi.advanceTimersByTime(5 * 60 * 1000 + 1000)
       }
     }
@@ -302,6 +312,7 @@ describe('HintSystem', () => {
     }
 
     // Fast-forward 30 minutes
+    mockNow += 30 * 60 * 1000
     vi.advanceTimersByTime(30 * 60 * 1000)
 
     await waitFor(() => {
