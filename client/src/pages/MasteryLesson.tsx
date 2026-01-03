@@ -148,8 +148,7 @@ export default function MasteryLesson() {
         // Load detailed mastery content
         const content = await loadLessonContent(lessonId!);
         setDetailedContent(content);
-      }
-      catch (error) {
+      } catch (error) {
         console.error('Error fetching lesson:', error);
       } finally {
         setLoading(false);
