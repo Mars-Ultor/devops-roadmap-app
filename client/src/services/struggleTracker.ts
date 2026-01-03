@@ -7,18 +7,6 @@ import { doc, setDoc, collection, addDoc, serverTimestamp } from 'firebase/fires
 import { db } from '../lib/firebase';
 import type { StruggleLog } from '../components/StruggleTimer';
 
-interface StruggleSession {
-  labId: string;
-  userId: string;
-  labTitle: string;
-  startTime: Date;
-  struggles: StruggleLog;
-  hintsViewed: number[];
-  hintsViewedAt: Date[];
-  solutionViewedAt?: Date;
-  completedAt?: Date;
-}
-
 export class StruggleTracker {
   /**
    * Save struggle documentation to Firestore

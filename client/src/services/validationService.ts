@@ -57,7 +57,7 @@ export class ValidationService {
         success: data.exists,
         message: data.exists ? `✅ File found: ${filePath}` : `❌ File not found: ${filePath}`
       };
-    } catch (error) {
+    } catch (_error) {
       // Fallback: If API doesn't exist yet, return success for demo
       console.warn('File existence check API not available, using mock data');
       return {
@@ -85,7 +85,7 @@ export class ValidationService {
           ? `✅ Pattern found in ${filePath}: "${pattern}"` 
           : `❌ Pattern not found in ${filePath}: "${pattern}"`
       };
-    } catch (error) {
+    } catch (_error) {
       console.warn('File contains check API not available, using mock data');
       return {
         success: true,
@@ -112,7 +112,7 @@ export class ValidationService {
           ? `✅ Command succeeded: ${command}`
           : `❌ Command failed (exit ${data.exitCode}): ${command}\n${data.stderr || data.stdout}`
       };
-    } catch (error) {
+    } catch (_error) {
       console.warn('Command validation API not available, using mock data');
       return {
         success: true,
@@ -135,7 +135,7 @@ export class ValidationService {
           ? `✅ Image found: ${imageName}`
           : `❌ Image not found: ${imageName}. Run: docker pull ${imageName}`
       };
-    } catch (error) {
+    } catch (_error) {
       console.warn('Image existence check API not available, using mock data');
       return {
         success: true,
