@@ -264,11 +264,11 @@ describe('StruggleTimer', () => {
       )
     })
 
-    // Debug: check what's actually rendered
-    screen.debug()
+    // Wait for the hints to be unlocked
+    await waitFor(() => {
+      expect(screen.getByText('Hints Available')).toBeInTheDocument()
+    }, { timeout: 1000 })
 
-    // The component should now show hints as unlocked
-    expect(screen.getByText('Hints Available')).toBeInTheDocument()
     expect(screen.getByText(/you've earned access to hints/i)).toBeInTheDocument()
     expect(mockOnHintUnlocked).toHaveBeenCalled()
 
