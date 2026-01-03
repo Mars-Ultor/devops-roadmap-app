@@ -360,4 +360,3 @@ describe('useProgress', () => {
       expect(mockGetDoc).toHaveBeenCalledTimes(4)
     })
   })
-})
