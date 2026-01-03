@@ -3,7 +3,7 @@
  * Handles 4-level mastery system (Crawl → Walk → Run-Guided → Run-Independent)
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
@@ -32,9 +32,9 @@ export function useMastery(lessonId: string) {
     }
 
     loadMastery();
-  }, [user?.uid, lessonId]);
+  }, [user?.uid, lessonId, loadMastery]);
 
-  const loadMastery = async () => {
+  const loadMastery = useCallback(async () => {
     if (!user?.uid || !lessonId) return;
 
     try {
@@ -47,7 +47,7 @@ export function useMastery(lessonId: string) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.uid, lessonId]);
 
   const recordAttempt = async (
     level: MasteryLevel,

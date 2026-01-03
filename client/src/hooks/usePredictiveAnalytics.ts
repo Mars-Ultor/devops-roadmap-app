@@ -3,7 +3,7 @@
  * Estimates completion times and predicts learning outcomes
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -53,9 +53,9 @@ export function usePredictiveAnalytics() {
     if (user) {
       generatePredictions();
     }
-  }, [user]);
+  }, [user, generatePredictions]);
 
-  const generatePredictions = async () => {
+  const generatePredictions = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -89,7 +89,7 @@ export function usePredictiveAnalytics() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const calculateCompletionPrediction = (progressDocs: { data: () => { completedAt?: { toDate: () => Date }; masteryLevel?: string } }[]): PredictiveData['completionPrediction'] => {
     const totalProgramItems = 200; // Estimated total items in program
