@@ -164,20 +164,6 @@ describe('useProgress', () => {
       const resultValue = await result.current.completeLab('w1-lab1', 150, 5, 10)
 
       expect(resultValue).toBe(true)
-      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
-      const mockIncrement = vi.fn()
-
-      vi.mocked(doc).mockImplementation(mockDoc)
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
-      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
-      vi.mocked(increment).mockImplementation(mockIncrement)
-
-      const { result } = renderHook(() => useProgress())
-
-      const resultValue = await result.current.completeLab('w1-lab1', 150, 5, 10)
-
-      expect(resultValue).toBe(true)
       expect(mockSetDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
         userId: 'test-user-123',
         labId: 'w1-lab1',
@@ -250,6 +236,11 @@ describe('useProgress', () => {
     })
 
     it('handles lab completion errors', async () => {
+      // Mock auth store
+      vi.mocked(useAuthStore).mockReturnValue({
+        user: { uid: 'test-user-123' },
+      })
+
       // Mock Firebase functions to throw error
       const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockRejectedValue(new Error('Firebase error'))
@@ -347,6 +338,11 @@ describe('useProgress', () => {
 
   describe('Badge System', () => {
     it('checks and awards badges after lab completion', async () => {
+      // Mock auth store
+      vi.mocked(useAuthStore).mockReturnValue({
+        user: { uid: 'test-user-123' },
+      })
+
       // Mock Firebase functions for badge checking
       const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
