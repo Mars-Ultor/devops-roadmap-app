@@ -216,7 +216,7 @@ class DatabaseDeployer {
     }
 
     // Run database tests
-    execSync('npm test -- --testPathPattern=health.test.ts', { stdio: 'inherit' });
+    execSync('npm test -- --testPathPatterns=health.test.ts', { stdio: 'inherit' });
 
     this.log('✅ Health checks passed');
   }
@@ -259,7 +259,6 @@ class DatabaseDeployer {
 }
 
 // Run deployment
-console.log('🚀 Starting database deployment script...');
 const deployer = new DatabaseDeployer();
 
 deployer.run()

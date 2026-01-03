@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-01-03T06:46:29.063Z",
+  "environment": "development",
+  "databaseUrl": "file:./prisma/dev.db",
+  "deploymentType": "completed",
+  "logs": [
+    "[2026-01-03T06:46:13.013Z] INFO: 🚀 Starting database deployment...",
+    "[2026-01-03T06:46:13.015Z] INFO: 🔍 Validating environment...",
+    "[2026-01-03T06:46:13.016Z] INFO: ✅ Environment validation passed",
+    "[2026-01-03T06:46:13.016Z] INFO: 🔍 Detecting deployment type...",
+    "[2026-01-03T06:46:16.185Z] INFO: 📦 Migration deployment detected (SQLite → PostgreSQL)",
+    "[2026-01-03T06:46:16.185Z] INFO: 🔄 Performing database migration...",
+    "[2026-01-03T06:46:16.189Z] INFO: 💾 Created backup: backups\\backup-2026-01-03T06-46-16-186Z.db",
+    "[2026-01-03T06:46:16.190Z] INFO: 🔧 Generating Prisma client...",
+    "[2026-01-03T06:46:19.677Z] INFO: 🗃️ Pushing database schema...",
+    "[2026-01-03T06:46:23.332Z] INFO: 📊 Migrating data...",
+    "[2026-01-03T06:46:23.472Z] INFO: ✅ Verifying migration...",
+    "[2026-01-03T06:46:23.612Z] INFO: 🏥 Running health checks...",
+    "[2026-01-03T06:46:29.062Z] INFO: ✅ Health checks passed"
+  ]
+}
