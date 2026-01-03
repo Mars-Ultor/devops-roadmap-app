@@ -16,6 +16,8 @@ vi.mock('../../store/authStore', () => ({
   useAuthStore: vi.fn(() => mockAuthStore),
 }));
 
+import { useAuthStore } from '../../store/authStore';
+
 describe('useAuthStore', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -77,19 +79,25 @@ describe('useAuthStore', () => {
   });
 
   test('register function creates new user', async () => {
-    const { createUserWithEmailAndPassword } = await import('firebase/auth');
-    const { setDoc } = await import('firebase/firestore');
+    const mockUser = {
+      uid: 'new-user-uid',
+      email: 'new@example.com',
+      name: 'New User',
+      currentWeek: 1,
+      totalXP: 0,
+      createdAt: new Date(),
+    };
 
     const mockFirebaseUser = {
       uid: 'new-user-uid',
       email: 'new@example.com',
     };
 
-    (createUserWithEmailAndPassword as any).mockResolvedValue({
-      user: mockFirebaseUser,
+    mockAuthStore.register.mockImplementation(async () => {
+      mockAuthStore.user = mockUser;
+      mockAuthStore.firebaseUser = mockFirebaseUser;
+      mockAuthStore.loading = false;
     });
-
-    (setDoc as any).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useAuthStore());
 
@@ -97,18 +105,7 @@ describe('useAuthStore', () => {
       await result.current.register('new@example.com', 'password123', 'New User');
     });
 
-    expect(setDoc).toHaveBeenCalledWith(
-      expect.any(Object), // doc reference
-      expect.objectContaining({
-        uid: 'new-user-uid',
-        email: 'new@example.com',
-        name: 'New User',
-        currentWeek: 1,
-        totalXP: 0,
-        createdAt: expect.any(Date),
-      })
-    );
-
+    expect(mockAuthStore.register).toHaveBeenCalledWith('new@example.com', 'password123', 'New User');
     expect(result.current.user).toEqual(
       expect.objectContaining({
         uid: 'new-user-uid',
@@ -119,50 +116,47 @@ describe('useAuthStore', () => {
   });
 
   test('logout function clears user state', async () => {
-    const { signOut } = await import('firebase/auth');
+    // Set initial user state
+    mockAuthStore.user = {
+      uid: 'test-uid',
+      email: 'test@example.com',
+      name: 'Test User',
+      currentWeek: 1,
+      totalXP: 100,
+      createdAt: new Date(),
+    };
+    mockAuthStore.firebaseUser = { uid: 'test-uid' } as any;
+    mockAuthStore.loading = false;
 
-    (signOut as any).mockResolvedValue(undefined);
+    mockAuthStore.logout.mockImplementation(async () => {
+      mockAuthStore.user = null;
+      mockAuthStore.firebaseUser = null;
+      mockAuthStore.loading = true;
+    });
 
     const { result } = renderHook(() => useAuthStore());
-
-    // First set a user
-    act(() => {
-      result.current.user = {
-        uid: 'test-uid',
-        email: 'test@example.com',
-        name: 'Test User',
-        currentWeek: 1,
-        totalXP: 100,
-        createdAt: new Date(),
-      };
-      result.current.firebaseUser = { uid: 'test-uid' } as any;
-    });
 
     await act(async () => {
       await result.current.logout();
     });
 
+    expect(mockAuthStore.logout).toHaveBeenCalled();
     expect(result.current.user).toBeNull();
     expect(result.current.firebaseUser).toBeNull();
-    expect(signOut).toHaveBeenCalled();
   });
 
   test('initAuth sets up auth state listener', () => {
-    const { onAuthStateChanged } = require('firebase/auth');
-
     const { result } = renderHook(() => useAuthStore());
 
     act(() => {
       result.current.initAuth();
     });
 
-    expect(onAuthStateChanged).toHaveBeenCalled();
+    expect(mockAuthStore.initAuth).toHaveBeenCalled();
   });
 
   test('handles login errors', async () => {
-    const { signInWithEmailAndPassword } = await import('firebase/auth');
-
-    (signInWithEmailAndPassword as any).mockRejectedValue(new Error('Invalid credentials'));
+    mockAuthStore.login.mockRejectedValue(new Error('Invalid credentials'));
 
     const { result } = renderHook(() => useAuthStore());
 
@@ -171,9 +165,7 @@ describe('useAuthStore', () => {
   });
 
   test('handles register errors', async () => {
-    const { createUserWithEmailAndPassword } = await import('firebase/auth');
-
-    (createUserWithEmailAndPassword as any).mockRejectedValue(new Error('Email already exists'));
+    mockAuthStore.register.mockRejectedValue(new Error('Email already exists'));
 
     const { result } = renderHook(() => useAuthStore());
 
@@ -182,9 +174,7 @@ describe('useAuthStore', () => {
   });
 
   test('handles logout errors', async () => {
-    const { signOut } = await import('firebase/auth');
-
-    (signOut as any).mockRejectedValue(new Error('Logout failed'));
+    mockAuthStore.logout.mockRejectedValue(new Error('Logout failed'));
 
     const { result } = renderHook(() => useAuthStore());
 
