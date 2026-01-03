@@ -40,6 +40,7 @@ vi.mock('../../store/authStore', () => ({
   useAuthStore: vi.fn(() => ({
     user: { uid: 'test-user' },
     loading: false,
+    initAuth: vi.fn(),
   })),
 }))
 

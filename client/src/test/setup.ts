@@ -20,6 +20,7 @@ vi.mock('../store/authStore', () => ({
   useAuthStore: vi.fn(() => ({
     user: null,
     loading: false,
+    initAuth: vi.fn(),
     signIn: vi.fn(),
     signOut: vi.fn(),
   })),

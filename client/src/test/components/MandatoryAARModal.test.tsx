@@ -10,6 +10,8 @@ vi.mock('../../lib/firebase', () => ({
   addDoc: vi.fn(),
   collection: vi.fn(),
 }))
+  collection: vi.fn(),
+}))
 
 describe('MandatoryAARModal', () => {
   const mockOnComplete = vi.fn()
@@ -101,9 +103,8 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
 
     // Mock Firebase functions
-    const mockAddDoc = vi.fn().mockResolvedValue({ id: 'test-doc-id' })
-    vi.mocked(addDoc).mockImplementation(mockAddDoc)
-    vi.mocked(collection).mockReturnValue('test-collection')
+    ;(addDoc as any).mockResolvedValue({ id: 'test-doc-id' })
+    ;(collection as any).mockReturnValue('test-collection')
 
     render(<MandatoryAARModal {...defaultProps} />)
 
@@ -146,9 +147,8 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
 
     // Mock slow Firebase call
-    const mockAddDoc = vi.fn().mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
-    vi.mocked(addDoc).mockImplementation(mockAddDoc)
-    vi.mocked(collection).mockReturnValue('test-collection')
+    ;(addDoc as any).mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
+    ;(collection as any).mockReturnValue('test-collection')
 
     render(<MandatoryAARModal {...defaultProps} />)
 
