@@ -280,8 +280,12 @@ describe('useProgress', () => {
     })
 
     it('increases intervals for successful reviews', async () => {
+      // Mock auth store
+      vi.mocked(useAuthStore).mockReturnValue({
+        user: { uid: 'test-user-123' },
+      })
+
       // Mock Firebase functions for existing lesson with SM-2 data
-      const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => true,
@@ -293,7 +297,7 @@ describe('useProgress', () => {
         })
       })
 
-      vi.mocked(doc).mockImplementation(mockDoc)
+      vi.mocked(doc).mockReturnValue({ id: 'mock-doc-ref' })
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
       vi.mocked(getDoc).mockImplementation(mockGetDoc)
 
@@ -306,8 +310,12 @@ describe('useProgress', () => {
     })
 
     it('resets repetitions for failed reviews', async () => {
+      // Mock auth store
+      vi.mocked(useAuthStore).mockReturnValue({
+        user: { uid: 'test-user-123' },
+      })
+
       // Mock Firebase functions for failed review (quality < 3)
-      const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => true,
@@ -319,7 +327,7 @@ describe('useProgress', () => {
         })
       })
 
-      vi.mocked(doc).mockImplementation(mockDoc)
+      vi.mocked(doc).mockReturnValue({ id: 'mock-doc-ref' })
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
       vi.mocked(getDoc).mockImplementation(mockGetDoc)
 
