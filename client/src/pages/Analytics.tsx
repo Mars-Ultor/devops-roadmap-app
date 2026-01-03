@@ -102,30 +102,31 @@ export default function Analytics() {
     weakTopics: []
   });
 
-  const getDateFilter = useCallback(() => {
-    const now = new Date();
-    switch (timeRange) {
-      case 'week': {
-        const weekAgo = new Date(now);
-        weekAgo.setDate(now.getDate() - 7);
-        return weekAgo;
-      }
-      case 'month': {
-        const monthAgo = new Date(now);
-        monthAgo.setMonth(now.getMonth() - 1);
-        return monthAgo;
-      }
-      case 'all':
-      default:
-        return new Date(0); // Beginning of time
-    }
-  }, [timeRange]);
-
   const loadAnalytics = useCallback(async () => {
     if (!user?.uid) return;
 
     setLoading(true);
     try {
+      // Calculate date filter based on timeRange
+      const getDateFilter = () => {
+        const now = new Date();
+        switch (timeRange) {
+          case 'week': {
+            const weekAgo = new Date(now);
+            weekAgo.setDate(now.getDate() - 7);
+            return weekAgo;
+          }
+          case 'month': {
+            const monthAgo = new Date(now);
+            monthAgo.setMonth(now.getMonth() - 1);
+            return monthAgo;
+          }
+          case 'all':
+          default:
+            return new Date(0); // Beginning of time
+        }
+      };
+
       const dateFilter = getDateFilter();
       const data: Partial<AnalyticsData> = {};
 
@@ -342,7 +343,7 @@ export default function Analytics() {
     } finally {
       setLoading(false);
     }
-  }, [user?.uid, getUsageStats, getDateFilter]);
+  }, [user?.uid, getUsageStats, timeRange]);
 
   useEffect(() => {
     loadAnalytics();
