@@ -154,9 +154,10 @@ export default function MasteryLesson() {
         setLoading(false);
       }
     }
+  }
 
-    fetchLessonData();
-  }, [lessonId]);
+  fetchLessonData();
+}, [lessonId]);
 
   // Early return for invalid parameters (after all hooks)
   if (!isValidParams) {
