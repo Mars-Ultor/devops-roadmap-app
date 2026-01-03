@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -14,111 +14,111 @@ export default function Review() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [categories, setCategories] = useState<string[]>([]);
 
-  useEffect(() => {
-    async function loadFlashCards() {
-      if (!user) return;
+  const loadFlashCards = useCallback(async () => {
+    if (!user) return;
 
-      try {
-        // Get all completed lessons
-        const progressQuery = query(
-          collection(db, 'progress'),
-          where('userId', '==', user.uid),
-          where('type', '==', 'lesson')
-        );
-        const progressSnapshot = await getDocs(progressQuery);
-        
-        // Generate flash cards from lessons
-        const cards: FlashCardData[] = [];
-        const uniqueCategories = new Set<string>();
+    try {
+      // Get all completed lessons
+      const progressQuery = query(
+        collection(db, 'progress'),
+        where('userId', '==', user.uid),
+        where('type', '==', 'lesson')
+      );
+      const progressSnapshot = await getDocs(progressQuery);
+      
+      // Generate flash cards from lessons
+      const cards: FlashCardData[] = [];
+      const uniqueCategories = new Set<string>();
 
-        // Sample flash cards for completed lessons
-        // In production, these would be generated from lesson content or stored in Firestore
-        progressSnapshot.docs.forEach((doc, index) => {
-          const data = doc.data();
-          const lessonId = data.lessonId;
-          const category = lessonId.includes('w1') ? 'Linux & DevOps' :
-                          lessonId.includes('w2') ? 'Git & GitHub' :
-                          lessonId.includes('w3') ? 'AWS Cloud' :
-                          lessonId.includes('w4') ? 'Networking' :
-                          lessonId.includes('w5') ? 'Python' :
-                          lessonId.includes('w6') ? 'Serverless' : 'General';
+      // Sample flash cards for completed lessons
+      // In production, these would be generated from lesson content or stored in Firestore
+      progressSnapshot.docs.forEach((doc, index) => {
+        const data = doc.data();
+        const lessonId = data.lessonId;
+        const category = lessonId.includes('w1') ? 'Linux & DevOps' :
+                        lessonId.includes('w2') ? 'Git & GitHub' :
+                        lessonId.includes('w3') ? 'AWS Cloud' :
+                        lessonId.includes('w4') ? 'Networking' :
+                        lessonId.includes('w5') ? 'Python' :
+                        lessonId.includes('w6') ? 'Serverless' : 'General';
 
-          uniqueCategories.add(category);
+        uniqueCategories.add(category);
 
-          // Add sample cards based on lesson topic
-          if (lessonId === 'w1-l1') {
-            cards.push({
-              id: `card-${index}-1`,
-              lessonId,
-              lessonTitle: 'What is DevOps?',
-              category,
-              question: 'What are the three main pillars of DevOps culture?',
-              answer: '1. Collaboration: Breaking down silos between Dev and Ops\n2. Automation: Automating repetitive tasks and deployments\n3. Continuous Improvement: Iterating based on metrics and feedback'
-            });
-            cards.push({
-              id: `card-${index}-2`,
-              lessonId,
-              lessonTitle: 'What is DevOps?',
-              category,
-              question: 'What is the primary goal of DevOps?',
-              answer: 'To shorten the development lifecycle and deliver features, fixes, and updates frequently while maintaining high quality and reliability.'
-            });
-          }
+        // Add sample cards based on lesson topic
+        if (lessonId === 'w1-l1') {
+          cards.push({
+            id: `card-${index}-1`,
+            lessonId,
+            lessonTitle: 'What is DevOps?',
+            category,
+            question: 'What are the three main pillars of DevOps culture?',
+            answer: '1. Collaboration: Breaking down silos between Dev and Ops\n2. Automation: Automating repetitive tasks and deployments\n3. Continuous Improvement: Iterating based on metrics and feedback'
+          });
+          cards.push({
+            id: `card-${index}-2`,
+            lessonId,
+            lessonTitle: 'What is DevOps?',
+            category,
+            question: 'What is the primary goal of DevOps?',
+            answer: 'To shorten the development lifecycle and deliver features, fixes, and updates frequently while maintaining high quality and reliability.'
+          });
+        }
 
-          if (lessonId === 'w1-l2') {
-            cards.push({
-              id: `card-${index}-3`,
-              lessonId,
-              lessonTitle: 'Linux Basics',
-              category,
-              question: 'What command shows your current directory?',
-              answer: 'pwd (print working directory)\n\nExample:\n$ pwd\n/home/user/projects'
-            });
-            cards.push({
-              id: `card-${index}-4`,
-              lessonId,
-              lessonTitle: 'Linux Basics',
-              category,
-              question: 'What does the chmod command do?',
-              answer: 'chmod (change mode) modifies file permissions\n\nExample:\nchmod 755 script.sh\n- Owner: read, write, execute (7)\n- Group: read, execute (5)\n- Others: read, execute (5)'
-            });
-          }
+        if (lessonId === 'w1-l2') {
+          cards.push({
+            id: `card-${index}-3`,
+            lessonId,
+            lessonTitle: 'Linux Basics',
+            category,
+            question: 'What command shows your current directory?',
+            answer: 'pwd (print working directory)\n\nExample:\n$ pwd\n/home/user/projects'
+          });
+          cards.push({
+            id: `card-${index}-4`,
+            lessonId,
+            lessonTitle: 'Linux Basics',
+            category,
+            question: 'What does the chmod command do?',
+            answer: 'chmod (change mode) modifies file permissions\n\nExample:\nchmod 755 script.sh\n- Owner: read, write, execute (7)\n- Group: read, execute (5)\n- Others: read, execute (5)'
+          });
+        }
 
-          if (lessonId === 'w2-l1') {
-            cards.push({
-              id: `card-${index}-5`,
-              lessonId,
-              lessonTitle: 'Git Fundamentals',
-              category,
-              question: 'What is the difference between git pull and git fetch?',
-              answer: 'git fetch: Downloads changes from remote but doesn\'t merge them\ngit pull: Downloads AND merges changes (fetch + merge)\n\nUse fetch when you want to review changes before merging.'
-            });
-          }
+        if (lessonId === 'w2-l1') {
+          cards.push({
+            id: `card-${index}-5`,
+            lessonId,
+            lessonTitle: 'Git Fundamentals',
+            category,
+            question: 'What is the difference between git pull and git fetch?',
+            answer: 'git fetch: Downloads changes from remote but doesn\'t merge them\ngit pull: Downloads AND merges changes (fetch + merge)\n\nUse fetch when you want to review changes before merging.'
+          });
+        }
 
-          if (lessonId === 'w3-l1') {
-            cards.push({
-              id: `card-${index}-6`,
-              lessonId,
-              lessonTitle: 'AWS Fundamentals',
-              category,
-              question: 'What are the 3 main AWS compute services?',
-              answer: '1. EC2: Virtual servers (full control, pay per hour)\n2. Lambda: Serverless functions (pay per execution)\n3. ECS/EKS: Container services (Docker/Kubernetes)'
-            });
-          }
-        });
+        if (lessonId === 'w3-l1') {
+          cards.push({
+            id: `card-${index}-6`,
+            lessonId,
+            lessonTitle: 'AWS Fundamentals',
+            category,
+            question: 'What are the 3 main AWS compute services?',
+            answer: '1. EC2: Virtual servers (full control, pay per hour)\n2. Lambda: Serverless functions (pay per execution)\n3. ECS/EKS: Container services (Docker/Kubernetes)'
+          });
+        }
+      });
 
-        setFlashCards(cards);
-        setFilteredCards(cards);
-        setCategories(['all', ...Array.from(uniqueCategories)]);
-      } catch (error) {
-        console.error('Error loading flash cards:', error);
-      } finally {
-        setLoading(false);
-      }
+      setFlashCards(cards);
+      setFilteredCards(cards);
+      setCategories(['all', ...Array.from(uniqueCategories)]);
+    } catch (error) {
+      console.error('Error loading flash cards:', error);
+    } finally {
+      setLoading(false);
     }
-
-    loadFlashCards();
   }, [user]);
+
+  useEffect(() => {
+    loadFlashCards();
+  }, [loadFlashCards]);
 
   useEffect(() => {
     if (selectedCategory === 'all') {

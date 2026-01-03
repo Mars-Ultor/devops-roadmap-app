@@ -3,7 +3,7 @@
  * Tracks performance by hour and recommends optimal study times
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -35,13 +35,7 @@ export function useTimeAnalysis() {
   const [analysisData, setAnalysisData] = useState<TimeAnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      analyzeStudyTimes();
-    }
-  }, [user]);
-
-  const analyzeStudyTimes = async () => {
+  const analyzeStudyTimes = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -109,7 +103,13 @@ export function useTimeAnalysis() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      analyzeStudyTimes();
+    }
+  }, [user, analyzeStudyTimes]);
 
   const generateRecommendation = (hourlyData: HourlyPerformance[]): TimeRecommendation => {
     // Filter hours with sufficient data (at least 3 sessions)
