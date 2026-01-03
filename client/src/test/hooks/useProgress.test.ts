@@ -145,12 +145,21 @@ describe('useProgress', () => {
 
       // Mock Firebase functions
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
-      const mockGetDoc = vi.fn().mockResolvedValue({
-        exists: () => false,
-        data: () => ({})
-      })
+      const mockGetDoc = vi.fn()
+        .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lab progress check
+        .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lesson progress check
+        .mockResolvedValueOnce({ exists: () => true, data: () => ({ totalXP: 0 }) }) // User stats
+        .mockResolvedValue({ exists: () => false, data: () => ({}) }) // Badge checks (return false for all)
       const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
       const mockIncrement = vi.fn()
+      const mockCollection = vi.fn()
+      const mockQuery = vi.fn()
+      const mockWhere = vi.fn()
+      const mockGetDocs = vi.fn().mockResolvedValue({
+        docs: [],
+        empty: true,
+        size: 0
+      })
 
       vi.mocked(doc).mockReturnValue({ id: 'mock-doc-ref' })
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
@@ -181,16 +190,29 @@ describe('useProgress', () => {
 
       // Mock Firebase functions for already completed lab
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
-      const mockGetDoc = vi.fn().mockResolvedValue({
-        exists: () => true,
-        data: () => ({})
-      })
+      const mockGetDoc = vi.fn()
+        .mockResolvedValueOnce({ exists: () => true, data: () => ({}) }) // Lab already exists
+        .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lesson progress check
+        .mockResolvedValueOnce({ exists: () => true, data: () => ({ totalXP: 150 }) }) // User stats
+        .mockResolvedValue({ exists: () => false, data: () => ({}) }) // Badge checks
       const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
+      const mockCollection = vi.fn()
+      const mockQuery = vi.fn()
+      const mockWhere = vi.fn()
+      const mockGetDocs = vi.fn().mockResolvedValue({
+        docs: [],
+        empty: true,
+        size: 0
+      })
 
       vi.mocked(doc).mockReturnValue({ id: 'mock-doc-ref' })
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
       vi.mocked(getDoc).mockImplementation(mockGetDoc)
       vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
+      vi.mocked(collection).mockImplementation(mockCollection)
+      vi.mocked(query).mockImplementation(mockQuery)
+      vi.mocked(where).mockImplementation(mockWhere)
+      vi.mocked(getDocs).mockImplementation(mockGetDocs)
 
       const { result } = renderHook(() => useProgress())
 
@@ -213,12 +235,26 @@ describe('useProgress', () => {
       const mockGetDoc = vi.fn()
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lab progress check
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lesson progress check
+        .mockResolvedValueOnce({ exists: () => true, data: () => ({ totalXP: 0 }) }) // User stats
+        .mockResolvedValue({ exists: () => false, data: () => ({}) }) // Badge checks
       const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
+      const mockCollection = vi.fn()
+      const mockQuery = vi.fn()
+      const mockWhere = vi.fn()
+      const mockGetDocs = vi.fn().mockResolvedValue({
+        docs: [],
+        empty: true,
+        size: 0
+      })
 
       vi.mocked(doc).mockReturnValue({ id: 'mock-doc-ref' })
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
       vi.mocked(getDoc).mockImplementation(mockGetDoc)
       vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
+      vi.mocked(collection).mockImplementation(mockCollection)
+      vi.mocked(query).mockImplementation(mockQuery)
+      vi.mocked(where).mockImplementation(mockWhere)
+      vi.mocked(getDocs).mockImplementation(mockGetDocs)
 
       const { result } = renderHook(() => useProgress())
 
@@ -398,8 +434,8 @@ describe('useProgress', () => {
 
       await result.current.completeLab('w1-lab1', 150, 5, 10)
 
-      // Should check for badge awards (2 progress checks + 1 user stats + 5 badge checks)
-      expect(mockGetDoc).toHaveBeenCalledTimes(8)
+      // Should check for badge awards (2 progress checks + 1 user stats + 5 badge checks + 1 streak check)
+      expect(mockGetDoc).toHaveBeenCalledTimes(9)
     })
   })
 })
