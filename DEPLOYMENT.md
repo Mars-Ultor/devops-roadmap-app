@@ -8,6 +8,38 @@ The application consists of three main services:
 1. **Client** - React/Vite frontend (Firebase Hosting)
 2. **Server** - Node.js/Express API with Prisma (Railway)
 3. **ML Service** - Python ML models (Railway)
+4. **Redis** - Caching layer for performance optimization
+
+## Caching Strategy
+
+### Redis Implementation
+
+**Purpose:** Improve performance by caching frequent database queries and expensive ML computations.
+
+**Cached Data:**
+- User progress data (5 minutes TTL)
+- Curriculum content (1 hour TTL)
+- ML predictions (15 minutes TTL)
+- Coach insights (10 minutes TTL)
+
+**Setup:**
+```bash
+# Linux/Mac
+./setup-redis.sh
+
+# Windows
+setup-redis.bat
+```
+
+**Environment Variables:**
+```env
+# Add to both server and ml-service .env files
+REDIS_URL="redis://localhost:6379"
+```
+
+**Railway Configuration:**
+- Add Redis plugin to your Railway project
+- REDIS_URL will be automatically configured
 
 ## Deployment Strategy
 
@@ -52,6 +84,7 @@ DATABASE_URL="postgresql://..."
 JWT_SECRET="your-secret-key"
 PORT=3001
 NODE_ENV="production"
+REDIS_URL="redis://your-redis-instance"
 ```
 
 ### ML Service (.env)
@@ -59,6 +92,7 @@ NODE_ENV="production"
 OPENAI_API_KEY="your-key"
 MODEL_PATH="./models"
 PORT=8000
+REDIS_URL="redis://your-redis-instance"
 ```
 
 ### Client (.env.production)
