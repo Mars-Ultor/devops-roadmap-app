@@ -1,13 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useProgress } from '../../hooks/useProgress'
-import { doc, setDoc, getDoc, updateDoc, increment } from 'firebase/firestore'
+import { doc, setDoc, getDoc, updateDoc, increment, collection, query, where, getDocs } from 'firebase/firestore'
 import { useAuthStore } from '../../store/authStore'
 
 vi.mock('../../store/authStore', () => ({
   useAuthStore: vi.fn(() => ({
     user: { uid: 'test-user-123' },
   })),
+}))
+
+// Mock Firebase functions
+vi.mock('firebase/firestore', () => ({
+  doc: vi.fn(),
+  setDoc: vi.fn(),
+  getDoc: vi.fn(),
+  updateDoc: vi.fn(),
+  increment: vi.fn(),
+  collection: vi.fn(),
+  query: vi.fn(),
+  where: vi.fn(),
+  getDocs: vi.fn(),
 }))
 
 describe('useProgress', () => {
@@ -125,14 +138,17 @@ describe('useProgress', () => {
 
   describe('completeLab', () => {
     it('completes a lab successfully', async () => {
+      // Mock Firebase functions
+      const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => false,
+        data: () => ({})
       })
       const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
       const mockIncrement = vi.fn()
 
-      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(doc).mockImplementation(mockDoc)
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
       vi.mocked(getDoc).mockImplementation(mockGetDoc)
       vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
@@ -154,14 +170,29 @@ describe('useProgress', () => {
     })
 
     it('awards XP only on first completion', async () => {
+      // Mock Firebase functions for already completed lab
+      const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
+      const mockGetDoc = vi.fn().mockResolvedValue({
+        exists: () => true,
+        data: () => ({})
+      })
+      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
 
-      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(doc).mockImplementation(mockDoc)
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
 
       const { result } = renderHook(() => useProgress())
 
       await result.current.completeLab('w1-lab1', 150, 5, 10)
+
+      expect(mockSetDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
+        xpEarned: 150, // Still records XP earned, but doesn't increment user total
+      }))
+      expect(mockUpdateDoc).not.toHaveBeenCalled() // No XP increment for re-completion
+    })
 
       expect(mockSetDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
         xpEarned: 150, // Still records XP earned, but doesn't increment user total
@@ -172,10 +203,27 @@ describe('useProgress', () => {
     })
 
     it('marks related lesson as completed', async () => {
+      // Mock Firebase functions
+      const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockResolvedValue(undefined)
       const mockGetDoc = vi.fn()
-        .mockResolvedValueOnce({ exists: () => false }) // Lab progress check
-        .mockResolvedValueOnce({ exists: () => false }) // Lesson progress check
+        .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lab progress check
+        .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lesson progress check
+      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
+
+      vi.mocked(doc).mockImplementation(mockDoc)
+      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
+
+      const { result } = renderHook(() => useProgress())
+
+      await result.current.completeLab('w1-lab1', 150, 5, 10)
+
+      // Should create lesson progress
+      expect(mockSetDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
+        lessonId: 'w1-lesson1',
+        type: 'lesson',
 
       vi.mocked(doc).mockReturnValue('mock-doc-ref')
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
@@ -194,10 +242,17 @@ describe('useProgress', () => {
     })
 
     it('handles lab completion errors', async () => {
+      // Mock Firebase functions to throw error
+      const mockDoc = vi.fn()
       const mockSetDoc = vi.fn().mockRejectedValue(new Error('Firebase error'))
+      const mockGetDoc = vi.fn().mockResolvedValue({
+        exists: () => false,
+        data: () => ({})
+      })
 
-      vi.mocked(doc).mockReturnValue('mock-doc-ref')
+      vi.mocked(doc).mockImplementation(mockDoc)
       vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(getDoc).mockImplementation(mockGetDoc)
 
       const { result } = renderHook(() => useProgress())
 
