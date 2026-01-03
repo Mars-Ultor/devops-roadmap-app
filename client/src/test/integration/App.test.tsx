@@ -39,7 +39,11 @@ vi.mock('../../pages/Register', () => ({
 vi.mock('../../store/authStore', () => ({
   useAuthStore: vi.fn(() => ({
     user: { uid: 'test-user' },
+    firebaseUser: null,
     loading: false,
+    login: vi.fn(),
+    register: vi.fn(),
+    logout: vi.fn(),
     initAuth: vi.fn(),
   })),
 }))
@@ -63,7 +67,12 @@ describe('App Integration', () => {
   it('shows loading state when auth is loading', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: null,
+      firebaseUser: null,
       loading: true,
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      initAuth: vi.fn(),
     })
 
     render(
@@ -78,7 +87,12 @@ describe('App Integration', () => {
   it('redirects to login when no user is authenticated', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: null,
+      firebaseUser: null,
       loading: false,
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      initAuth: vi.fn(),
     })
 
     render(
@@ -93,7 +107,12 @@ describe('App Integration', () => {
   it('shows authenticated routes when user is logged in', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { uid: 'test-user' },
+      firebaseUser: null,
       loading: false,
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      initAuth: vi.fn(),
     })
 
     render(
@@ -109,7 +128,12 @@ describe('App Integration', () => {
   it('renders training routes correctly', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { uid: 'test-user' },
+      firebaseUser: null,
       loading: false,
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      initAuth: vi.fn(),
     })
 
     // Mock window.location to simulate routing
