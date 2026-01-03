@@ -45,7 +45,7 @@ describe('FlashCard', () => {
   test('shows answer when Show Answer button is clicked', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
-    const showAnswerButton = screen.getByText('Show Answer');
+    const showAnswerButton = screen.getByText('Reveal Answer');
     fireEvent.click(showAnswerButton);
 
     expect(screen.getByText('Docker is a platform for developing, shipping, and running applications in containers.')).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('FlashCard', () => {
   test('shows progress indicator', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
-    expect(screen.getByText('1 / 2')).toBeInTheDocument();
+    expect(screen.getByText('Card 1 of 2')).toBeInTheDocument();
   });
 
   test('updates progress when moving to next card', () => {

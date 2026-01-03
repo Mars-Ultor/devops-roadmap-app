@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import Quiz from '../Quiz';
+import Quiz from '../../components/Quiz';
 import { useAuthStore } from '../../store/authStore';
 
 // Mock the auth store

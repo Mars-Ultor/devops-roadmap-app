@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { vi } from 'vitest';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '../../../store/authStore';
 
 // Mock Firebase
 vi.mock('firebase/auth', () => ({
@@ -17,7 +17,7 @@ vi.mock('firebase/firestore', () => ({
   updateDoc: vi.fn(),
 }));
 
-vi.mock('../../lib/firebase', () => ({
+vi.mock('../../../lib/firebase', () => ({
   auth: {},
   db: {},
 }));
