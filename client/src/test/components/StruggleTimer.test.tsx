@@ -247,7 +247,7 @@ describe('StruggleTimer', () => {
     )
 
     // Fast-forward past 30 minutes
-    currentTime += 30 * 60 * 1000 + 1000
+    currentTime += 30 * 60 * 1000
     
     // Check state before rerender
     expect(screen.getByText('Struggles logged')).toBeInTheDocument()
