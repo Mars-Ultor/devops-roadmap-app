@@ -101,7 +101,9 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
 
     // Mock Firebase functions
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(addDoc as any).mockResolvedValue({ id: 'test-doc-id' })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(collection as any).mockReturnValue('test-collection')
 
     render(<MandatoryAARModal {...defaultProps} />)
@@ -145,7 +147,9 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
 
     // Mock slow Firebase call
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(addDoc as any).mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(collection as any).mockReturnValue('test-collection')
 
     render(<MandatoryAARModal {...defaultProps} />)
@@ -168,7 +172,9 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
 
     // Mock Firebase error
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(addDoc as any).mockRejectedValue(new Error('Firebase error'))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(collection as any).mockReturnValue('test-collection')
 
     const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {})
