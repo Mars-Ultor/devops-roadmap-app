@@ -93,27 +93,6 @@ export default function MasteryLesson() {
           }
         }
 
-    async function fetchLessonData() {
-      try {
-        console.log('🔍 Looking for lessonId:', lessonId);
-
-        // Load all weeks data to find the lesson
-        const allWeeks = await curriculumLoader.loadAllWeeks();
-
-        // Load basic lesson data from local curriculum data
-        let lessonInfo = null;
-        let foundWeek = null;
-        for (const week of allWeeks) {
-          console.log('🔍 Checking week', week.weekNumber, 'lessons:', week.lessons.map(l => ({ id: l.id, lessonId: l.lessonId })));
-          const foundLesson = week.lessons.find(l => l.id === lessonId || l.lessonId === lessonId);
-          if (foundLesson) {
-            console.log('✅ Found lesson:', foundLesson);
-            lessonInfo = foundLesson;
-            foundWeek = week.weekNumber;
-            break;
-          }
-        }
-
         if (lessonInfo && foundWeek) {
           setWeekNumber(foundWeek);
           // Create lesson data structure from curriculum info
@@ -154,10 +133,9 @@ export default function MasteryLesson() {
         setLoading(false);
       }
     }
-  }
 
-  fetchLessonData();
-}, [lessonId]);
+    fetchLessonData();
+  }, [lessonId, isValidParams]);
 
   // Early return for invalid parameters (after all hooks)
   if (!isValidParams) {
