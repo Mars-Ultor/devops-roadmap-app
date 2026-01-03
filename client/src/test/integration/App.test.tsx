@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, MemoryRouter } from 'react-router-dom'
 import App from '../../App'
 
 // Mock Firebase
@@ -103,7 +103,7 @@ describe('App Integration', () => {
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
-  it('redirects to login when no user is authenticated', () => {
+  it('redirects to login when no user is authenticated', async () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: null,
       firebaseUser: null,
@@ -115,12 +115,14 @@ describe('App Integration', () => {
     })
 
     render(
-      <BrowserRouter>
+      <MemoryRouter initialEntries={['/']}>
         <App />
-      </BrowserRouter>
+      </MemoryRouter>
     )
 
-    expect(screen.getByTestId('login')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('login')).toBeInTheDocument()
+    })
   })
 
   it('shows authenticated routes when user is logged in', async () => {
@@ -135,9 +137,9 @@ describe('App Integration', () => {
     })
 
     render(
-      <BrowserRouter>
+      <MemoryRouter initialEntries={['/dashboard']}>
         <App />
-      </BrowserRouter>
+      </MemoryRouter>
     )
 
     // Should show dashboard by default
@@ -146,7 +148,7 @@ describe('App Integration', () => {
     })
   })
 
-  it('renders training routes correctly', () => {
+  it('renders training routes correctly', async () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { uid: 'test-user' },
       firebaseUser: null,
@@ -157,16 +159,10 @@ describe('App Integration', () => {
       initAuth: vi.fn(),
     })
 
-    // Mock window.location to simulate routing
-    Object.defineProperty(window, 'location', {
-      value: { pathname: '/training' },
-      writable: true,
-    })
-
     render(
-      <BrowserRouter>
+      <MemoryRouter initialEntries={['/training']}>
         <App />
-      </BrowserRouter>
+      </MemoryRouter>
     )
 
     await waitFor(() => {
@@ -174,7 +170,7 @@ describe('App Integration', () => {
     })
   })
 
-  it('renders lab routes correctly', () => {
+  it('renders lab routes correctly', async () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { uid: 'test-user' },
       firebaseUser: null,
@@ -185,16 +181,10 @@ describe('App Integration', () => {
       initAuth: vi.fn(),
     })
 
-    // Mock window.location to simulate routing
-    Object.defineProperty(window, 'location', {
-      value: { pathname: '/lab/w1-lab1' },
-      writable: true,
-    })
-
     render(
-      <BrowserRouter>
+      <MemoryRouter initialEntries={['/lab/w1-lab1']}>
         <App />
-      </BrowserRouter>
+      </MemoryRouter>
     )
 
     await waitFor(() => {
@@ -202,7 +192,7 @@ describe('App Integration', () => {
     })
   })
 
-  it('includes ContentGate for protected routes', () => {
+  it('includes ContentGate for protected routes', async () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { uid: 'test-user' },
       firebaseUser: null,
@@ -215,7 +205,13 @@ describe('App Integration', () => {
 
     // Mock ContentGate
     vi.mock('../../components/ContentGate', () => ({
-  default: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+      default: ({ children }: { children?: React.ReactNode }) => (
+        <div data-testid="content-gate">
+          <div data-testid="gate-protected">Gate Protected</div>
+          {children}
+        </div>
+      ),
+    }))
 
     render(
       <BrowserRouter>
