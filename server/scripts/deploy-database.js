@@ -207,8 +207,13 @@ class DatabaseDeployer {
   async runHealthChecks() {
     this.log('🏥 Running health checks...');
 
-    // Test database connection
-    execSync('npx prisma db execute --file scripts/health-check.sql', { stdio: 'pipe' });
+    if (this.isProduction) {
+      // Production: Check PostgreSQL database
+      execSync('npx prisma db execute --file scripts/health-check.sql', { stdio: 'pipe' });
+    } else {
+      // Development: Simple SQLite check
+      execSync('npx prisma db execute --file scripts/health-check.sql --url="file:./prisma/dev.db"', { stdio: 'pipe' });
+    }
 
     // Run database tests
     execSync('npm test -- --testPathPattern=health.test.ts', { stdio: 'inherit' });
