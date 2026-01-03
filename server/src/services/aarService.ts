@@ -262,7 +262,7 @@ export class AARService {
         .filter(aar => aar.aiReview?.score)
         .reduce((sum, aar) => sum + (aar.aiReview?.score || 0), 0) / aars.length,
       commonPatterns: patterns,
-      completionRate: 1, // TODO: calculate based on total lessons
+      completionRate: aars.length / 36, // 12 weeks × 3 lessons each = 36 total lessons
       improvementTrends: this.calculateImprovementTrends(aars),
       strengths: this.extractStrengths(aars),
       areasForImprovement: this.extractAreasForImprovement(aars)

@@ -1,6 +1,7 @@
 import { useAuthStore } from '../store/authStore';
 import { doc, setDoc, getDoc, updateDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { curriculumData } from '../data/curriculumData';
 
 export interface LabCompletion {
   labId: string;
@@ -330,7 +331,22 @@ export function useProgress() {
 
           case 'week_completed':
             // Check if all week's labs are complete
-            // TODO: Implement week completion check
+            const weekNumber = badge.requirement.value;
+            const weekData = curriculumData.find(week => week.weekNumber === weekNumber);
+            if (weekData) {
+              const weekLabIds = weekData.labs.map(lab => lab.id);
+              // Query for completed labs in this week
+              const weekLabsQuery = query(
+                collection(db, 'progress'),
+                where('userId', '==', user.uid),
+                where('type', '==', 'lab'),
+                where('itemId', 'in', weekLabIds)
+              );
+              const weekLabsSnap = await getDocs(weekLabsQuery);
+              if (weekLabsSnap.size === weekLabIds.length) {
+                shouldAward = true;
+              }
+            }
             break;
 
           case 'streak_days':
