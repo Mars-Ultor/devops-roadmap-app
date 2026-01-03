@@ -35,7 +35,7 @@ export function useRecertification() {
     if (user) {
       checkRecertificationStatus();
     }
-  }, [user, checkRecertificationStatus]);
+  }, [user]); // Removed checkRecertificationStatus from dependencies
 
   const checkRecertificationStatus = useCallback(async () => {
     if (!user) return;
