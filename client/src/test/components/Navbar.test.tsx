@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { vi } from 'vitest';
-import Navbar from '../Navbar';
+import Navbar from '../../components/Navbar';
 import { useAuthStore } from '../../store/authStore';
 
 // Mock the auth store

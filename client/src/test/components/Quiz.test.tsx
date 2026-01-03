@@ -147,7 +147,7 @@ describe('Quiz', () => {
       <Quiz
         {...defaultProps}
         questions={hardQuestions}
-        passingScore: 80
+        passingScore={80}
       />
     );
 
