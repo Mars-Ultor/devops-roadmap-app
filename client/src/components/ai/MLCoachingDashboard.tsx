@@ -15,7 +15,6 @@ import {
   Lightbulb,
   Users,
   Calendar,
-  BarChart3,
   Zap,
   RefreshCw
 } from 'lucide-react';

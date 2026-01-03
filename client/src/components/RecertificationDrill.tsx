@@ -8,16 +8,10 @@ import type {
   CertificationLevel
 } from '../types/training';
 import {
-  Award,
-  Clock,
   CheckCircle,
   XCircle,
-  AlertTriangle,
-  Trophy,
-  Target,
   BookOpen,
-  Timer,
-  Star
+  Timer
 } from 'lucide-react';
 
 interface RecertificationDrillProps {
