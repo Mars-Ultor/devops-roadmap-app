@@ -43,7 +43,7 @@ describe('MandatoryAARModal', () => {
     expect(wordCountElements).toHaveLength(6) // One for each question
   })
 
-  it.skip('validates minimum word counts', async () => {
+  it('validates minimum word counts', async () => {
     const user = userEvent.setup({ delay: null })
     render(<MandatoryAARModal {...defaultProps} />)
 
@@ -69,7 +69,7 @@ describe('MandatoryAARModal', () => {
     expect(screen.getByText('5/20 words')).toBeInTheDocument()
   })
 
-  it.skip('validates minimum word count for each question', async () => {
+  it('validates minimum word count for each question', async () => {
     const user = userEvent.setup({ delay: null })
     render(<MandatoryAARModal {...defaultProps} />)
 
@@ -89,7 +89,7 @@ describe('MandatoryAARModal', () => {
     alertMock.mockRestore()
   })
 
-  it.skip('accepts valid AAR submission', async () => {
+  it('accepts valid AAR submission', async () => {
     const user = userEvent.setup({ delay: null })
 
     // Mock Firebase functions are already mocked globally
@@ -164,7 +164,7 @@ describe('MandatoryAARModal', () => {
     expect(submitButton).toBeDisabled()
   })
 
-  it.skip('handles submission errors gracefully', async () => {
+  it('handles submission errors gracefully', async () => {
     const user = userEvent.setup({ delay: null })
 
     // Mock Firebase error
