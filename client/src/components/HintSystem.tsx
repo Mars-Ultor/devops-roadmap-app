@@ -18,6 +18,7 @@ interface HintSystemProps {
   hintsUnlocked: boolean;
   labStartTime: number;
   onHintViewed: (hintId: number, timestamp: Date) => void;
+  currentTime?: number; // For testing
 }
 
 const HINT_DELAY = 5 * 60 * 1000; // 5 minutes
@@ -27,7 +28,8 @@ export default function HintSystem({
   hints, 
   hintsUnlocked, 
   labStartTime,
-  onHintViewed 
+  onHintViewed,
+  currentTime 
 }: HintSystemProps) {
   const [viewedHints, setViewedHints] = useState<number[]>([]);
   const [lastHintTime, setLastHintTime] = useState<number | null>(null);
@@ -36,7 +38,7 @@ export default function HintSystem({
 
   useEffect(() => {
     const updateTimers = () => {
-      const now = Date.now();
+      const now = currentTime || Date.now();
       const timeSinceStart = now - labStartTime;
 
       // Check if solution is available (90 minutes)
@@ -57,13 +59,13 @@ export default function HintSystem({
     updateTimers();
     const interval = setInterval(updateTimers, 1000);
     return () => clearInterval(interval);
-  }, [lastHintTime, labStartTime]);
+  }, [lastHintTime, labStartTime, currentTime]);
 
   const handleViewHint = (hintId: number) => {
     if (!canViewNextHint()) return;
 
     setViewedHints([...viewedHints, hintId]);
-    setLastHintTime(Date.now());
+    setLastHintTime(currentTime || Date.now());
     onHintViewed(hintId, new Date());
   };
 
