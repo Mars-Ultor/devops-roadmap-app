@@ -113,22 +113,18 @@ export class CertificationService {
   }
 
   static async submitRecertificationAttempt(
-    certificationId: string,
-    drillId: string,
-    score: number,
-    passed: boolean,
-    timeSpentMinutes: number
+    attempt: RecertificationAttempt
   ): Promise<RecertificationAttempt | null> {
     try {
       const response = await fetch(`${API_BASE_URL}/api/certifications/attempt`, {
         method: 'POST',
         headers: await this.getAuthHeaders(),
         body: JSON.stringify({
-          certificationId,
-          drillId,
-          score,
-          passed,
-          timeSpentMinutes,
+          certificationId: attempt.id, // Note: This might need to be adjusted based on your API
+          drillId: attempt.drillId,
+          score: attempt.score,
+          passed: attempt.passed,
+          timeSpentMinutes: attempt.timeSpentMinutes,
         }),
       });
 
