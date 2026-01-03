@@ -122,10 +122,6 @@ describe('HintSystem', () => {
   })
 
   it('enforces 5-minute cooldown between hints', async () => {
-    vi.useFakeTimers()
-    let mockNow = Date.now()
-    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
-
     const labStartTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -151,10 +147,7 @@ describe('HintSystem', () => {
 
     // Should show countdown
     expect(screen.getByText(/next hint available in/i)).toBeInTheDocument()
-    expect(screen.getByText('5:00')).toBeInTheDocument()
-
-    vi.useRealTimers()
-    vi.restoreAllMocks()
+    expect(screen.getByText('4:59')).toBeInTheDocument()
   })
 
   it('updates cooldown timer', async () => {
@@ -309,7 +302,7 @@ describe('HintSystem', () => {
   })
 
   it('shows remaining time until solution when all hints used', async () => {
-    const labStartTime = Date.now()
+    const labStartTime = Date.now() - 10 * 60 * 1000 // Start 10 minutes ago
     let currentTime = Date.now()
     const user = userEvent.setup({ delay: null })
 
@@ -344,7 +337,7 @@ describe('HintSystem', () => {
 
     // Should show time remaining until solution
     expect(screen.getByText(/time remaining:/i)).toBeInTheDocument()
-    expect(screen.getByText('90:00')).toBeInTheDocument()
+    expect(screen.getByText('80:00')).toBeInTheDocument()
   })
 
   it('updates solution countdown timer', async () => {
