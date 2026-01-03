@@ -3,7 +3,7 @@
  * Manages real-world troubleshooting scenarios
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
@@ -34,9 +34,9 @@ export function useProductionScenario(): UseProductionScenarioReturn {
     if (user) {
       loadPerformance();
     }
-  }, [user]);
+  }, [user, loadPerformance]);
 
-  const loadPerformance = async () => {
+  const loadPerformance = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -56,7 +56,7 @@ export function useProductionScenario(): UseProductionScenarioReturn {
     } catch (err) {
       console.error('Error loading performance:', err);
     }
-  };
+  }, [user]);
 
   const startScenario = async (scenario: ProductionScenario) => {
     if (!user) {

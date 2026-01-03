@@ -83,7 +83,7 @@ export function usePredictiveAnalytics() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, calculateCompletionPrediction, predictWeakAreas, forecastPerformance, analyzeLearningTrajectory]);
 
   useEffect(() => {
     if (user) {
@@ -275,7 +275,7 @@ export function usePredictiveAnalytics() {
     };
   }, [identifySkillImprovements]);
 
-  const analyzeLearningTrajectory = (progressDocs: { data: () => { score?: number } }[]): PredictiveData['learningTrajectory'] => {
+  const analyzeLearningTrajectory = useCallback((progressDocs: { data: () => { score?: number } }[]): PredictiveData['learningTrajectory'] => {
     if (progressDocs.length < 5) {
       return {
         currentTrajectory: 'steady',
@@ -312,7 +312,7 @@ export function usePredictiveAnalytics() {
       optimalTrajectory,
       adjustments
     };
-  };
+  }, [generateTrajectoryAdjustments]);
 
   const calculateVariance = useCallback((values: number[]): number => {
     if (values.length < 2) return 0;

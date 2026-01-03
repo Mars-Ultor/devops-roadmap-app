@@ -3,7 +3,7 @@
  * Tracks skill decay and requires monthly re-testing
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
@@ -35,9 +35,9 @@ export function useRecertification() {
     if (user) {
       checkRecertificationStatus();
     }
-  }, [user]);
+  }, [user, checkRecertificationStatus]);
 
-  const checkRecertificationStatus = async () => {
+  const checkRecertificationStatus = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -71,9 +71,9 @@ export function useRecertification() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, analyzeSkillDecay]);
 
-  const analyzeSkillDecay = async (): Promise<SkillDecayAlert[]> => {
+  const analyzeSkillDecay = useCallback(async (): Promise<SkillDecayAlert[]> => {
     if (!user) return [];
 
     const alerts: SkillDecayAlert[] = [];
@@ -143,7 +143,7 @@ export function useRecertification() {
     }
 
     return alerts.sort((a, b) => b.decayPercentage - a.decayPercentage);
-  };
+  }, [user]);
 
   const completeRecertification = async (drillResults: Record<string, boolean>) => {
     if (!user) return;
