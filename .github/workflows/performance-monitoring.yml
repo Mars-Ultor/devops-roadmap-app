@@ -219,15 +219,11 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Best Practices:* ${{ steps.lighthouse.outputs.best-practices }}/100 ${{${
-                        fromJSON(steps.check-threshold.outputs.best_practices_below_threshold) ? '❌' : '✅'
-                      }}}"
+                      "text": "*Best Practices:* ${{ steps.lighthouse.outputs.best-practices }}/100 ${{ fromJSON(steps.check-threshold.outputs.best_practices_below_threshold) && '❌' || '✅' }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*SEO:* ${{ steps.lighthouse.outputs.seo }}/100 ${{${
-                        fromJSON(steps.check-threshold.outputs.seo_below_threshold) ? '❌' : '✅'
-                      }}}"
+                      "text": "*SEO:* ${{ steps.lighthouse.outputs.seo }}/100 ${{ fromJSON(steps.check-threshold.outputs.seo_below_threshold) && '❌' || '✅' }}"
                     }
                   ]
                 },
