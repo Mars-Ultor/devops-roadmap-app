@@ -244,7 +244,19 @@ class DatabaseDeployer {
 }
 
 // Run deployment if executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+console.log('Checking execution condition...');
+console.log('import.meta.url:', import.meta.url);
+console.log('process.argv[1]:', process.argv[1]);
+
+// Normalize paths for comparison (handle Windows backslashes vs forward slashes)
+const normalizedMetaUrl = import.meta.url.replace(/\\/g, '/');
+const normalizedArgv1 = `file://${process.argv[1].replace(/\\/g, '/')}`;
+
+console.log('Normalized meta URL:', normalizedMetaUrl);
+console.log('Normalized argv[1]:', normalizedArgv1);
+console.log('Equal?', normalizedMetaUrl === normalizedArgv1);
+
+if (normalizedMetaUrl === normalizedArgv1) {
   console.log('🚀 Starting database deployment script...');
   const deployer = new DatabaseDeployer();
 
@@ -257,6 +269,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       console.error('💥 Database deployment script failed:', error);
       process.exit(1);
     });
+} else {
+  console.log('Script not executed directly, skipping main execution');
 }
 
 export { DatabaseDeployer };
