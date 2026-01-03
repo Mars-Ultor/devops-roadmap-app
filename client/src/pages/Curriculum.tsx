@@ -146,11 +146,11 @@ export default function Curriculum() {
           const totalItems = totalLessons + totalLabs;
           
           const completedLessonsCount = week.lessons.filter((l: unknown) => 
-            completedLessons.has((l as any).id)
+            completedLessons.has((l as { id: string }).id)
           ).length;
           
           const completedLabsCount = week.labs.filter((l: unknown) => 
-            completedLabs.has((l as any).id)
+            completedLabs.has((l as { id: string }).id)
           ).length;
           
           const completedItems = completedLessonsCount + completedLabsCount;

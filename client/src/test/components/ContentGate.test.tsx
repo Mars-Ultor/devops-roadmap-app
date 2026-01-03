@@ -155,7 +155,7 @@ describe('ContentGate', () => {
   it('explains why daily drills matter', async () => {
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -176,7 +176,7 @@ describe('ContentGate', () => {
   it('re-checks drill status when route changes', async () => {
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     const { rerender } = render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
