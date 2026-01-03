@@ -3,7 +3,7 @@ Basic tests for ML Service
 """
 
 import pytest
-from main import app, SimpleLearningPathPredictor
+from main import app, LearningPathPredictor
 from fastapi.testclient import TestClient
 
 client = TestClient(app)
@@ -16,7 +16,7 @@ def test_health_endpoint():
 
 def test_learning_path_prediction():
     """Test the learning path prediction"""
-    predictor = SimpleLearningPathPredictor()
+    predictor = LearningPathPredictor()
 
     # Test beginner level
     user_data = {
@@ -41,5 +41,5 @@ def test_learning_path_prediction():
 
 def test_predictor_is_loaded():
     """Test that the predictor reports as loaded"""
-    predictor = SimpleLearningPathPredictor()
+    predictor = LearningPathPredictor()
     assert predictor.is_loaded() == True
