@@ -102,10 +102,6 @@ export default function Analytics() {
     weakTopics: []
   });
 
-  useEffect(() => {
-    loadAnalytics();
-  }, [user, timeRange, loadAnalytics]);
-
   const getDateFilter = useCallback(() => {
     const now = new Date();
     switch (timeRange) {
@@ -347,6 +343,10 @@ export default function Analytics() {
       setLoading(false);
     }
   }, [user?.uid, getUsageStats, getDateFilter]);
+
+  useEffect(() => {
+    loadAnalytics();
+  }, [user, timeRange, loadAnalytics]);
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
