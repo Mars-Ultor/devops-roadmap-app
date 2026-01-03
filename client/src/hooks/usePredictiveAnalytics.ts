@@ -49,6 +49,103 @@ export function usePredictiveAnalytics() {
   const [predictiveData, setPredictiveData] = useState<PredictiveData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Helper functions
+  const calculateVariance = useCallback((values: number[]): number => {
+    if (values.length < 2) return 0;
+    const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+    const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+    return Math.sqrt(variance);
+  }, []);
+
+  const generateStrugglePrediction = useCallback((avgScore: number, failureRate: number, struggleRate: number): string => {
+    if (failureRate > 0.3) {
+      return 'High likelihood of continued struggles due to frequent failures. May need significant additional practice.';
+    }
+    if (avgScore < 50) {
+      return 'Significant challenges expected. Topic fundamentals may need complete review.';
+    }
+    if (struggleRate > 0.3) {
+      return 'Recent performance indicates ongoing difficulties. Consider different learning approaches.';
+    }
+    return 'Moderate challenges expected. Additional focused practice recommended.';
+  }, []);
+
+  const generatePreventiveActions = useCallback((riskLevel: string, attempts: number, avgScore: number): string[] => {
+    const actions: string[] = [];
+
+    if (riskLevel === 'high') {
+      actions.push('Schedule dedicated review sessions for this topic');
+      actions.push('Seek additional learning resources or tutorials');
+      actions.push('Consider breaking topic into smaller, manageable parts');
+    }
+
+    if (attempts < 3) {
+      actions.push('Complete more practice attempts to build familiarity');
+    }
+
+    if (avgScore < 70) {
+      actions.push('Focus on understanding core concepts before advanced applications');
+      actions.push('Use spaced repetition to reinforce learning');
+    }
+
+    actions.push('Review after-action reports for specific improvement areas');
+
+    return actions.slice(0, 3); // Limit to 3 actions
+  }, []);
+
+  const identifySkillImprovements = useCallback((recentProgress: { data: () => { masteryLevel?: string; score?: number; timeSpentMinutes?: number } }[]): string[] => {
+    const improvements: string[] = [];
+    const masteryLevels = recentProgress.map(doc => doc.data().masteryLevel);
+
+    const runIndependentCount = masteryLevels.filter(level => level === 'run-independent').length;
+    const runGuidedCount = masteryLevels.filter(level => level === 'run-guided').length;
+
+    if (runIndependentCount > runGuidedCount) {
+      improvements.push('Independent problem-solving');
+    }
+
+    const avgScore = recentProgress.reduce((sum, doc) => sum + (doc.data().score || 0), 0) / recentProgress.length;
+    if (avgScore > 75) {
+      improvements.push('Quiz performance');
+    }
+
+    // Add time-based improvements
+    const avgTime = recentProgress.reduce((sum, doc) => sum + (doc.data().timeSpentMinutes || 0), 0) / recentProgress.length;
+    if (avgTime < 15) {
+      improvements.push('Learning efficiency');
+    }
+
+    return improvements.length > 0 ? improvements : ['Continued skill development'];
+  }, []);
+
+  const generateTrajectoryAdjustments = useCallback((
+    current: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _improvement: number
+  ): string[] => {
+    const adjustments: string[] = [];
+
+    if (current === 'declining') {
+      adjustments.push('Increase study frequency and duration');
+      adjustments.push('Review study techniques and effectiveness');
+      adjustments.push('Consider taking a short break to prevent burnout');
+    } else if (current === 'plateauing') {
+      adjustments.push('Try new learning approaches or resources');
+      adjustments.push('Increase practice difficulty gradually');
+      adjustments.push('Focus on weak areas identified in analytics');
+    } else if (current === 'steady' && optimal === 'accelerating') {
+      adjustments.push('Add more study sessions per week');
+      adjustments.push('Incorporate advanced topics earlier');
+      adjustments.push('Set more ambitious daily goals');
+    }
+
+    if (adjustments.length === 0) {
+      adjustments.push('Continue current approach while monitoring progress');
+    }
+
+    return adjustments;
+  }, []);
+
   const generatePredictions = useCallback(async () => {
     if (!user) return;
 
@@ -313,102 +410,6 @@ export function usePredictiveAnalytics() {
       adjustments
     };
   }, [generateTrajectoryAdjustments]);
-
-  const calculateVariance = useCallback((values: number[]): number => {
-    if (values.length < 2) return 0;
-    const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
-    const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
-    return Math.sqrt(variance);
-  }, []);
-
-  const generateStrugglePrediction = useCallback((avgScore: number, failureRate: number, struggleRate: number): string => {
-    if (failureRate > 0.3) {
-      return 'High likelihood of continued struggles due to frequent failures. May need significant additional practice.';
-    }
-    if (avgScore < 50) {
-      return 'Significant challenges expected. Topic fundamentals may need complete review.';
-    }
-    if (struggleRate > 0.3) {
-      return 'Recent performance indicates ongoing difficulties. Consider different learning approaches.';
-    }
-    return 'Moderate challenges expected. Additional focused practice recommended.';
-  }, []);
-
-  const generatePreventiveActions = useCallback((riskLevel: string, attempts: number, avgScore: number): string[] => {
-    const actions: string[] = [];
-
-    if (riskLevel === 'high') {
-      actions.push('Schedule dedicated review sessions for this topic');
-      actions.push('Seek additional learning resources or tutorials');
-      actions.push('Consider breaking topic into smaller, manageable parts');
-    }
-
-    if (attempts < 3) {
-      actions.push('Complete more practice attempts to build familiarity');
-    }
-
-    if (avgScore < 70) {
-      actions.push('Focus on understanding core concepts before advanced applications');
-      actions.push('Use spaced repetition to reinforce learning');
-    }
-
-    actions.push('Review after-action reports for specific improvement areas');
-
-    return actions.slice(0, 3); // Limit to 3 actions
-  }, []);
-
-  const identifySkillImprovements = useCallback((recentProgress: { data: () => { masteryLevel?: string; score?: number; timeSpentMinutes?: number } }[]): string[] => {
-    const improvements: string[] = [];
-    const masteryLevels = recentProgress.map(doc => doc.data().masteryLevel);
-
-    const runIndependentCount = masteryLevels.filter(level => level === 'run-independent').length;
-    const runGuidedCount = masteryLevels.filter(level => level === 'run-guided').length;
-
-    if (runIndependentCount > runGuidedCount) {
-      improvements.push('Independent problem-solving');
-    }
-
-    const avgScore = recentProgress.reduce((sum, doc) => sum + (doc.data().score || 0), 0) / recentProgress.length;
-    if (avgScore > 75) {
-      improvements.push('Quiz performance');
-    }
-
-    // Add time-based improvements
-    const avgTime = recentProgress.reduce((sum, doc) => sum + (doc.data().timeSpentMinutes || 0), 0) / recentProgress.length;
-    if (avgTime < 15) {
-      improvements.push('Learning efficiency');
-    }
-
-    return improvements.length > 0 ? improvements : ['Continued skill development'];
-  }, []);
-
-  const generateTrajectoryAdjustments = useCallback((
-    current: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _improvement: number
-  ): string[] => {
-    const adjustments: string[] = [];
-
-    if (current === 'declining') {
-      adjustments.push('Increase study frequency and duration');
-      adjustments.push('Review study techniques and effectiveness');
-      adjustments.push('Consider taking a short break to prevent burnout');
-    } else if (current === 'plateauing') {
-      adjustments.push('Try new learning approaches or resources');
-      adjustments.push('Increase practice difficulty gradually');
-      adjustments.push('Focus on weak areas identified in analytics');
-    } else if (current === 'steady' && optimal === 'accelerating') {
-      adjustments.push('Add more study sessions per week');
-      adjustments.push('Incorporate advanced topics earlier');
-      adjustments.push('Set more ambitious daily goals');
-    }
-
-    if (adjustments.length === 0) {
-      adjustments.push('Continue current approach while monitoring progress');
-    }
-
-    return adjustments;
-  }, []);
 
   return {
     predictiveData,
