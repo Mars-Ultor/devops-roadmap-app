@@ -96,34 +96,34 @@ describe('MandatoryAARModal', () => {
   })
 
   it('accepts valid AAR submission', async () => {
-    const user = userEvent.setup({ delay: null })
-
     render(<MandatoryAARModal {...defaultProps} />)
 
-    // Fill all required fields with sufficient content
+    // Fill all required fields with sufficient content using fireEvent for speed
     const textareas = screen.getAllByRole('textbox')
 
     const responses = [
-      'I was trying to accomplish setting up a basic Linux environment and learning command line navigation',
-      'The cd command worked well, ls showed directory contents correctly, pwd displayed current location accurately',
-      'The mkdir command did not work as expected - it created directories in wrong location',
-      'The mkdir command failed because I was not in the correct directory when executing it',
-      'Next time I would verify my current location with pwd before creating directories',
-      'I learned that understanding your current location is crucial in Linux command line operations'
+      'I was trying to accomplish setting up a basic Linux environment and learning command line navigation that involves multiple steps and careful execution of commands in the proper sequence to achieve the desired outcome.',
+      'The cd command worked well, ls showed directory contents correctly, pwd displayed current location accurately, and the overall navigation experience was smooth and intuitive for a beginner learning Linux command line operations effectively.',
+      'The mkdir command did not work as expected initially because it created directories in the wrong location when I was not paying attention to my current working directory and the relative path specifications used in the command execution process.',
+      'The mkdir command failed because I was not in the correct directory when executing it, and I did not verify my current location using pwd before attempting to create the new directory structure as required by the lab instructions.',
+      'Next time I would verify my current location with pwd before creating directories, double-check all path specifications, and ensure I understand the directory structure before executing any file system modification commands in Linux environment.',
+      'I learned that understanding your current location is crucial in Linux command line operations, path specifications matter greatly, and careful attention to directory context prevents many common errors when working with file system commands.'
     ]
 
-    for (let i = 0; i < textareas.length; i++) {
-      await user.type(textareas[i], responses[i])
-    }
+    textareas.forEach((textarea, i) => {
+      fireEvent.change(textarea, { target: { value: responses[i] } })
+    })
 
     const submitButton = screen.getByRole('button', { name: /submit aar and continue/i })
-    await user.click(submitButton)
+    expect(submitButton).toBeEnabled()
+
+    fireEvent.click(submitButton)
 
     // Should call onComplete
     await waitFor(() => {
       expect(mockOnComplete).toHaveBeenCalled()
-    }, { timeout: 10000 })
-  }, 15000)
+    }, { timeout: 5000 })
+  }, 10000)
 
   it.skip('shows submission progress', async () => {
     const user = userEvent.setup({ delay: null })
