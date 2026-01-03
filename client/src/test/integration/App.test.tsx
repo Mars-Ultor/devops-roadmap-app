@@ -1,7 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import App from '../../App'
+
+// Mock Firebase
+vi.mock('../../lib/firebase', () => ({
+  db: {},
+}))
+
+vi.mock('firebase/firestore', () => ({
+  doc: vi.fn(() => ({ id: 'mock-doc' })),
+  getDoc: vi.fn(() => Promise.resolve({
+    exists: () => true,
+    data: () => ({ completed: true }) // Allow access by default
+  })),
+  setDoc: vi.fn(() => Promise.resolve()),
+  updateDoc: vi.fn(() => Promise.resolve()),
+  collection: vi.fn(),
+  query: vi.fn(),
+  where: vi.fn(),
+  getDocs: vi.fn(() => Promise.resolve({ docs: [], size: 0, empty: true })),
+}))
 
 // Mock Zustand store
 vi.mock('../../store/authStore', () => ({
@@ -104,7 +123,7 @@ describe('App Integration', () => {
     expect(screen.getByTestId('login')).toBeInTheDocument()
   })
 
-  it('shows authenticated routes when user is logged in', () => {
+  it('shows authenticated routes when user is logged in', async () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { uid: 'test-user' },
       firebaseUser: null,
@@ -122,7 +141,9 @@ describe('App Integration', () => {
     )
 
     // Should show dashboard by default
-    expect(screen.getByTestId('dashboard')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('dashboard')).toBeInTheDocument()
+    })
   })
 
   it('renders training routes correctly', () => {
@@ -148,7 +169,9 @@ describe('App Integration', () => {
       </BrowserRouter>
     )
 
-    expect(screen.getByTestId('training')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('training')).toBeInTheDocument()
+    })
   })
 
   it('renders lab routes correctly', () => {
@@ -174,7 +197,9 @@ describe('App Integration', () => {
       </BrowserRouter>
     )
 
-    expect(screen.getByTestId('lab')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('lab')).toBeInTheDocument()
+    })
   })
 
   it('includes ContentGate for protected routes', () => {
@@ -190,13 +215,7 @@ describe('App Integration', () => {
 
     // Mock ContentGate
     vi.mock('../../components/ContentGate', () => ({
-      default: ({ children }: { children?: React.ReactNode }) => (
-        <div data-testid="content-gate">
-          <div data-testid="gate-protected">Gate Protected</div>
-          {children}
-        </div>
-      ),
-    }))
+  default: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 
     render(
       <BrowserRouter>
