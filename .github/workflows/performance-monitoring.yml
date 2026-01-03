@@ -130,38 +130,54 @@ jobs:
           fi
 
       - name: Create performance issue
-        if: steps.check-threshold.outputs.performance_below_threshold == 'true' || steps.check-threshold.outputs.accessibility_below_threshold == 'true'
+        if: steps.check-threshold.outputs.performance_below_threshold == 'true' || steps.check-threshold.outputs.accessibility_below_threshold == 'true' || steps.check-threshold.outputs.best_practices_below_threshold == 'true' || steps.check-threshold.outputs.seo_below_threshold == 'true'
         uses: actions/github-script@v7
         with:
           script: |
             const performance = ${{ steps.lighthouse.outputs.performance }};
             const accessibility = ${{ steps.lighthouse.outputs.accessibility }};
+            const bestPractices = ${{ steps.lighthouse.outputs.best-practices }};
+            const seo = ${{ steps.lighthouse.outputs.seo }};
 
             const title = `📊 Performance Alert: Scores Below Threshold`;
             const body = `
-            ## Performance Audit Results
+            ## 🚨 Performance Audit Results
 
             ### Current Scores:
             - **Performance:** ${performance}/100 ${performance < 80 ? '❌' : '✅'}
             - **Accessibility:** ${accessibility}/100 ${accessibility < 90 ? '❌' : '✅'}
-            - **Best Practices:** ${{ steps.lighthouse.outputs.best-practices }}/100
-            - **SEO:** ${{ steps.lighthouse.outputs.seo }}/100
+            - **Best Practices:** ${bestPractices}/100 ${bestPractices < 90 ? '❌' : '✅'}
+            - **SEO:** ${seo}/100 ${seo < 90 ? '❌' : '✅'}
 
             ### Thresholds:
             - Performance: ≥80 (currently ${performance < 80 ? 'failing' : 'passing'})
             - Accessibility: ≥90 (currently ${accessibility < 90 ? 'failing' : 'passing'})
+            - Best Practices: ≥90 (currently ${bestPractices < 90 ? 'failing' : 'passing'})
+            - SEO: ≥90 (currently ${seo < 90 ? 'failing' : 'passing'})
 
             ### Actions Required:
-            1. Review the Lighthouse report in artifacts
-            2. Optimize performance issues
-            3. Fix accessibility problems
-            4. Test on staging before production
+            1. Review the Lighthouse report in workflow artifacts
+            2. Optimize performance issues (bundle size, images, caching)
+            3. Fix accessibility problems (alt text, contrast, keyboard navigation)
+            4. Address best practices violations (HTTPS, security headers)
+            5. Improve SEO (meta tags, structured data, performance)
+            6. Test on staging before production deployment
 
             ### Audit Details:
-            - Audit Date: ${new Date().toISOString()}
-            - Repository: ${{ github.repository }}
-            - Branch: ${{ github.ref_name }}
-            - URL: ${{ steps.deploy.outputs.url }}
+            - **Audit Date:** ${new Date().toISOString()}
+            - **Repository:** ${{ github.repository }}
+            - **Branch:** ${{ github.ref_name }}
+            - **Commit:** ${{ github.sha }}
+            - **URL:** ${{ steps.deploy.outputs.url }}
+            - **Workflow:** ${{ github.workflow }}
+            - **Run ID:** ${{ github.run_id }}
+
+            ### Performance Budgets:
+            - First Contentful Paint (FCP): < 1.8s
+            - Largest Contentful Paint (LCP): < 2.5s
+            - Time to Interactive (TTI): < 3.8s
+            - Total Blocking Time (TBT): < 200ms
+            - Cumulative Layout Shift (CLS): < 0.1
 
             ---
             🤖 This issue was automatically created by the performance monitoring workflow.
@@ -172,22 +188,131 @@ jobs:
               repo: context.repo.repo,
               title: title,
               body: body,
-              labels: ['performance', 'accessibility', 'monitoring']
+              labels: ['performance', 'accessibility', 'monitoring', 'lighthouse']
             });
 
-      - name: Slack notification for performance issues
-        if: steps.check-threshold.outputs.performance_below_threshold == 'true' || steps.check-threshold.outputs.accessibility_below_threshold == 'true'
-        uses: 8398a7/action-slack@v3
+      - name: Send Slack notification
+        if: steps.check-threshold.outputs.performance_below_threshold == 'true' || steps.check-threshold.outputs.accessibility_below_threshold == 'true' || steps.check-threshold.outputs.best_practices_below_threshold == 'true' || steps.check-threshold.outputs.seo_below_threshold == 'true'
+        uses: slackapi/slack-github-action@v1.25.0
         with:
-          status: warning
-          webhook_url: ${{ secrets.SLACK_PERFORMANCE_WEBHOOK }}
-          text: |
-            📊 *Performance Alert* 📊
-
-            Performance: ${{ steps.lighthouse.outputs.performance }}/100
-            Accessibility: ${{ steps.lighthouse.outputs.accessibility }}/100
-
-            Repository: ${{ github.repository }}
-            Report: Check workflow artifacts
+          payload: |
+            {
+              "text": "🚨 Performance Alert: DevOps Roadmap App",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "📊 Performance Alert: Scores Below Threshold"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Performance:* ${{ steps.lighthouse.outputs.performance }}/100 ${{${
+                        fromJSON(steps.check-threshold.outputs.performance_below_threshold) ? '❌' : '✅'
+                      }}}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Accessibility:* ${{ steps.lighthouse.outputs.accessibility }}/100 ${{${
+                        fromJSON(steps.check-threshold.outputs.accessibility_below_threshold) ? '❌' : '✅'
+                      }}}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Best Practices:* ${{ steps.lighthouse.outputs.best-practices }}/100 ${{${
+                        fromJSON(steps.check-threshold.outputs.best_practices_below_threshold) ? '❌' : '✅'
+                      }}}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*SEO:* ${{ steps.lighthouse.outputs.seo }}/100 ${{${
+                        fromJSON(steps.check-threshold.outputs.seo_below_threshold) ? '❌' : '✅'
+                      }}}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*URL:* ${{ steps.deploy.outputs.url }}\n*Branch:* ${{ github.ref_name }}\n*Commit:* `${{ github.sha }}`"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Issue"
+                      },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    },
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Lighthouse Report"
+                      },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts"
+                    }
+                  ]
+                }
+              ]
+            }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_PERFORMANCE_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Upload Lighthouse report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report-${{ github.run_id }}
+          path: .lighthouseci/
+          retention-days: 30
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const performance = ${{ steps.lighthouse.outputs.performance }};
+            const accessibility = ${{ steps.lighthouse.outputs.accessibility }};
+            const bestPractices = ${{ steps.lighthouse.outputs.best-practices }};
+            const seo = ${{ steps.lighthouse.outputs.seo }};
+
+            const comment = `
+            ## 📊 Lighthouse Performance Audit Results
+
+            ### Scores:
+            - **Performance:** ${performance}/100 ${performance < 80 ? '❌' : '✅'}
+            - **Accessibility:** ${accessibility}/100 ${accessibility < 90 ? '❌' : '✅'}
+            - **Best Practices:** ${bestPractices}/100 ${bestPractices < 90 ? '❌' : '✅'}
+            - **SEO:** ${seo}/100 ${seo < 90 ? '❌' : '✅'}
+
+            ### Thresholds:
+            - Performance: ≥80 ${performance < 80 ? '(failing)' : '(passing)'}
+            - Accessibility: ≥90 ${accessibility < 90 ? '(failing)' : '(passing)'}
+            - Best Practices: ≥90 ${bestPractices < 90 ? '(failing)' : '(passing)'}
+            - SEO: ≥90 ${seo < 90 ? '(failing)' : '(passing)'}
+
+            ${performance < 80 || accessibility < 90 || bestPractices < 90 || seo < 90 ?
+              '⚠️ **Some scores are below thresholds.** Please review the performance issues.' :
+              '✅ **All scores meet or exceed thresholds.** Great job!'}
+
+            📈 [View detailed Lighthouse report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts)
+
+            ---
+            🤖 This comment was automatically generated by the performance monitoring workflow.
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
