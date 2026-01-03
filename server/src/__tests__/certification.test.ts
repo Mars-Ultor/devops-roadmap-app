@@ -29,6 +29,11 @@ describe('Certification System Integration', () => {
   let authToken: string;
   let testUserId: string;
 
+  beforeAll(() => {
+    // Set JWT secret for tests
+    process.env.JWT_SECRET = 'test-secret';
+  });
+
   beforeEach(async () => {
     app = createTestApp();
     testUserId = 'test-user-' + Date.now();
