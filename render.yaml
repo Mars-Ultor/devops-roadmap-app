@@ -1,10 +1,21 @@
 services:
-  # Server Service
+  # PostgreSQL Database
+  - type: pserv
+    name: devops-db
+    runtime: postgres
+    ipAllowList: []  # Only accessible by other services in this project
+
+  # Redis for Caching
+  - type: redis
+    name: devops-redis
+    ipAllowList: []  # Only accessible by other services in this project
+
+  # Server Service (Node.js)
   - type: web
     name: devops-server
     runtime: node
-    buildCommand: cd server && ./build.sh
-    startCommand: sh -c "cd server && npm run db:setup && npm start"
+    buildCommand: cd server && npm install && npm run build
+    startCommand: cd server && npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -14,10 +25,15 @@ services:
         fromDatabase:
           name: devops-db
           property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: devops-redis
+          property: connectionString
       - key: JWT_SECRET
         generateValue: true
 
-  # ML Service
+  # ML Service (Python)
   - type: web
     name: devops-ml-service
     runtime: python3
@@ -26,11 +42,14 @@ services:
     envVars:
       - key: PORT
         value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: devops-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: devops-redis
+          property: connectionString
       - key: PYTHONUNBUFFERED
         value: "1"
-
-  # Database
-  - type: pserv
-    name: devops-db
-    runtime: postgres
-    ipAllowList: []  # Only accessible by other services in this project
