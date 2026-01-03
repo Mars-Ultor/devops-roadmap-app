@@ -145,12 +145,12 @@ export default function Curriculum() {
           const totalLabs = week.labs.length;
           const totalItems = totalLessons + totalLabs;
           
-          const completedLessonsCount = week.lessons.filter((l: any) => 
-            completedLessons.has(l.id)
+          const completedLessonsCount = week.lessons.filter((l: unknown) => 
+            completedLessons.has((l as any).id)
           ).length;
           
-          const completedLabsCount = week.labs.filter((l: any) => 
-            completedLabs.has(l.id)
+          const completedLabsCount = week.labs.filter((l: unknown) => 
+            completedLabs.has((l as any).id)
           ).length;
           
           const completedItems = completedLessonsCount + completedLabsCount;
@@ -316,9 +316,9 @@ export default function Curriculum() {
                         Lessons
                       </h5>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {week.lessons.map((lesson: any, idx: number) => (
+                        {week.lessons.map((lesson: unknown, idx: number) => (
                           <div
-                            key={lesson.lessonId}
+                            key={(lesson as any).lessonId}
                             className="bg-slate-900 rounded-lg p-3 border border-slate-700 hover:border-indigo-500 transition-colors"
                           >
                             <div className="flex items-start space-x-3">
@@ -326,8 +326,8 @@ export default function Curriculum() {
                                 {idx + 1}
                               </span>
                               <div className="flex-1 min-w-0">
-                                <h6 className="font-medium text-white text-sm mb-1">{lesson.baseLesson.title}</h6>
-                                <p className="text-xs text-gray-400 line-clamp-2">{lesson.baseLesson.description}</p>
+                                <h6 className="font-medium text-white text-sm mb-1">{(lesson as any).baseLesson.title}</h6>
+                                <p className="text-xs text-gray-400 line-clamp-2">{(lesson as any).baseLesson.description}</p>
                               </div>
                             </div>
                           </div>

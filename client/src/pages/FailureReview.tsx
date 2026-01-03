@@ -55,13 +55,13 @@ export default function FailureReview() {
         : 0;
 
       // Group by category
-      const failuresByCategory: any = {};
+      const failuresByCategory: Record<string, number> = {};
       allFailures.forEach(f => {
         failuresByCategory[f.category] = (failuresByCategory[f.category] || 0) + 1;
       });
 
       // Group by severity
-      const failuresBySeverity: any = {};
+      const failuresBySeverity: Record<string, number> = {};
       allFailures.forEach(f => {
         failuresBySeverity[f.severity] = (failuresBySeverity[f.severity] || 0) + 1;
       });

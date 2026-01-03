@@ -32,7 +32,7 @@ interface LessonContent {
   instructions: string;
   objectives: string[];
   hints?: string[];
-  quiz?: any[];
+  quiz?: unknown[];
   labInstructions?: string;
 }
 
