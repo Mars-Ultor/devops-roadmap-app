@@ -3,7 +3,7 @@
  * Handles mastery progression, daily drills, reset tokens, streaks
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
@@ -28,9 +28,9 @@ export function useTrainingState() {
     }
 
     loadTrainingState();
-  }, [user?.uid]);
+  }, [user?.uid, user?.currentWeek, loadTrainingState]);
 
-  const loadTrainingState = async () => {
+  const loadTrainingState = useCallback(async () => {
     if (!user?.uid) return;
 
     try {
@@ -91,7 +91,7 @@ export function useTrainingState() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.uid, user?.currentWeek]);
 
   const updateCurrentWeek = async (newWeek: number) => {
     if (!user?.uid) return;

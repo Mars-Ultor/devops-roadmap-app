@@ -31,7 +31,7 @@ export default function AdaptiveDifficultyDashboard() {
 
   useEffect(() => {
     evaluateRecommendation();
-  }, []);
+  }, [evaluateRecommendation]);
 
   const handleLevelChange = (level: DifficultyLevel) => {
     setSelectedLevel(level);

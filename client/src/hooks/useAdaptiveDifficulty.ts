@@ -3,7 +3,7 @@
  * Automatically adjusts difficulty based on performance
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, query, where, getDocs, addDoc, doc, getDoc, updateDoc, setDoc, orderBy, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
@@ -110,7 +110,7 @@ export function useAdaptiveDifficulty() {
     };
   };
 
-  const calculatePerformanceMetrics = async (): Promise<PerformanceMetrics> => {
+  const calculatePerformanceMetrics = useCallback(async (): Promise<PerformanceMetrics> => {
     if (!user?.uid) {
       return getDefaultMetrics();
     }
@@ -277,7 +277,7 @@ export function useAdaptiveDifficulty() {
       console.error('Error calculating metrics:', error);
       return getDefaultMetrics();
     }
-  };
+  }, [user?.uid]);
 
   const getDefaultMetrics = (): PerformanceMetrics => ({
     quizSuccessRate: 0,
@@ -297,7 +297,7 @@ export function useAdaptiveDifficulty() {
     avgSessionsPerWeek: 0
   });
 
-  const evaluateRecommendation = async (): Promise<AdaptiveRecommendation> => {
+  const evaluateRecommendation = useCallback(async (): Promise<AdaptiveRecommendation> => {
     const metrics = await calculatePerformanceMetrics();
     const reasoning: string[] = [];
     let suggestedLevel = currentLevel;
@@ -360,7 +360,7 @@ export function useAdaptiveDifficulty() {
       suggestedLevel,
       metricsSnapshot: metrics
     };
-  };
+  }, [currentLevel, calculatePerformanceMetrics]);
 
   const checkPromotionCriteria = (metrics: PerformanceMetrics, level: keyof typeof PROMOTION_CRITERIA): boolean => {
     const criteria = PROMOTION_CRITERIA[level];

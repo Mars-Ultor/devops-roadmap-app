@@ -36,7 +36,7 @@ export function useTopicMasteryHeatmap() {
     if (user) {
       loadTopicMasteryData();
     }
-  }, [user]);
+  }, [user, loadTopicMasteryData]);
 
   const loadTopicMasteryData = useCallback(async () => {
     if (!user) return;
