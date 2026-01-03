@@ -35,6 +35,12 @@ export interface TCSLab extends LegacyLab {
 
 /**
  * Generate TCS format from legacy lab data
+ * 
+ * Converts traditional lab instructions into military-style Task-Conditions-Standards
+ * format with structured objectives, constraints, and evaluation criteria.
+ * 
+ * @param lab - Legacy lab data with basic task information
+ * @returns Structured TCS task with conditions and standards
  */
 export function generateTCS(lab: LegacyLab): TCSTask {
   const baseTask = `Complete all objectives related to ${lab.title.toLowerCase()} to demonstrate competency in ${extractSkillArea(lab.title)}.`;

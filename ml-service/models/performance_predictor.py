@@ -42,7 +42,16 @@ class PerformancePredictor(BaseMLModel):
         return np.array(features)
 
     def _train_model(self, X: np.ndarray, y: np.ndarray):
-        """Train using simple linear regression"""
+        """
+        Train the model using linear regression with gradient descent
+        
+        Learns to predict user performance probability based on learning behavior
+        and style preferences. Uses simple gradient descent optimization.
+        
+        Args:
+            X: Feature matrix of shape (n_samples, n_features)
+            y: Target values of shape (n_samples,) representing performance scores
+        """
         if self.weights is None:
             self.weights = np.random.randn(X.shape[1]) * 0.1
             self.bias = np.mean(y)

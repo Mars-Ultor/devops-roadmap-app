@@ -39,7 +39,16 @@ class MotivationalAnalyzer(BaseMLModel):
         return np.array(features)
 
     def _train_model(self, X: np.ndarray, y: np.ndarray):
-        """Train using simple multi-class classification"""
+        """
+        Train the model using multi-class classification with softmax and cross-entropy
+        
+        Learns to classify user motivation types (achievement, mastery, social, autonomy)
+        based on learning behavior patterns using gradient descent optimization.
+        
+        Args:
+            X: Feature matrix of shape (n_samples, n_features)
+            y: One-hot encoded target matrix of shape (n_samples, n_motivation_types)
+        """
         if self.weights is None:
             self.weights = np.random.randn(X.shape[1], y.shape[1]) * 0.1
 
