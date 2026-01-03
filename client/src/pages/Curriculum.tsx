@@ -318,7 +318,7 @@ export default function Curriculum() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {week.lessons.map((lesson: unknown, idx: number) => (
                           <div
-                            key={(lesson as any).lessonId}
+                            key={(lesson as { lessonId: string }).lessonId}
                             className="bg-slate-900 rounded-lg p-3 border border-slate-700 hover:border-indigo-500 transition-colors"
                           >
                             <div className="flex items-start space-x-3">
@@ -326,8 +326,8 @@ export default function Curriculum() {
                                 {idx + 1}
                               </span>
                               <div className="flex-1 min-w-0">
-                                <h6 className="font-medium text-white text-sm mb-1">{(lesson as any).baseLesson.title}</h6>
-                                <p className="text-xs text-gray-400 line-clamp-2">{(lesson as any).baseLesson.description}</p>
+                                <h6 className="font-medium text-white text-sm mb-1">{(lesson as { baseLesson: { title: string } }).baseLesson.title}</h6>
+                                <p className="text-xs text-gray-400 line-clamp-2">{(lesson as { baseLesson: { description: string } }).baseLesson.description}</p>
                               </div>
                             </div>
                           </div>
@@ -360,10 +360,10 @@ export default function Curriculum() {
                       {week.labs.map((lab: unknown, idx: number) => (
                         <Link
                           key={idx}
-                          to={`/lab/${(lab as any).id}`}
+                          to={`/lab/${(lab as { id: string }).id}`}
                           className="text-xs bg-slate-700 hover:bg-indigo-600 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium border border-slate-600 hover:border-indigo-500"
                         >
-                          {(lab as any).title}
+                          {(lab as { title: string }).title}
                         </Link>
                       ))}
                     </div>

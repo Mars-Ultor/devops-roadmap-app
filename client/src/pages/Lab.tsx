@@ -88,7 +88,7 @@ export default function Lab() {
         
         if (weekSnap.exists()) {
           const weekData = weekSnap.data();
-          const lab = weekData.labs?.find((l: unknown) => (l as any).id === labId);
+          const lab = weekData.labs?.find((l: unknown) => (l as { id: string }).id === labId);
           if (lab) {
             setLabData(lab);
             

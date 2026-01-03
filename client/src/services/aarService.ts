@@ -109,7 +109,7 @@ export class AARService {
       return response.data.data;
     } catch (error: unknown) {
       console.error('Error creating AAR:', error);
-      throw new Error((error as any).response?.data?.message || 'Failed to create AAR');
+      throw new Error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to create AAR');
     }
   }
 
@@ -127,14 +127,14 @@ export class AARService {
       });
 
       return response.data.data.map((aar: unknown) => ({
-        ...(aar as any),
-        createdAt: new Date((aar as any).createdAt),
-        updatedAt: new Date((aar as any).updatedAt),
-        completedAt: new Date((aar as any).completedAt)
+        ...(aar as Record<string, unknown>),
+        createdAt: new Date((aar as { createdAt: string }).createdAt),
+        updatedAt: new Date((aar as { updatedAt: string }).updatedAt),
+        completedAt: new Date((aar as { completedAt: string }).completedAt)
       }));
     } catch (error: unknown) {
       console.error('Error fetching user AARs:', error);
-      throw new Error((error as any).response?.data?.message || 'Failed to fetch AARs');
+      throw new Error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch AARs');
     }
   }
 
@@ -151,14 +151,14 @@ export class AARService {
       });
 
       return response.data.data.map((aar: unknown) => ({
-        ...(aar as any),
-        createdAt: new Date((aar as any).createdAt),
-        updatedAt: new Date((aar as any).updatedAt),
-        completedAt: new Date((aar as any).completedAt)
+        ...(aar as Record<string, unknown>),
+        createdAt: new Date((aar as { createdAt: string }).createdAt),
+        updatedAt: new Date((aar as { updatedAt: string }).updatedAt),
+        completedAt: new Date((aar as { completedAt: string }).completedAt)
       }));
     } catch (error: unknown) {
       console.error('Error fetching lesson AARs:', error);
-      throw new Error((error as any).response?.data?.message || 'Failed to fetch lesson AARs');
+      throw new Error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch lesson AARs');
     }
   }
 
@@ -176,7 +176,7 @@ export class AARService {
       return response.data.data;
     } catch (error: unknown) {
       console.error('Error fetching AAR stats:', error);
-      throw new Error((error as any).response?.data?.message || 'Failed to fetch AAR statistics');
+      throw new Error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch AAR statistics');
     }
   }
 
@@ -194,7 +194,7 @@ export class AARService {
       return response.data.data;
     } catch (error: unknown) {
       console.error('Error validating AAR form:', error);
-      throw new Error((error as any).response?.data?.message || 'Failed to validate AAR form');
+      throw new Error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to validate AAR form');
     }
   }
 
@@ -213,7 +213,7 @@ export class AARService {
       return response.data.data;
     } catch (error: unknown) {
       console.error('Error fetching common patterns:', error);
-      throw new Error((error as any).response?.data?.message || 'Failed to fetch common patterns');
+      throw new Error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch common patterns');
     }
   }
 

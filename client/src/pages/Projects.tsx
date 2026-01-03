@@ -108,19 +108,19 @@ export default function Projects() {
                       <div>
                         <div className="flex items-center space-x-2 mb-2">
                           <div className="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold">
-                            {(phase as any).phase}
+                            {(phase as { phase: number }).phase}
                           </div>
-                          <span className="text-xs text-gray-400 font-medium">Week {(phase as any).week}</span>
+                          <span className="text-xs text-gray-400 font-medium">Week {(phase as { week: number }).week}</span>
                         </div>
-                        <h4 className="text-lg font-bold text-white">{(phase as any).title}</h4>
+                        <h4 className="text-lg font-bold text-white">{(phase as { title: string }).title}</h4>
                       </div>
                       <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                        {(phase as any).xp} XP
+                        {(phase as { xp: number }).xp} XP
                       </span>
                     </div>
                     
                     <div className="space-y-2">
-                      {(phase as any).tasks.slice(0, 3).map((task: string, taskIdx: number) => (
+                      {(phase as { tasks: string[] }).tasks.slice(0, 3).map((task: string, taskIdx: number) => (
                         <div key={taskIdx} className="text-sm text-gray-300 flex items-start">
                           <CheckCircle className="w-4 h-4 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
                           <span>{task}</span>
@@ -165,13 +165,13 @@ export default function Projects() {
                   {cloudResumeChallenge.resources?.map((resource: unknown, idx: number) => (
                     <a 
                       key={idx}
-                      href={(resource as any).url}
+                      href={(resource as { url: string }).url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center space-x-3 text-sm text-indigo-300 hover:text-white transition bg-slate-800/50 p-4 rounded-lg border border-slate-600 hover:border-indigo-400"
                     >
                       <ExternalLink className="w-5 h-5 flex-shrink-0" />
-                      <span className="font-medium">{(resource as any).title}</span>
+                      <span className="font-medium">{(resource as { title: string }).title}</span>
                     </a>
                   ))}
                 </div>
