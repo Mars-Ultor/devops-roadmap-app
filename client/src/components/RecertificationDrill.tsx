@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { RECERTIFICATION_DRILLS, CERTIFICATION_REQUIREMENTS } from '../data/recertificationDrills';
 import type {
@@ -56,7 +56,7 @@ export default function RecertificationDrillComponent({
     } else if (timeRemaining === 0 && !showResults) {
       handleSubmit(true); // Auto-submit when time runs out
     }
-  }, [timeRemaining, showResults]);
+  }, [timeRemaining, showResults, handleSubmit]);
 
   const handleAnswer = (answer: string | number | boolean) => {
     const question = currentDrill!.questions[currentQuestionIndex];
@@ -86,7 +86,7 @@ export default function RecertificationDrillComponent({
     }
   };
 
-  const handleSubmit = (autoSubmit = false) => {
+  const handleSubmit = useCallback((autoSubmit = false) => {
     if (!currentDrill || !user) return;
 
     const endTime = new Date();
@@ -119,7 +119,7 @@ export default function RecertificationDrillComponent({
     if (onComplete) {
       onComplete(attemptResult);
     }
-  };
+  }, [currentDrill, user, startTime, answers, onComplete]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

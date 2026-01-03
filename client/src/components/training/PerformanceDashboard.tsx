@@ -25,7 +25,7 @@ interface PerformanceDashboardProps {
 }
 
 export default function PerformanceDashboard({
-  userId,
+  userId: _userId,
   context
 }: PerformanceDashboardProps) {
   const [analytics, setAnalytics] = useState<PerformanceAnalytics | null>(null);

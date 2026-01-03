@@ -3,7 +3,7 @@
  * Interface for managing and monitoring ML models
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MLModelService } from '../../services/mlModelService';
 import type { MLModel, MLInput, MLPrediction } from '../../services/mlModelService';
 import {
@@ -130,7 +130,7 @@ export function MLModelManagementDashboard() {
 
   const mlService = MLModelService.getInstance();
 
-  const loadModels = async () => {
+  const loadModels = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -158,11 +158,11 @@ export function MLModelManagementDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadModels();
-  }, []);
+  }, [loadModels]);
 
   const runInference = async (modelId: string) => {
     const model = models.find(m => m.id === modelId);
