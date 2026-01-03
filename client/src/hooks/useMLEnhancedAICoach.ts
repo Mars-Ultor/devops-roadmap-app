@@ -57,7 +57,7 @@ export function useMLEnhancedAICoach(context?: CoachContext) {
         error: error instanceof Error ? error.message : 'Failed to get ML coaching insights'
       }));
     }
-  }, [user?.uid]);
+  }, [user?.uid, coachService]);
 
   const refreshInsights = useCallback(() => {
     if (context) {
@@ -74,7 +74,7 @@ export function useMLEnhancedAICoach(context?: CoachContext) {
       console.error('Feedback generation error:', error);
       return null;
     }
-  }, [user?.uid]);
+  }, [user?.uid, coachService]);
 
   const getRecommendationsForContext = useCallback(async (coachContext: CoachContext) => {
     if (!user?.uid) return [];
@@ -85,7 +85,7 @@ export function useMLEnhancedAICoach(context?: CoachContext) {
       console.error('Recommendations generation error:', error);
       return [];
     }
-  }, [user?.uid]);
+  }, [user?.uid, coachService]);
 
   useEffect(() => {
     if (context && user?.uid) {
@@ -165,7 +165,7 @@ export function useMLSkillGapAnalysis() {
     } finally {
       setLoading(false);
     }
-  }, [user?.uid]);
+  }, [user?.uid, coachService]);
 
   return {
     skillGaps,
@@ -196,7 +196,7 @@ export function useMLPerformancePrediction() {
     } finally {
       setLoading(false);
     }
-  }, [user?.uid]);
+  }, [user?.uid, coachService]);
 
   return {
     prediction,
@@ -227,7 +227,7 @@ export function useMLLearningStyle() {
     } finally {
       setLoading(false);
     }
-  }, [user?.uid]);
+  }, [user?.uid, coachService]);
 
   return {
     learningStyle,

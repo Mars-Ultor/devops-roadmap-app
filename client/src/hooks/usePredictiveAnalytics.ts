@@ -91,7 +91,7 @@ export function usePredictiveAnalytics() {
     }
   }, [user, generatePredictions]);
 
-  const calculateCompletionPrediction = (progressDocs: { data: () => { completedAt?: { toDate: () => Date }; masteryLevel?: string } }[]): PredictiveData['completionPrediction'] => {
+  const calculateCompletionPrediction = useCallback((progressDocs: { data: () => { completedAt?: { toDate: () => Date }; masteryLevel?: string } }[]): PredictiveData['completionPrediction'] => {
     const totalProgramItems = 200; // Estimated total items in program
     const completedItems = progressDocs.length;
     const remainingItems = Math.max(totalProgramItems - completedItems, 0);
@@ -149,7 +149,7 @@ export function usePredictiveAnalytics() {
       requiredPace: Math.round(requiredPace * 10) / 10,
       riskFactors
     };
-  };
+  }, []);
 
   const predictWeakAreas = (progressDocs: { data: () => { contentId?: string; lessonId?: string; score?: number; timeSpentMinutes?: number } }[], failureDocs: { data: () => { topic?: string; contentId?: string; createdAt?: { toDate: () => Date } } }[]): PredictiveData['weakAreaPredictions'] => {
     const topicPerformance: Record<string, {

@@ -158,7 +158,7 @@ export function MLModelManagementDashboard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mlService]);
 
   useEffect(() => {
     loadModels();
