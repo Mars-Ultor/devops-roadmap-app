@@ -551,7 +551,7 @@ High Availability:
             label: 'Frontend replicas',
             hint: 'How many for redundancy?',
             correctValue: '3 (or 2+ for high availability)',
-            validationPattern: '3|2\\+|multiple|high.*availab' // eslint-disable-line no-useless-escape
+            validationPattern: '3|2\\+|multiple|high.*availab'
           },
           {
             id: 'frontend_exposure',
@@ -691,7 +691,7 @@ Fault Tolerance:
             label: 'What does user request?',
             hint: 'External DNS name',
             correctValue: 'DNS name (myapp.example.com) pointing to cloud load balancer IP',
-            validationPattern: 'dns|domain|load.*balancer.*ip|example\\.com' // eslint-disable-line no-useless-escape
+            validationPattern: 'dns|domain|load.*balancer.*ip|example\\.com'
           },
           {
             id: 'cloud_lb_forwards',
