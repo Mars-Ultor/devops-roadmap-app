@@ -106,7 +106,7 @@ export default function Analytics() {
     loadAnalytics();
   }, [user, timeRange, loadAnalytics]);
 
-  const getDateFilter = () => {
+  const getDateFilter = useCallback(() => {
     const now = new Date();
     switch (timeRange) {
       case 'week': {
@@ -123,7 +123,7 @@ export default function Analytics() {
       default:
         return new Date(0); // Beginning of time
     }
-  };
+  }, [timeRange]);
 
   const loadAnalytics = useCallback(async () => {
     if (!user?.uid) return;
@@ -346,7 +346,7 @@ export default function Analytics() {
     } finally {
       setLoading(false);
     }
-  }, [user?.uid, timeRange, getUsageStats]);
+  }, [user?.uid, timeRange, getUsageStats, getDateFilter]);
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);

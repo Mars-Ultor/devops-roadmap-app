@@ -199,47 +199,6 @@ export function useTimeAnalysis() {
     };
   }, [formatTimeWindow]);
 
-  const findPeakWindow = (hours: number[]): number[] => {
-    if (hours.length === 0) return [];
-    if (hours.length === 1) return hours;
-
-    // Find longest consecutive sequence
-    let longestSequence: number[] = [hours[0]];
-    let currentSequence: number[] = [hours[0]];
-
-    for (let i = 1; i < hours.length; i++) {
-      if (hours[i] === hours[i - 1] + 1) {
-        currentSequence.push(hours[i]);
-      } else {
-        if (currentSequence.length > longestSequence.length) {
-          longestSequence = currentSequence;
-        }
-        currentSequence = [hours[i]];
-      }
-    }
-
-    if (currentSequence.length > longestSequence.length) {
-      longestSequence = currentSequence;
-    }
-
-    return longestSequence.length > 1 ? longestSequence : [hours[0], hours[1] || hours[0]];
-  };
-
-  const formatTimeWindow = (hours: number[]): string => {
-    if (hours.length === 0) return 'Not enough data';
-    if (hours.length === 1) return formatHour(hours[0]);
-    
-    const start = formatHour(hours[0]);
-    const end = formatHour(hours[hours.length - 1] + 1); // End is exclusive
-    return `${start} - ${end}`;
-  };
-
-  const formatHour = (hour: number): string => {
-    const period = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-    return `${displayHour}${period}`;
-  };
-
   return {
     analysisData,
     loading,

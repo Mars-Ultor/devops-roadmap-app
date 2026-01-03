@@ -3,7 +3,7 @@
  * Manages stress training sessions with physiological simulation
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { collection, addDoc, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
@@ -33,7 +33,7 @@ export function useStressTraining(): UseStressTrainingReturn {
   const [stressMetrics, setStressMetrics] = useState<StressMetrics | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [intervalId, setIntervalId] = useState<number | null>(null);
+  const intervalIdRef = useRef<number | null>(null);
 
   // Load user's stress metrics
   useEffect(() => {
@@ -86,9 +86,9 @@ export function useStressTraining(): UseStressTrainingReturn {
   // Update physiological metrics every second during active session
   useEffect(() => {
     if (!currentSession || currentSession.completedAt) {
-      if (intervalId) {
-        clearInterval(intervalId);
-        setIntervalId(null);
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+        intervalIdRef.current = null;
       }
       return;
     }
@@ -97,7 +97,7 @@ export function useStressTraining(): UseStressTrainingReturn {
       updatePhysiologicalMetrics();
     }, 1000);
 
-    setIntervalId(id);
+    intervalIdRef.current = id;
 
     return () => clearInterval(id);
   }, [currentSession, updatePhysiologicalMetrics]);
