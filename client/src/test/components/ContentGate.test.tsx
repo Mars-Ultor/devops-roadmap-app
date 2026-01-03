@@ -22,7 +22,7 @@ vi.mock('react-router-dom', () => ({
   useLocation: () => ({ pathname: '/training' }),
 }))
 
-const AnyContentGate = ContentGate as unknown as (props: any) => ReactElement
+const AnyContentGate = ContentGate as unknown as (props: unknown) => ReactElement
 
 describe('ContentGate', () => {
   beforeEach(() => {

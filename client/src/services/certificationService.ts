@@ -56,14 +56,14 @@ export class CertificationService {
       }
 
       const data = await response.json();
-      return data.map((attempt: any) => ({
-        id: attempt.id,
-        userId: attempt.userId,
-        drillId: attempt.drillId,
-        score: attempt.score,
-        passed: attempt.passed,
-        timeSpentMinutes: attempt.timeSpentMinutes,
-        completedAt: attempt.completedAt ? new Date(attempt.completedAt) : undefined,
+      return data.map((attempt: unknown) => ({
+        id: (attempt as any).id,
+        userId: (attempt as any).userId,
+        drillId: (attempt as any).drillId,
+        score: (attempt as any).score,
+        passed: (attempt as any).passed,
+        timeSpentMinutes: (attempt as any).timeSpentMinutes,
+        completedAt: (attempt as any).completedAt ? new Date((attempt as any).completedAt) : undefined,
       }));
     } catch (error) {
       console.error('Error fetching recertification attempts:', error);

@@ -32,7 +32,7 @@ export default function BattleDrillSession() {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [showHints, setShowHints] = useState<Set<number>>(new Set());
   const [sessionComplete, setSessionComplete] = useState(false);
-  const [sessionResult, setSessionResult] = useState<any>(null);
+  const [sessionResult, setSessionResult] = useState<unknown>(null);
   const [stepInputs, setStepInputs] = useState<Record<number, string>>({});
   const [validationResults, setValidationResults] = useState<Record<number, ValidationResult>>({});
   const [validatingStep, setValidatingStep] = useState<number | null>(null);

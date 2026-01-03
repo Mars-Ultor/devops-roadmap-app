@@ -97,8 +97,8 @@ interface MasterTrainingSession {
   learningPath: LearningPath;
   currentScenario: AdaptiveScenario;
   performanceData: {
-    decisions: any[];
-    communications: any[];
+    decisions: unknown[];
+    communications: unknown[];
     timeSpent: number;
     score: number;
     difficultyAdjustment: number;
