@@ -68,5 +68,4 @@ export default defineConfig({
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
   },
-});</content>
-<parameter name="filePath">c:\Users\ayode\Desktop\devops-roadmap-app\client\playwright.config.ts
+});
