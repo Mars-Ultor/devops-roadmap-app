@@ -107,11 +107,7 @@ describe('App Integration', () => {
       initAuth: vi.fn(),
     })
 
-    render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    )
+    render(<App />)
 
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
@@ -149,11 +145,7 @@ describe('App Integration', () => {
       initAuth: vi.fn(),
     })
 
-    render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    )
+    render(<App />)
 
     // Should show navbar for authenticated users
     await waitFor(() => {
@@ -172,11 +164,7 @@ describe('App Integration', () => {
       initAuth: vi.fn(),
     })
 
-    render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    )
+    render(<App />)
 
     // Should render without crashing and show navbar
     await waitFor(() => {
@@ -195,11 +183,7 @@ describe('App Integration', () => {
       initAuth: vi.fn(),
     })
 
-    render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    )
+    render(<App />)
 
     // Should render without crashing and show navbar
     await waitFor(() => {
@@ -218,11 +202,7 @@ describe('App Integration', () => {
       initAuth: vi.fn(),
     })
 
-    render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    )
+    render(<App />)
 
     // For authenticated users, navbar should be present
     // ContentGate behavior is tested separately
@@ -246,11 +226,7 @@ describe('App Integration', () => {
       writable: true,
     })
 
-    render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    )
+    render(<App />)
 
     // Should still render the app structure
     expect(screen.getByTestId('navbar')).toBeInTheDocument()
