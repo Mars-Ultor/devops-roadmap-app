@@ -24,6 +24,10 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Load environment variables
+import dotenv from 'dotenv';
+dotenv.config();
+
 class DatabaseDeployer {
   constructor() {
     this.isProduction = process.env.NODE_ENV === 'production';
@@ -241,6 +245,7 @@ class DatabaseDeployer {
 
 // Run deployment if executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
+  console.log('🚀 Starting database deployment script...');
   const deployer = new DatabaseDeployer();
 
   deployer.run()
@@ -255,4 +260,3 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 }
 
 export { DatabaseDeployer };
-<parameter name="filePath">c:\Users\ayode\Desktop\devops-roadmap-app\server\scripts\deploy-database.js
