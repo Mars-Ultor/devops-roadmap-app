@@ -149,9 +149,9 @@ export function usePredictiveAnalytics() {
       requiredPace: Math.round(requiredPace * 10) / 10,
       riskFactors
     };
-  }, []);
+  }, [calculateVariance]);
 
-  const predictWeakAreas = (progressDocs: { data: () => { contentId?: string; lessonId?: string; score?: number; timeSpentMinutes?: number } }[], failureDocs: { data: () => { topic?: string; contentId?: string; createdAt?: { toDate: () => Date } } }[]): PredictiveData['weakAreaPredictions'] => {
+  const predictWeakAreas = useCallback((progressDocs: { data: () => { contentId?: string; lessonId?: string; score?: number; timeSpentMinutes?: number } }[], failureDocs: { data: () => { topic?: string; contentId?: string; createdAt?: { toDate: () => Date } } }[]): PredictiveData['weakAreaPredictions'] => {
     const topicPerformance: Record<string, {
       scores: number[];
       attempts: number;
@@ -238,10 +238,10 @@ export function usePredictiveAnalytics() {
       .slice(0, 5); // Top 5 predictions
 
     return predictions;
-  };
+  }, [generateStrugglePrediction, generatePreventiveActions]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const forecastPerformance = (progressDocs: { data: () => { masteryLevel?: string } }[], _sessionDocs: { data: () => { startTime?: { toDate: () => Date } } }[]): PredictiveData['performanceForecast'] => {
+  const forecastPerformance = useCallback((progressDocs: { data: () => { masteryLevel?: string } }[], _sessionDocs: { data: () => { startTime?: { toDate: () => Date } } }[]): PredictiveData['performanceForecast'] => {
     // Next week prediction
     const recentProgress = progressDocs.slice(-10); // Last 10 items
     const avgItemsPerWeek = recentProgress.length / 2; // Assuming 2 weeks of data
@@ -273,7 +273,7 @@ export function usePredictiveAnalytics() {
       nextWeekPrediction,
       monthProjection
     };
-  };
+  }, [identifySkillImprovements]);
 
   const analyzeLearningTrajectory = (progressDocs: { data: () => { score?: number } }[]): PredictiveData['learningTrajectory'] => {
     if (progressDocs.length < 5) {
@@ -314,14 +314,14 @@ export function usePredictiveAnalytics() {
     };
   };
 
-  const calculateVariance = (values: number[]): number => {
+  const calculateVariance = useCallback((values: number[]): number => {
     if (values.length < 2) return 0;
     const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
     const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
     return Math.sqrt(variance);
-  };
+  }, []);
 
-  const generateStrugglePrediction = (avgScore: number, failureRate: number, struggleRate: number): string => {
+  const generateStrugglePrediction = useCallback((avgScore: number, failureRate: number, struggleRate: number): string => {
     if (failureRate > 0.3) {
       return 'High likelihood of continued struggles due to frequent failures. May need significant additional practice.';
     }
@@ -332,9 +332,9 @@ export function usePredictiveAnalytics() {
       return 'Recent performance indicates ongoing difficulties. Consider different learning approaches.';
     }
     return 'Moderate challenges expected. Additional focused practice recommended.';
-  };
+  }, []);
 
-  const generatePreventiveActions = (riskLevel: string, attempts: number, avgScore: number): string[] => {
+  const generatePreventiveActions = useCallback((riskLevel: string, attempts: number, avgScore: number): string[] => {
     const actions: string[] = [];
 
     if (riskLevel === 'high') {
@@ -355,9 +355,9 @@ export function usePredictiveAnalytics() {
     actions.push('Review after-action reports for specific improvement areas');
 
     return actions.slice(0, 3); // Limit to 3 actions
-  };
+  }, []);
 
-  const identifySkillImprovements = (recentProgress: { data: () => { masteryLevel?: string; score?: number; timeSpentMinutes?: number } }[]): string[] => {
+  const identifySkillImprovements = useCallback((recentProgress: { data: () => { masteryLevel?: string; score?: number; timeSpentMinutes?: number } }[]): string[] => {
     const improvements: string[] = [];
     const masteryLevels = recentProgress.map(doc => doc.data().masteryLevel);
 
@@ -380,9 +380,9 @@ export function usePredictiveAnalytics() {
     }
 
     return improvements.length > 0 ? improvements : ['Continued skill development'];
-  };
+  }, []);
 
-  const generateTrajectoryAdjustments = (
+  const generateTrajectoryAdjustments = useCallback((
     current: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _improvement: number
@@ -408,7 +408,7 @@ export function usePredictiveAnalytics() {
     }
 
     return adjustments;
-  };
+  }, []);
 
   return {
     predictiveData,
