@@ -150,15 +150,15 @@ export class AARService {
         }
       });
 
-      return response.data.data.map((aar: any) => ({
-        ...aar,
-        createdAt: new Date(aar.createdAt),
-        updatedAt: new Date(aar.updatedAt),
-        completedAt: new Date(aar.completedAt)
+      return response.data.data.map((aar: unknown) => ({
+        ...(aar as any),
+        createdAt: new Date((aar as any).createdAt),
+        updatedAt: new Date((aar as any).updatedAt),
+        completedAt: new Date((aar as any).completedAt)
       }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching lesson AARs:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch lesson AARs');
+      throw new Error((error as any).response?.data?.message || 'Failed to fetch lesson AARs');
     }
   }
 
@@ -174,9 +174,9 @@ export class AARService {
       });
 
       return response.data.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching AAR stats:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch AAR statistics');
+      throw new Error((error as any).response?.data?.message || 'Failed to fetch AAR statistics');
     }
   }
 
@@ -192,9 +192,9 @@ export class AARService {
       });
 
       return response.data.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error validating AAR form:', error);
-      throw new Error(error.response?.data?.message || 'Failed to validate AAR form');
+      throw new Error((error as any).response?.data?.message || 'Failed to validate AAR form');
     }
   }
 
@@ -211,9 +211,9 @@ export class AARService {
       });
 
       return response.data.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching common patterns:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch common patterns');
+      throw new Error((error as any).response?.data?.message || 'Failed to fetch common patterns');
     }
   }
 
@@ -235,12 +235,12 @@ export class AARService {
         updatedAt: new Date(aar.updatedAt),
         completedAt: new Date(aar.completedAt)
       };
-    } catch (error: any) {
-      if (error.response?.status === 404) {
+    } catch (error: unknown) {
+      if ((error as any).response?.status === 404) {
         return null;
       }
       console.error('Error fetching AAR:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch AAR');
+      throw new Error((error as any).response?.data?.message || 'Failed to fetch AAR');
     }
   }
 
@@ -262,12 +262,12 @@ export class AARService {
         updatedAt: new Date(aar.updatedAt),
         completedAt: new Date(aar.completedAt)
       };
-    } catch (error: any) {
-      if (error.response?.status === 404) {
+    } catch (error: unknown) {
+      if ((error as any).response?.status === 404) {
         return null;
       }
       console.error('Error updating AAR:', error);
-      throw new Error(error.response?.data?.message || 'Failed to update AAR');
+      throw new Error((error as any).response?.data?.message || 'Failed to update AAR');
     }
   }
 
@@ -283,12 +283,12 @@ export class AARService {
       });
 
       return true;
-    } catch (error: any) {
-      if (error.response?.status === 404) {
+    } catch (error: unknown) {
+      if ((error as any).response?.status === 404) {
         return false;
       }
       console.error('Error deleting AAR:', error);
-      throw new Error(error.response?.data?.message || 'Failed to delete AAR');
+      throw new Error((error as any).response?.data?.message || 'Failed to delete AAR');
     }
   }
 
