@@ -31,48 +31,6 @@ export function useRecertification() {
   const [status, setStatus] = useState<RecertificationStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      checkRecertificationStatus();
-    }
-  }, [user]); // Removed checkRecertificationStatus from dependencies
-
-  const checkRecertificationStatus = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      // Get recertification record
-      const recertDoc = await getDoc(doc(db, 'recertifications', user.uid));
-      const recertData = recertDoc.data();
-
-      const lastRecertDate = recertData?.lastRecertDate?.toDate() || null;
-      const nextRecertDue = lastRecertDate 
-        ? new Date(lastRecertDate.getTime() + 30 * 24 * 60 * 60 * 1000) // 30 days
-        : null;
-
-      const daysUntilDue = nextRecertDue 
-        ? Math.ceil((nextRecertDue.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-        : 30;
-
-      const isOverdue = daysUntilDue < 0;
-
-      // Analyze skill decay
-      const skillsNeedingRecert = await analyzeSkillDecay();
-
-      setStatus({
-        lastRecertDate,
-        nextRecertDue,
-        daysUntilDue,
-        isOverdue,
-        skillsNeedingRecert
-      });
-    } catch (error) {
-      console.error('Error checking recertification status:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, analyzeSkillDecay]);
-
   const analyzeSkillDecay = useCallback(async (): Promise<SkillDecayAlert[]> => {
     if (!user) return [];
 
@@ -121,7 +79,7 @@ export function useRecertification() {
             where('userId', '==', user.uid),
             where('category', '==', category)
           ));
-          
+
           const lastPracticed = lastPracticedDocs.docs.length > 0
             ? lastPracticedDocs.docs
                 .map(d => d.data().completedAt?.toDate())
@@ -144,6 +102,48 @@ export function useRecertification() {
 
     return alerts.sort((a, b) => b.decayPercentage - a.decayPercentage);
   }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      checkRecertificationStatus();
+    }
+  }, [user]); // Removed checkRecertificationStatus from dependencies
+
+  const checkRecertificationStatus = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      // Get recertification record
+      const recertDoc = await getDoc(doc(db, 'recertifications', user.uid));
+      const recertData = recertDoc.data();
+
+      const lastRecertDate = recertData?.lastRecertDate?.toDate() || null;
+      const nextRecertDue = lastRecertDate
+        ? new Date(lastRecertDate.getTime() + 30 * 24 * 60 * 60 * 1000) // 30 days
+        : null;
+
+      const daysUntilDue = nextRecertDue
+        ? Math.ceil((nextRecertDue.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+        : 30;
+
+      const isOverdue = daysUntilDue < 0;
+
+      // Analyze skill decay
+      const skillsNeedingRecert = await analyzeSkillDecay();
+
+      setStatus({
+        lastRecertDate,
+        nextRecertDue,
+        daysUntilDue,
+        isOverdue,
+        skillsNeedingRecert
+      });
+    } catch (error) {
+      console.error('Error checking recertification status:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, analyzeSkillDecay]);
 
   const completeRecertification = async (drillResults: Record<string, boolean>) => {
     if (!user) return;
