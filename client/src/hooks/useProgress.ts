@@ -351,7 +351,13 @@ export function useProgress() {
 
           case 'streak_days':
             // Check login streak
-            // TODO: Implement streak tracking
+            const streakRef = doc(db, 'progressStreaks', user.uid);
+            const streakSnap = await getDoc(streakRef);
+            const streakData = streakSnap.exists() ? streakSnap.data() : null;
+            const currentStreak = streakData?.currentStreak || 0;
+            if (currentStreak >= badge.requirement.value) {
+              shouldAward = true;
+            }
             break;
         }
 
