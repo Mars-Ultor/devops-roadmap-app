@@ -92,11 +92,13 @@ describe('MandatoryAARModal', () => {
   it('accepts valid AAR submission', async () => {
     const user = userEvent.setup({ delay: null })
 
-    // Mock Firebase functions
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(addDoc as any).mockResolvedValue({ id: 'test-doc-id' })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(collection as any).mockReturnValue('test-collection')
+    // Mock Firebase functions are already mocked globally
+    const mockAddDoc = vi.fn(() => Promise.resolve({ id: 'test-doc-id' }))
+    const mockCollection = vi.fn(() => 'test-collection')
+
+    // Temporarily replace the global mocks for this test
+    vi.mocked(addDoc).mockImplementation(mockAddDoc)
+    vi.mocked(collection).mockImplementation(mockCollection)
 
     render(<MandatoryAARModal {...defaultProps} />)
 
@@ -139,10 +141,12 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
 
     // Mock slow Firebase call
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(addDoc as any).mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(collection as any).mockReturnValue('test-collection')
+    const mockAddDoc = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100)))
+    const mockCollection = vi.fn(() => 'test-collection')
+
+    // Temporarily replace the global mocks for this test
+    vi.mocked(addDoc).mockImplementation(mockAddDoc)
+    vi.mocked(collection).mockImplementation(mockCollection)
 
     render(<MandatoryAARModal {...defaultProps} />)
 
@@ -164,10 +168,12 @@ describe('MandatoryAARModal', () => {
     const user = userEvent.setup({ delay: null })
 
     // Mock Firebase error
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(addDoc as any).mockRejectedValue(new Error('Firebase error'))
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(collection as any).mockReturnValue('test-collection')
+    const mockAddDoc = vi.fn(() => Promise.reject(new Error('Firebase error')))
+    const mockCollection = vi.fn(() => 'test-collection')
+
+    // Temporarily replace the global mocks for this test
+    vi.mocked(addDoc).mockImplementation(mockAddDoc)
+    vi.mocked(collection).mockImplementation(mockCollection)
 
     const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {})
 
