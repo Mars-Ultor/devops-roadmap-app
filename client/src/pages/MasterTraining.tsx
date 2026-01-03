@@ -3,7 +3,7 @@
  * AI-powered adaptive difficulty and personalized learning paths
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Brain,
@@ -2488,9 +2488,9 @@ export default function MasterTraining() {
     } else {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, loadProgress]);
 
-  const loadProgress = async () => {
+  const loadProgress = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -2525,7 +2525,7 @@ export default function MasterTraining() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const saveProgress = async (updatedPaths: LearningPath[]) => {
     if (!user) return;

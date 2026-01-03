@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -1044,7 +1044,7 @@ export default function WeekAssessment() {
 
   useEffect(() => {
     loadPreviousResults();
-  }, [weekNumber, user]);
+  }, [weekNumber, user, loadPreviousResults]);
 
   useEffect(() => {
     // Update assessment type when URL query parameter changes
@@ -1054,9 +1054,9 @@ export default function WeekAssessment() {
       setAnswers({});
       setShowResults(false);
     }
-  }, [typeFromUrl]);
+  }, [typeFromUrl, assessmentType]);
 
-  const loadPreviousResults = async () => {
+  const loadPreviousResults = useCallback(async () => {
     if (!user || !weekNumber) return;
 
     try {
@@ -1072,7 +1072,7 @@ export default function WeekAssessment() {
     } catch (error) {
       console.error('Error loading previous results:', error);
     }
-  };
+  }, [user, weekNumber]);
 
   const handleAnswer = (questionId: string, answerIndex: number) => {
     setAnswers({ ...answers, [questionId]: answerIndex });
