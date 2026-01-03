@@ -378,4 +378,7 @@ describe('useProgress', () => {
       // Should check for badge awards
       expect(mockGetDoc).toHaveBeenCalledTimes(4)
     })
-  })
+  })} )  
+ } )  
+ } )  
+ 
