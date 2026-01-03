@@ -58,7 +58,7 @@ describe('FlashCard', () => {
 
     expect(screen.getByText('Again')).toBeInTheDocument();
     expect(screen.getByText('Hard')).toBeInTheDocument();
-    expect(screen.getByText('Good')).toBeInTheDocument();
+    expect(screen.getByText('Good (4)')).toBeInTheDocument();
     expect(screen.getByText('Easy')).toBeInTheDocument();
   });
 
@@ -67,7 +67,7 @@ describe('FlashCard', () => {
 
     // Show answer and rate
     fireEvent.click(screen.getByText('Reveal Answer'));
-    fireEvent.click(screen.getByText('Good'));
+    fireEvent.click(screen.getByText('Good (4)'));
 
     // Should show second card
     expect(screen.getByText('What is Kubernetes?')).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe('FlashCard', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
     fireEvent.click(screen.getByText('Reveal Answer'));
-    fireEvent.click(screen.getByText('Good'));
+    fireEvent.click(screen.getByText('Good (4)'));
 
     expect(screen.getByText('Card 2 of 2')).toBeInTheDocument();
   });
@@ -94,7 +94,7 @@ describe('FlashCard', () => {
 
     // Complete first card
     fireEvent.click(screen.getByText('Reveal Answer'));
-    fireEvent.click(screen.getByText('Good'));
+    fireEvent.click(screen.getByText('Good (4)'));
 
     // Complete second card
     fireEvent.click(screen.getByText('Reveal Answer'));
@@ -108,17 +108,17 @@ describe('FlashCard', () => {
   test('calls onComplete with correct results', () => {
     render(<FlashCard cards={mockCards} onComplete={mockOnComplete} />);
 
-    // Complete first card with "Good" (quality: 3)
+    // Complete first card with "Good" (quality: 4)
     fireEvent.click(screen.getByText('Reveal Answer'));
-    fireEvent.click(screen.getByText('Good'));
+    fireEvent.click(screen.getByText('Good (4)'));
 
-    // Complete second card with "Easy" (quality: 4)
+    // Complete second card with "Perfect" (quality: 5)
     fireEvent.click(screen.getByText('Reveal Answer'));
-    fireEvent.click(screen.getByText('Easy'));
+    fireEvent.click(screen.getByText('Perfect (5)'));
 
     expect(mockOnComplete).toHaveBeenCalledWith([
-      { cardId: 'card-1', quality: 3 },
-      { cardId: 'card-2', quality: 4 },
+      { cardId: 'card-1', quality: 4 },
+      { cardId: 'card-2', quality: 5 },
     ]);
   });
 
@@ -127,17 +127,17 @@ describe('FlashCard', () => {
 
     // Complete the session
     fireEvent.click(screen.getByText('Reveal Answer'));
-    fireEvent.click(screen.getByText('Good'));
+    fireEvent.click(screen.getByText('Good (4)'));
     fireEvent.click(screen.getByText('Reveal Answer'));
-    fireEvent.click(screen.getByText('Easy'));
+    fireEvent.click(screen.getByText('Perfect (5)'));
 
     // Click reset
-    fireEvent.click(screen.getByText('Start New Session'));
+    fireEvent.click(screen.getByText('Review Again'));
 
     // Should be back to first card
     expect(screen.getByText('What is Docker?')).toBeInTheDocument();
     expect(screen.getByText('Card 1 of 2')).toBeInTheDocument();
-    expect(screen.queryByText('Session Complete!')).not.toBeInTheDocument();
+    expect(screen.queryByText('Review Complete!')).not.toBeInTheDocument();
   });
 
   test('displays card metadata', () => {
@@ -153,7 +153,7 @@ describe('FlashCard', () => {
     fireEvent.click(screen.getByText('Reveal Answer'));
 
     // Test each quality rating
-    fireEvent.click(screen.getByText('Again')); // Should be 1
+    fireEvent.click(screen.getByText('Failed (1)')); // Should be 1
     expect(mockOnComplete).toHaveBeenCalledWith([
       { cardId: 'card-1', quality: 1 },
     ]);
@@ -163,9 +163,9 @@ describe('FlashCard', () => {
     render(<FlashCard cards={[mockCards[0]]} onComplete={mockOnComplete} />);
 
     fireEvent.click(screen.getByText('Reveal Answer'));
-    fireEvent.click(screen.getByText('Good'));
+    fireEvent.click(screen.getByText('Good (4)'));
 
-    expect(screen.getByText('Session Complete!')).toBeInTheDocument();
+    expect(screen.getByText('Review Complete!')).toBeInTheDocument();
     expect(screen.getByText('Card 1 of 1')).toBeInTheDocument();
   });
 
@@ -175,14 +175,14 @@ describe('FlashCard', () => {
     fireEvent.click(screen.getByText('Reveal Answer'));
 
     // Check that buttons have different styling (we can check for presence)
-    const againButton = screen.getByText('Again');
-    const hardButton = screen.getByText('Hard');
-    const goodButton = screen.getByText('Good');
-    const easyButton = screen.getByText('Easy');
+    const failedButton = screen.getByText('Failed (1)');
+    const hardButton = screen.getByText('Hard (2)');
+    const goodButton = screen.getByText('Good (4)');
+    const perfectButton = screen.getByText('Perfect (5)');
 
-    expect(againButton).toBeInTheDocument();
+    expect(failedButton).toBeInTheDocument();
     expect(hardButton).toBeInTheDocument();
     expect(goodButton).toBeInTheDocument();
-    expect(easyButton).toBeInTheDocument();
+    expect(perfectButton).toBeInTheDocument();
   });
 });
