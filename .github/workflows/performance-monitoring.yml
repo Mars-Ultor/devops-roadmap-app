@@ -211,15 +211,11 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Performance:* ${{ steps.lighthouse.outputs.performance }}/100 ${{${
-                        fromJSON(steps.check-threshold.outputs.performance_below_threshold) ? '❌' : '✅'
-                      }}}"
+                      "text": "*Performance:* ${{ steps.lighthouse.outputs.performance }}/100 ${{ fromJSON(steps.check-threshold.outputs.performance_below_threshold) && '❌' || '✅' }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Accessibility:* ${{ steps.lighthouse.outputs.accessibility }}/100 ${{${
-                        fromJSON(steps.check-threshold.outputs.accessibility_below_threshold) ? '❌' : '✅'
-                      }}}"
+                      "text": "*Accessibility:* ${{ steps.lighthouse.outputs.accessibility }}/100 ${{ fromJSON(steps.check-threshold.outputs.accessibility_below_threshold) && '❌' || '✅' }}"
                     },
                     {
                       "type": "mrkdwn",
