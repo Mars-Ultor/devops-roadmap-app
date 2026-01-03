@@ -41,7 +41,7 @@ jobs:
 
       - name: Run Lighthouse audit
         id: lighthouse
-        uses: treosh/lighthouse-ci-action@v10
+        uses: treosh/lighthouse-ci-action@v12
         with:
           urls: ${{ steps.deploy.outputs.url }}
           configPath: .lighthouserc.json
