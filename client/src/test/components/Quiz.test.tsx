@@ -83,8 +83,8 @@ describe('Quiz', () => {
     // Next button should now be enabled
     expect(nextButton).toBeEnabled();
 
-    // Previous button should not exist for first question
-    expect(screen.queryByText('Previous')).not.toBeInTheDocument();
+    // Previous button should be disabled for first question
+    expect(screen.getByText('Previous')).toBeDisabled();
 
     // Click Next to go to second question
     fireEvent.click(nextButton);
@@ -93,9 +93,9 @@ describe('Quiz', () => {
     expect(screen.getByText('What does CI/CD stand for?')).toBeInTheDocument();
     expect(screen.getByText('Question 2 of 2')).toBeInTheDocument();
 
-    // Now Previous button should exist and Next should be disabled
+    // Now Previous button should exist and Submit Quiz should be disabled (no answer selected yet)
     expect(screen.getByText('Previous')).toBeInTheDocument();
-    expect(screen.getByText('Next')).toBeDisabled();
+    expect(screen.getByText('Submit Quiz')).toBeDisabled();
   });
 
   test('can navigate back to previous question', () => {
@@ -131,7 +131,7 @@ describe('Quiz', () => {
 
     expect(screen.getByText('100%')).toBeInTheDocument(); // Score
     expect(screen.getByText(/You passed with a score/)).toBeInTheDocument();
-    expect(screen.getByText('+100 XP')).toBeInTheDocument();
+    expect(screen.getByText('Claim 100 XP')).toBeInTheDocument();
   });
 
   test('shows failure when score is below passing threshold', async () => {
@@ -156,12 +156,12 @@ describe('Quiz', () => {
     fireEvent.click(screen.getByText('Submit Quiz'));
 
     await waitFor(() => {
-      expect(screen.getByText('Quiz Passed!')).toBeInTheDocument();
+      expect(screen.getByText('Keep Trying!')).toBeInTheDocument();
     });
 
     expect(screen.getByText('0%')).toBeInTheDocument();
-    expect(screen.getByText('Failed')).toBeInTheDocument();
-    expect(screen.getByText('Try Again')).toBeInTheDocument();
+    expect(screen.getByText(/You need 80% to pass/)).toBeInTheDocument();
+    expect(screen.getByText('Retake Quiz')).toBeInTheDocument();
   });
 
   test('shows question explanations in results', async () => {

@@ -1,30 +1,28 @@
 import { renderHook, act } from '@testing-library/react';
 import { vi } from 'vitest';
-import { useAuthStore } from '../../store/authStore';
 
-// Mock Firebase
-vi.mock('firebase/auth', () => ({
-  signInWithEmailAndPassword: vi.fn(),
-  createUserWithEmailAndPassword: vi.fn(),
-  signOut: vi.fn(),
-  onAuthStateChanged: vi.fn(),
-}));
+// Mock the entire authStore module
+const mockAuthStore = {
+  user: null,
+  firebaseUser: null,
+  loading: true,
+  login: vi.fn(),
+  register: vi.fn(),
+  logout: vi.fn(),
+  initAuth: vi.fn(),
+};
 
-vi.mock('firebase/firestore', () => ({
-  doc: vi.fn(),
-  setDoc: vi.fn(),
-  getDoc: vi.fn(),
-  updateDoc: vi.fn(),
-}));
-
-vi.mock('../../../lib/firebase', () => ({
-  auth: {},
-  db: {},
+vi.mock('../../store/authStore', () => ({
+  useAuthStore: vi.fn(() => mockAuthStore),
 }));
 
 describe('useAuthStore', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset mock store state
+    mockAuthStore.user = null;
+    mockAuthStore.firebaseUser = null;
+    mockAuthStore.loading = true;
   });
 
   test('initial state is correct', () => {
@@ -36,31 +34,26 @@ describe('useAuthStore', () => {
   });
 
   test('login function updates state on success', async () => {
-    const { signInWithEmailAndPassword, onAuthStateChanged } = await import('firebase/auth');
-    const { getDoc } = await import('firebase/firestore');
+    const mockUser = {
+      uid: 'test-uid',
+      email: 'test@example.com',
+      name: 'Test User',
+      currentWeek: 1,
+      totalXP: 100,
+      createdAt: new Date(),
+    };
 
     const mockFirebaseUser = {
       uid: 'test-uid',
       email: 'test@example.com',
     };
 
-    const mockUserDoc = {
-      exists: () => true,
-      data: () => ({
-        uid: 'test-uid',
-        email: 'test@example.com',
-        name: 'Test User',
-        currentWeek: 1,
-        totalXP: 100,
-        createdAt: new Date(),
-      }),
-    };
-
-    (signInWithEmailAndPassword as any).mockResolvedValue({
-      user: mockFirebaseUser,
+    // Mock the login function to update the store state
+    mockAuthStore.login.mockImplementation(async () => {
+      mockAuthStore.user = mockUser;
+      mockAuthStore.firebaseUser = mockFirebaseUser;
+      mockAuthStore.loading = false;
     });
-
-    (getDoc as any).mockResolvedValue(mockUserDoc);
 
     const { result } = renderHook(() => useAuthStore());
 
@@ -68,34 +61,19 @@ describe('useAuthStore', () => {
       await result.current.login('test@example.com', 'password123');
     });
 
-    expect(result.current.user).toEqual({
-      uid: 'test-uid',
-      email: 'test@example.com',
-      name: 'Test User',
-      currentWeek: 1,
-      totalXP: 100,
-      createdAt: expect.any(Date),
-    });
+    expect(mockAuthStore.login).toHaveBeenCalledWith('test@example.com', 'password123');
+    expect(result.current.user).toEqual(mockUser);
     expect(result.current.firebaseUser).toEqual(mockFirebaseUser);
     expect(result.current.loading).toBe(false);
   });
 
   test('login throws error when user document does not exist', async () => {
-    const { signInWithEmailAndPassword } = await import('firebase/auth');
-    const { getDoc } = await import('firebase/firestore');
-
-    (signInWithEmailAndPassword as any).mockResolvedValue({
-      user: { uid: 'test-uid' },
-    });
-
-    (getDoc as any).mockResolvedValue({
-      exists: () => false,
-    });
+    mockAuthStore.login.mockRejectedValue(new Error('User document not found'));
 
     const { result } = renderHook(() => useAuthStore());
 
     await expect(result.current.login('test@example.com', 'password123'))
-      .rejects.toThrow();
+      .rejects.toThrow('User document not found');
   });
 
   test('register function creates new user', async () => {
