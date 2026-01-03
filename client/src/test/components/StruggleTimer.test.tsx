@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import StruggleTimer from '../../components/StruggleTimer'
 
@@ -236,8 +236,7 @@ describe('StruggleTimer', () => {
     const submitButton = screen.getByRole('button', { name: /submit documentation/i })
     await user.click(submitButton)
 
-    // Fast-forward past 30 minutes
-    currentTime += 30 * 60 * 1000 + 1000
+    // Rerender after form submission to ensure strugglesLogged state is updated
     rerender(
       <StruggleTimer
         startTime={startTime}
@@ -247,14 +246,22 @@ describe('StruggleTimer', () => {
       />
     )
 
-    // Debug: check what's actually rendered
-    console.log('After rerender:', screen.getByRole('main').textContent)
-
-    await waitFor(() => {
-      expect(screen.getByText('Hints Available')).toBeInTheDocument()
-      expect(screen.getByText(/you've earned access to hints/i)).toBeInTheDocument()
+    // Fast-forward past 30 minutes
+    currentTime += 30 * 60 * 1000 + 1000
+    act(() => {
+      rerender(
+        <StruggleTimer
+          startTime={startTime}
+          onHintUnlocked={mockOnHintUnlocked}
+          onStruggleLogged={mockOnStruggleLogged}
+          currentTime={currentTime}
+        />
+      )
     })
 
+    // The component should now show hints as unlocked
+    expect(screen.getByText('Hints Available')).toBeInTheDocument()
+    expect(screen.getByText(/you've earned access to hints/i)).toBeInTheDocument()
     expect(mockOnHintUnlocked).toHaveBeenCalled()
 
     alertMock.mockRestore()
