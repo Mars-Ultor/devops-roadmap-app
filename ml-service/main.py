@@ -4,10 +4,23 @@ Full ML service using trained models from the models directory
 """
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List, Dict, Any, Optional
+from datetime import datetime
+import os
+from pathlib import Path
 
-# ... existing imports ...
+# Import database manager
+from database import db_manager
+
+# Import ML models
+from models.learning_path_predictor import LearningPathPredictor
+from models.performance_predictor import PerformancePredictor
+from models.learning_style_detector import LearningStyleDetector
+from models.skill_gap_analyzer import SkillGapAnalyzer
+from models.motivational_analyzer import MotivationalAnalyzer
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
