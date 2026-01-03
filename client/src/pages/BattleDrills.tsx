@@ -155,7 +155,7 @@ export default function BattleDrills() {
                 {['all', 'basic', 'intermediate', 'advanced'].map(diff => (
                   <button
                     key={diff}
-                    onClick={() => setSelectedDifficulty(diff as any)}
+                    onClick={() => setSelectedDifficulty(diff as unknown)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       selectedDifficulty === diff
                         ? 'bg-indigo-600 text-white'

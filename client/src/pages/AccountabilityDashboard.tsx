@@ -422,7 +422,7 @@ export default function AccountabilityDashboard() {
                             value={commitment.importance}
                             onChange={(e) => {
                               const updated = [...newCommitments];
-                              updated[index].importance = e.target.value as any;
+                              updated[index].importance = e.target.value as unknown;
                               setNewCommitments(updated);
                             }}
                             className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"

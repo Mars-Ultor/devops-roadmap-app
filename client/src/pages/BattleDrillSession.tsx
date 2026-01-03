@@ -156,7 +156,7 @@ export default function BattleDrillSession() {
     recordHintUsed();
   };
 
-  const handleLogFailure = async (failureData: any) => {
+  const handleLogFailure = async (failureData: unknown) => {
     try {
       await logFailure(failureData);
       setShowFailureLog(false);
