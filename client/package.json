@@ -14,6 +14,9 @@
     "test:run": "vitest run",
     "test:ci": "vitest run --passWithNoTests --reporter=verbose --pool=forks --poolOptions.forks.singleFork --bail=1",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:install": "playwright install",
     "type-check": "tsc --noEmit",
     "deploy": "npm run build && firebase deploy --only hosting",
     "deploy:ci": "firebase deploy --only hosting"
