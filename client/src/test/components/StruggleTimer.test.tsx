@@ -247,11 +247,15 @@ describe('StruggleTimer', () => {
       />
     )
 
+    // Debug: check what's actually rendered
+    console.log('After rerender:', screen.getByRole('main').textContent)
+
     await waitFor(() => {
-      expect(mockOnHintUnlocked).toHaveBeenCalled()
       expect(screen.getByText('Hints Available')).toBeInTheDocument()
       expect(screen.getByText(/you've earned access to hints/i)).toBeInTheDocument()
     })
+
+    expect(mockOnHintUnlocked).toHaveBeenCalled()
 
     alertMock.mockRestore()
   })
