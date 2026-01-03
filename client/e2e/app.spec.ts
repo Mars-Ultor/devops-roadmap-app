@@ -49,7 +49,7 @@ test.describe('DevOps Roadmap App - Critical User Flows', () => {
     await expect(page.locator('text=Create your account')).toBeVisible();
 
     // Click back to login
-    await page.locator('text=Sign in here').click();
+    await page.locator('text=Sign in →').click();
 
     // Should navigate back to login page
     await expect(page).toHaveURL(/\/login/);
