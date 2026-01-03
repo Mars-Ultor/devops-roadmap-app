@@ -56,18 +56,26 @@ describe('Certification System Integration', () => {
           {
             userId: testUserId,
             skillId: 'docker-basics',
-            certificationLevel: 'crawl',
+            certificationLevel: 'bronze',
             earnedAt: new Date('2024-01-01'),
             expiresAt: new Date('2025-01-01'),
-            status: 'active'
+            lastRecertifiedAt: new Date('2024-01-01'),
+            recertificationRequired: false,
+            gracePeriodDays: 30,
+            consecutivePasses: 1,
+            totalAttempts: 1
           },
           {
             userId: testUserId,
             skillId: 'kubernetes-fundamentals',
-            certificationLevel: 'walk',
+            certificationLevel: 'silver',
             earnedAt: new Date('2024-01-02'),
             expiresAt: new Date('2025-01-02'),
-            status: 'active'
+            lastRecertifiedAt: new Date('2024-01-02'),
+            recertificationRequired: false,
+            gracePeriodDays: 30,
+            consecutivePasses: 1,
+            totalAttempts: 1
           }
         ]
       });
@@ -101,10 +109,14 @@ describe('Certification System Integration', () => {
         data: {
           userId: testUserId,
           skillId: 'docker-basics',
-          certificationLevel: 'crawl',
+          certificationLevel: 'bronze',
           earnedAt: new Date('2024-01-01'),
           expiresAt: new Date('2025-01-01'),
-          status: 'active'
+          lastRecertifiedAt: new Date('2024-01-01'),
+          recertificationRequired: false,
+          gracePeriodDays: 30,
+          consecutivePasses: 1,
+          totalAttempts: 1
         }
       });
 
@@ -137,10 +149,14 @@ describe('Certification System Integration', () => {
         data: {
           userId: testUserId,
           skillId: 'docker-basics',
-          certificationLevel: 'crawl',
+          certificationLevel: 'bronze',
           earnedAt: new Date('2024-01-01'),
           expiresAt: new Date('2025-01-01'),
-          status: 'active'
+          lastRecertifiedAt: new Date('2024-01-01'),
+          recertificationRequired: false,
+          gracePeriodDays: 30,
+          consecutivePasses: 1,
+          totalAttempts: 1
         }
       });
 
@@ -174,12 +190,9 @@ describe('Certification System Integration', () => {
     it('should create new certification for user', async () => {
       const certData = {
         skillId: 'docker-basics',
-        certificationLevel: 'crawl',
-        assessmentData: {
-          score: 90,
-          questions: ['What is Docker?', 'How to build images?'],
-          answers: ['Container platform', 'Using Dockerfile']
-        }
+        certificationLevel: 'bronze',
+        expiresAt: '2025-01-01T00:00:00.000Z',
+        gracePeriodDays: 30
       };
 
       const response = await request(app)
@@ -190,8 +203,7 @@ describe('Certification System Integration', () => {
 
       expect(response.body).toHaveProperty('id');
       expect(response.body.skillId).toBe('docker-basics');
-      expect(response.body.certificationLevel).toBe('crawl');
-      expect(response.body.status).toBe('active');
+      expect(response.body.certificationLevel).toBe('bronze');
       expect(response.body).toHaveProperty('earnedAt');
       expect(response.body).toHaveProperty('expiresAt');
 
@@ -209,21 +221,22 @@ describe('Certification System Integration', () => {
         data: {
           userId: testUserId,
           skillId: 'docker-basics',
-          certificationLevel: 'crawl',
+          certificationLevel: 'bronze',
           earnedAt: new Date('2024-01-01'),
           expiresAt: new Date('2025-01-01'),
-          status: 'active'
+          lastRecertifiedAt: new Date('2024-01-01'),
+          recertificationRequired: false,
+          gracePeriodDays: 30,
+          consecutivePasses: 1,
+          totalAttempts: 1
         }
       });
 
       const updateData = {
         skillId: 'docker-basics',
-        certificationLevel: 'crawl',
-        assessmentData: {
-          score: 95,
-          questions: ['Advanced Docker question'],
-          answers: ['Advanced answer']
-        }
+        certificationLevel: 'silver',
+        expiresAt: '2025-06-01T00:00:00.000Z',
+        gracePeriodDays: 45
       };
 
       const response = await request(app)
@@ -233,7 +246,7 @@ describe('Certification System Integration', () => {
         .expect(200);
 
       expect(response.body.skillId).toBe('docker-basics');
-      expect(response.body.certificationLevel).toBe('crawl');
+      expect(response.body.certificationLevel).toBe('silver');
 
       // Verify only one certification exists
       const certs = await prisma.certification.findMany({
@@ -257,5 +270,5 @@ describe('Certification System Integration', () => {
       expect(response.body.error).toContain('skillId and certificationLevel are required');
     });
   });
-});</content>
-<parameter name="filePath">c:\Users\ayode\Desktop\devops-roadmap-app\server\src\__tests__\certification.test.ts
+});
+
