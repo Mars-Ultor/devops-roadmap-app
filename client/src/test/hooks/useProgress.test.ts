@@ -354,17 +354,36 @@ describe('useProgress', () => {
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lab progress
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lesson progress
         .mockResolvedValueOnce({ // User stats
+          exists: () => true,
           data: () => ({ totalXP: 0, badges: [] })
         })
-        .mockResolvedValueOnce({ // Badge check
-          data: () => ({ totalXP: 150 })
+        .mockResolvedValueOnce({ // Badge check 1 (first-lab)
+          exists: () => false,
+          data: () => ({})
+        })
+        .mockResolvedValueOnce({ // Badge check 2 (lab-novice)
+          exists: () => false,
+          data: () => ({})
+        })
+        .mockResolvedValueOnce({ // Badge check 3 (xp-hunter)
+          exists: () => false,
+          data: () => ({})
+        })
+        .mockResolvedValueOnce({ // Badge check 4 (week-one-warrior)
+          exists: () => false,
+          data: () => ({})
+        })
+        .mockResolvedValueOnce({ // Badge check 5 (dedicated-learner) - streak check
+          exists: () => false,
+          data: () => ({ currentStreak: 0 })
         })
       const mockCollection = vi.fn()
       const mockQuery = vi.fn()
       const mockWhere = vi.fn()
       const mockGetDocs = vi.fn().mockResolvedValue({
         docs: [],
-        empty: true
+        empty: true,
+        size: 0
       })
 
       vi.mocked(doc).mockImplementation(mockDoc)
@@ -379,8 +398,8 @@ describe('useProgress', () => {
 
       await result.current.completeLab('w1-lab1', 150, 5, 10)
 
-      // Should check for badge awards
-      expect(mockGetDoc).toHaveBeenCalledTimes(4)
+      // Should check for badge awards (2 progress checks + 1 user stats + 5 badge checks)
+      expect(mockGetDoc).toHaveBeenCalledTimes(8)
     })
   })
 })
