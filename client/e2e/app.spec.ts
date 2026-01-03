@@ -55,5 +55,4 @@ test.describe('DevOps Roadmap App - Critical User Flows', () => {
       await expect(mainContent).toBeVisible();
     }
   });
-});</content>
-<parameter name="filePath">c:\Users\ayode\Desktop\devops-roadmap-app\client\e2e\app.spec.ts
+});
