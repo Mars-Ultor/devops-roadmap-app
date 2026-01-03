@@ -19,10 +19,6 @@ export default function BattleDrills() {
   const [selectedCategory, setSelectedCategory] = useState<'all' | string>('all');
   const [performanceMap, setPerformanceMap] = useState<Map<string, BattleDrillPerformance>>(new Map());
 
-  useEffect(() => {
-    loadPerformance();
-  }, [user?.uid, loadPerformance]);
-
   const loadPerformance = useCallback(async () => {
     if (!user?.uid) return;
 
@@ -44,6 +40,10 @@ export default function BattleDrills() {
       console.error('Error loading performance:', error);
     }
   }, [user?.uid]);
+
+  useEffect(() => {
+    loadPerformance();
+  }, [user?.uid, loadPerformance]);
 
   const getFilteredDrills = (): BattleDrill[] => {
     let drills = BATTLE_DRILLS;
