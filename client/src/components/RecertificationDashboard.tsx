@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import RecertificationDrillComponent from './RecertificationDrill';
-import { RECERTIFICATION_DRILLS, CERTIFICATION_REQUIREMENTS, SKILL_DECAY_MODELS } from '../data/recertificationDrills';
+import { RECERTIFICATION_DRILLS } from '../data/recertificationDrills';
 import { CertificationService } from '../services/certificationService';
 import type {
   CertificationStatus,
@@ -16,10 +16,8 @@ import {
   CheckCircle,
   Trophy,
   Target,
-  Calendar,
   TrendingUp,
   BookOpen,
-  Star,
   Zap,
   XCircle
 } from 'lucide-react';

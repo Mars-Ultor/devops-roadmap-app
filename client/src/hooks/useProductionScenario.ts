@@ -16,7 +16,7 @@ interface UseProductionScenarioReturn {
   error: string | null;
   startScenario: (scenario: ProductionScenario) => Promise<void>;
   completeInvestigationStep: (stepId: string) => void;
-  useHint: () => void;
+  incrementHintsUsed: () => void;
   identifyRootCause: (causeId: string) => boolean;
   completeResolutionStep: (stepId: string) => void;
   completeScenario: (success: boolean, lessonsLearned: string[]) => Promise<void>;
@@ -110,7 +110,7 @@ export function useProductionScenario(): UseProductionScenarioReturn {
     });
   };
 
-  const useHint = () => {
+  const incrementHintsUsed = () => {
     setCurrentAttempt(prev => {
       if (!prev) return null;
       return { ...prev, hintsUsed: prev.hintsUsed + 1 };
@@ -309,7 +309,7 @@ export function useProductionScenario(): UseProductionScenarioReturn {
     error,
     startScenario,
     completeInvestigationStep,
-    useHint,
+    incrementHintsUsed,
     identifyRootCause,
     completeResolutionStep,
     completeScenario,

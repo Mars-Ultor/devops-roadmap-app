@@ -19,7 +19,7 @@ export default function ScenarioExecution() {
     currentAttempt,
     startScenario,
     completeInvestigationStep,
-    useHint,
+    incrementHintsUsed,
     identifyRootCause,
     completeResolutionStep,
     completeScenario
@@ -68,7 +68,7 @@ export default function ScenarioExecution() {
   const handleShowHint = (stepId: string) => {
     const currentHintIndex = showHints.get(stepId) || 0;
     setShowHints(new Map(showHints).set(stepId, currentHintIndex + 1));
-    useHint();
+    incrementHintsUsed();
   };
 
   const handleDiagnosis = () => {
