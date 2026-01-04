@@ -24,8 +24,6 @@ export default defineConfig({
           'scenarios': ['./src/data/scenarios.ts', './src/data/productionScenarios.ts', './src/data/stressScenarios.ts'],
           // Group UI libraries
           'ui-vendor': ['lucide-react', '@radix-ui/react-icons'],
-          // Group Firebase
-          'firebase-vendor': ['firebase'],
           // Group React ecosystem
           'react-vendor': ['react', 'react-dom', 'react-router-dom', 'zustand'],
           // Group utilities
