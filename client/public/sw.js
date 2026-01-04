@@ -3,8 +3,9 @@
  * Improves loading performance by caching JS/CSS chunks and assets
  */
 
-const CACHE_NAME = 'devops-roadmap-v1';
-const STATIC_CACHE_NAME = 'devops-roadmap-static-v1';
+// Use timestamp for cache versioning to ensure cache invalidation on deploy
+const CACHE_NAME = `devops-roadmap-${Date.now()}`;
+const STATIC_CACHE_NAME = `devops-roadmap-static-${Date.now()}`;
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
@@ -28,6 +29,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
+          // Delete caches that don't match the current version
           if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE_NAME) {
             return caches.delete(cacheName);
           }
