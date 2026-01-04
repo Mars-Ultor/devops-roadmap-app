@@ -21,15 +21,6 @@ export function useTrainingState() {
   const [loading, setLoading] = useState(true);
   const [dailyDrillRequired, setDailyDrillRequired] = useState(false);
 
-  useEffect(() => {
-    if (!user?.uid) {
-      setLoading(false);
-      return;
-    }
-
-    loadTrainingState();
-  }, [user?.uid, user?.currentWeek, loadTrainingState]);
-
   const loadTrainingState = useCallback(async () => {
     if (!user?.uid) return;
 
@@ -92,6 +83,15 @@ export function useTrainingState() {
       setLoading(false);
     }
   }, [user?.uid, user?.currentWeek]);
+
+  useEffect(() => {
+    if (!user?.uid) {
+      setLoading(false);
+      return;
+    }
+
+    loadTrainingState();
+  }, [user?.uid, user?.currentWeek, loadTrainingState]);
 
   const updateCurrentWeek = async (newWeek: number) => {
     if (!user?.uid) return;

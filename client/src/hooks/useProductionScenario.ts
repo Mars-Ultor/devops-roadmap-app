@@ -30,12 +30,6 @@ export function useProductionScenario(): UseProductionScenarioReturn {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadPerformance();
-    }
-  }, [user, loadPerformance]);
-
   const loadPerformance = useCallback(async () => {
     if (!user) return;
 
@@ -57,6 +51,12 @@ export function useProductionScenario(): UseProductionScenarioReturn {
       console.error('Error loading performance:', err);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadPerformance();
+    }
+  }, [user, loadPerformance]);
 
   const startScenario = async (scenario: ProductionScenario) => {
     if (!user) {

@@ -103,12 +103,6 @@ export function useRecertification() {
     return alerts.sort((a, b) => b.decayPercentage - a.decayPercentage);
   }, [user]);
 
-  useEffect(() => {
-    if (user) {
-      checkRecertificationStatus();
-    }
-  }, [user]); // Removed checkRecertificationStatus from dependencies
-
   const checkRecertificationStatus = useCallback(async () => {
     if (!user) return;
 
@@ -144,6 +138,12 @@ export function useRecertification() {
       setLoading(false);
     }
   }, [user, analyzeSkillDecay]);
+
+  useEffect(() => {
+    if (user) {
+      checkRecertificationStatus();
+    }
+  }, [user, checkRecertificationStatus]);
 
   const completeRecertification = async (drillResults: Record<string, boolean>) => {
     if (!user) return;

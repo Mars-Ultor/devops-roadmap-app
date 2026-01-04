@@ -83,25 +83,6 @@ export function useStressTraining(): UseStressTrainingReturn {
     loadStressMetrics();
   }, [user]);
 
-  // Update physiological metrics every second during active session
-  useEffect(() => {
-    if (!currentSession || currentSession.completedAt) {
-      if (intervalIdRef.current) {
-        clearInterval(intervalIdRef.current);
-        intervalIdRef.current = null;
-      }
-      return;
-    }
-
-    const id = window.setInterval(() => {
-      updatePhysiologicalMetrics();
-    }, 1000);
-
-    intervalIdRef.current = id;
-
-    return () => clearInterval(id);
-  }, [currentSession, updatePhysiologicalMetrics]);
-
   const updatePhysiologicalMetrics = useCallback(() => {
     if (!currentSession) return;
 
@@ -125,6 +106,25 @@ export function useStressTraining(): UseStressTrainingReturn {
       focusLevel
     } : null);
   }, [currentSession]);
+
+  // Update physiological metrics every second during active session
+  useEffect(() => {
+    if (!currentSession || currentSession.completedAt) {
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+        intervalIdRef.current = null;
+      }
+      return;
+    }
+
+    const id = window.setInterval(() => {
+      updatePhysiologicalMetrics();
+    }, 1000);
+
+    intervalIdRef.current = id;
+
+    return () => clearInterval(id);
+  }, [currentSession, updatePhysiologicalMetrics]);
 
   const startSession = async (scenario: StressScenario) => {
     if (!user) {

@@ -15,33 +15,6 @@ export function useStudySession({ contentId, contentType }: UseStudySessionProps
   const sessionIdRef = useRef<string | null>(null);
   const sessionStartTimeRef = useRef<Date | null>(null);
 
-  // Start session on mount
-  useEffect(() => {
-    if (!user) return;
-
-    const startTime = new Date();
-    sessionStartTimeRef.current = startTime;
-    sessionIdRef.current = `${user.uid}_${contentId}_${startTime.getTime()}`;
-
-    // Update elapsed time every second
-    intervalRef.current = window.setInterval(() => {
-      setElapsedTime(Math.floor((Date.now() - startTime.getTime()) / 1000));
-    }, 1000);
-
-    // Log session start
-    logSessionStart();
-
-    return () => {
-      // Clean up and log session end
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      if (sessionStartTimeRef.current) {
-        logSessionEnd(new Date());
-      }
-    };
-  }, [user, contentId, logSessionStart, logSessionEnd]);
-
   const logSessionStart = useCallback(async () => {
     if (!user || !sessionIdRef.current) return;
 
@@ -81,6 +54,33 @@ export function useStudySession({ contentId, contentType }: UseStudySessionProps
       console.error('Error logging session end:', error);
     }
   }, [user, contentId, contentType]);
+
+  // Start session on mount
+  useEffect(() => {
+    if (!user) return;
+
+    const startTime = new Date();
+    sessionStartTimeRef.current = startTime;
+    sessionIdRef.current = `${user.uid}_${contentId}_${startTime.getTime()}`;
+
+    // Update elapsed time every second
+    intervalRef.current = window.setInterval(() => {
+      setElapsedTime(Math.floor((Date.now() - startTime.getTime()) / 1000));
+    }, 1000);
+
+    // Log session start
+    logSessionStart();
+
+    return () => {
+      // Clean up and log session end
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      if (sessionStartTimeRef.current) {
+        logSessionEnd(new Date());
+      }
+    };
+  }, [user, contentId, logSessionStart, logSessionEnd]);
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);

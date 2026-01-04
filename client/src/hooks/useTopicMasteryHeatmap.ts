@@ -32,12 +32,6 @@ export function useTopicMasteryHeatmap() {
   const [heatmapData, setHeatmapData] = useState<TopicMasteryData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      loadTopicMasteryData();
-    }
-  }, [user, loadTopicMasteryData]);
-
   const loadTopicMasteryData = useCallback(async () => {
     if (!user) return;
 
@@ -112,6 +106,12 @@ export function useTopicMasteryHeatmap() {
       setLoading(false);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadTopicMasteryData();
+    }
+  }, [user, loadTopicMasteryData]);
 
   return {
     heatmapData,
