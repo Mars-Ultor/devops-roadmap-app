@@ -30,7 +30,7 @@ export default function Week() {
       
       try {
         // Check prerequisite: Week 1 always accessible, others require 80% completion of previous week
-        // OR diagnostic recommendation allows access
+        // OR diagnostic recommendation allows access (only UP TO suggested start week)
         if (weekNum > 1) {
           // First check if user has diagnostic results that allow bypassing the gate
           let diagnosticAllowsAccess = false;
@@ -40,8 +40,9 @@ export default function Week() {
               if (diagnosticDoc.exists()) {
                 const diagnosticData = diagnosticDoc.data();
                 const suggestedStartWeek = diagnosticData.suggestedStartWeek || 1;
-                // If diagnostic recommends starting at or before this week, allow access
-                if (suggestedStartWeek <= weekNum) {
+                // Diagnostic unlocks ONLY UP TO the suggested start week (not beyond)
+                // e.g., if diagnostic suggests week 5, unlock weeks 1-5 but not 6+
+                if (weekNum <= suggestedStartWeek) {
                   diagnosticAllowsAccess = true;
                   console.log(`🎯 Diagnostic allows access to Week ${weekNum} (recommended start: Week ${suggestedStartWeek})`);
                 }

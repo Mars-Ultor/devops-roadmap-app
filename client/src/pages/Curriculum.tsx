@@ -64,12 +64,13 @@ export default function Curriculum() {
   const isWeekUnlocked = (weekNumber: number): boolean => {
     if (weekNumber === 1) return true;
 
-    // First check if user has diagnostic results that allow bypassing the gate
-    if (diagnosticStartWeek !== null && diagnosticStartWeek <= weekNumber) {
+    // Diagnostic can unlock ONLY UP TO the suggested start week (not beyond)
+    // e.g., if diagnostic suggests week 5, unlock weeks 1-5 but not 6+
+    if (diagnosticStartWeek !== null && weekNumber <= diagnosticStartWeek) {
       return true;
     }
 
-    // Otherwise check progress requirements
+    // For weeks beyond the diagnostic start week, check progress requirements
     const previousWeek = weeks.find(w => w.weekNumber === weekNumber - 1);
     if (!previousWeek) return false;
 
