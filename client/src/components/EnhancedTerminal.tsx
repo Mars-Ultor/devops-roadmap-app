@@ -60,6 +60,11 @@ export default function EnhancedTerminal({
     }
   });
 
+  const writePrompt = useCallback((term: Terminal) => {
+    const dir = context.currentDir === '/home/devops' ? '~' : context.currentDir;
+    term.write(`\x1b[32m${context.environment.USER}@tcs\x1b[0m:\x1b[34m${dir}\x1b[0m$ `);
+  }, [context]);
+
   const completedTasksRef = useRef<Set<string>>(new Set());
   const commandHistoryRef = useRef<string[]>([]);
   const historyIndexRef = useRef<number>(-1);
@@ -193,11 +198,6 @@ export default function EnhancedTerminal({
       term.dispose();
     };
   }, [tasks, timeLimit]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const writePrompt = useCallback((term: Terminal) => {
-    const dir = context.currentDir === '/home/devops' ? '~' : context.currentDir;
-    term.write(`\x1b[32m${context.environment.USER}@tcs\x1b[0m:\x1b[34m${dir}\x1b[0m$ `);
-  }, [context]);
 
   const executeCommand = (command: string, term: Terminal) => {
     const parts = command.split(' ').filter(p => p.trim());
