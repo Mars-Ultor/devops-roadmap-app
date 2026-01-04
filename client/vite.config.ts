@@ -4,6 +4,7 @@ import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/', // Explicitly set base path for Firebase hosting
   plugins: [
     react(),
     // Only include visualizer in production builds when ANALYZE env var is set
