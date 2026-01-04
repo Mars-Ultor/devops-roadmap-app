@@ -25,15 +25,6 @@ export function useMastery(lessonId: string) {
     return level as 'crawl' | 'walk';
   };
 
-  useEffect(() => {
-    if (!user?.uid || !lessonId) {
-      setLoading(false);
-      return;
-    }
-
-    loadMastery();
-  }, [user?.uid, lessonId, loadMastery]);
-
   const loadMastery = useCallback(async () => {
     if (!user?.uid || !lessonId) return;
 
@@ -48,6 +39,15 @@ export function useMastery(lessonId: string) {
       setLoading(false);
     }
   }, [user?.uid, lessonId]);
+
+  useEffect(() => {
+    if (!user?.uid || !lessonId) {
+      setLoading(false);
+      return;
+    }
+
+    loadMastery();
+  }, [user?.uid, lessonId, loadMastery]);
 
   const recordAttempt = async (
     level: MasteryLevel,
