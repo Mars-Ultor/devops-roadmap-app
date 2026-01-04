@@ -2481,15 +2481,6 @@ export default function MasterTraining() {
   });
   const [loading, setLoading] = useState(true);
 
-  // Load saved progress from Firestore on mount
-  useEffect(() => {
-    if (user) {
-      loadProgress();
-    } else {
-      setLoading(false);
-    }
-  }, [user, loadProgress]);
-
   const loadProgress = useCallback(async () => {
     if (!user) return;
 
@@ -2518,14 +2509,27 @@ export default function MasterTraining() {
         if (savedPaths && Array.isArray(savedPaths)) {
           setLearningPaths(savedPaths);
           console.log('Loaded master training progress from Firestore');
+          setLoading(false);
+          return;
         }
       }
-    } catch {
-      // Silent fail - localStorage is primary storage
-    } finally {
+      
+      console.log('No saved progress found, starting fresh');
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading master training progress:', error);
       setLoading(false);
     }
   }, [user]);
+
+  // Load saved progress from Firestore on mount
+  useEffect(() => {
+    if (user) {
+      loadProgress();
+    } else {
+      setLoading(false);
+    }
+  }, [user, loadProgress]);
 
   const saveProgress = async (updatedPaths: LearningPath[]) => {
     if (!user) return;
