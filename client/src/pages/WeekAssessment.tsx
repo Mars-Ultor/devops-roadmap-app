@@ -1042,20 +1042,6 @@ export default function WeekAssessment() {
   const questions = weekAssessments[week]?.[assessmentType] || [];
   const currentQ = questions[currentQuestion];
 
-  useEffect(() => {
-    loadPreviousResults();
-  }, [weekNumber, user, loadPreviousResults]);
-
-  useEffect(() => {
-    // Update assessment type when URL query parameter changes
-    if (typeFromUrl && typeFromUrl !== assessmentType) {
-      setAssessmentType(typeFromUrl);
-      setCurrentQuestion(0);
-      setAnswers({});
-      setShowResults(false);
-    }
-  }, [typeFromUrl, assessmentType]);
-
   const loadPreviousResults = useCallback(async () => {
     if (!user || !weekNumber) return;
 
@@ -1073,6 +1059,20 @@ export default function WeekAssessment() {
       console.error('Error loading previous results:', error);
     }
   }, [user, weekNumber]);
+
+  useEffect(() => {
+    loadPreviousResults();
+  }, [weekNumber, user, loadPreviousResults]);
+
+  useEffect(() => {
+    // Update assessment type when URL query parameter changes
+    if (typeFromUrl && typeFromUrl !== assessmentType) {
+      setAssessmentType(typeFromUrl);
+      setCurrentQuestion(0);
+      setAnswers({});
+      setShowResults(false);
+    }
+  }, [typeFromUrl, assessmentType]);
 
   const handleAnswer = (questionId: string, answerIndex: number) => {
     setAnswers({ ...answers, [questionId]: answerIndex });
