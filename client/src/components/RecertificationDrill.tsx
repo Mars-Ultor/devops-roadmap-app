@@ -34,6 +34,41 @@ export default function RecertificationDrillComponent({
   const [showResults, setShowResults] = useState(false);
   const [attempt, setAttempt] = useState<RecertificationAttempt | null>(null);
 
+  const handleSubmit = useCallback((autoSubmit = false) => {
+    if (!currentDrill || !user) return;
+
+    const endTime = new Date();
+    const timeSpentMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
+
+    // Calculate score
+    const correctAnswers = answers.filter(a => a.correct).length;
+    const totalQuestions = currentDrill.questions.length;
+    const score = Math.round((correctAnswers / totalQuestions) * 100);
+
+    const passingScore = currentDrill.passingScore;
+    const passed = score >= passingScore;
+
+    const attemptResult: RecertificationAttempt = {
+      id: `attempt-${Date.now()}`,
+      drillId: currentDrill.id,
+      userId: user.uid,
+      startedAt: startTime,
+      completedAt: endTime,
+      score,
+      passed,
+      timeSpentMinutes,
+      answers,
+      feedback: autoSubmit ? 'Time expired - auto-submitted' : undefined
+    };
+
+    setAttempt(attemptResult);
+    setShowResults(true);
+
+    if (onComplete) {
+      onComplete(attemptResult);
+    }
+  }, [currentDrill, user, startTime, answers, onComplete]);
+
   // Load drill data
   useEffect(() => {
     if (drillId) {
@@ -85,41 +120,6 @@ export default function RecertificationDrillComponent({
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
-
-  const handleSubmit = useCallback((autoSubmit = false) => {
-    if (!currentDrill || !user) return;
-
-    const endTime = new Date();
-    const timeSpentMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
-
-    // Calculate score
-    const correctAnswers = answers.filter(a => a.correct).length;
-    const totalQuestions = currentDrill.questions.length;
-    const score = Math.round((correctAnswers / totalQuestions) * 100);
-
-    const passingScore = currentDrill.passingScore;
-    const passed = score >= passingScore;
-
-    const attemptResult: RecertificationAttempt = {
-      id: `attempt-${Date.now()}`,
-      drillId: currentDrill.id,
-      userId: user.uid,
-      startedAt: startTime,
-      completedAt: endTime,
-      score,
-      passed,
-      timeSpentMinutes,
-      answers,
-      feedback: autoSubmit ? 'Time expired - auto-submitted' : undefined
-    };
-
-    setAttempt(attemptResult);
-    setShowResults(true);
-
-    if (onComplete) {
-      onComplete(attemptResult);
-    }
-  }, [currentDrill, user, startTime, answers, onComplete]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

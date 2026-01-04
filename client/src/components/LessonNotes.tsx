@@ -20,6 +20,27 @@ export default function LessonNotes({ lessonId, lessonTitle }: LessonNotesProps)
   const [autoSaveTimer, setAutoSaveTimer] = useState<number | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
 
+  const saveNotes = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      setSaving(true);
+      await setDoc(doc(db, 'notes', `${user.uid}_${lessonId}`), {
+        userId: user.uid,
+        lessonId,
+        lessonTitle,
+        content: notes,
+        tags,
+        lastUpdated: serverTimestamp()
+      });
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error('Error saving notes:', error);
+    } finally {
+      setSaving(false);
+    }
+  }, [user, lessonId, lessonTitle, notes, tags]);
+
   // Load existing notes on mount
   useEffect(() => {
     async function loadNotes() {
@@ -60,27 +81,6 @@ export default function LessonNotes({ lessonId, lessonTitle }: LessonNotesProps)
       }
     };
   }, [notes, tags, autoSaveTimer, saveNotes]);
-
-  const saveNotes = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      setSaving(true);
-      await setDoc(doc(db, 'notes', `${user.uid}_${lessonId}`), {
-        userId: user.uid,
-        lessonId,
-        lessonTitle,
-        content: notes,
-        tags,
-        lastUpdated: serverTimestamp()
-      });
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error('Error saving notes:', error);
-    } finally {
-      setSaving(false);
-    }
-  }, [user, lessonId, lessonTitle, notes, tags]);
 
   const addTag = () => {
     const tag = tagInput.trim().toLowerCase();
