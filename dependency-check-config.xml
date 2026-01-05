@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!-- OWASP Dependency Check Configuration for DevOps Roadmap App -->
+<configuration>
+    <scanSet>
+        <!-- Scan client-side dependencies -->
+        <directory>client</directory>
+        <includes>
+            <include>**/*.json</include>
+            <include>**/*.js</include>
+            <include>**/*.ts</include>
+        </includes>
+        <excludes>
+            <exclude>**/node_modules/**</exclude>
+            <exclude>**/dist/**</exclude>
+            <exclude>**/build/**</exclude>
+            <exclude>**/coverage/**</exclude>
+        </excludes>
+    </scanSet>
+
+    <scanSet>
+        <!-- Scan server-side dependencies -->
+        <directory>server</directory>
+        <includes>
+            <include>**/*.json</include>
+            <include>**/*.js</include>
+            <include>**/*.ts</include>
+        </includes>
+        <excludes>
+            <exclude>**/node_modules/**</exclude>
+            <exclude>**/dist/**</exclude>
+            <exclude>**/build/**</exclude>
+            <exclude>**/coverage/**</exclude>
+        </excludes>
+    </scanSet>
+
+    <!-- Suppression file for known false positives -->
+    <suppressionFile>dependency-check-suppression.xml</suppressionFile>
+
+    <!-- Database configuration -->
+    <databaseDriverName>org.h2.Driver</databaseDriverName>
+    <connectionString>jdbc:h2:file:./dependency-check-db;MV_STORE=FALSE</connectionString>
+
+    <!-- Report configuration -->
+    <format>ALL</format>
+    <prettyPrint>true</prettyPrint>
+
+    <!-- Analysis configuration -->
+    <skipDevDependencies>false</skipDevDependencies>
+    <bundleAuditEnabled>true</bundleAuditEnabled>
+    <retireJsEnabled>true</retireJsEnabled>
+    <ossIndexEnabled>true</ossIndexEnabled>
+
+    <!-- Proxy configuration (uncomment if needed) -->
+    <!--
+    <proxy>
+        <host>proxy.example.com</host>
+        <port>8080</port>
+        <username>proxyuser</username>
+        <password>proxypass</password>
+    </proxy>
+    -->
+</configuration></content>
+<parameter name="filePath">c:\Users\ayode\Desktop\devops-roadmap-app\dependency-check-config.xml
