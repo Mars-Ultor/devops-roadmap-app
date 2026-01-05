@@ -423,16 +423,43 @@ export default function DailyChallenge() {
                 Resources
               </h3>
               <div className="space-y-2">
-                {scenario.resources
-                  .filter(resource => resource.available)
-                  .map((resource, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm">
-                      {resource.type === 'documentation' && <BookOpen className="w-4 h-4 text-blue-400" />}
-                      {resource.type === 'tool' && <Code className="w-4 h-4 text-green-400" />}
-                      {resource.type === 'command' && <Terminal className="w-4 h-4 text-purple-400" />}
-                      <span>{resource.title}</span>
-                    </div>
-                  ))}
+                {scenario.resources.map((resource, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    {resource.type === 'documentation' && <BookOpen className="w-4 h-4 text-blue-400" />}
+                    {resource.type === 'tool' && <Code className="w-4 h-4 text-green-400" />}
+                    {resource.type === 'command' && <Terminal className="w-4 h-4 text-purple-400" />}
+                    {resource.type === 'diagram' && <Globe className="w-4 h-4 text-yellow-400" />}
+                    {resource.url ? (
+                      <a
+                        href={resource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`underline ${resource.available ? 'text-blue-400 hover:text-blue-300' : 'text-gray-500 cursor-not-allowed'}`}
+                        onClick={(e) => !resource.available && e.preventDefault()}
+                      >
+                        {resource.title}
+                        {!resource.available && ' (Locked)'}
+                      </a>
+                    ) : resource.content ? (
+                      <details className={resource.available ? 'text-gray-300' : 'text-gray-500'}>
+                        <summary className={`cursor-pointer ${resource.available ? 'hover:text-white' : 'cursor-not-allowed'}`}>
+                          {resource.title}
+                          {!resource.available && ' (Locked)'}
+                        </summary>
+                        {resource.available && (
+                          <pre className="mt-2 p-2 bg-slate-900 rounded text-xs font-mono text-green-400 whitespace-pre-wrap">
+                            {resource.content}
+                          </pre>
+                        )}
+                      </details>
+                    ) : (
+                      <span className={resource.available ? 'text-gray-300' : 'text-gray-500'}>
+                        {resource.title}
+                        {!resource.available && ' (Locked)'}
+                      </span>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
