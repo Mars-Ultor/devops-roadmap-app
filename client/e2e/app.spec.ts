@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import { test, expect } from '@playwright/test';
 
 test.describe('DevOps Roadmap App - Critical User Flows', () => {

@@ -3,76 +3,44 @@
  * Mandatory structured reflection after every lab completion
  */
 
-import { useState, useEffect } from 'react';
-import { aarService } from '../../services/aarService';
-import type { AARFormData, AARValidationResult } from '../../types/aar';
 import { AARTextField, AARListField } from './AARFormFields';
 import { AARFormHeader, AARValidationSummary, AARFormActions } from './AARFormComponents';
+import { useAARFormState } from './useAARFormState';
+
+/** AAR mastery level type */
+export type AARLevel = 'crawl' | 'walk' | 'run-guided' | 'run-independent';
 
 interface AARFormProps {
-  userId: string;
-  lessonId: string;
-  level: 'crawl' | 'walk' | 'run-guided' | 'run-independent';
-  labId: string;
-  onComplete: (aarId: string) => void;
-  onCancel?: () => void;
+  readonly userId: string;
+  readonly lessonId: string;
+  readonly level: AARLevel;
+  readonly labId: string;
+  readonly onComplete: (aarId: string) => void;
+  readonly onCancel?: () => void;
+  readonly onError?: (error: Error) => void;
 }
 
-const initialFormData: AARFormData = {
-  whatWasAccomplished: '',
-  whatWorkedWell: [''],
-  whatDidNotWork: [''],
-  whyDidNotWork: '',
-  whatWouldIDoDifferently: '',
-  whatDidILearn: ''
-};
-
-export default function AARForm({ userId, lessonId, level, labId, onComplete, onCancel }: AARFormProps) {
-  const [formData, setFormData] = useState<AARFormData>(initialFormData);
-  const [validation, setValidation] = useState<AARValidationResult | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showValidation, setShowValidation] = useState(false);
-
-  useEffect(() => {
-    setValidation(aarService.validateAARForm(formData));
-  }, [formData]);
-
-  const handleTextChange = (field: keyof AARFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleListItemChange = (field: 'whatWorkedWell' | 'whatDidNotWork', index: number, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: prev[field].map((item, i) => i === index ? value : item)
-    }));
-  };
-
-  const addListItem = (field: 'whatWorkedWell' | 'whatDidNotWork') => {
-    setFormData(prev => ({ ...prev, [field]: [...prev[field], ''] }));
-  };
-
-  const removeListItem = (field: 'whatWorkedWell' | 'whatDidNotWork', index: number) => {
-    if (formData[field].length > 1) {
-      setFormData(prev => ({ ...prev, [field]: prev[field].filter((_, i) => i !== index) }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowValidation(true);
-    if (!validation?.isValid) return;
-    setIsSubmitting(true);
-    try {
-      const aar = await aarService.createAAR(userId, lessonId, level, labId, formData);
-      onComplete(aar.id);
-    } catch (error) {
-      console.error('Failed to create AAR:', error);
-      alert('Failed to save AAR. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+export default function AARForm({
+  userId,
+  lessonId,
+  level,
+  labId,
+  onComplete,
+  onCancel,
+  onError
+}: Readonly<AARFormProps>) {
+  const {
+    formData,
+    validation,
+    isSubmitting,
+    showValidation,
+    submitError,
+    handleTextChange,
+    handleListItemChange,
+    addListItem,
+    removeListItem,
+    handleSubmit
+  } = useAARFormState({ userId, lessonId, level, labId, onComplete, onError });
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -104,6 +72,11 @@ export default function AARForm({ userId, lessonId, level, labId, onComplete, on
             minWords={15} value={formData.whatDidILearn} onChange={(v) => handleTextChange('whatDidILearn', v)}
             showValidation={showValidation} validation={validation} rows={4} />
           {validation && <AARValidationSummary validation={validation} show={showValidation} />}
+          {submitError && (
+            <div className="p-4 rounded-md bg-red-900/50 border border-red-700" role="alert">
+              <span className="text-red-400">{submitError}</span>
+            </div>
+          )}
           <AARFormActions onCancel={onCancel} isSubmitting={isSubmitting} isValid={validation?.isValid ?? false} />
         </form>
       </div>

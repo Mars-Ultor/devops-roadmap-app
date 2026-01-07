@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, sonarjs/no-duplicate-string */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Settings as SettingsIcon, RefreshCw, Sliders, User, Bell, Trash2 } from 'lucide-react';

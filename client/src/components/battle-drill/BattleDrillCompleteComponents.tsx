@@ -3,12 +3,11 @@
  * Extracted for ESLint compliance
  */
 
-import React from 'react';
 import { CheckCircle, Target, Trophy, TrendingUp } from 'lucide-react';
 
 // Result Header (Passed or Failed)
 interface ResultHeaderProps {
-  passed: boolean;
+  readonly passed: boolean;
 }
 
 export function ResultHeader({ passed }: ResultHeaderProps) {
@@ -43,13 +42,13 @@ export function AARRequiredWarning() {
 
 // Stats Grid
 interface StatsGridProps {
-  durationSeconds: number;
-  targetTimeSeconds: number;
-  completedSteps: number;
-  totalSteps: number;
-  hintsUsed: number;
-  beatTarget: boolean;
-  formatTime: (seconds: number) => string;
+  readonly durationSeconds: number;
+  readonly targetTimeSeconds: number;
+  readonly completedSteps: number;
+  readonly totalSteps: number;
+  readonly hintsUsed: number;
+  readonly beatTarget: boolean;
+  readonly formatTime: (seconds: number) => string;
 }
 
 export function StatsGrid({ durationSeconds, targetTimeSeconds, completedSteps, totalSteps, hintsUsed, beatTarget, formatTime }: StatsGridProps) {
@@ -77,8 +76,8 @@ export function StatsGrid({ durationSeconds, targetTimeSeconds, completedSteps, 
 
 // Achievement Badges
 interface AchievementBadgesProps {
-  beatTarget: boolean;
-  personalBest: boolean;
+  readonly beatTarget: boolean;
+  readonly personalBest: boolean;
 }
 
 export function AchievementBadges({ beatTarget, personalBest }: AchievementBadgesProps) {
@@ -104,10 +103,10 @@ export function AchievementBadges({ beatTarget, personalBest }: AchievementBadge
 
 // Action Buttons
 interface ActionButtonsProps {
-  aarSubmitted: boolean;
-  onTryAgain: () => void;
-  onBackToDrills: () => void;
-  onCompleteAAR: () => void;
+  readonly aarSubmitted: boolean;
+  readonly onTryAgain: () => void;
+  readonly onBackToDrills: () => void;
+  readonly onCompleteAAR: () => void;
 }
 
 export function ActionButtons({ aarSubmitted, onTryAgain, onBackToDrills, onCompleteAAR }: ActionButtonsProps) {

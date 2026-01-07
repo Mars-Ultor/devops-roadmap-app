@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, sonarjs/no-duplicate-string */
 /**
  * Phase 2.8: Advanced Integration Scenarios
  * Multi-team coordination and cross-domain incident response

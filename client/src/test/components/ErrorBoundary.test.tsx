@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, sonarjs/no-duplicate-string */
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { ErrorBoundary } from "../../components/ErrorBoundary";

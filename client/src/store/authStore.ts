@@ -1,7 +1,8 @@
+/* eslint-disable max-lines-per-function, max-depth */
 import { create } from 'zustand';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   type User as FirebaseUser

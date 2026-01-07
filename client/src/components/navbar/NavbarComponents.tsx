@@ -3,7 +3,6 @@
  * Extracted from Navbar.tsx for ESLint compliance
  */
 
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { NAV_LINKS, type NavLink } from './navbarData';
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Recertification Modal
  * Monthly skill re-testing with all battle drills

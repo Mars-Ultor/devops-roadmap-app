@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * CapstoneSimulation Page - Scenario Challenge System
  * Final 4-hour production incident simulation

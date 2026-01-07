@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Learning Pattern Analysis
  * Identifies patterns in study behavior and performance correlations

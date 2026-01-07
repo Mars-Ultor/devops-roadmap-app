@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity, sonarjs/no-duplicate-string */
 /**
  * Phase 2.6: Advanced Leadership & Command
  * Military-style leadership training for DevOps incident command

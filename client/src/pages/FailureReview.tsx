@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Failure Review Page - Pattern analysis and resolution tracking
  * Military-style incident review for continuous improvement

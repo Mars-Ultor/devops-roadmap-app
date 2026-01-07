@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, sonarjs/no-duplicate-string */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, type MockedFunction } from 'vitest';
 import Quiz from '../../components/Quiz';

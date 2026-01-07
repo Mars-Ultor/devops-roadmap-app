@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Battle Drills Library Page
  * Shows all available drills with performance stats

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { Trophy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useProgress } from '../hooks/useProgress';

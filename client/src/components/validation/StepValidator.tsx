@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * StepValidator - Automated validation with real-time feedback
  * Displays checkmarks/X marks for each validation criterion

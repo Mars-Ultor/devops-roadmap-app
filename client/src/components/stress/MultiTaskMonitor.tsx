@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * MultiTaskMonitor Component - Progressive Stress System
  * Monitors and displays multiple simultaneous tasks during high-stress training

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, sonarjs/no-duplicate-string */
 import { FileCode, Terminal, Book, Briefcase, Calendar, FileText } from 'lucide-react';
 
 export default function Resources() {

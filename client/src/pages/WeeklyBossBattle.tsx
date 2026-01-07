@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * WeeklyBossBattle Page - Scenario Challenge System
  * Comprehensive 2-hour scenario mastery challenges

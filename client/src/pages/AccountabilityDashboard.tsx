@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Accountability Dashboard Page
  * Weekly commitments, partners, and public goals

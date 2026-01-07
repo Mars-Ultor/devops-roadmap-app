@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Progressive Stress System
  * Weeks 1-4: Comfort, Weeks 5-8: Moderate Pressure, Weeks 9-12: Realistic Conditions

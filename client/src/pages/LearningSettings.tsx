@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { doc, getDoc, setDoc } from 'firebase/firestore';

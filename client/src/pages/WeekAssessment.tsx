@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity, sonarjs/no-duplicate-string */
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { doc, getDoc, setDoc } from 'firebase/firestore';

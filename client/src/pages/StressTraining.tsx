@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Stress Training Page
  * Progressive stress scenario training

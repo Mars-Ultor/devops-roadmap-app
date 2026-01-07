@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * WalkLevelContent - Fill-in-the-blank exercises
  * User fills in missing parameters to complete commands

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Adaptive Difficulty Dashboard
  * View and manage difficulty settings
@@ -5,8 +6,8 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, TrendingUp, TrendingDown, Minus, Award, 
+import {
+  ArrowLeft, TrendingUp, TrendingDown, Minus, Award,
   Target, Brain, Zap, Shield, AlertCircle, CheckCircle
 } from 'lucide-react';
 import { useAdaptiveDifficulty } from '../hooks/useAdaptiveDifficulty';

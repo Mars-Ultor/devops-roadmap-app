@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity */
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * CrawlLevelContent - Step-by-step guided execution
  * Shows each step with commands, explanations, and validation

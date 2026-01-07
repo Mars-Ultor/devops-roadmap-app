@@ -51,8 +51,8 @@ const SkillBreakdown: React.FC<SkillBreakdownProps> = ({ skills }) => {
       </div>
 
       <div className="space-y-4">
-        {skills.map((skill, index) => (
-          <div key={index} className="p-4 bg-gray-700 rounded-lg">
+        {skills.map((skill: SkillData) => (
+          <div key={skill.name} className="p-4 bg-gray-700 rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
                 {getCategoryIcon(skill.category)}

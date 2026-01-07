@@ -3,7 +3,6 @@
  * Extracted from DailyDrillBlocker.tsx for ESLint compliance
  */
 
-import React from 'react';
 import { Zap, AlertTriangle, Clock, Target } from 'lucide-react';
 
 // Loading Screen
@@ -62,7 +61,7 @@ export function WhyDrillsMatter() {
 
 // Status Check Info
 interface StatusCheckInfoProps {
-  checkCount: number;
+  readonly checkCount: number;
 }
 
 export function StatusCheckInfo({ checkCount }: StatusCheckInfoProps) {
@@ -79,7 +78,7 @@ export function StatusCheckInfo({ checkCount }: StatusCheckInfoProps) {
 
 // Start Drill Button
 interface StartDrillButtonProps {
-  onClick: () => void;
+  readonly onClick: () => void;
 }
 
 export function StartDrillButton({ onClick }: StartDrillButtonProps) {

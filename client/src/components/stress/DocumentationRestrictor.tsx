@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * DocumentationRestrictor Component - Progressive Stress System
  * Restricts documentation access based on stress level

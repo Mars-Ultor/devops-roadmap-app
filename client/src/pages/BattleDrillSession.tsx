@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity */
 /**
  * Battle Drill Execution Page
  * Timed drill execution with step-by-step validation

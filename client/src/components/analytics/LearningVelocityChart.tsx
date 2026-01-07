@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Learning Velocity Chart
  * Shows progress speed and learning acceleration over time

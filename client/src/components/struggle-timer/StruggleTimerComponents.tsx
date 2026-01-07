@@ -3,7 +3,6 @@
  * Extracted from StruggleTimer.tsx for ESLint compliance
  */
 
-import React from 'react';
 import { Lock, Unlock, AlertCircle, CheckCircle, FileText } from 'lucide-react';
 
 export interface StruggleLog {
@@ -32,9 +31,9 @@ export function HintsUnlockedBanner() {
 
 // Timer Header Component
 interface TimerHeaderProps {
-  timeRemaining: number;
-  strugglesLogged: boolean;
-  formatTime: (ms: number) => string;
+  readonly timeRemaining: number;
+  readonly strugglesLogged: boolean;
+  readonly formatTime: (ms: number) => string;
 }
 
 export function TimerHeader({ timeRemaining, strugglesLogged, formatTime }: TimerHeaderProps) {
@@ -89,7 +88,7 @@ export function WhyWaitInfo() {
 
 // Document Struggle Button
 interface DocumentButtonProps {
-  onClick: () => void;
+  readonly onClick: () => void;
 }
 
 export function DocumentStruggleButton({ onClick }: DocumentButtonProps) {
@@ -106,12 +105,12 @@ export function DocumentStruggleButton({ onClick }: DocumentButtonProps) {
 
 // Struggle Form Component
 interface StruggleFormProps {
-  struggles: Partial<StruggleLog>;
-  onUpdateAttempt: (index: number, value: string) => void;
-  onUpdateStuckPoint: (value: string) => void;
-  onUpdateHypothesis: (value: string) => void;
-  onSubmit: () => void;
-  onCancel: () => void;
+  readonly struggles: Partial<StruggleLog>;
+  readonly onUpdateAttempt: (index: number, value: string) => void;
+  readonly onUpdateStuckPoint: (value: string) => void;
+  readonly onUpdateHypothesis: (value: string) => void;
+  readonly onSubmit: () => void;
+  readonly onCancel: () => void;
 }
 
 export function StruggleForm({ struggles, onUpdateAttempt, onUpdateStuckPoint, onUpdateHypothesis, onSubmit, onCancel }: StruggleFormProps) {
@@ -119,23 +118,23 @@ export function StruggleForm({ struggles, onUpdateAttempt, onUpdateStuckPoint, o
     <div className="p-6 bg-slate-800/50 space-y-4">
       <h4 className="text-white font-semibold mb-3">Document Your Struggle</h4>
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">What have you tried? (Minimum 3 things)</label>
+        <label htmlFor="attempt-0" className="block text-sm font-medium text-slate-300 mb-2">What have you tried? (Minimum 3 things)</label>
         {[0, 1, 2].map(i => (
-          <input key={i} type="text" value={struggles.attemptedSolutions?.[i] || ''} onChange={(e) => onUpdateAttempt(i, e.target.value)}
+          <input key={i} id={i === 0 ? 'attempt-0' : undefined} type="text" value={struggles.attemptedSolutions?.[i] || ''} onChange={(e) => onUpdateAttempt(i, e.target.value)}
             placeholder={`Attempt ${i + 1}: e.g., "Checked logs", "Restarted service", "Verified config"`}
             className="w-full px-4 py-2 mb-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-500" required />
         ))}
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">Where are you stuck? (Be specific)</label>
-        <textarea value={struggles.stuckPoint || ''} onChange={(e) => onUpdateStuckPoint(e.target.value)}
+        <label htmlFor="stuck-point" className="block text-sm font-medium text-slate-300 mb-2">Where are you stuck? (Be specific)</label>
+        <textarea id="stuck-point" value={struggles.stuckPoint || ''} onChange={(e) => onUpdateStuckPoint(e.target.value)}
           placeholder="Describe the exact error, behavior, or roadblock you're facing..."
           className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 min-h-[80px]" required />
         <p className="text-xs text-slate-400 mt-1">{struggles.stuckPoint?.length || 0}/20 characters minimum</p>
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">What might be the problem?</label>
-        <textarea value={struggles.hypothesis || ''} onChange={(e) => onUpdateHypothesis(e.target.value)}
+        <label htmlFor="hypothesis" className="block text-sm font-medium text-slate-300 mb-2">What might be the problem?</label>
+        <textarea id="hypothesis" value={struggles.hypothesis || ''} onChange={(e) => onUpdateHypothesis(e.target.value)}
           placeholder="Your best guess about what's causing the issue and why..."
           className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 min-h-[80px]" required />
         <p className="text-xs text-slate-400 mt-1">{struggles.hypothesis?.length || 0}/20 characters minimum</p>

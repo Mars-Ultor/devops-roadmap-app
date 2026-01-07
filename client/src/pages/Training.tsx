@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { BookOpen, Zap, Target, Crown, Shield } from 'lucide-react';

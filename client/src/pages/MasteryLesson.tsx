@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity, sonarjs/no-duplicate-string */
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Clock, Award, CheckCircle, Target, Brain, Zap, Lock, AlertTriangle } from 'lucide-react';

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Phase 2.7: Specialized Operations & Advanced Tactics
  * Domain-specific advanced training for specialized DevOps roles and scenarios

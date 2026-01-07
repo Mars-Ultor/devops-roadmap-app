@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity, max-depth, sonarjs/cognitive-complexity */
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';

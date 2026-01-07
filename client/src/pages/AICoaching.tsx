@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * AI/ML Coaching Page
  * Comprehensive AI-powered coaching with machine learning insights

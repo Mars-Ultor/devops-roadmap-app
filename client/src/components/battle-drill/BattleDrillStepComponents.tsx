@@ -3,14 +3,13 @@
  * Extracted for ESLint compliance
  */
 
-import React from 'react';
 import { CheckCircle, XCircle, AlertCircle, Lightbulb, Target } from 'lucide-react';
-import type { ValidationResult } from '../types';
+import type { ValidationResult } from '../../utils/validation';
 
 // Step Header with Number
 interface StepNumberProps {
-  index: number;
-  isCompleted: boolean;
+  readonly index: number;
+  readonly isCompleted: boolean;
 }
 
 export function StepNumber({ index, isCompleted }: StepNumberProps) {
@@ -23,19 +22,27 @@ export function StepNumber({ index, isCompleted }: StepNumberProps) {
 
 // Validation Criteria List
 interface ValidationCriteriaProps {
-  criteria: string[];
-  validationResult?: ValidationResult;
+  readonly criteria: string[];
+  readonly validationResult?: ValidationResult;
 }
 
 export function ValidationCriteria({ criteria, validationResult }: ValidationCriteriaProps) {
   return (
     <div className="space-y-1">
       <div className="text-sm text-slate-400 mb-1">Validation Criteria:</div>
-      {criteria.map((c, idx) => {
+      {criteria.map((c: string) => {
         const isPassed = validationResult?.passedCriteria.includes(c);
         const isFailed = validationResult?.failedCriteria.includes(c);
+        let textColorClass: string;
+        if (isPassed) {
+          textColorClass = 'text-green-400';
+        } else if (isFailed) {
+          textColorClass = 'text-red-400';
+        } else {
+          textColorClass = 'text-slate-300';
+        }
         return (
-          <div key={idx} className={`flex items-center gap-2 text-sm ${isPassed ? 'text-green-400' : isFailed ? 'text-red-400' : 'text-slate-300'}`}>
+          <div key={c} className={`flex items-center gap-2 text-sm ${textColorClass}`}>
             {isPassed && <CheckCircle className="w-4 h-4" />}
             {isFailed && <XCircle className="w-4 h-4" />}
             {!isPassed && !isFailed && <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />}
@@ -49,7 +56,7 @@ export function ValidationCriteria({ criteria, validationResult }: ValidationCri
 
 // Hint Button
 interface HintButtonProps {
-  onClick: () => void;
+  readonly onClick: () => void;
 }
 
 export function HintButton({ onClick }: HintButtonProps) {
@@ -62,19 +69,19 @@ export function HintButton({ onClick }: HintButtonProps) {
 
 // Step Input Area
 interface StepInputProps {
-  input: string;
-  validating: boolean;
-  onInputChange: (value: string) => void;
-  onValidate: () => void;
-  onComplete: () => void;
+  readonly input: string;
+  readonly validating: boolean;
+  readonly onInputChange: (value: string) => void;
+  readonly onValidate: () => void;
+  readonly onComplete: () => void;
 }
 
 export function StepInput({ input, validating, onInputChange, onValidate, onComplete }: StepInputProps) {
   return (
     <div className="mt-4 space-y-3">
       <div>
-        <label className="block text-sm text-slate-400 mb-2">Describe what you did or paste relevant output:</label>
-        <textarea value={input} onChange={(e) => onInputChange(e.target.value)}
+        <label htmlFor="step-input" className="block text-sm text-slate-400 mb-2">Describe what you did or paste relevant output:</label>
+        <textarea id="step-input" value={input} onChange={(e) => onInputChange(e.target.value)}
           placeholder='Example: Created Dockerfile with FROM node:18-alpine, COPY . ., RUN npm install, EXPOSE 3000, CMD npm start'
           className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[100px]" />
       </div>
@@ -91,7 +98,7 @@ export function StepInput({ input, validating, onInputChange, onValidate, onComp
 
 // Validation Feedback
 interface ValidationFeedbackProps {
-  result: ValidationResult;
+  readonly result: ValidationResult;
 }
 
 export function ValidationFeedback({ result }: ValidationFeedbackProps) {
@@ -103,13 +110,13 @@ export function ValidationFeedback({ result }: ValidationFeedbackProps) {
       {result.specificErrors.length > 0 && (
         <div className="mt-3 space-y-1">
           <div className="text-sm text-red-300 font-semibold">Issues Found:</div>
-          {result.specificErrors.map((error, idx) => (<div key={idx} className="text-sm text-red-200 flex items-start gap-2"><XCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />{error}</div>))}
+          {result.specificErrors.map((error: string) => (<div key={error} className="text-sm text-red-200 flex items-start gap-2"><XCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />{error}</div>))}
         </div>
       )}
       {result.suggestions.length > 0 && (
         <div className="mt-3 space-y-1">
           <div className="text-sm text-yellow-300 font-semibold">Suggestions:</div>
-          {result.suggestions.map((s, idx) => (<div key={idx} className="text-sm text-yellow-200 flex items-start gap-2"><Lightbulb className="w-4 h-4 mt-0.5 flex-shrink-0" />{s}</div>))}
+          {result.suggestions.map((s: string) => (<div key={s} className="text-sm text-yellow-200 flex items-start gap-2"><Lightbulb className="w-4 h-4 mt-0.5 flex-shrink-0" />{s}</div>))}
         </div>
       )}
       {result.passed && <div className="mt-3 text-sm text-green-300">All criteria met! This step is now complete.</div>}
@@ -119,14 +126,14 @@ export function ValidationFeedback({ result }: ValidationFeedbackProps) {
 
 // Hints Panel
 interface HintsPanelProps {
-  hints: string[];
+  readonly hints: string[];
 }
 
 export function HintsPanel({ hints }: HintsPanelProps) {
   return (
     <div className="mt-4 bg-yellow-900/20 border border-yellow-600/30 rounded-lg p-4">
       <div className="flex items-center gap-2 text-yellow-400 mb-2"><Lightbulb className="w-4 h-4" /><span className="font-semibold text-sm">Hints</span></div>
-      <div className="space-y-2">{hints.map((hint, idx) => (<div key={idx} className="text-sm text-slate-300">{idx + 1}. {hint}</div>))}</div>
+      <div className="space-y-2">{hints.map((hint: string, idx: number) => (<div key={hint} className="text-sm text-slate-300">{idx + 1}. {hint}</div>))}</div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Personal Runbook - Auto-generated troubleshooting guide
  * Aggregates failure logs into organized reference

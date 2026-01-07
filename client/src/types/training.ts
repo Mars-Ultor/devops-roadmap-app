@@ -3,6 +3,17 @@
 // Mastery Progression Levels
 export type MasteryLevel = 'crawl' | 'walk' | 'run-guided' | 'run-independent';
 
+// Validation Result for step validation
+export interface ValidationResult {
+  passed: boolean;
+  specificErrors: string[];
+  suggestions: string[];
+  passedCriteria: string[];
+  failedCriteria: string[];
+}
+
+// Mastery Progression Levels
+
 export interface MasteryProgress {
   attempts: number;
   perfectCompletions: number;

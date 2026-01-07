@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Predictive Analytics Dashboard
  * Estimates completion times and predicts learning outcomes

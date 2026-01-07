@@ -3,25 +3,24 @@
  * Extracted from AARForm.tsx for ESLint compliance
  */
 
-import React from 'react';
 import { Save, CheckCircle, AlertTriangle, BookOpen, Target } from 'lucide-react';
 import type { AARValidationResult } from '../../types/aar';
+import type { AARLevel } from './AARForm';
 
-// Props interfaces
 interface AARFormHeaderProps {
-  lessonId: string;
-  level: 'crawl' | 'walk' | 'run-guided' | 'run-independent';
+  readonly lessonId: string;
+  readonly level: AARLevel;
 }
 
 interface AARValidationSummaryProps {
-  validation: AARValidationResult;
-  show: boolean;
+  readonly validation: AARValidationResult;
+  readonly show: boolean;
 }
 
 interface AARFormActionsProps {
-  onCancel?: () => void;
-  isSubmitting: boolean;
-  isValid: boolean;
+  readonly onCancel?: () => void;
+  readonly isSubmitting: boolean;
+  readonly isValid: boolean;
 }
 
 // Header Component

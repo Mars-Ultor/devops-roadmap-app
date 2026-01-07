@@ -4,11 +4,11 @@
 
 import { RefreshCw, TrendingDown, Clock, AlertTriangle, ArrowLeft, Trophy, Target } from 'lucide-react';
 import ResetTokenDisplay from '../components/tokens/ResetTokenDisplay';
-import type { TokenUsageStats, TokenAllocation, ResetTokenUsage } from '../types/tokens';
+import type { TokenUsageStats, TokenAllocation, ResetToken } from '../types/tokens';
 import { formatDate, getTypeColor, getTypeLabel } from './TokenManagementUtils';
 
 interface PageHeaderProps {
-  onBack: () => void;
+  readonly onBack: () => void;
 }
 
 export function PageHeader({ onBack }: PageHeaderProps) {
@@ -27,7 +27,7 @@ export function PageHeader({ onBack }: PageHeaderProps) {
 }
 
 interface CurrentWeekSectionProps {
-  allocation: TokenAllocation | null;
+  readonly allocation: TokenAllocation | null;
 }
 
 export function CurrentWeekSection({ allocation }: CurrentWeekSectionProps) {
@@ -52,7 +52,7 @@ export function CurrentWeekSection({ allocation }: CurrentWeekSectionProps) {
 }
 
 interface StatsSectionProps {
-  stats: TokenUsageStats;
+  readonly stats: TokenUsageStats;
 }
 
 export function StatsSection({ stats }: StatsSectionProps) {
@@ -70,7 +70,7 @@ export function StatsSection({ stats }: StatsSectionProps) {
   );
 }
 
-function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string | number; color: string }) {
+function StatCard({ icon, label, value, color }: { readonly icon: React.ReactNode; readonly label: string; readonly value: string | number; readonly color: string }) {
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
       <div className="flex items-center justify-between">
@@ -81,7 +81,7 @@ function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label:
   );
 }
 
-function MostResetItems({ items }: { items: TokenUsageStats['itemsMostReset'] }) {
+function MostResetItems({ items }: { readonly items: TokenUsageStats['itemsMostReset'] }) {
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
       <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -114,7 +114,7 @@ function MostResetItems({ items }: { items: TokenUsageStats['itemsMostReset'] })
 }
 
 interface RecentHistoryProps {
-  resets: ResetTokenUsage[];
+  readonly resets: ResetToken[];
 }
 
 export function RecentHistory({ resets }: RecentHistoryProps) {

@@ -3,35 +3,38 @@
  * Extracted from AARHistory.tsx for ESLint compliance
  */
 
-import React from 'react';
 import { Search, Filter, Calendar, BookOpen, TrendingUp, AlertCircle, CheckCircle, Lightbulb, Target } from 'lucide-react';
 import type { AfterActionReview, AARPattern } from '../../types/aar';
 import { getLevelColor, formatDate, getPatternTypeClass } from './aarHistoryUtils';
 
+// Type aliases for union types
+type MasteryLevelFilter = 'all' | 'crawl' | 'walk' | 'run-guided' | 'run-independent';
+type SortOption = 'newest' | 'oldest' | 'lesson' | 'level';
+
 // Props interfaces
 interface SearchBarProps {
-  searchTerm: string;
-  onSearch: (term: string) => void;
+  readonly searchTerm: string;
+  readonly onSearch: (term: string) => void;
 }
 
 interface FilterControlsProps {
-  selectedLevel: 'all' | 'crawl' | 'walk' | 'run-guided' | 'run-independent';
-  selectedLesson: string;
-  sortBy: 'newest' | 'oldest' | 'lesson' | 'level';
-  lessons: string[];
-  filteredCount: number;
-  totalCount: number;
-  onLevelChange: (level: 'all' | 'crawl' | 'walk' | 'run-guided' | 'run-independent') => void;
-  onLessonChange: (lesson: string) => void;
-  onSortChange: (sort: 'newest' | 'oldest' | 'lesson' | 'level') => void;
+  readonly selectedLevel: MasteryLevelFilter;
+  readonly selectedLesson: string;
+  readonly sortBy: SortOption;
+  readonly lessons: string[];
+  readonly filteredCount: number;
+  readonly totalCount: number;
+  readonly onLevelChange: (level: MasteryLevelFilter) => void;
+  readonly onLessonChange: (lesson: string) => void;
+  readonly onSortChange: (sort: SortOption) => void;
 }
 
 interface AARCardProps {
-  aar: AfterActionReview;
+  readonly aar: AfterActionReview;
 }
 
 interface AARPatternsProps {
-  patterns: AARPattern[];
+  readonly patterns: AARPattern[];
 }
 
 // Search Bar Component
@@ -101,7 +104,7 @@ export function AARFilterControls({
 }
 
 // Empty State Component
-export function AAREmptyState({ hasFilters }: { hasFilters: boolean }) {
+export function AAREmptyState({ hasFilters }: { readonly hasFilters: boolean }) {
   return (
     <div className="text-center py-12">
       <BookOpen className="w-12 h-12 text-gray-600 mx-auto mb-4" />
@@ -114,6 +117,10 @@ export function AAREmptyState({ hasFilters }: { hasFilters: boolean }) {
 }
 
 // AAR Patterns Display
+interface AARPatternsProps {
+  readonly patterns: AARPattern[];
+}
+
 export function AARPatternsDisplay({ patterns }: AARPatternsProps) {
   if (!patterns || patterns.length === 0) return null;
 
@@ -124,10 +131,10 @@ export function AARPatternsDisplay({ patterns }: AARPatternsProps) {
         Identified Patterns
       </h4>
       <div className="space-y-2">
-        {patterns.map((pattern, index) => {
+        {patterns.map((pattern) => {
           const typeClass = getPatternTypeClass(pattern.type);
           return (
-            <div key={index} className="text-sm">
+            <div key={pattern.patternId} className="text-sm">
               <div className="flex items-start justify-between">
                 <span className="text-gray-300">{pattern.description}</span>
                 <span className={`px-2 py-1 rounded text-xs ${typeClass}`}>
@@ -144,6 +151,10 @@ export function AARPatternsDisplay({ patterns }: AARPatternsProps) {
 }
 
 // AAR Card Header
+interface AARCardProps {
+  readonly aar: AfterActionReview;
+}
+
 export function AARCardHeader({ aar }: AARCardProps) {
   return (
     <div className="flex items-start justify-between mb-4">
@@ -176,8 +187,8 @@ export function AARLeftColumn({ aar }: AARCardProps) {
           <CheckCircle className="w-4 h-4 mr-1" />What worked well
         </h3>
         <ul className="text-gray-300 text-sm space-y-1">
-          {aar.whatWorkedWell.map((item: string, index: number) => (
-            <li key={index} className="flex items-start">
+          {aar.whatWorkedWell.map((item: string) => (
+            <li key={item} className="flex items-start">
               <span className="text-green-400 mr-2">•</span>{item}
             </li>
           ))}
@@ -188,8 +199,8 @@ export function AARLeftColumn({ aar }: AARCardProps) {
           <AlertCircle className="w-4 h-4 mr-1" />What didn't work
         </h3>
         <ul className="text-gray-300 text-sm space-y-1">
-          {aar.whatDidNotWork.map((item: string, index: number) => (
-            <li key={index} className="flex items-start">
+          {aar.whatDidNotWork.map((item: string) => (
+            <li key={item} className="flex items-start">
               <span className="text-red-400 mr-2">•</span>{item}
             </li>
           ))}

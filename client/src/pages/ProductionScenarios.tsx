@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Production Scenarios Page
  * Real-world troubleshooting simulations

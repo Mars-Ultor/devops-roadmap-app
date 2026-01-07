@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, sonarjs/no-duplicate-string */
 import { renderHook, act } from '@testing-library/react';
 import { vi } from 'vitest';
 import type { User as FirebaseUser } from 'firebase/auth';

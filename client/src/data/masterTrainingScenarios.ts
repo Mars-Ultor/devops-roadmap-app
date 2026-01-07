@@ -1,3 +1,9 @@
+/* eslint-disable sonarjs/no-duplicate-string */
+/**
+ * Master Training Scenarios
+ * Contains adaptive scenarios with intentionally repeated category/difficulty values
+ */
+
 import type { AdaptiveScenario } from '../pages/MasterTraining';
 
 export const ADAPTIVE_SCENARIOS: AdaptiveScenario[] = [

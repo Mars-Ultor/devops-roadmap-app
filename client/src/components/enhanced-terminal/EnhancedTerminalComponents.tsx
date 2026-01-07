@@ -6,7 +6,7 @@
 
 // Mobile Quick Commands Panel
 interface MobileCommandsPanelProps {
-  terminalPaste: (cmd: string) => void;
+  readonly terminalPaste: (cmd: string) => void;
 }
 
 export function MobileCommandsPanel({ terminalPaste }: MobileCommandsPanelProps) {

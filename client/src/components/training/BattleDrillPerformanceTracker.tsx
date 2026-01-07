@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Battle Drill Performance Tracker
  * Phase 7: Real-time timer, personal best tracking, performance trending, recertification

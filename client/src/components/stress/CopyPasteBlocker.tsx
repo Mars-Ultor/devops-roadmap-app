@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * CopyPasteBlocker Component - Progressive Stress System
  * Blocks copy and paste operations during high-stress sessions

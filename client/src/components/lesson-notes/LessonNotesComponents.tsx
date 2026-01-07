@@ -3,7 +3,6 @@
  * Extracted from LessonNotes.tsx for ESLint compliance
  */
 
-import React from 'react';
 import { FileDown, Save, Tag, Eye, Edit3 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 

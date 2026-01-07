@@ -3,7 +3,6 @@
  * Extracted from HintSystem.tsx for ESLint compliance
  */
 
-import React from 'react';
 import { Lightbulb, Lock, Clock, CheckCircle2, XCircle } from 'lucide-react';
 
 interface Hint {
@@ -26,9 +25,9 @@ export function HintsLockedBanner() {
 
 // Hint Progress Section
 interface HintProgressProps {
-  viewedHints: number[];
-  hints: Hint[];
-  solutionAvailable: boolean;
+  readonly viewedHints: number[];
+  readonly hints: Hint[];
+  readonly solutionAvailable: boolean;
 }
 
 export function HintProgress({ viewedHints, hints, solutionAvailable }: HintProgressProps) {
@@ -64,16 +63,23 @@ export function HintProgress({ viewedHints, hints, solutionAvailable }: HintProg
 
 // Next Hint Card
 interface NextHintCardProps {
-  hint: Hint;
-  totalHints: number;
-  nextHintAvailableIn: number;
-  canViewNextHint: boolean;
-  onViewHint: (id: number) => void;
-  formatTime: (ms: number) => string;
+  readonly hint: Hint;
+  readonly totalHints: number;
+  readonly nextHintAvailableIn: number;
+  readonly canViewNextHint: boolean;
+  readonly onViewHint: (id: number) => void;
+  readonly formatTime: (ms: number) => string;
 }
 
 export function NextHintCard({ hint, totalHints, nextHintAvailableIn, canViewNextHint, onViewHint, formatTime }: NextHintCardProps) {
-  const difficultyClass = hint.difficulty === 'easy' ? 'text-green-400' : hint.difficulty === 'medium' ? 'text-yellow-400' : 'text-red-400';
+  let difficultyClass: string;
+  if (hint.difficulty === 'easy') {
+    difficultyClass = 'text-green-400';
+  } else if (hint.difficulty === 'medium') {
+    difficultyClass = 'text-yellow-400';
+  } else {
+    difficultyClass = 'text-red-400';
+  }
   
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
@@ -110,8 +116,8 @@ export function NextHintCard({ hint, totalHints, nextHintAvailableIn, canViewNex
 
 // Viewed Hints List
 interface ViewedHintsListProps {
-  hints: Hint[];
-  viewedHints: number[];
+  readonly hints: Hint[];
+  readonly viewedHints: number[];
 }
 
 export function ViewedHintsList({ hints, viewedHints }: ViewedHintsListProps) {
@@ -124,7 +130,14 @@ export function ViewedHintsList({ hints, viewedHints }: ViewedHintsListProps) {
       </h4>
       <div className="space-y-3">
         {hints.filter(h => viewedHints.includes(h.id)).map(hint => {
-          const bgClass = hint.difficulty === 'easy' ? 'bg-green-900/30 text-green-400' : hint.difficulty === 'medium' ? 'bg-yellow-900/30 text-yellow-400' : 'bg-red-900/30 text-red-400';
+          let bgClass: string;
+          if (hint.difficulty === 'easy') {
+            bgClass = 'bg-green-900/30 text-green-400';
+          } else if (hint.difficulty === 'medium') {
+            bgClass = 'bg-yellow-900/30 text-yellow-400';
+          } else {
+            bgClass = 'bg-red-900/30 text-red-400';
+          }
           return (
             <div key={hint.id} className="bg-slate-700/50 border border-slate-600 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
@@ -142,8 +155,8 @@ export function ViewedHintsList({ hints, viewedHints }: ViewedHintsListProps) {
 
 // All Hints Used Warning
 interface AllHintsUsedProps {
-  formatTime: (ms: number) => string;
-  getTimeUntilSolution: () => number;
+  readonly formatTime: (ms: number) => string;
+  readonly getTimeUntilSolution: () => number;
 }
 
 export function AllHintsUsedWarning({ formatTime, getTimeUntilSolution }: AllHintsUsedProps) {

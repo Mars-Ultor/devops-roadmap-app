@@ -1,4 +1,3 @@
-import React from 'react';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import { type AARQuestion, countWords } from './aarData';
 

@@ -3,7 +3,6 @@
  * Extracted from ContentGate.tsx for ESLint compliance
  */
 
-import React from 'react';
 import { AlertTriangle, Target, Calendar, Clock } from 'lucide-react';
 
 // Loading Screen

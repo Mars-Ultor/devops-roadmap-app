@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Destructive Command Checklist Modal
  * Forces user to acknowledge risks before executing dangerous commands

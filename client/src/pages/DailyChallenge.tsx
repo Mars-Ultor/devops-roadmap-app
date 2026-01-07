@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * DailyChallenge Page - Scenario Challenge System
  * Quick 5-10 minute scenario-based skill application

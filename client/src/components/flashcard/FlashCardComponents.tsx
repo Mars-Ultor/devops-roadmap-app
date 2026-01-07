@@ -3,7 +3,6 @@
  * Extracted from FlashCard.tsx for ESLint compliance
  */
 
-import React from 'react';
 import { Brain, ChevronRight, RotateCcw, CheckCircle, XCircle } from 'lucide-react';
 import type { FlashCardData } from './FlashCard';
 

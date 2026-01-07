@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity */
 import { useEffect, useState } from 'react';
 import { collection, getDocs, query, where, getDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';

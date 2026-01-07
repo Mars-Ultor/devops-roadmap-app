@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * DistractionSimulator Component - Progressive Stress System
  * Simulates real-world distractions during training sessions

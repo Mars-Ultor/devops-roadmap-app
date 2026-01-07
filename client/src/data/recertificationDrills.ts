@@ -1,3 +1,9 @@
+/* eslint-disable sonarjs/no-duplicate-string */
+/**
+ * Recertification Drills
+ * Contains skill decay models and drills with intentionally repeated difficulty values
+ */
+
 import type { RecertificationDrill, SkillDecayModel } from '../types/training';
 
 // Skill Decay Models - How knowledge degrades over time
