@@ -1,149 +1,86 @@
 /**
- * Constraint Display Component
- * Shows current week's constraints and remaining resources
- * Phase 8: Progressive Constraints
+ * Constraint Display - Refactored
+ * Shows time and resource constraints for training
  */
 
-import { Shield, AlertTriangle, Lightbulb, RotateCcw, Copy } from 'lucide-react';
-import { ProgressiveConstraintsManager } from '../../services/progressiveConstraints';
+import React from 'react';
+import { Clock, AlertTriangle, CheckCircle, Timer } from 'lucide-react';
 
-interface ConstraintDisplayProps {
-  weekNumber: number;
-  hintsUsed: number;
-  resetsUsed: number;
+interface Constraint {
+  type: 'time' | 'resource' | 'dependency';
+  name: string;
+  value: string | number;
+  status: 'met' | 'warning' | 'critical';
+  description?: string;
 }
 
-export default function ConstraintDisplay({ weekNumber, hintsUsed, resetsUsed }: ConstraintDisplayProps) {
-  const status = ProgressiveConstraintsManager.getConstraintStatus(weekNumber, hintsUsed, resetsUsed);
-  const badge = ProgressiveConstraintsManager.getConstraintBadge(weekNumber);
-  const warning = ProgressiveConstraintsManager.getWarningMessage(weekNumber, hintsUsed, resetsUsed);
+interface ConstraintDisplayProps {
+  constraints: Constraint[];
+  timeRemaining?: number;
+  onConstraintClick?: (constraint: Constraint) => void;
+}
+
+function getStatusColor(status: Constraint['status']): string {
+  switch (status) {
+    case 'met': return 'bg-green-900/20 border-green-700 text-green-400';
+    case 'warning': return 'bg-yellow-900/20 border-yellow-700 text-yellow-400';
+    case 'critical': return 'bg-red-900/20 border-red-700 text-red-400';
+  }
+}
+
+function getStatusIcon(status: Constraint['status']) {
+  switch (status) {
+    case 'met': return <CheckCircle className="w-4 h-4 text-green-500" />;
+    case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+    case 'critical': return <AlertTriangle className="w-4 h-4 text-red-500" />;
+  }
+}
+
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+export default function ConstraintDisplay({ constraints, timeRemaining, onConstraintClick }: ConstraintDisplayProps) {
+  const criticalCount = constraints.filter(c => c.status === 'critical').length;
+  const warningCount = constraints.filter(c => c.status === 'warning').length;
 
   return (
-    <div className="bg-slate-800 rounded-lg border-2 border-slate-700 p-6">
+    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-          <Shield className="w-5 h-5 text-indigo-400" />
-          Training Constraints
+          <Clock className="w-5 h-5 text-indigo-400" />Constraints
         </h3>
-        <div className={`px-3 py-1 rounded-full text-sm font-semibold ${badge.color}`}>
-          {badge.icon} {badge.label}
-        </div>
+        {timeRemaining !== undefined && (
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${timeRemaining < 60 ? 'bg-red-900/30 text-red-400' : timeRemaining < 300 ? 'bg-yellow-900/30 text-yellow-400' : 'bg-slate-700 text-slate-300'}`}>
+            <Timer className="w-4 h-4" />
+            <span className="font-mono font-bold">{formatTime(timeRemaining)}</span>
+          </div>
+        )}
       </div>
 
-      <p className="text-gray-300 text-sm mb-4">{status.level.description}</p>
-
-      {/* Warning Banner */}
-      {warning && (
-        <div className="bg-yellow-900/30 border-2 border-yellow-600 rounded-lg p-3 mb-4">
-          <div className="flex items-start gap-2">
-            <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
-            <p className="text-yellow-300 text-sm font-medium">{warning}</p>
-          </div>
+      {(criticalCount > 0 || warningCount > 0) && (
+        <div className="flex gap-2 mb-4">
+          {criticalCount > 0 && <span className="px-2 py-1 bg-red-900/30 text-red-400 text-xs rounded">{criticalCount} critical</span>}
+          {warningCount > 0 && <span className="px-2 py-1 bg-yellow-900/30 text-yellow-400 text-xs rounded">{warningCount} warning</span>}
         </div>
       )}
 
-      {/* Resource Counters */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Hints */}
-        <div className={`rounded-lg p-4 border-2 ${
-          status.hintsRemaining === 0
-            ? 'bg-red-900/20 border-red-600'
-            : status.hintsRemaining === 1
-            ? 'bg-yellow-900/20 border-yellow-600'
-            : 'bg-slate-900/50 border-slate-600'
-        }`}>
-          <div className="flex items-center gap-2 mb-2">
-            <Lightbulb className={`w-5 h-5 ${
-              status.hintsRemaining === 0 ? 'text-red-400' :
-              status.hintsRemaining === 1 ? 'text-yellow-400' :
-              'text-blue-400'
-            }`} />
-            <span className="text-white font-semibold">Hints</span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className={`text-3xl font-bold ${
-              status.hintsRemaining === 0 ? 'text-red-400' :
-              status.hintsRemaining === 1 ? 'text-yellow-400' :
-              'text-white'
-            }`}>
-              {status.hintsRemaining === Infinity ? '∞' : status.hintsRemaining}
-            </span>
-            {status.level.maxHints !== Infinity && (
-              <span className="text-gray-400">/ {status.level.maxHints}</span>
-            )}
-          </div>
-          <div className="text-xs text-gray-400 mt-1">
-            {status.hintsUsed} used
-          </div>
-        </div>
-
-        {/* Resets */}
-        <div className={`rounded-lg p-4 border-2 ${
-          status.resetsRemaining === 0
-            ? 'bg-red-900/20 border-red-600'
-            : status.resetsRemaining <= 2
-            ? 'bg-yellow-900/20 border-yellow-600'
-            : 'bg-slate-900/50 border-slate-600'
-        }`}>
-          <div className="flex items-center gap-2 mb-2">
-            <RotateCcw className={`w-5 h-5 ${
-              status.resetsRemaining === 0 ? 'text-red-400' :
-              status.resetsRemaining <= 2 ? 'text-yellow-400' :
-              'text-green-400'
-            }`} />
-            <span className="text-white font-semibold">Resets</span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className={`text-3xl font-bold ${
-              status.resetsRemaining === 0 ? 'text-red-400' :
-              status.resetsRemaining <= 2 ? 'text-yellow-400' :
-              'text-white'
-            }`}>
-              {status.resetsRemaining === Infinity ? '∞' : status.resetsRemaining}
-            </span>
-            {status.level.maxResets !== Infinity && (
-              <span className="text-gray-400">/ {status.level.maxResets}</span>
-            )}
-          </div>
-          <div className="text-xs text-gray-400 mt-1">
-            {status.resetsUsed} used
-          </div>
-        </div>
-      </div>
-
-      {/* Copy-Paste Blocking Notice */}
-      {status.level.copyPasteBlocked && (
-        <div className="mt-4 bg-red-900/20 border border-red-600 rounded-lg p-3">
-          <div className="flex items-start gap-2">
-            <Copy className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-red-300 text-sm font-medium mb-1">
-                Copy-Paste Blocked
-              </p>
-              <p className="text-red-200 text-xs">
-                You must type all commands and code manually. This builds muscle memory and prevents dependency on copy-paste.
-              </p>
+      <div className="space-y-2">
+        {constraints.map((constraint, index) => (
+          <div key={index} onClick={() => onConstraintClick?.(constraint)}
+            className={`p-3 rounded-lg border ${getStatusColor(constraint.status)} ${onConstraintClick ? 'cursor-pointer hover:opacity-80' : ''}`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {getStatusIcon(constraint.status)}
+                <span className="font-medium">{constraint.name}</span>
+              </div>
+              <span className="text-sm font-mono">{constraint.value}</span>
             </div>
+            {constraint.description && <p className="text-sm text-slate-400 mt-1">{constraint.description}</p>}
           </div>
-        </div>
-      )}
-
-      {/* Phase Progression Info */}
-      <div className="mt-4 pt-4 border-t border-slate-700">
-        <div className="text-xs text-gray-400 space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-500"></span>
-            <span>Weeks 1-4: Unlimited support</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-            <span>Weeks 5-8: 3 hints, 5 resets</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-red-500"></span>
-            <span>Weeks 9-12: 1 hint, 2 resets, no copy-paste</span>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

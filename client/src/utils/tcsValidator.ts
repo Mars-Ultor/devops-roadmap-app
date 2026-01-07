@@ -10,103 +10,108 @@ export interface ValidationResult {
   warnings: string[];
 }
 
+// Validator helper for TASK section
+function validateTask(task: string, errors: string[], warnings: string[]): void {
+  if (!task || task.trim().length === 0) {
+    errors.push('TASK is required and cannot be empty');
+    return;
+  }
+  if (task.length < 20) {
+    warnings.push('TASK should be more descriptive (minimum 20 characters)');
+  }
+  if (task.length > 200) {
+    warnings.push('TASK should be concise (maximum 200 characters recommended)');
+  }
+  if (!task.includes('demonstrate') && !task.includes('deploy') && !task.includes('configure')) {
+    warnings.push('TASK should use action verbs (demonstrate, deploy, configure, etc.)');
+  }
+}
+
+// Validator helper for CONDITIONS section
+function validateConditions(conditions: TCSTask['conditions'], errors: string[], warnings: string[]): void {
+  if (!conditions) {
+    errors.push('CONDITIONS section is required');
+    return;
+  }
+  // Time Limit
+  if (conditions.timeLimit && conditions.timeLimit < 5) {
+    warnings.push('Time limit seems very short (< 5 minutes)');
+  }
+  if (conditions.timeLimit && conditions.timeLimit > 180) {
+    warnings.push('Time limit seems very long (> 3 hours)');
+  }
+  // Environment
+  if (!conditions.environment || conditions.environment.trim().length === 0) {
+    errors.push('Environment description is required in CONDITIONS');
+  }
+  // Resources
+  if (!conditions.resources || conditions.resources.length === 0) {
+    errors.push('At least one resource must be specified in CONDITIONS');
+  } else if (conditions.resources.length > 15) {
+    warnings.push('Too many resources listed - keep it focused');
+  }
+  // Restrictions
+  if (!conditions.restrictions || conditions.restrictions.length === 0) {
+    warnings.push('Consider adding restrictions to increase training value');
+  }
+}
+
+// Validator helper for individual standard
+function validateSingleStandard(
+  standard: TCSTask['standards'][0], 
+  index: number, 
+  errors: string[], 
+  warnings: string[]
+): void {
+  if (!standard.id || standard.id.trim().length === 0) {
+    errors.push(`Standard ${index + 1} must have an ID`);
+  }
+  if (!standard.description || standard.description.trim().length === 0) {
+    errors.push(`Standard ${index + 1} must have a description`);
+    return;
+  }
+  if (standard.description.length < 10) {
+    warnings.push(`Standard ${index + 1} description is too short`);
+  }
+  if (standard.description.length > 150) {
+    warnings.push(`Standard ${index + 1} description is too long - be concise`);
+  }
+  // Check for measurability
+  const measurableWords = ['successfully', 'correctly', 'without errors', 'passes', 'returns', 'contains', 'matches'];
+  const hasMeasurable = measurableWords.some(word => standard.description.toLowerCase().includes(word));
+  if (!hasMeasurable) {
+    warnings.push(`Standard ${index + 1} may not be measurable - add success criteria`);
+  }
+}
+
+// Validator helper for STANDARDS section
+function validateStandards(standards: TCSTask['standards'], errors: string[], warnings: string[]): void {
+  if (!standards || standards.length === 0) {
+    errors.push('At least one standard is required in STANDARDS');
+    return;
+  }
+  const requiredStandards = standards.filter(s => s.required);
+  if (requiredStandards.length === 0) {
+    errors.push('At least one required standard must be specified');
+  }
+  if (standards.length > 20) {
+    warnings.push('Too many standards (> 20) - consider consolidating');
+  }
+  standards.forEach((standard, index) => {
+    validateSingleStandard(standard, index, errors, warnings);
+  });
+}
+
 /**
  * Validate TCS structure and content
- * 
- * Performs comprehensive validation of Task-Conditions-Standards format including
- * required fields, content quality, and military standards compliance.
- * 
- * @param tcs - TCS task object to validate
- * @returns Validation result with errors, warnings, and validity status
  */
 export function validateTCS(tcs: TCSTask): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Validate TASK
-  if (!tcs.task || tcs.task.trim().length === 0) {
-    errors.push('TASK is required and cannot be empty');
-  } else {
-    if (tcs.task.length < 20) {
-      warnings.push('TASK should be more descriptive (minimum 20 characters)');
-    }
-    if (tcs.task.length > 200) {
-      warnings.push('TASK should be concise (maximum 200 characters recommended)');
-    }
-    if (!tcs.task.includes('demonstrate') && !tcs.task.includes('deploy') && !tcs.task.includes('configure')) {
-      warnings.push('TASK should use action verbs (demonstrate, deploy, configure, etc.)');
-    }
-  }
-
-  // Validate CONDITIONS
-  if (!tcs.conditions) {
-    errors.push('CONDITIONS section is required');
-  } else {
-    // Time Limit
-    if (tcs.conditions.timeLimit && tcs.conditions.timeLimit < 5) {
-      warnings.push('Time limit seems very short (< 5 minutes)');
-    }
-    if (tcs.conditions.timeLimit && tcs.conditions.timeLimit > 180) {
-      warnings.push('Time limit seems very long (> 3 hours)');
-    }
-
-    // Environment
-    if (!tcs.conditions.environment || tcs.conditions.environment.trim().length === 0) {
-      errors.push('Environment description is required in CONDITIONS');
-    }
-
-    // Resources
-    if (!tcs.conditions.resources || tcs.conditions.resources.length === 0) {
-      errors.push('At least one resource must be specified in CONDITIONS');
-    } else {
-      if (tcs.conditions.resources.length > 15) {
-        warnings.push('Too many resources listed - keep it focused');
-      }
-    }
-
-    // Restrictions
-    if (!tcs.conditions.restrictions || tcs.conditions.restrictions.length === 0) {
-      warnings.push('Consider adding restrictions to increase training value');
-    }
-  }
-
-  // Validate STANDARDS
-  if (!tcs.standards || tcs.standards.length === 0) {
-    errors.push('At least one standard is required in STANDARDS');
-  } else {
-    const requiredStandards = tcs.standards.filter(s => s.required);
-    if (requiredStandards.length === 0) {
-      errors.push('At least one required standard must be specified');
-    }
-
-    if (tcs.standards.length > 20) {
-      warnings.push('Too many standards (> 20) - consider consolidating');
-    }
-
-    // Check each standard
-    tcs.standards.forEach((standard, index) => {
-      if (!standard.id || standard.id.trim().length === 0) {
-        errors.push(`Standard ${index + 1} must have an ID`);
-      }
-      if (!standard.description || standard.description.trim().length === 0) {
-        errors.push(`Standard ${index + 1} must have a description`);
-      } else {
-        if (standard.description.length < 10) {
-          warnings.push(`Standard ${index + 1} description is too short`);
-        }
-        if (standard.description.length > 150) {
-          warnings.push(`Standard ${index + 1} description is too long - be concise`);
-        }
-      }
-      
-      // Check for measurability
-      const measurableWords = ['successfully', 'correctly', 'without errors', 'passes', 'returns', 'contains', 'matches'];
-      const hasMeasurable = measurableWords.some(word => standard.description.toLowerCase().includes(word));
-      if (!hasMeasurable) {
-        warnings.push(`Standard ${index + 1} may not be measurable - add success criteria`);
-      }
-    });
-  }
+  validateTask(tcs.task, errors, warnings);
+  validateConditions(tcs.conditions, errors, warnings);
+  validateStandards(tcs.standards, errors, warnings);
 
   return {
     valid: errors.length === 0,

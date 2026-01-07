@@ -62,6 +62,38 @@ export function calculateReviewPriority(
   return 'low';
 }
 
+// Helper: Get mastery bonus for easiness factor
+function getMasteryBonus(masteryLevel: MasteryLevel | undefined): number {
+  if (!masteryLevel) return 0;
+  const bonusMap: Record<MasteryLevel, number> = {
+    'crawl': 0,
+    'walk': 0.1,
+    'run-guided': 0.2,
+    'run-independent': 0.3
+  };
+  return bonusMap[masteryLevel];
+}
+
+// Helper: Calculate failed recall interval
+function getFailedRecallInterval(masteryLevel: MasteryLevel | undefined): number {
+  if (masteryLevel === 'run-independent') return 0.5;
+  if (masteryLevel === 'run-guided') return 0.75;
+  return 1;
+}
+
+// Helper: Calculate second review interval
+function getSecondReviewInterval(masteryLevel: MasteryLevel | undefined): number {
+  if (masteryLevel === 'run-independent') return 8;
+  if (masteryLevel === 'run-guided') return 7;
+  if (masteryLevel === 'walk') return 6;
+  return 5;
+}
+
+// Helper: Clamp easiness factor
+function clampEasinessFactor(ef: number): number {
+  return Math.max(1.3, Math.min(3.0, ef));
+}
+
 /**
  * Enhanced SM-2 algorithm with mastery level integration
  * Adjusts intervals based on mastery progression
@@ -78,48 +110,27 @@ export function calculateEnhancedSM2(
   interval: number;
   nextReviewDate: Date;
 } {
-  let newEasinessFactor = easinessFactor;
+  // Update easiness factor based on quality + mastery bonus
+  const baseEF = easinessFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+  const newEasinessFactor = clampEasinessFactor(baseEF + getMasteryBonus(masteryLevel));
+  
   let newRepetitions = repetitions;
   let newInterval = interval;
-
-  // Update easiness factor based on quality
-  newEasinessFactor = easinessFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-  
-  // Mastery level bonus: Higher mastery = higher base easiness
-  if (masteryLevel) {
-    const masteryBonus = {
-      'crawl': 0,
-      'walk': 0.1,
-      'run-guided': 0.2,
-      'run-independent': 0.3
-    }[masteryLevel];
-    
-    newEasinessFactor += masteryBonus;
-  }
-  
-  // Ensure easiness factor stays within bounds (1.3 to 3.0 with mastery)
-  if (newEasinessFactor < 1.3) newEasinessFactor = 1.3;
-  if (newEasinessFactor > 3.0) newEasinessFactor = 3.0;
   
   // Failed recall (quality < 3)
   if (quality < 3) {
     newRepetitions = 0;
-    // Shorter interval for higher mastery (they can recover faster)
-    newInterval = masteryLevel === 'run-independent' ? 0.5 : 
-                  masteryLevel === 'run-guided' ? 0.75 : 1;
+    newInterval = getFailedRecallInterval(masteryLevel);
   } else {
     // Successful recall
+    newRepetitions = repetitions + 1;
     if (repetitions === 0) {
-      newInterval = 1; // First successful review
+      newInterval = 1;
     } else if (repetitions === 1) {
-      // Second review interval varies by mastery
-      newInterval = masteryLevel === 'run-independent' ? 8 :
-                    masteryLevel === 'run-guided' ? 7 :
-                    masteryLevel === 'walk' ? 6 : 5;
+      newInterval = getSecondReviewInterval(masteryLevel);
     } else {
       newInterval = Math.round(interval * newEasinessFactor);
     }
-    newRepetitions = repetitions + 1;
   }
 
   return {

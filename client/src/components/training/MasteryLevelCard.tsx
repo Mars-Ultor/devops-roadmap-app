@@ -101,7 +101,7 @@ export default function MasteryLevelCard({
         <div className="mt-3">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-slate-400">Perfect Completions</span>
-            <span className={`text-sm font-semibold ${isMastered ? `text-${config.color}-400` : 'text-white'}`}>
+            <span className={`text-sm font-semibold ${isMastered ? 'text-' + config.color + '-400' : 'text-white'}`}>
               {progress.perfectCompletions}/{progress.requiredPerfectCompletions}
             </span>
           </div>

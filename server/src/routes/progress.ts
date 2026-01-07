@@ -1,15 +1,16 @@
-import express, { Request, Response } from 'express';
+import express, { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from '../middleware/auth.js';
 import redisCache from '../utils/cache.js';
+import { AuthenticatedRequest } from '../types/express.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Get user progress with caching
-router.get('/', authenticateToken, async (req: Request, res: Response) => {
+router.get('/', authenticateToken, async (req, res: Response) => {
   try {
-    const userId = (req as any).user.userId;
+    const userId = (req as AuthenticatedRequest).user.userId;
     const cacheKey = `progress:${userId}:summary`;
 
     // Try to get from cache first
@@ -45,15 +46,15 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     await redisCache.set(cacheKey, data, 300);
 
     res.json(data);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to fetch progress' });
   }
 });
 
 // Update lesson progress
-router.post('/lesson', authenticateToken, async (req: Request, res: Response) => {
+router.post('/lesson', authenticateToken, async (req, res: Response) => {
   try {
-    const userId = (req as any).user.userId;
+    const userId = (req as AuthenticatedRequest).user.userId;
     const { weekId, lessonId, completed, score } = req.body;
 
     const progress = await prisma.progress.upsert({
@@ -95,7 +96,7 @@ router.post('/lesson', authenticateToken, async (req: Request, res: Response) =>
     await redisCache.invalidateProgressCache(userId);
 
     res.json(progress);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to update progress' });
   }
 });

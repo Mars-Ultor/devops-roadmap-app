@@ -59,7 +59,7 @@ class RedisCache {
     }
   }
 
-  async set(key: string, value: any, ttlSeconds?: number): Promise<void> {
+  async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
     if (!this.isConnected) return;
 
     try {

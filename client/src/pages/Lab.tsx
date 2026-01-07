@@ -131,11 +131,10 @@ export default function Lab() {
 
   // Phase 8: Copy-paste blocking for weeks 9-12
   useEffect(() => {
-    const cleanup = ProgressiveConstraintsManager.initializeCopyPasteBlocking(
+    return ProgressiveConstraintsManager.initializeCopyPasteBlocking(
       weekNumber,
       'textarea, input[type="text"], .terminal-input'
     );
-    return cleanup;
   }, [weekNumber]);
 
   const handleStepComplete = (stepNumber: number) => {

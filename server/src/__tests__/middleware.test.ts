@@ -2,6 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { authenticateToken } from '../middleware/auth.js';
+import { AuthenticatedRequest } from '../types/express.js';
 
 // Create test app with protected route
 const createTestApp = () => {
@@ -10,7 +11,7 @@ const createTestApp = () => {
 
   // Protected route
   app.get('/api/protected', authenticateToken, (req, res) => {
-    res.json({ message: 'Access granted', user: (req as any).user });
+    res.json({ message: 'Access granted', user: (req as AuthenticatedRequest).user });
   });
 
   return app;

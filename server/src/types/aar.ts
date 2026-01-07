@@ -37,10 +37,33 @@ export interface AfterActionReview {
     whatWouldIDoDifferently: number;
     whatDidILearn: number;
   };
-  aiReview?: any; // JSON object
+  aiReview?: AIReview;
   patterns?: AARPattern[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface AIReview {
+  qualityScore: number;
+  score?: number; // Alias for qualityScore used in some contexts
+  feedback: string;
+  suggestions: string[];
+  followUpQuestions: string[];
+  patterns?: AARPattern[];
+  reviewedAt?: Date;
+  reviewer?: 'ai' | 'human';
+}
+
+export interface ImprovementTrend {
+  period: string;
+  averageScore: number;
+  count: number;
+}
+
+export interface StrengthOrImprovement {
+  area: string;
+  description: string;
+  frequency?: number;
 }
 
 export interface AARStats {
@@ -48,9 +71,9 @@ export interface AARStats {
   averageQualityScore?: number;
   commonPatterns: AARPattern[];
   completionRate: number;
-  improvementTrends: any[];
-  strengths: any[];
-  areasForImprovement: any[];
+  improvementTrends: ImprovementTrend[];
+  strengths: StrengthOrImprovement[];
+  areasForImprovement: StrengthOrImprovement[];
 }
 
 export interface AARPattern {
@@ -62,6 +85,46 @@ export interface AARPattern {
   relatedLessons?: string[];
   recommendation?: string;
   confidence?: number;
+}
+
+export interface AARUpdateData {
+  whatWasAccomplished?: string;
+  whatWorkedWell?: string[];
+  whatDidNotWork?: string[];
+  whyDidNotWork?: string;
+  whatWouldIDoDifferently?: string;
+  whatDidILearn?: string;
+}
+
+export interface WordCounts {
+  whatWasAccomplished: number;
+  whyDidNotWork: number;
+  whatWouldIDoDifferently: number;
+  whatDidILearn: number;
+}
+
+/**
+ * Represents AAR data as stored in Prisma database
+ */
+export interface PrismaAARData {
+  id: string;
+  userId: string;
+  lessonId: string;
+  level: string;
+  labId: string;
+  completedAt: Date;
+  whatWasAccomplished: string;
+  whatWorkedWell: unknown;
+  whatDidNotWork: unknown;
+  whyDidNotWork: string;
+  whatWouldIDoDifferently: string;
+  whatDidILearn: string;
+  wordCounts: unknown;
+  aiReview?: unknown;
+  patterns?: unknown;
+  qualityScore?: number | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const AAR_REQUIREMENTS = {

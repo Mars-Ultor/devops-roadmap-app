@@ -1,10 +1,11 @@
 import { renderHook, act } from '@testing-library/react';
 import { vi } from 'vitest';
+import type { User as FirebaseUser } from 'firebase/auth';
 
 // Mock the entire authStore module
 const mockAuthStore = {
-  user: null,
-  firebaseUser: null,
+  user: null as ReturnType<typeof import('../../store/authStore').useAuthStore>['user'],
+  firebaseUser: null as FirebaseUser | null,
   loading: true,
   login: vi.fn(),
   register: vi.fn(),
@@ -125,7 +126,7 @@ describe('useAuthStore', () => {
       totalXP: 100,
       createdAt: new Date(),
     };
-    mockAuthStore.firebaseUser = { uid: 'test-uid' } as any;
+    mockAuthStore.firebaseUser = { uid: 'test-uid' } as FirebaseUser;
     mockAuthStore.loading = false;
 
     mockAuthStore.logout.mockImplementation(async () => {

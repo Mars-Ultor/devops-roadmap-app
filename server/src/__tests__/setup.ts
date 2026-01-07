@@ -18,7 +18,7 @@ afterAll(async () => {
     const fs = await import('fs');
     try {
       fs.unlinkSync('./test.db');
-    } catch (error) {
+    } catch {
       // Ignore if file doesn't exist
     }
   }
@@ -37,7 +37,7 @@ afterEach(async () => {
     await prisma.project.deleteMany();
     await prisma.progress.deleteMany();
     await prisma.user.deleteMany();
-  } catch (error) {
+  } catch {
     // Ignore errors during cleanup
   } finally {
     await prisma.$disconnect();

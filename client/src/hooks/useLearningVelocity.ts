@@ -1,20 +1,16 @@
 /**
- * Learning Velocity Analysis Hook
+ * Learning Velocity Analysis Hook - Refactored
  * Tracks progress speed and learning acceleration over time
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import type { WeeklyProgress } from './learning-velocity/learningVelocityUtils';
+import { calculateVelocityTrend, getWeekKey, convertToWeeklyProgress, calculateCurrentPace, calculateOptimalPace, projectCompletionDate } from './learning-velocity/learningVelocityUtils';
 
-export interface WeeklyProgress {
-  week: number;
-  itemsCompleted: number;
-  avgTimePerItem: number;
-  masteryRate: number;
-  date: Date;
-}
+export type { WeeklyProgress };
 
 export interface LearningVelocityData {
   weeklyProgress: WeeklyProgress[];
@@ -29,130 +25,44 @@ export function useLearningVelocity() {
   const [velocityData, setVelocityData] = useState<LearningVelocityData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      analyzeLearningVelocity();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  const analyzeLearningVelocity = async () => {
+  const analyzeLearningVelocity = useCallback(async () => {
     if (!user) return;
-
     try {
-      // Get progress data over time
-      const progressQuery = query(
-        collection(db, 'progress'),
-        where('userId', '==', user.uid),
-        orderBy('completedAt', 'asc')
-      );
-      const progressSnap = await getDocs(progressQuery);
-
+      const progressSnap = await getDocs(query(collection(db, 'progress'), where('userId', '==', user.uid), orderBy('completedAt', 'asc')));
+      
       // Group by weeks
-      const weeklyData: Record<string, {
-        items: { id: string; data: () => Record<string, unknown> }[];
-        totalTime: number;
-        masteredItems: number;
-        weekStart: Date;
-      }> = {};
-
+      const weeklyData: Record<string, { items: Array<Record<string, unknown>>; totalTime: number; masteredItems: number; weekStart: Date }> = {};
       progressSnap.docs.forEach(doc => {
         const data = doc.data();
         const completedAt = data.completedAt?.toDate();
         if (!completedAt) return;
-
-        // Calculate week number (weeks since epoch)
+        const weekKey = getWeekKey(completedAt);
         const weekStart = new Date(completedAt);
         weekStart.setDate(completedAt.getDate() - completedAt.getDay());
         weekStart.setHours(0, 0, 0, 0);
-        const weekKey = weekStart.toISOString();
-
-        if (!weeklyData[weekKey]) {
-          weeklyData[weekKey] = {
-            items: [],
-            totalTime: 0,
-            masteredItems: 0,
-            weekStart
-          };
-        }
-
+        if (!weeklyData[weekKey]) weeklyData[weekKey] = { items: [], totalTime: 0, masteredItems: 0, weekStart };
         weeklyData[weekKey].items.push(data);
         weeklyData[weekKey].totalTime += data.timeSpentMinutes || 0;
-        if (data.masteryLevel === 'run-independent') {
-          weeklyData[weekKey].masteredItems++;
-        }
+        if (data.masteryLevel === 'run-independent') weeklyData[weekKey].masteredItems++;
       });
 
-      // Convert to weekly progress array
-      const weeklyProgress: WeeklyProgress[] = Object.entries(weeklyData)
-        .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
-        .map(([weekKey, data]) => {
-          const weekNumber = Math.floor((new Date(weekKey).getTime() - new Date('2024-01-01').getTime()) / (1000 * 60 * 60 * 24 * 7)) + 1;
-
-          return {
-            week: weekNumber,
-            itemsCompleted: data.items.length,
-            avgTimePerItem: data.items.length > 0 ? data.totalTime / data.items.length : 0,
-            masteryRate: data.items.length > 0 ? (data.masteredItems / data.items.length) * 100 : 0,
-            date: data.weekStart
-          };
-        });
-
-      // Calculate velocity trend
-      const velocityTrend = calculateVelocityTrend(weeklyProgress);
-
-      // Calculate current pace (last 4 weeks average)
-      const recentWeeks = weeklyProgress.slice(-4);
-      const currentPace = recentWeeks.length > 0
-        ? recentWeeks.reduce((sum, w) => sum + w.itemsCompleted, 0) / recentWeeks.length
-        : 0;
-
-      // Calculate optimal pace (assume 12-week program, adjust based on remaining content)
-      const totalWeeks = 12;
-      const completedWeeks = Math.max(...weeklyProgress.map(w => w.week), 0);
-      const remainingWeeks = Math.max(totalWeeks - completedWeeks, 1);
-      const remainingItems = 100; // Estimated remaining items
-      const optimalPace = remainingItems / remainingWeeks;
-
-      // Project completion date
-      const projectedCompletion = currentPace > 0
-        ? new Date(Date.now() + (remainingItems / currentPace) * 7 * 24 * 60 * 60 * 1000)
-        : null;
+      const weeklyProgress = convertToWeeklyProgress(weeklyData);
+      const currentPace = calculateCurrentPace(weeklyProgress);
+      const optimalPace = calculateOptimalPace(weeklyProgress);
+      const remainingItems = 100;
 
       setVelocityData({
         weeklyProgress,
-        velocityTrend,
-        projectedCompletion,
+        velocityTrend: calculateVelocityTrend(weeklyProgress),
+        projectedCompletion: projectCompletionDate(currentPace, remainingItems),
         currentPace: Math.round(currentPace * 10) / 10,
         optimalPace: Math.round(optimalPace * 10) / 10
       });
-    } catch (error) {
-      console.error('Error analyzing learning velocity:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    } catch (error) { console.error('Error analyzing learning velocity:', error); }
+    finally { setLoading(false); }
+  }, [user]);
 
-  const calculateVelocityTrend = (weeklyData: WeeklyProgress[]): 'accelerating' | 'steady' | 'decelerating' => {
-    if (weeklyData.length < 3) return 'steady';
+  useEffect(() => { if (user) analyzeLearningVelocity(); }, [user, analyzeLearningVelocity]);
 
-    // Calculate trend using linear regression on items completed
-    const n = weeklyData.length;
-    const sumX = weeklyData.reduce((sum, _, idx) => sum + idx, 0);
-    const sumY = weeklyData.reduce((sum, w) => sum + w.itemsCompleted, 0);
-    const sumXY = weeklyData.reduce((sum, w, idx) => sum + idx * w.itemsCompleted, 0);
-    const sumXX = weeklyData.reduce((sum, _, idx) => sum + idx * idx, 0);
-
-    const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-
-    if (slope > 0.5) return 'accelerating';
-    if (slope < -0.5) return 'decelerating';
-    return 'steady';
-  };
-
-  return {
-    velocityData,
-    loading,
-    analyzeLearningVelocity
-  };
+  return { velocityData, loading, analyzeLearningVelocity };
 }

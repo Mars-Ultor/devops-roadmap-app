@@ -1,6 +1,5 @@
 import request from 'supertest';
 import express from 'express';
-import { createServer } from 'http';
 
 // Create a test app instance
 const createTestApp = () => {
@@ -34,7 +33,7 @@ describe('Health Check', () => {
   });
 
   it('should handle CORS', async () => {
-    const response = await request(app)
+    await request(app)
       .options('/api/health')
       .expect(200);
   });

@@ -12,6 +12,13 @@ import { useProgress } from '../hooks/useProgress';
 
 type AARView = 'history' | 'create';
 
+interface NavTabProps { label: string; icon: React.ReactNode; isActive: boolean; onClick: () => void; }
+const NavTab = ({ label, icon, isActive, onClick }: NavTabProps) => (
+  <button onClick={onClick} className={`flex items-center px-4 py-3 border-b-2 font-medium text-sm ${isActive ? 'border-indigo-400 text-indigo-400' : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'}`}>
+    {icon}{label}
+  </button>
+);
+
 export default function AARPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -25,20 +32,11 @@ export default function AARPage() {
 
   const handleAARComplete = async (aarId: string) => {
     console.log('AAR completed with ID:', aarId);
-    
-    // If this AAR was triggered from a lab completion, mark the lab as completed
     if (labId) {
-      try {
-        // Complete the lab with default values (time spent, etc. could be enhanced)
-        await completeLab(labId, 100, 1, 1); // Default XP and task completion
-      } catch (error) {
-        console.error('Failed to complete lab after AAR:', error);
-      }
+      try { await completeLab(labId, 100, 1, 1); } 
+      catch (error) { console.error('Failed to complete lab after AAR:', error); }
     }
-
-    // Navigate back to the return URL or curriculum
-    const returnTo = searchParams.get('returnTo') || '/curriculum';
-    navigate(returnTo);
+    navigate(searchParams.get('returnTo') || '/curriculum');
   };
 
   const handleViewChange = (newView: AARView) => {
@@ -53,68 +51,26 @@ export default function AARPage() {
         <div className="max-w-4xl mx-auto p-6">
           <div className="bg-red-900/50 border border-red-700 rounded-lg p-6 text-center">
             <h2 className="text-xl font-bold text-red-400 mb-2">Invalid AAR Request</h2>
-            <p className="text-gray-300 mb-4">
-              Missing required parameters for AAR creation.
-            </p>
-            <button
-              onClick={() => navigate('/aar')}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-            >
-              Go to AAR History
-            </button>
+            <p className="text-gray-300 mb-4">Missing required parameters for AAR creation.</p>
+            <button onClick={() => navigate('/aar')} className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Go to AAR History</button>
           </div>
         </div>
       );
     }
-
-    return (
-      <AARForm
-        userId={user.uid}
-        lessonId={lessonId}
-        level={level}
-        labId={labId}
-        onComplete={handleAARComplete}
-        onCancel={() => handleViewChange('history')}
-      />
-    );
+    return <AARForm userId={user.uid} lessonId={lessonId} level={level} labId={labId} onComplete={handleAARComplete} onCancel={() => handleViewChange('history')} />;
   };
 
   return (
     <div className="min-h-screen bg-slate-900">
-      {/* Navigation Tabs */}
       <div className="bg-slate-800 border-b border-slate-700">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-center space-x-1">
-            <button
-              onClick={() => handleViewChange('history')}
-              className={`flex items-center px-4 py-3 border-b-2 font-medium text-sm ${
-                view === 'history'
-                  ? 'border-indigo-400 text-indigo-400'
-                  : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
-              }`}
-            >
-              <History className="w-4 h-4 mr-2" />
-              AAR History
-            </button>
-            <button
-              onClick={() => handleViewChange('create')}
-              className={`flex items-center px-4 py-3 border-b-2 font-medium text-sm ${
-                view === 'create'
-                  ? 'border-indigo-400 text-indigo-400'
-                  : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
-              }`}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create AAR
-            </button>
+            <NavTab label="AAR History" icon={<History className="w-4 h-4 mr-2" />} isActive={view === 'history'} onClick={() => handleViewChange('history')} />
+            <NavTab label="Create AAR" icon={<Plus className="w-4 h-4 mr-2" />} isActive={view === 'create'} onClick={() => handleViewChange('create')} />
           </div>
         </div>
       </div>
-
-      {/* Content */}
-      <div className="py-6">
-        {view === 'create' ? renderCreateView() : <AARHistory />}
-      </div>
+      <div className="py-6">{view === 'create' ? renderCreateView() : <AARHistory />}</div>
     </div>
   );
 }

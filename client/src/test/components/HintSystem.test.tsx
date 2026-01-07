@@ -11,8 +11,6 @@ describe('HintSystem', () => {
     { id: 3, text: 'Third hint', difficulty: 'hard' as const },
   ]
 
-  let mockNow = Date.now()
-
   beforeEach(() => {
     vi.clearAllMocks()
     // Don't use fake timers by default - only for timer-specific tests

@@ -69,12 +69,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    // Check if the AlertTriangle icon is rendered (it should have a specific class or be in the DOM)
-    const errorIcon = document.querySelector('[data-testid="alert-triangle"]') ||
-                     screen.getByRole('img', { hidden: true }) ||
-                     document.querySelector('.lucide-alert-triangle');
-
-    // Since we can't easily test the icon, let's check the error styling
+    // Check that error UI is rendered
     expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
   });
 

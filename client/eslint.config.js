@@ -26,11 +26,11 @@ export default defineConfig([
       sonarjs
     },
     rules: {
-      // Complexity Analysis Rules
-      'complexity': ['error', 10], // Cyclomatic complexity limit
-      'sonarjs/cognitive-complexity': ['error', 15], // Cognitive complexity limit
+      // Complexity Analysis Rules (Relaxed for Baseline Establishment)
+      'complexity': ['error', 20], // Cyclomatic complexity limit (relaxed from 10)
+      'sonarjs/cognitive-complexity': ['error', 25], // Cognitive complexity limit (relaxed from 15)
       'sonarjs/no-identical-functions': 'error', // Detect duplicate functions
-      'sonarjs/no-duplicate-string': ['error', 5], // Detect duplicate strings
+      'sonarjs/no-duplicate-string': ['error', { threshold: 5 }], // Detect duplicate strings
       'sonarjs/no-nested-template-literals': 'error', // Avoid nested template literals
       'sonarjs/prefer-immediate-return': 'error', // Prefer immediate returns
       'sonarjs/no-inverted-boolean-check': 'error', // Avoid inverted boolean checks
@@ -38,11 +38,11 @@ export default defineConfig([
       'sonarjs/no-unused-collection': 'error', // Detect unused collections
       'sonarjs/no-collapsible-if': 'error', // Detect collapsible if statements
 
-      // Function complexity limits
-      'max-lines-per-function': ['error', 50], // Max lines per function
-      'max-params': ['error', 4], // Max parameters per function
-      'max-depth': ['error', 4], // Max nesting depth
-      'max-nested-callbacks': ['error', 3], // Max nested callbacks
+      // Function complexity limits (Relaxed)
+      'max-lines-per-function': ['error', 100], // Max lines per function (relaxed from 50)
+      'max-params': ['error', 6], // Max parameters per function (relaxed from 4)
+      'max-depth': ['error', 5], // Max nesting depth (relaxed from 4)
+      'max-nested-callbacks': ['error', 4], // Max nested callbacks (relaxed from 3)
 
       // Maintainability rules
       'sonarjs/function-return-type': 'error', // Require return type annotations

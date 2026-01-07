@@ -54,11 +54,8 @@ export default defineConfig({
     testTimeout: 5000,
     hookTimeout: 5000,
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    isolate: false,
+    exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**'],
     server: {
       deps: {
         inline: ['firebase'],

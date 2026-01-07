@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 import Quiz from '../../components/Quiz';
 import { useAuthStore } from '../../store/authStore';
 
@@ -7,6 +7,8 @@ import { useAuthStore } from '../../store/authStore';
 vi.mock('../../store/authStore', () => ({
   useAuthStore: vi.fn(),
 }));
+
+const mockedUseAuthStore = useAuthStore as MockedFunction<typeof useAuthStore>;
 
 // Mock Firebase
 vi.mock('firebase/firestore', () => ({
@@ -40,9 +42,9 @@ const mockQuestions = [
 describe('Quiz', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useAuthStore as any).mockReturnValue({
+    mockedUseAuthStore.mockReturnValue({
       user: mockUser,
-    });
+    } as ReturnType<typeof useAuthStore>);
   });
 
   const defaultProps = {
@@ -212,9 +214,9 @@ describe('Quiz', () => {
   });
 
   test('handles quiz with no user logged in', () => {
-    (useAuthStore as any).mockReturnValue({
+    mockedUseAuthStore.mockReturnValue({
       user: null,
-    });
+    } as ReturnType<typeof useAuthStore>);
 
     render(<Quiz {...defaultProps} />);
 

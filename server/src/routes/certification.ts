@@ -1,14 +1,15 @@
-import express, { Request, Response } from 'express';
+import express, { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from '../middleware/auth.js';
+import { AuthenticatedRequest } from '../types/express.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Get user certifications
-router.get('/', authenticateToken, async (req: Request, res: Response) => {
+router.get('/', authenticateToken, async (req, res: Response) => {
   try {
-    const userId = (req as any).user.userId;
+    const userId = (req as AuthenticatedRequest).user.userId;
 
     const certifications = await prisma.certification.findMany({
       where: { userId },
@@ -16,15 +17,15 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     });
 
     res.json(certifications);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to fetch certifications' });
   }
 });
 
 // Get user recertification attempts
-router.get('/attempts', authenticateToken, async (req: Request, res: Response) => {
+router.get('/attempts', authenticateToken, async (req, res: Response) => {
   try {
-    const userId = (req as any).user.userId;
+    const userId = (req as AuthenticatedRequest).user.userId;
 
     const attempts = await prisma.recertificationAttempt.findMany({
       where: { userId },
@@ -36,15 +37,15 @@ router.get('/attempts', authenticateToken, async (req: Request, res: Response) =
     });
 
     res.json(attempts);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to fetch recertification attempts' });
   }
 });
 
 // Create or update certification
-router.post('/', authenticateToken, async (req: Request, res: Response) => {
+router.post('/', authenticateToken, async (req, res: Response) => {
   try {
-    const userId = (req as any).user.userId;
+    const userId = (req as AuthenticatedRequest).user.userId;
     const {
       skillId,
       certificationLevel,
@@ -82,15 +83,15 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
     });
 
     res.json(certification);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to create/update certification' });
   }
 });
 
 // Submit recertification attempt
-router.post('/attempt', authenticateToken, async (req: Request, res: Response) => {
+router.post('/attempt', authenticateToken, async (req, res: Response) => {
   try {
-    const userId = (req as any).user.userId;
+    const userId = (req as AuthenticatedRequest).user.userId;
     const {
       certificationId,
       drillId,
@@ -137,15 +138,15 @@ router.post('/attempt', authenticateToken, async (req: Request, res: Response) =
     }
 
     res.json(attempt);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to submit recertification attempt' });
   }
 });
 
 // Mark certification as requiring recertification
-router.post('/:id/require-recertification', authenticateToken, async (req: Request, res: Response) => {
+router.post('/:id/require-recertification', authenticateToken, async (req, res: Response) => {
   try {
-    const userId = (req as any).user.userId;
+    const userId = (req as AuthenticatedRequest).user.userId;
     const { id } = req.params;
 
     const certification = await prisma.certification.updateMany({
@@ -163,7 +164,7 @@ router.post('/:id/require-recertification', authenticateToken, async (req: Reque
     }
 
     res.json({ success: true });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to update certification' });
   }
 });

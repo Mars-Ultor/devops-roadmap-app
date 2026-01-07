@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { vi } from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 import Navbar from '../../components/Navbar';
 import { useAuthStore } from '../../store/authStore';
 
@@ -8,6 +8,8 @@ import { useAuthStore } from '../../store/authStore';
 vi.mock('../../store/authStore', () => ({
   useAuthStore: vi.fn(),
 }));
+
+const mockedUseAuthStore = useAuthStore as MockedFunction<typeof useAuthStore>;
 
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
@@ -59,10 +61,10 @@ describe('Navbar', () => {
 
   describe('when user is not logged in', () => {
     beforeEach(() => {
-      (useAuthStore as any).mockReturnValue({
+      mockedUseAuthStore.mockReturnValue({
         user: null,
         logout: vi.fn(),
-      });
+      } as ReturnType<typeof useAuthStore>);
     });
 
     test('renders the navbar with correct branding', () => {
@@ -75,10 +77,10 @@ describe('Navbar', () => {
 
   describe('when user is logged in', () => {
     beforeEach(() => {
-      (useAuthStore as any).mockReturnValue({
+      mockedUseAuthStore.mockReturnValue({
         user: mockUser,
         logout: vi.fn(),
-      });
+      } as ReturnType<typeof useAuthStore>);
     });
 
     test('renders navigation links for authenticated user', () => {
@@ -97,10 +99,10 @@ describe('Navbar', () => {
     test('logout button calls logout and navigates to login', async () => {
       mockNavigate = vi.fn(); // Reset mock for this test
       const mockLogout = vi.fn();
-      (useAuthStore as any).mockReturnValue({
+      mockedUseAuthStore.mockReturnValue({
         user: mockUser,
         logout: mockLogout,
-      });
+      } as ReturnType<typeof useAuthStore>);
 
       renderNavbar();
 
@@ -114,10 +116,10 @@ describe('Navbar', () => {
 
   describe('mobile menu functionality', () => {
     beforeEach(() => {
-      (useAuthStore as any).mockReturnValue({
+      mockedUseAuthStore.mockReturnValue({
         user: mockUser,
         logout: vi.fn(),
-      });
+      } as ReturnType<typeof useAuthStore>);
     });
 
     test('mobile menu button is visible on small screens', () => {
@@ -170,10 +172,10 @@ describe('Navbar', () => {
 
   describe('navigation links', () => {
     beforeEach(() => {
-      (useAuthStore as any).mockReturnValue({
+      mockedUseAuthStore.mockReturnValue({
         user: mockUser,
         logout: vi.fn(),
-      });
+      } as ReturnType<typeof useAuthStore>);
     });
 
     test('dashboard link has correct href', () => {
