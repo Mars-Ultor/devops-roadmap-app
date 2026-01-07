@@ -2,6 +2,8 @@ import express, { Router, Request, Response } from 'express';
 import { body, param, validationResult } from 'express-validator';
 import { authenticateToken } from '../middleware/auth.js';
 import { AARService } from '../services/aarService.js';
+import { AuthenticatedRequest } from '../types/express.js';
+import { handleError } from '../utils/errorHandler.js';
 
 const router: Router = express.Router();
 const aarService = new AARService();
@@ -34,7 +36,8 @@ router.post('/', authenticateToken, validateAARForm, async (req: Request, res: R
       });
     }
 
-    const userId = (req as any).user.id;
+    const authReq = req as AuthenticatedRequest;
+    const userId = authReq.user.id || authReq.user.userId;
     const aarData = {
       userId,
       lessonId: req.body.lessonId,
@@ -56,12 +59,7 @@ router.post('/', authenticateToken, validateAARForm, async (req: Request, res: R
       data: aar
     });
   } catch (error) {
-    console.error('Error creating AAR:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create AAR',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    res.status(500).json(handleError('Error creating AAR', error, 'Failed to create AAR'));
   }
 });
 
@@ -69,9 +67,9 @@ router.post('/', authenticateToken, validateAARForm, async (req: Request, res: R
  * GET /api/aar
  * Get user's AARs with optional filtering
  */
-router.get('/', authenticateToken, async (req: Request, res: Response) => {
+router.get('/', authenticateToken, async (req, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = (req as AuthenticatedRequest).user.id || (req as AuthenticatedRequest).user.userId;
     const { lessonId, limit } = req.query;
 
     let aars;
@@ -86,12 +84,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
       data: aars
     });
   } catch (error) {
-    console.error('Error fetching AARs:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch AARs',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    res.status(500).json(handleError('Error fetching AARs', error, 'Failed to fetch AARs'));
   }
 });
 
@@ -99,7 +92,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
  * GET /api/aar/:id
  * Get a specific AAR by ID
  */
-router.get('/:id', authenticateToken, param('id').isString().notEmpty(), async (req: Request, res: Response) => {
+router.get('/:id', authenticateToken, param('id').isString().notEmpty(), async (req, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -110,7 +103,7 @@ router.get('/:id', authenticateToken, param('id').isString().notEmpty(), async (
       });
     }
 
-    const userId = (req as any).user.id;
+    const userId = (req as AuthenticatedRequest).user.id || (req as AuthenticatedRequest).user.userId;
     const aarId = req.params.id;
 
     const aar = await aarService.getAARById(aarId, userId);
@@ -126,12 +119,7 @@ router.get('/:id', authenticateToken, param('id').isString().notEmpty(), async (
       data: aar
     });
   } catch (error) {
-    console.error('Error fetching AAR:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch AAR',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    res.status(500).json(handleError('Error fetching AAR', error, 'Failed to fetch AAR'));
   }
 });
 
@@ -139,7 +127,7 @@ router.get('/:id', authenticateToken, param('id').isString().notEmpty(), async (
  * PUT /api/aar/:id
  * Update an existing AAR
  */
-router.put('/:id', authenticateToken, param('id').isString().notEmpty(), async (req: Request, res: Response) => {
+router.put('/:id', authenticateToken, param('id').isString().notEmpty(), async (req, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -150,7 +138,7 @@ router.put('/:id', authenticateToken, param('id').isString().notEmpty(), async (
       });
     }
 
-    const userId = (req as any).user.id;
+    const userId = (req as AuthenticatedRequest).user.id || (req as AuthenticatedRequest).user.userId;
     const aarId = req.params.id;
     const updateData = req.body;
 
@@ -168,12 +156,7 @@ router.put('/:id', authenticateToken, param('id').isString().notEmpty(), async (
       data: aar
     });
   } catch (error) {
-    console.error('Error updating AAR:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update AAR',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    res.status(500).json(handleError('Error updating AAR', error, 'Failed to update AAR'));
   }
 });
 
@@ -181,7 +164,7 @@ router.put('/:id', authenticateToken, param('id').isString().notEmpty(), async (
  * DELETE /api/aar/:id
  * Delete an AAR
  */
-router.delete('/:id', authenticateToken, param('id').isString().notEmpty(), async (req: Request, res: Response) => {
+router.delete('/:id', authenticateToken, param('id').isString().notEmpty(), async (req, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -192,7 +175,7 @@ router.delete('/:id', authenticateToken, param('id').isString().notEmpty(), asyn
       });
     }
 
-    const userId = (req as any).user.id;
+    const userId = (req as AuthenticatedRequest).user.id || (req as AuthenticatedRequest).user.userId;
     const aarId = req.params.id;
 
     const deleted = await aarService.deleteAAR(aarId, userId);
@@ -208,12 +191,7 @@ router.delete('/:id', authenticateToken, param('id').isString().notEmpty(), asyn
       message: 'AAR deleted successfully'
     });
   } catch (error) {
-    console.error('Error deleting AAR:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to delete AAR',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    res.status(500).json(handleError('Error deleting AAR', error, 'Failed to delete AAR'));
   }
 });
 
@@ -221,9 +199,9 @@ router.delete('/:id', authenticateToken, param('id').isString().notEmpty(), asyn
  * GET /api/aar/stats/overview
  * Get AAR statistics for the user
  */
-router.get('/stats/overview', authenticateToken, async (req: Request, res: Response) => {
+router.get('/stats/overview', authenticateToken, async (req, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = (req as AuthenticatedRequest).user.id || (req as AuthenticatedRequest).user.userId;
 
     const stats = await aarService.getUserAARStats(userId);
 
@@ -232,12 +210,7 @@ router.get('/stats/overview', authenticateToken, async (req: Request, res: Respo
       data: stats
     });
   } catch (error) {
-    console.error('Error fetching AAR stats:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch AAR statistics',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    res.status(500).json(handleError('Error fetching AAR stats', error, 'Failed to fetch AAR statistics'));
   }
 });
 
@@ -272,12 +245,7 @@ router.post('/validate', authenticateToken, validateAARForm, async (req: Request
       data: validation
     });
   } catch (error) {
-    console.error('Error validating AAR form:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to validate AAR form',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    res.status(500).json(handleError('Error validating AAR form', error, 'Failed to validate AAR form'));
   }
 });
 
@@ -285,9 +253,9 @@ router.post('/validate', authenticateToken, validateAARForm, async (req: Request
  * GET /api/aar/patterns/common
  * Get common patterns across user's AARs
  */
-router.get('/patterns/common', authenticateToken, async (req: Request, res: Response) => {
+router.get('/patterns/common', authenticateToken, async (req, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = (req as AuthenticatedRequest).user.id || (req as AuthenticatedRequest).user.userId;
     const { minFrequency = 2 } = req.query;
 
     const patterns = await aarService.getCommonPatterns(userId, parseInt(minFrequency as string));
@@ -297,12 +265,7 @@ router.get('/patterns/common', authenticateToken, async (req: Request, res: Resp
       data: patterns
     });
   } catch (error) {
-    console.error('Error fetching common patterns:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch common patterns',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    res.status(500).json(handleError('Error fetching common patterns', error, 'Failed to fetch common patterns'));
   }
 });
 

@@ -7,6 +7,15 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Get JWT secret - fail fast if not configured
+const getJwtSecret = (): string => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable must be set');
+  }
+  return secret;
+};
+
 // Register
 router.post('/register', [
   body('email').isEmail().normalizeEmail(),
@@ -43,10 +52,10 @@ router.post('/register', [
     // Generate JWT
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_SECRET || 'secret',
+      getJwtSecret(),
       { expiresIn: '7d' }
     );
-    
+
     res.status(201).json({
       token,
       user: {
@@ -57,35 +66,44 @@ router.post('/register', [
         totalXP: user.totalXP,
       },
     });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Registration failed' });
   }
 });
 
 // Login
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', [
+  body('email').isEmail().normalizeEmail(),
+  body('password').notEmpty().withMessage('Password is required'),
+], async (req: Request, res: Response) => {
   try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { email, password } = req.body;
-    
+
     // Find user
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    
+
     // Check password
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    
+
     // Generate JWT
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_SECRET || 'secret',
+      getJwtSecret(),
       { expiresIn: '7d' }
     );
-    
+
     res.json({
       token,
       user: {
@@ -96,7 +114,7 @@ router.post('/login', async (req: Request, res: Response) => {
         totalXP: user.totalXP,
       },
     });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Login failed' });
   }
 });
