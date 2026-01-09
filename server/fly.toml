@@ -6,11 +6,8 @@
 app = 'devops-server'
 primary_region = 'lax'
 
-# Use Nixpacks for building (Fly.io default)
-# No build section needed - Fly.io will auto-detect Node.js
-
-  [build.args]
-    NODE_ENV = 'production'
+[build]
+  dockerfile = "Dockerfile"
 
 [env]
   NODE_ENV = 'production'
