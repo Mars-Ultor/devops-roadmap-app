@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for devops-server-dry-dream-532 on 2026-01-09T02:48:11-05:00
+# fly.toml app configuration file for devops-server
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'devops-server-dry-dream-532'
+app = 'devops-server'
 primary_region = 'lax'
 
 # Use Nixpacks for building (Fly.io default)

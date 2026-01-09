@@ -165,6 +165,7 @@ jobs:
 
       # Create GitHub release
       - name: Create GitHub release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -206,16 +207,8 @@ jobs:
           asset_name: source-v${{ steps.version.outputs.version }}.tar.gz
           asset_content_type: application/gzip
 
-      # Notify Slack
-      - name: Notify release
-        uses: 8398a7/action-slack@v3
-        with:
-          status: success
-          webhook_url: ${{ secrets.SLACK_RELEASE_WEBHOOK }}
-          text: |
-            🚀 *New Release: v${{ steps.version.outputs.version }}*
-
-            Repository: ${{ github.repository }}
-            Release: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.version.outputs.version }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_RELEASE_WEBHOOK }}
+      - name: Release Summary
+        run: |
+          echo "🚀 Release v${{ steps.version.outputs.version }} Created"
+          echo "Repository: ${{ github.repository }}"
+          echo "Release URL: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.version.outputs.version }}"

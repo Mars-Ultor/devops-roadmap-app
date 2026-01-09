@@ -3,19 +3,11 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [master, main, develop]
+    branches: [master, main]
   pull_request:
-    branches: [master, main, develop]
+    branches: [master, main]
   workflow_dispatch:
     inputs:
-      environment:
-        description: 'Deployment environment'
-        required: true
-        default: 'staging'
-        type: choice
-        options:
-          - staging
-          - production
       rollback:
         description: 'Rollback deployment'
         required: false
@@ -347,74 +339,12 @@ jobs:
           npm run format:check || true
         continue-on-error: true
 
-  # Deploy to Staging
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: [security-scan, test-client, test-server, test-ml-service, code-quality]
-    if: github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
-    environment: staging
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Download client build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: client-build
-          path: client/dist
-
-      - name: Deploy Client to Firebase Hosting (Staging)
-        run: |
-          npm install -g firebase-tools
-          cd client
-          firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID_STAGING }} --token ${{ secrets.FIREBASE_TOKEN_STAGING }}
-
-      # Deploy Server to Render (Staging)
-      - name: Deploy Server to Render (Staging)
-        run: |
-          curl -X POST ${{ secrets.RENDER_SERVER_DEPLOY_HOOK_STAGING }}
-        continue-on-error: true
-
-      # Deploy ML Service to Render (Staging)
-      - name: Deploy ML Service to Render (Staging)
-        run: |
-          curl -X POST ${{ secrets.RENDER_ML_DEPLOY_HOOK_STAGING }}
-        continue-on-error: true
-
-      - name: Notify deployment
-        uses: slackapi/slack-github-action@v1
-        if: always() && env.SLACK_WEBHOOK_URL != ''
-        with:
-          payload: |
-            {
-              "text": "Staging Deployment Status: ${{ job.status }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Staging Deployment Status*\nStatus: ${{ job.status }}\nRepo: ${{ github.repository }}\nCommit: ${{ github.sha }}\nAuthor: ${{ github.actor }}\nAction: ${{ github.event_name }}\nRef: ${{ github.ref }}\nWorkflow: ${{ github.workflow }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_STAGING }}
-
   # Deploy to Production
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: [security-scan, test-client, test-server, test-ml-service, code-quality]
-    if: github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
-    environment: production
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -438,42 +368,39 @@ jobs:
           cd client
           firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
 
-      # Deploy Server to Render (Production)
-      - name: Deploy Server to Render (Production)
-        run: |
-          curl -X POST ${{ secrets.RENDER_SERVER_DEPLOY_HOOK }}
+      # Install Fly.io CLI
+      - name: Install Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
 
-      # Deploy ML Service to Render (Production)
-      - name: Deploy ML Service to Render (Production)
+      # Deploy Server to Fly.io (Production)
+      - name: Deploy Server to Fly.io (Production)
         run: |
-          curl -X POST ${{ secrets.RENDER_ML_DEPLOY_HOOK }}
+          cd server
+          flyctl deploy --app ${{ secrets.FLY_SERVER_APP }} --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      # Deploy ML Service to Fly.io (Production)
+      - name: Deploy ML Service to Fly.io (Production)
+        run: |
+          cd ml-service
+          flyctl deploy --app ${{ secrets.FLY_ML_APP }} --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       # Health Check
       - name: Health Check
         continue-on-error: true
         run: |
           sleep 60
-          curl -f ${{ secrets.RENDER_SERVER_URL }}/api/health || echo "Health check failed, server may still be starting"
+          curl -f https://${{ secrets.FLY_SERVER_APP }}.fly.dev/api/health || echo "Health check failed, server may still be starting"
 
-      - name: Notify deployment
-        uses: slackapi/slack-github-action@v1
-        if: always() && env.SLACK_WEBHOOK_URL != ''
-        with:
-          payload: |
-            {
-              "text": "Production Deployment Status: ${{ job.status }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Production Deployment Status*\nStatus: ${{ job.status }}\nRepo: ${{ github.repository }}\nCommit: ${{ github.sha }}\nAuthor: ${{ github.actor }}\nAction: ${{ github.event_name }}\nRef: ${{ github.ref }}\nWorkflow: ${{ github.workflow }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_PRODUCTION }}
+      - name: Deployment Summary
+        run: |
+          echo "🚀 Production Deployment Complete"
+          echo "Status: ${{ job.status }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
 
   # Rollback job (manual trigger)
   rollback:
@@ -489,22 +416,8 @@ jobs:
         run: |
           echo "Manual rollback required for Firebase Hosting. Rollback to version ${{ github.event.inputs.rollback_version }} needs to be done via Firebase Console."
 
-      - name: Notify rollback
-        uses: slackapi/slack-github-action@v1
-        if: env.SLACK_WEBHOOK_URL != ''
-        with:
-          payload: |
-            {
-              "text": "🚨 Deployment rolled back to version ${{ github.event.inputs.rollback_version }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Rollback Completed*\nRolled back to version: ${{ github.event.inputs.rollback_version }}\nRepo: ${{ github.repository }}\nAuthor: ${{ github.actor }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_PRODUCTION }}
+      - name: Rollback Summary
+        run: |
+          echo "🚨 Rollback initiated"
+          echo "Target version: ${{ github.event.inputs.rollback_version }}"
+          echo "Author: ${{ github.actor }}"
