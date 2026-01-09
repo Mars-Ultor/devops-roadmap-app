@@ -4,6 +4,8 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 import { aarService } from '../../services/aarService';
 import type { AARFormData, AARValidationResult } from '../../types/aar';
 import type { AARLevel } from './AARForm';
@@ -86,16 +88,33 @@ export function useAARFormState({
 
     setIsSubmitting(true);
     try {
-      const aar = await aarService.createAAR(userId, lessonId, level, labId, formData);
-      onComplete(aar.id);
+      // Save directly to Firebase Firestore
+      const aarData = {
+        userId,
+        lessonId,
+        level,
+        labId,
+        completedAt: serverTimestamp(),
+        ...formData,
+        // Filter out empty items from arrays
+        whatWorkedWell: formData.whatWorkedWell.filter(item => item.trim()),
+        whatDidNotWork: formData.whatDidNotWork.filter(item => item.trim()),
+        wordCounts: validation.wordCounts,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+
+      const docRef = await addDoc(collection(db, 'afterActionReviews'), aarData);
+      onComplete(docRef.id);
     } catch (error) {
+      console.error('Error saving AAR to Firestore:', error);
       const errorInstance = error instanceof Error ? error : new Error(String(error));
       setSubmitError(SUBMISSION_ERROR_MESSAGE);
       onError?.(errorInstance);
     } finally {
       setIsSubmitting(false);
     }
-  }, [validation?.isValid, userId, lessonId, level, labId, formData, onComplete, onError]);
+  }, [validation, userId, lessonId, level, labId, formData, onComplete, onError]);
 
   return {
     formData,
@@ -110,4 +129,3 @@ export function useAARFormState({
     handleSubmit
   };
 }
-
