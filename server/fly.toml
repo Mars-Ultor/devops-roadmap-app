@@ -1,32 +1,37 @@
-app = "devops-server"
-primary_region = "lax"
+# fly.toml app configuration file generated for devops-server-dry-dream-532 on 2026-01-09T02:48:11-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
-[build]
-  builder = "paketobuildpacks/builder:base"
-  buildpacks = ["gcr.io/paketo-buildpacks/nodejs"]
+app = 'devops-server-dry-dream-532'
+primary_region = 'lax'
 
-[build.args]
-  NODE_ENV = "production"
+# Use Nixpacks for building (Fly.io default)
+# No build section needed - Fly.io will auto-detect Node.js
+
+  [build.args]
+    NODE_ENV = 'production'
 
 [env]
-  PORT = "8080"
-  NODE_ENV = "production"
+  NODE_ENV = 'production'
+  PORT = '8080'
 
 [processes]
-  app = "npm run build && npm start"
+  app = 'npm start'
+
+[[mounts]]
+  source = 'devops_server_data'
+  destination = '/data'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 1
+  processes = ['app']
 
 [[vm]]
-  cpu_kind = "shared"
+  cpu_kind = 'shared'
   cpus = 1
   memory_mb = 256
-
-[mounts]
-  source = "devops_server_data"
-  destination = "/data"
