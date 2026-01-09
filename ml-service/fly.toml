@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for devops-ml-service on 2026-01-09T03:01:47-05:00
+# fly.toml app configuration file for devops-ml-service
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -7,12 +7,10 @@ app = 'devops-ml-service'
 primary_region = 'lax'
 
 [build]
+  dockerfile = "Dockerfile"
 
 [env]
-  PORT = '8080'
-
-[processes]
-  app = 'python main.py'
+  PORT = '8000'
 
 [[mounts]]
   source = 'devops_ml_data'
@@ -24,9 +22,8 @@ primary_region = 'lax'
   auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 1
-  processes = ['app']
 
 [[vm]]
   cpu_kind = 'shared'
   cpus = 1
-  memory_mb = 256
+  memory_mb = 512
