@@ -83,7 +83,21 @@ export default function MasteryLesson() {
   const [completedExercises, setCompletedExercises] = useState<number[]>([]);
   const [runIndependentDraft, setRunIndependentDraft] = useState<string>('');
 
-  const level = levelParam as MasteryLevel;
+  // Normalize level parameter (support both kebab-case and camelCase)
+  const normalizeLevel = (param: string | undefined): MasteryLevel => {
+    if (!param) return 'crawl';
+    const levelMap: Record<string, MasteryLevel> = {
+      'crawl': 'crawl',
+      'walk': 'walk',
+      'run-guided': 'run-guided',
+      'runGuided': 'run-guided',
+      'run-independent': 'run-independent',
+      'runIndependent': 'run-independent'
+    };
+    return levelMap[param] || param as MasteryLevel;
+  };
+  
+  const level = normalizeLevel(levelParam);
 
   // Mastery tracking
   const {
