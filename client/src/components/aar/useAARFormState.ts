@@ -88,6 +88,9 @@ export function useAARFormState({
 
     setIsSubmitting(true);
     try {
+      // Generate AI review/insights for the AAR
+      const aiReview = aarService.generateAIReview(formData, validation.wordCounts);
+
       // Save directly to Firebase Firestore
       const aarData = {
         userId,
@@ -100,6 +103,11 @@ export function useAARFormState({
         whatWorkedWell: formData.whatWorkedWell.filter(item => item.trim()),
         whatDidNotWork: formData.whatDidNotWork.filter(item => item.trim()),
         wordCounts: validation.wordCounts,
+        // Include AI-generated insights
+        aiReview: {
+          ...aiReview,
+          reviewedAt: aiReview.reviewedAt.toISOString() // Convert Date to string for Firestore
+        },
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       };

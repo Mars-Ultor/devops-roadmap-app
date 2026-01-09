@@ -1,6 +1,6 @@
 /**
  * After Action Review (AAR) Service
- * Handles AAR validation and fetching from Firebase Firestore
+ * Handles AAR validation, AI analysis, and fetching from Firebase Firestore
  */
 
 import { collection, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
@@ -8,7 +8,8 @@ import { db } from '../lib/firebase';
 import type {
   AARFormData,
   AARValidationResult,
-  AfterActionReview
+  AfterActionReview,
+  AARReview
 } from '../types/aar';
 import { AAR_REQUIREMENTS } from '../types/aar';
 
@@ -68,6 +69,151 @@ export class AARService {
       errors,
       wordCounts
     };
+  }
+
+  /**
+   * Generate AI review/insights for an AAR
+   */
+  generateAIReview(formData: AARFormData, wordCounts: Record<string, number>): AARReview {
+    const qualityScore = this.calculateQualityScore(formData, wordCounts);
+    const feedback = this.generateFeedback(qualityScore);
+    const suggestions = this.generateSuggestions(formData, qualityScore);
+    const followUpQuestions = this.generateFollowUpQuestions(formData, qualityScore);
+
+    return {
+      reviewedAt: new Date(),
+      reviewer: 'ai',
+      score: qualityScore,
+      feedback,
+      suggestions,
+      followUpQuestions
+    };
+  }
+
+  /**
+   * Calculate quality score (1-10) based on AAR content
+   */
+  private calculateQualityScore(formData: AARFormData, wordCounts: Record<string, number>): number {
+    let score = 5; // Base score
+
+    // Word count quality (up to 2 points)
+    const totalWords = wordCounts.whatWasAccomplished +
+                      wordCounts.whyDidNotWork +
+                      wordCounts.whatWouldIDoDifferently +
+                      wordCounts.whatDidILearn;
+
+    if (totalWords > 200) score += 2;
+    else if (totalWords > 100) score += 1;
+    else if (totalWords > 50) score += 0.5;
+
+    // Content depth analysis (up to 2 points)
+    const allText = `${formData.whatWasAccomplished} ${formData.whyDidNotWork} ${formData.whatWouldIDoDifferently} ${formData.whatDidILearn}`.toLowerCase();
+    
+    // Check for specific examples
+    const specificIndicators = ['command', 'error', 'config', 'file', 'docker', 'kubernetes', 'aws', 'linux', 'bash', 'git'];
+    if (specificIndicators.some(ind => allText.includes(ind))) score += 0.5;
+
+    // Check for root cause analysis
+    const rootCauseIndicators = ['because', 'due to', 'caused by', 'reason', 'root cause', 'misconfigured', 'missing'];
+    if (rootCauseIndicators.some(ind => allText.includes(ind))) score += 0.8;
+
+    // Check for actionable improvements
+    const actionableIndicators = ['check', 'verify', 'test', 'validate', 'use', 'create', 'add', 'review', 'practice'];
+    if (actionableIndicators.some(ind => formData.whatWouldIDoDifferently.toLowerCase().includes(ind))) score += 0.7;
+
+    // Self-reflection quality (up to 1 point)
+    const reflectionIndicators = ['learned', 'understand', 'realized', 'important', 'need to', 'better', 'improve'];
+    if (reflectionIndicators.some(ind => formData.whatDidILearn.toLowerCase().includes(ind))) score += 1;
+
+    // List items quality (up to 0.5 points)
+    const workedWellItems = formData.whatWorkedWell.filter(item => item.trim().length > 10).length;
+    const didNotWorkItems = formData.whatDidNotWork.filter(item => item.trim().length > 10).length;
+    if (workedWellItems >= 3 && didNotWorkItems >= 2) score += 0.5;
+
+    return Math.min(Math.max(Math.round(score * 10) / 10, 1), 10);
+  }
+
+  /**
+   * Generate feedback based on AAR quality
+   */
+  private generateFeedback(score: number): string {
+    if (score >= 8) {
+      return "Excellent reflection! Your AAR demonstrates deep analysis with specific examples and actionable improvements. This level of self-reflection will accelerate your DevOps mastery.";
+    } else if (score >= 6) {
+      return "Good AAR with solid reflection. Consider adding more specific technical details and concrete action items for even better learning outcomes.";
+    } else if (score >= 4) {
+      return "Decent start on your reflection. Try to dig deeper into root causes and be more specific about what you'll do differently next time.";
+    } else {
+      return "Your AAR could benefit from more detail. Focus on specific examples, clear root cause analysis, and actionable next steps.";
+    }
+  }
+
+  /**
+   * Generate improvement suggestions
+   */
+  private generateSuggestions(formData: AARFormData, score: number): string[] {
+    const suggestions: string[] = [];
+
+    const wordCounts = {
+      whatWasAccomplished: this.countWords(formData.whatWasAccomplished),
+      whyDidNotWork: this.countWords(formData.whyDidNotWork),
+      whatWouldIDoDifferently: this.countWords(formData.whatWouldIDoDifferently),
+      whatDidILearn: this.countWords(formData.whatDidILearn)
+    };
+
+    if (wordCounts.whatWasAccomplished < 30) {
+      suggestions.push("Add more detail about what you were trying to accomplish and why it matters.");
+    }
+
+    if (wordCounts.whyDidNotWork < 20) {
+      suggestions.push("Expand on root causes - ask 'why' multiple times to get to the real issue.");
+    }
+
+    if (!formData.whatWouldIDoDifferently.toLowerCase().includes('will') && 
+        !formData.whatWouldIDoDifferently.toLowerCase().includes('next time')) {
+      suggestions.push("Frame improvements as concrete future actions: 'Next time I will...'");
+    }
+
+    if (wordCounts.whatDidILearn < 20) {
+      suggestions.push("Reflect more on transferable knowledge - what principles apply beyond this specific task?");
+    }
+
+    if (suggestions.length === 0 && score < 9) {
+      suggestions.push("Great work! Consider adding even more technical specifics to maximize learning.");
+    }
+
+    return suggestions;
+  }
+
+  /**
+   * Generate follow-up questions to deepen reflection
+   */
+  private generateFollowUpQuestions(formData: AARFormData, score: number): string[] {
+    const questions: string[] = [];
+
+    if (score < 7) {
+      // General improvement questions
+      questions.push("What specific error messages or behaviors did you observe?");
+      questions.push("How does this lesson connect to your overall DevOps learning goals?");
+    }
+
+    // Context-based questions
+    const allText = `${formData.whatWasAccomplished} ${formData.whyDidNotWork}`.toLowerCase();
+    
+    if (allText.includes('docker') || allText.includes('container')) {
+      questions.push("Have you considered how this Docker knowledge applies to orchestration tools like Kubernetes?");
+    }
+
+    if (allText.includes('error') || allText.includes('fail')) {
+      questions.push("What monitoring or alerting could help catch similar issues earlier?");
+    }
+
+    if (formData.whatDidILearn.length < 50) {
+      questions.push("What would you teach someone else about this topic based on your experience?");
+    }
+
+    // Limit to 3 questions
+    return questions.slice(0, 3);
   }
 
   /**
