@@ -34,11 +34,12 @@ export const WalkLevelContent: FC<WalkLevelContentProps> = ({
 
   const checkAnswers = () => {
     const allCorrect = exercise.blanks.every((blank) => {
-      const userAnswer = answers[blank.id]?.trim() || '';
+      const userAnswer = answers[blank.id]?.trim().toLowerCase() || '';
       if (blank.validationPattern) {
-        return new RegExp(blank.validationPattern).test(userAnswer);
+        // Use case-insensitive matching for all patterns
+        return new RegExp(blank.validationPattern, 'i').test(userAnswer);
       }
-      return userAnswer === blank.correctValue;
+      return userAnswer === blank.correctValue.toLowerCase();
     });
 
     if (allCorrect) {

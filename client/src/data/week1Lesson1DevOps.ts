@@ -359,7 +359,7 @@ export const week1Lesson1WhatIsDevOps: LeveledLessonContent = {
             label: 'MTTR',
             hint: 'DevOps metric: Mean Time to...',
             correctValue: 'Recovery',
-            validationPattern: '^[Rr]ecovery$'
+            validationPattern: '.*(recover|restoration|repair).*'
           },
           {
             id: 'MINUTES',
@@ -440,35 +440,35 @@ export const week1Lesson1WhatIsDevOps: LeveledLessonContent = {
             label: 'DEPLOY_FREQUENCY',
             hint: 'How often code is deployed to production',
             correctValue: 'Deployment Frequency',
-            validationPattern: '.*(deploy.*freq|freq.*deploy).*'
+            validationPattern: '.*(deploy|frequency|how.*often).*'
           },
           {
             id: 'LEAD_TIME',
             label: 'LEAD_TIME',
             hint: 'Time from code commit to running in production',
             correctValue: 'Lead Time for Changes',
-            validationPattern: '.*(lead.*time|time.*to.*prod).*'
+            validationPattern: '.*(lead.*time|time.*change|cycle.*time).*'
           },
           {
             id: 'MTTR',
             label: 'MTTR',
             hint: 'Mean Time to...',
             correctValue: 'Recovery',
-            validationPattern: '^[Rr]ecovery$'
+            validationPattern: '.*(recover|restoration|repair).*'
           },
           {
             id: 'CHANGE_FAIL_RATE',
             label: 'CHANGE_FAIL_RATE',
             hint: 'What percentage of changes cause production incidents',
             correctValue: 'Change Failure Rate',
-            validationPattern: '.*(change.*fail|fail.*rate).*'
+            validationPattern: '.*(change.*fail|fail.*rate|failure).*'
           },
           {
             id: 'MULTIPLE_TIMES_DAILY',
             label: 'MULTIPLE_TIMES_DAILY',
             hint: 'Elite teams deploy on-demand, often multiple times per...',
             correctValue: 'multiple times per day',
-            validationPattern: '.*(multiple.*day|on.*demand|many.*day).*'
+            validationPattern: '.*(multiple|daily|day|on.*demand|frequent).*'
           }
         ],
         solution: 'The 4 DORA Metrics:\n1. Deployment Frequency: How often we release to production\n2. Lead Time for Changes: Time from commit to production deployment\n3. Mean Time to Recovery: Mean time to recover from failures\n4. Change Failure Rate: Percentage of deployments causing incidents\n\nElite Performance: Deploy multiple times per day with <1 hour recovery',
