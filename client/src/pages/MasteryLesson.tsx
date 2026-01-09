@@ -409,8 +409,8 @@ export default function MasteryLesson() {
       );
     }
 
-    // Run-Guided Level: Conceptual guidance with workspace
-    if (level === 'run-guided' && 'objective' in rawContent) {
+    // Run-Guided Level: Conceptual guidance with workspace (checkpoints are unique to run-guided)
+    if (level === 'run-guided' && 'checkpoints' in rawContent) {
       const handleRunGuidedSubmit = (responses: Record<string, string>, notes: string, hintsUsed: number) => {
         const timeSpent = Math.floor((Date.now() - startTime) / 1000);
         setStruggleMetrics(prev => ({
