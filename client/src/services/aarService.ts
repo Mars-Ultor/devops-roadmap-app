@@ -217,9 +217,9 @@ export class AARService {
   }
 
   /**
-   * Count words in a text string
+   * Count words in a text string (public for use by AdaptiveAARForm)
    */
-  private countWords(text: string): number {
+  countWords(text: string): number {
     return text.trim().split(/\s+/).filter(word => word.length > 0).length;
   }
 

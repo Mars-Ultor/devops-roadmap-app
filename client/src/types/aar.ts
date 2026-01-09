@@ -3,6 +3,39 @@
  * Military-style structured reflection after every lab/exercise
  */
 
+/** Metrics about user's performance/struggle during the exercise */
+export interface StruggleMetrics {
+  hintsUsed: number;
+  validationErrors: number;
+  timeSpentSeconds: number;
+  retryCount: number;
+  isPerfectCompletion: boolean;
+}
+
+/** Type of AAR based on struggle metrics */
+export type AARFormType = 'skip' | 'quick' | 'full';
+
+/** Determines AAR type based on struggle metrics */
+export function determineAARType(metrics: StruggleMetrics): AARFormType {
+  // Perfect completion with no struggles - allow skip
+  if (metrics.isPerfectCompletion && 
+      metrics.hintsUsed === 0 && 
+      metrics.validationErrors === 0 && 
+      metrics.retryCount === 0) {
+    return 'skip';
+  }
+  
+  // Minor struggles - quick form
+  if (metrics.hintsUsed <= 1 && 
+      metrics.validationErrors <= 2 && 
+      metrics.retryCount <= 1) {
+    return 'quick';
+  }
+  
+  // Significant struggles - full detailed AAR
+  return 'full';
+}
+
 export interface AfterActionReview {
   id: string;
   userId: string;

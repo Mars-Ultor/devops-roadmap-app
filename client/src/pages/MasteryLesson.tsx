@@ -5,13 +5,14 @@ import { ArrowLeft, BookOpen, Clock, Award, CheckCircle, Target, Brain, Zap, Loc
 import { useAuthStore } from '../store/authStore';
 import ContentGate from '../components/ContentGate';
 import StruggleSessionManager from '../components/struggle/StruggleSessionManager';
-import AARForm from '../components/aar/AARForm';
+import AdaptiveAARForm from '../components/aar/AdaptiveAARForm';
 import MasteryGate from '../components/MasteryGate';
 import { WalkLevelContent } from '../components/lessons/WalkLevelContent';
 import { useMastery } from '../hooks/useMastery';
 import type { MasteryLevel } from '../types/training';
 import { loadLessonContent } from '../utils/lessonContentLoader';
 import type { LeveledLessonContent } from '../types/lessonContent';
+import type { StruggleMetrics } from '../types/aar';
 import { curriculumLoader } from '../utils/curriculumLoader';
 
 interface LessonData {
@@ -47,8 +48,13 @@ export default function MasteryLesson() {
   const [completed, setCompleted] = useState(false);
   const [aarSubmitted, setAarSubmitted] = useState(false);
   const [weekNumber, setWeekNumber] = useState<number | null>(null);
-  const [hintsUsed] = useState(0);
-  const [validationErrors, setValidationErrors] = useState(0);
+  const [struggleMetrics, setStruggleMetrics] = useState<StruggleMetrics>({
+    hintsUsed: 0,
+    validationErrors: 0,
+    timeSpentSeconds: 0,
+    retryCount: 0,
+    isPerfectCompletion: true
+  });
   const [startTime] = useState<number>(Date.now());
   const [completedExercises, setCompletedExercises] = useState<number[]>([]);
 
@@ -346,7 +352,11 @@ export default function MasteryLesson() {
               setCompletedExercises([...completedExercises, exerciseNumber]);
             }
             if (!correct) {
-              setValidationErrors(validationErrors + 1);
+              setStruggleMetrics(prev => ({
+                ...prev,
+                validationErrors: prev.validationErrors + 1,
+                isPerfectCompletion: false
+              }));
             }
           }}
           completedExercises={completedExercises}
@@ -621,11 +631,18 @@ export default function MasteryLesson() {
                 // Calculate time spent
                 const timeSpent = Math.floor((Date.now() - startTime) / 1000);
                 
-                // Determine if this was a perfect completion
-                // Perfect = no hints, no validation errors
-                const isPerfect = hintsUsed === 0 && validationErrors === 0;
+                // Update struggle metrics with final values
+                const finalMetrics: StruggleMetrics = {
+                  ...struggleMetrics,
+                  timeSpentSeconds: timeSpent,
+                  isPerfectCompletion: struggleMetrics.hintsUsed === 0 && struggleMetrics.validationErrors === 0 && struggleMetrics.retryCount === 0
+                };
+                setStruggleMetrics(finalMetrics);
                 
-                console.log('🔵 Recording attempt:', { level, isPerfect, timeSpent, hintsUsed, validationErrors });
+                // Determine if this was a perfect completion
+                const isPerfect = finalMetrics.isPerfectCompletion;
+                
+                console.log('🔵 Recording attempt:', { level, isPerfect, timeSpent, struggleMetrics: finalMetrics });
                 console.log('🔵 Mastery state BEFORE recordAttempt:', JSON.stringify(mastery, null, 2));
                 
                 // Record the attempt
@@ -637,12 +654,7 @@ export default function MasteryLesson() {
                   console.log('🔵 Current mastery state AFTER:', mastery);
                   
                   if (!isPerfect) {
-                    alert(
-                      `⚠️ Not a perfect completion.\n\n` +
-                      `Hints used: ${hintsUsed}\n` +
-                      `Validation errors: ${validationErrors}\n\n` +
-                      `Try again for a perfect score to count toward mastery.`
-                    );
+                    // Don't show alert - let the AAR handle it
                   } else if (result?.levelMastered) {
                     alert(
                       `🎉 Level Mastered!\n\n` +
@@ -671,14 +683,14 @@ export default function MasteryLesson() {
             </button>
             
             {/* Performance Warning */}
-            {(hintsUsed > 0 || validationErrors > 0) && (
+            {(struggleMetrics.hintsUsed > 0 || struggleMetrics.validationErrors > 0) && (
               <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-3">
                 <div className="flex items-start space-x-2">
                   <AlertTriangle className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" />
                   <div className="text-xs text-yellow-300">
                     <p className="font-medium mb-1">Not Perfect</p>
-                    {hintsUsed > 0 && <p>• {hintsUsed} hint(s) used</p>}
-                    {validationErrors > 0 && <p>• {validationErrors} error(s)</p>}
+                    {struggleMetrics.hintsUsed > 0 && <p>• {struggleMetrics.hintsUsed} hint(s) used</p>}
+                    {struggleMetrics.validationErrors > 0 && <p>• {struggleMetrics.validationErrors} error(s)</p>}
                   </div>
                 </div>
               </div>
@@ -687,64 +699,48 @@ export default function MasteryLesson() {
         </div>
       </div>
 
-      {/* Mandatory AAR Modal */}
+      {/* Adaptive AAR Modal */}
       {completed && !aarSubmitted && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border-2 border-red-500 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center space-x-3 mb-6">
-              <BookOpen className="w-8 h-8 text-red-400" />
-              <div>
-                <h2 className="text-2xl font-bold text-white">Mandatory After Action Review</h2>
-                <p className="text-red-300">Complete your AAR to save progress and unlock navigation</p>
-              </div>
-            </div>
-
-            <AARForm
-              userId={user?.uid || ''}
-              lessonId={lessonId}
-              level={level}
-              labId="" // Not a lab, this is a lesson
-              onComplete={async () => {
-                setAarSubmitted(true);
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <AdaptiveAARForm
+            userId={user?.uid || ''}
+            lessonId={lessonId}
+            level={level}
+            labId=""
+            struggleMetrics={struggleMetrics}
+            onComplete={async () => {
+              setAarSubmitted(true);
+              
+              // Refresh mastery data to get latest state
+              await refreshMastery();
+              
+              // Show mastery status
+              if (mastery && isLevelMastered(level)) {
+                const nextLevel = 
+                  level === 'crawl' ? 'walk' :
+                  level === 'walk' ? 'run-guided' :
+                  level === 'run-guided' ? 'run-independent' :
+                  null;
                 
-                // Refresh mastery data to get latest state
-                await refreshMastery();
-                
-                // Show mastery status
-                if (mastery && isLevelMastered(level)) {
-                  const nextLevel = 
-                    level === 'crawl' ? 'walk' :
-                    level === 'walk' ? 'run-guided' :
-                    level === 'run-guided' ? 'run-independent' :
-                    null;
-                  
-                  if (nextLevel) {
-                    const confirm = window.confirm(
-                      `🎉 You've mastered this level!\n\n` +
-                      `Would you like to continue to the next level (${nextLevel})?`
-                    );
-                    if (confirm) {
-                      navigate(`/lesson/${lessonId}/${nextLevel}`);
-                      return;
-                    }
+                if (nextLevel) {
+                  const confirm = window.confirm(
+                    `🎉 You've mastered this level!\n\n` +
+                    `Would you like to continue to the next level (${nextLevel})?`
+                  );
+                  if (confirm) {
+                    navigate(`/lesson/${lessonId}/${nextLevel}`);
+                    return;
                   }
                 }
-                
-                // Navigate back to the week page
-                navigate(weekNumber ? `/week/${weekNumber}` : '/curriculum');
-              }}
-              onCancel={() => {
-                alert('AAR is required to save your progress.');
-              }}
-            />
-
-            <div className="mt-4 p-4 bg-red-900/20 border border-red-600 rounded-lg">
-              <p className="text-red-300 text-sm">
-                <strong>⚠️ Navigation Blocked:</strong> You cannot leave this page until the AAR is completed.
-                This ensures you reflect on your learning and build better problem-solving skills.
-              </p>
-            </div>
-          </div>
+              }
+              
+              // Navigate back to the week page
+              navigate(weekNumber ? `/week/${weekNumber}` : '/curriculum');
+            }}
+            onCancel={() => {
+              alert('AAR is required to save your progress.');
+            }}
+          />
         </div>
       )}
     </div>
