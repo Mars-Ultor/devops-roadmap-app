@@ -128,5 +128,5 @@ jobs:
           reports/
           client/coverage/
           server/coverage/
-          ml-service/coverage.xml</content>
+          ml-service/coverage.xml
 <parameter name="filePath">c:\Users\ayode\Desktop\devops-roadmap-app\.github\workflows\code-analysis.yml
