@@ -374,13 +374,15 @@ jobs:
 
       # Deploy Server to Fly.io (Production)
       - name: Deploy Server to Fly.io (Production)
-        run: cd server && flyctl deploy --app ${{ secrets.FLY_SERVER_APP }} --remote-only
+        working-directory: server
+        run: flyctl deploy --app devops-server --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       # Deploy ML Service to Fly.io (Production)
       - name: Deploy ML Service to Fly.io (Production)
-        run: cd ml-service && flyctl deploy --app ${{ secrets.FLY_ML_APP }} --remote-only
+        working-directory: ml-service
+        run: flyctl deploy --app devops-ml-service --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
