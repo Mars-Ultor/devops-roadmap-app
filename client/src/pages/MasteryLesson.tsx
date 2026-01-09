@@ -98,8 +98,8 @@ export default function MasteryLesson() {
   } = useMastery(lessonId || '');
 
   // Validate level parameter
-  const validLevels: MasteryLevel[] = ['crawl', 'walk', 'run-guided', 'run-independent'];
-  const isValidParams = lessonId && levelParam && validLevels.includes(level);
+  const validLevels = new Set<MasteryLevel>(['crawl', 'walk', 'run-guided', 'run-independent']);
+  const isValidParams = lessonId && levelParam && validLevels.has(level);
 
   // Handler for AAR completion
   const handleAARComplete = useCallback(async () => {
@@ -190,10 +190,20 @@ export default function MasteryLesson() {
   }, [lessonId, isValidParams]);
 
   // Early return for invalid parameters (after all hooks)
-  if (!isValidParams) {
+  // Show loading if params are not yet available (router still initializing)
+  if (!lessonId || !levelParam) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Invalid lesson or level</div>
+        <div className="text-slate-400">Loading...</div>
+      </div>
+    );
+  }
+  
+  // Show error only if level is actually invalid
+  if (!validLevels.has(level)) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">Invalid level: {levelParam}</div>
       </div>
     );
   }
