@@ -1,12 +1,14 @@
 /**
  * After Action Review (AAR) Service
- * Handles AAR validation and word counting
- * Note: AAR data is stored in Firebase Firestore directly via useAARFormState hook
+ * Handles AAR validation and fetching from Firebase Firestore
  */
 
+import { collection, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import type {
   AARFormData,
-  AARValidationResult
+  AARValidationResult,
+  AfterActionReview
 } from '../types/aar';
 import { AAR_REQUIREMENTS } from '../types/aar';
 
@@ -73,6 +75,48 @@ export class AARService {
    */
   private countWords(text: string): number {
     return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  }
+
+  /**
+   * Get all AARs for a user from Firebase Firestore
+   */
+  async getUserAARs(userId: string): Promise<AfterActionReview[]> {
+    try {
+      const aarsRef = collection(db, 'afterActionReviews');
+      const q = query(
+        aarsRef,
+        where('userId', '==', userId),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          userId: data.userId,
+          lessonId: data.lessonId,
+          level: data.level,
+          labId: data.labId,
+          completedAt: data.completedAt instanceof Timestamp ? data.completedAt.toDate() : new Date(data.completedAt),
+          whatWasAccomplished: data.whatWasAccomplished,
+          whatWorkedWell: data.whatWorkedWell || [],
+          whatDidNotWork: data.whatDidNotWork || [],
+          whyDidNotWork: data.whyDidNotWork,
+          whatWouldIDoDifferently: data.whatWouldIDoDifferently,
+          whatDidILearn: data.whatDidILearn,
+          wordCounts: data.wordCounts,
+          qualityScore: data.qualityScore,
+          aiReview: data.aiReview,
+          patterns: data.patterns,
+          createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date(data.createdAt),
+          updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : new Date(data.updatedAt)
+        } as AfterActionReview;
+      });
+    } catch (error) {
+      console.error('Error fetching AARs from Firestore:', error);
+      return [];
+    }
   }
 }
 
