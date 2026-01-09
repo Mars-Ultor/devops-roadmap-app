@@ -76,6 +76,31 @@ export interface RunGuidedCheckpoint {
 export interface RunIndependentContent {
   introduction?: string; // Optional introduction
   objective?: string; // Optional objective
+  companyProfile?: {
+    name: string;
+    description: string;
+    currentMetrics: {
+      deploymentFrequency: string;
+      leadTimeForChanges: string;
+      changeFailureRate: string;
+      timeToRestoreService: string;
+    };
+    teamStructure: {
+      development: string;
+      operations: string;
+      qa: string;
+      management: string;
+    };
+    technologyStack: {
+      frontend: string;
+      backend: string;
+      infrastructure: string;
+      ciCd: string;
+      monitoring: string;
+    };
+    currentChallenges: string[];
+    businessContext: string;
+  }; // Optional company profile for transformation exercises
   successCriteria?: string[]; // Optional success criteria
   timeTarget?: number; // Optional time target
   minimumRequirements?: string[]; // Optional minimum requirements

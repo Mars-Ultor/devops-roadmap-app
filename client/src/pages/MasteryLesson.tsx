@@ -535,6 +535,7 @@ export default function MasteryLesson() {
           {/* Workspace Component */}
           <RunIndependentWorkspace
             objective={rawContent.objective}
+            companyProfile={rawContent.companyProfile}
             successCriteria={rawContent.successCriteria || []}
             timeTarget={rawContent.timeTarget}
             minimumRequirements={rawContent.minimumRequirements}
