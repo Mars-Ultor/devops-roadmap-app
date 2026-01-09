@@ -10,7 +10,7 @@ import { AlertTriangle, RefreshCw, X } from 'lucide-react';
 // ============================================================================
 
 interface ModalHeaderProps {
-  onClose: () => void;
+  readonly onClose: () => void;
 }
 
 export function ConfirmationModalHeader({ onClose }: ModalHeaderProps) {
@@ -32,7 +32,7 @@ export function ConfirmationModalHeader({ onClose }: ModalHeaderProps) {
 // ============================================================================
 
 interface CooldownWarningProps {
-  cooldownMinutes: number;
+  readonly cooldownMinutes: number;
 }
 
 export function CooldownWarning({ cooldownMinutes }: CooldownWarningProps) {
@@ -57,7 +57,7 @@ export function CooldownWarning({ cooldownMinutes }: CooldownWarningProps) {
 // ============================================================================
 
 interface TokenUsageWarningProps {
-  remainingTokens: number;
+  readonly remainingTokens: number;
 }
 
 export function TokenUsageWarning({ remainingTokens }: TokenUsageWarningProps) {
@@ -108,17 +108,18 @@ export function MilitaryPhilosophyWarning() {
 // ============================================================================
 
 interface ReasonInputProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function ReasonInput({ value, onChange }: ReasonInputProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-300 mb-2">
+      <label htmlFor="reset-reason" className="block text-sm font-medium text-gray-300 mb-2">
         Why are you resetting? (Optional)
       </label>
       <textarea
+        id="reset-reason"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="e.g., I misunderstood the question, I need to try a different approach..."
@@ -134,8 +135,8 @@ export function ReasonInput({ value, onChange }: ReasonInputProps) {
 // ============================================================================
 
 interface AcknowledgmentCheckboxProps {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
+  readonly checked: boolean;
+  readonly onChange: (checked: boolean) => void;
 }
 
 export function AcknowledgmentCheckbox({ checked, onChange }: AcknowledgmentCheckboxProps) {
@@ -160,10 +161,10 @@ export function AcknowledgmentCheckbox({ checked, onChange }: AcknowledgmentChec
 // ============================================================================
 
 interface ModalActionsProps {
-  onClose: () => void;
-  onConfirm: () => void;
-  canConfirm: boolean;
-  showConfirm: boolean;
+  readonly onClose: () => void;
+  readonly onConfirm: () => void;
+  readonly canConfirm: boolean;
+  readonly showConfirm: boolean;
 }
 
 export function ConfirmationModalActions({ onClose, onConfirm, canConfirm, showConfirm }: ModalActionsProps) {

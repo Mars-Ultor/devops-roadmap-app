@@ -18,10 +18,10 @@ import type { MLModel, MLPrediction } from '../../../services/mlModelService';
 // ============================================================================
 
 interface ModelCardProps {
-  model: MLModel;
-  onRunInference: (modelId: string) => void;
-  onTrain: (modelId: string) => void;
-  loading?: boolean;
+  readonly model: MLModel;
+  readonly onRunInference: (modelId: string) => void;
+  readonly onTrain: (modelId: string) => void;
+  readonly loading?: boolean;
 }
 
 export function ModelCard({ model, onRunInference, onTrain, loading }: ModelCardProps) {
@@ -121,8 +121,8 @@ export function ModelCard({ model, onRunInference, onTrain, loading }: ModelCard
 // ============================================================================
 
 interface ModelDashboardHeaderProps {
-  onRefresh: () => void;
-  loading: boolean;
+  readonly onRefresh: () => void;
+  readonly loading: boolean;
 }
 
 export function ModelDashboardHeader({ onRefresh, loading }: ModelDashboardHeaderProps) {
@@ -152,8 +152,8 @@ export function ModelDashboardHeader({ onRefresh, loading }: ModelDashboardHeade
 // ============================================================================
 
 interface InferenceResultsProps {
-  selectedModel: MLModel;
-  inferenceResult: MLPrediction;
+  readonly selectedModel: MLModel;
+  readonly inferenceResult: MLPrediction;
 }
 
 export function InferenceResults({ selectedModel, inferenceResult }: InferenceResultsProps) {
@@ -184,7 +184,7 @@ export function InferenceResults({ selectedModel, inferenceResult }: InferenceRe
   );
 }
 
-function InferenceMetrics({ inferenceResult }: { inferenceResult: MLPrediction }) {
+function InferenceMetrics({ inferenceResult }: { readonly inferenceResult: MLPrediction }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="text-center">
@@ -207,13 +207,13 @@ function InferenceMetrics({ inferenceResult }: { inferenceResult: MLPrediction }
   );
 }
 
-function PredictionValues({ prediction }: { prediction: number[] }) {
+function PredictionValues({ prediction }: { readonly prediction: number[] }) {
   return (
     <div>
       <p className="text-sm font-medium text-white mb-2">Prediction Values:</p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {prediction.map((value, index) => (
-          <div key={index} className="text-center p-2 bg-gray-700 rounded">
+          <div key={`prediction-${index}-${value}`} className="text-center p-2 bg-gray-700 rounded">
             <p className="text-sm font-mono text-white">{value.toFixed(3)}</p>
             <p className="text-xs text-gray-400">Output {index}</p>
           </div>
@@ -223,13 +223,13 @@ function PredictionValues({ prediction }: { prediction: number[] }) {
   );
 }
 
-function ProbabilitiesDisplay({ probabilities }: { probabilities: number[] }) {
+function ProbabilitiesDisplay({ probabilities }: { readonly probabilities: number[] }) {
   return (
     <div>
       <p className="text-sm font-medium text-white mb-2">Probabilities:</p>
       <div className="space-y-2">
         {probabilities.map((prob, index) => (
-          <div key={index} className="flex items-center gap-2">
+          <div key={`probability-${index}-${prob}`} className="flex items-center gap-2">
             <span className="text-sm text-white w-16">Class {index}:</span>
             <div className="flex-1 bg-gray-700 rounded-full h-2">
               <div
@@ -245,7 +245,7 @@ function ProbabilitiesDisplay({ probabilities }: { probabilities: number[] }) {
   );
 }
 
-function ExplanationDisplay({ explanation }: { explanation: string }) {
+function ExplanationDisplay({ explanation }: { readonly explanation: string }) {
   return (
     <div className="bg-blue-900/20 p-4 rounded-lg">
       <p className="text-sm text-blue-400">{explanation}</p>
@@ -253,7 +253,7 @@ function ExplanationDisplay({ explanation }: { explanation: string }) {
   );
 }
 
-function FeatureImportanceDisplay({ featureImportance }: { featureImportance: Record<string, number> }) {
+function FeatureImportanceDisplay({ featureImportance }: { readonly featureImportance: Record<string, number> }) {
   return (
     <div>
       <p className="text-sm font-medium text-white mb-2">Feature Importance:</p>
@@ -335,7 +335,7 @@ export function ModelInformationPanel() {
 // ============================================================================
 
 interface ErrorDisplayProps {
-  error: string;
+  readonly error: string;
 }
 
 export function ErrorDisplay({ error }: ErrorDisplayProps) {

@@ -4,7 +4,7 @@
  */
 
 import { Brain, ChevronRight, RotateCcw, CheckCircle, XCircle } from 'lucide-react';
-import type { FlashCardData } from './FlashCard';
+import type { FlashCardData } from '../FlashCard';
 
 // Empty State Component
 export function FlashCardEmptyState() {
@@ -19,8 +19,8 @@ export function FlashCardEmptyState() {
 
 // Session Complete Component
 interface SessionCompleteProps {
-  results: { cardId: string; quality: number }[];
-  onReset: () => void;
+  readonly results: { cardId: string; quality: number }[];
+  readonly onReset: () => void;
 }
 
 export function FlashCardSessionComplete({ results, onReset }: SessionCompleteProps) {
@@ -57,9 +57,9 @@ export function FlashCardSessionComplete({ results, onReset }: SessionCompletePr
 
 // Progress Bar Component
 interface ProgressBarProps {
-  currentIndex: number;
-  total: number;
-  category: string;
+  readonly currentIndex: number;
+  readonly total: number;
+  readonly category: string;
 }
 
 export function FlashCardProgressBar({ currentIndex, total, category }: ProgressBarProps) {
@@ -79,9 +79,9 @@ export function FlashCardProgressBar({ currentIndex, total, category }: Progress
 
 // Question Display Component
 interface QuestionDisplayProps {
-  card: FlashCardData;
-  showAnswer: boolean;
-  onReveal: () => void;
+  readonly card: FlashCardData;
+  readonly showAnswer: boolean;
+  readonly onReveal: () => void;
 }
 
 export function FlashCardQuestion({ card, showAnswer, onReveal }: QuestionDisplayProps) {
@@ -106,8 +106,8 @@ export function FlashCardQuestion({ card, showAnswer, onReveal }: QuestionDispla
 
 // Answer and Rating Component
 interface AnswerRatingProps {
-  answer: string;
-  onRate: (quality: number) => void;
+  readonly answer: string;
+  readonly onRate: (quality: number) => void;
 }
 
 const QUALITY_OPTIONS = [

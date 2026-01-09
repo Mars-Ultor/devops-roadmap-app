@@ -13,14 +13,8 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Generate Prisma client
-RUN npm run prisma:generate
-
-# Build the application
-RUN npm run build
-
-# Remove dev dependencies to reduce image size
-RUN npm prune --production
+# Generate Prisma client, build the application, and remove dev dependencies
+RUN npm run prisma:generate && npm run build && npm prune --production
 
 # Expose port
 EXPOSE 8080

@@ -18,8 +18,8 @@ export function LoadingState() {
 }
 
 interface DrillHeaderProps {
-  canDismiss: boolean;
-  onDismiss: () => void;
+  readonly canDismiss: boolean;
+  readonly onDismiss: () => void;
 }
 
 export function DrillHeader({ canDismiss, onDismiss }: DrillHeaderProps) {
@@ -44,7 +44,7 @@ export function DrillHeader({ canDismiss, onDismiss }: DrillHeaderProps) {
 }
 
 interface SelectionInfoProps {
-  candidate: DailyDrillCandidate;
+  readonly candidate: DailyDrillCandidate;
 }
 
 export function SelectionInfo({ candidate }: SelectionInfoProps) {
@@ -78,7 +78,7 @@ export function WhyDailyDrills() {
 }
 
 interface DrillDisplayProps {
-  drill: BattleDrill;
+  readonly drill: BattleDrill;
 }
 
 export function DrillDisplay({ drill }: DrillDisplayProps) {
@@ -113,13 +113,13 @@ export function DrillDisplay({ drill }: DrillDisplayProps) {
   );
 }
 
-function StepsPreview({ steps }: { steps: BattleDrill['steps'] }) {
+function StepsPreview({ steps }: { readonly steps: BattleDrill['steps'] }) {
   return (
     <div className="mt-4">
       <div className="text-xs text-slate-500 mb-2">{steps.length} Steps Total</div>
       <div className="space-y-1 max-h-32 overflow-y-auto">
         {steps.slice(0, 5).map((step, idx) => (
-          <div key={idx} className="flex items-center gap-2 text-sm text-slate-400">
+          <div key={`step-${idx}-${step.description.slice(0, 10)}`} className="flex items-center gap-2 text-sm text-slate-400">
             <div className="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-300">{idx + 1}</div>
             <span className="truncate">{step.description}</span>
           </div>
@@ -131,9 +131,9 @@ function StepsPreview({ steps }: { steps: BattleDrill['steps'] }) {
 }
 
 interface DrillFooterProps {
-  canDismiss: boolean;
-  onDismiss: () => void;
-  onStart: () => void;
+  readonly canDismiss: boolean;
+  readonly onDismiss: () => void;
+  readonly onStart: () => void;
 }
 
 export function DrillFooter({ canDismiss, onDismiss, onStart }: DrillFooterProps) {

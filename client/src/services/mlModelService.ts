@@ -10,9 +10,12 @@ export interface MLModel {
   name: string;
   version: string;
   type: 'tensorflow' | 'onnx' | 'custom';
+  status: 'ready' | 'training' | 'error' | 'loading';
+  description: string;
   inputShape: number[];
   outputShape: number[];
   model: unknown; // TensorFlow.js model or ONNX model
+  metrics?: Record<string, number | string>;
   metadata: {
     accuracy: number;
     trainingDataSize: number;
@@ -45,8 +48,8 @@ const ML_SERVICE_URL = import.meta.env.VITE_ML_API_URL || 'http://localhost:8000
 
 export class MLModelService {
   private static instance: MLModelService;
-  private models = new Map<string, MLModel>();
-  private modelCache = new Map<string, unknown>();
+  private readonly models = new Map<string, MLModel>();
+  private readonly modelCache = new Map<string, unknown>();
 
   public static getInstance(): MLModelService {
     if (!MLModelService.instance) {
@@ -173,7 +176,7 @@ export class MLModelService {
         inputShape: [30],
         outputShape: [1],
         metadata: {
-          accuracy: 0.80,
+          accuracy: 0.8,
           trainingDataSize: 500,
           lastTrained: new Date(),
           features: ['study_streak', 'avg_score', 'completion_rate', 'struggle_time'],
@@ -185,7 +188,7 @@ export class MLModelService {
         inputShape: [20],
         outputShape: [4],
         metadata: {
-          accuracy: 0.70,
+          accuracy: 0.7,
           trainingDataSize: 300,
           lastTrained: new Date(),
           features: ['visual_preference', 'hands_on_preference', 'theory_preference', 'practice_preference'],
@@ -245,7 +248,7 @@ export class MLModelService {
    */
   private generateFallbackPrediction(modelId: string, input: MLInput): MLPrediction {
     // Generate reasonable defaults based on input features
-    const avgFeature = input.features.length > 0 ? input.features.reduce((a, b) => a + b) / input.features.length : 0.5;
+    const avgFeature = input.features.length > 0 ? input.features.reduce((a, b) => a + b, 0) / input.features.length : 0.5;
 
     let prediction: number[];
     let explanation: string;

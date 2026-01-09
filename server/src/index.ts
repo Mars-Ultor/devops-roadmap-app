@@ -11,7 +11,6 @@ import projectRoutes from './routes/project.js';
 import validateRoutes from './routes/validate.js';
 import aarRoutes from './routes/aar.js';
 import certificationRoutes from './routes/certification.js';
-import redisCache from './utils/cache.js';
 
 dotenv.config();
 

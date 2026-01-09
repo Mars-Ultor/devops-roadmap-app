@@ -10,7 +10,7 @@ import { countWords, MIN_OBJECTIVE_WORDS, MIN_ITEMS, MIN_ROOT_CAUSES, MIN_IMPROV
 // ============================================================================
 
 interface AARHeaderProps {
-  contentTitle: string;
+  readonly contentTitle: string;
 }
 
 export function AARHeader({ contentTitle }: AARHeaderProps) {
@@ -56,12 +56,12 @@ export function AARInfoBanner() {
 // ============================================================================
 
 interface TextFieldWithCountProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  minWords: number;
-  rows?: number;
+  readonly label: string;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly placeholder: string;
+  readonly minWords: number;
+  readonly rows?: number;
 }
 
 export function TextFieldWithCount({ label, value, onChange, placeholder, minWords, rows = 3 }: TextFieldWithCountProps) {
@@ -90,15 +90,15 @@ export function TextFieldWithCount({ label, value, onChange, placeholder, minWor
 // ============================================================================
 
 interface ArrayInputFieldProps {
-  label: string;
-  items: string[];
-  minItems: number;
-  onItemChange: (index: number, value: string) => void;
-  onAddItem: () => void;
-  maxItems?: number;
-  placeholder: (index: number) => string;
-  addLabel: string;
-  isTextarea?: boolean;
+  readonly label: string;
+  readonly items: string[];
+  readonly minItems: number;
+  readonly onItemChange: (index: number, value: string) => void;
+  readonly onAddItem: () => void;
+  readonly maxItems?: number;
+  readonly placeholder: (index: number) => string;
+  readonly addLabel: string;
+  readonly isTextarea?: boolean;
 }
 
 export function ArrayInputField({ 
@@ -113,7 +113,7 @@ export function ArrayInputField({
       <div className="space-y-2">
         {items.map((item, index) => isTextarea ? (
           <textarea
-            key={index}
+            key={`textarea-${index}-${item.slice(0, 10)}`}
             value={item}
             onChange={(e) => onItemChange(index, e.target.value)}
             placeholder={placeholder(index)}
@@ -122,7 +122,7 @@ export function ArrayInputField({
           />
         ) : (
           <input
-            key={index}
+            key={`input-${index}-${item.slice(0, 10)}`}
             type="text"
             value={item}
             onChange={(e) => onItemChange(index, e.target.value)}
@@ -148,14 +148,14 @@ export function ArrayInputField({
 // ============================================================================
 
 interface ValidationMessagesProps {
-  showValidation: boolean;
-  isValid: boolean;
-  objective: string;
-  whatWorked: string[];
-  whatDidntWork: string[];
-  rootCauses: string[];
-  improvements: string[];
-  transferableKnowledge: string;
+  readonly showValidation: boolean;
+  readonly isValid: boolean;
+  readonly objective: string;
+  readonly whatWorked: string[];
+  readonly whatDidntWork: string[];
+  readonly rootCauses: string[];
+  readonly improvements: string[];
+  readonly transferableKnowledge: string;
 }
 
 export function ValidationMessages({ 
@@ -206,10 +206,10 @@ export function ValidationMessages({
 // ============================================================================
 
 interface AARFormActionsProps {
-  isValid: boolean;
-  submitting: boolean;
-  onSubmit: () => void;
-  onCancel?: () => void;
+  readonly isValid: boolean;
+  readonly submitting: boolean;
+  readonly onSubmit: () => void;
+  readonly onCancel?: () => void;
 }
 
 export function AARFormActions({ isValid, submitting, onSubmit, onCancel }: AARFormActionsProps) {

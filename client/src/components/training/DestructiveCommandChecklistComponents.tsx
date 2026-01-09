@@ -3,10 +3,10 @@
  */
 
 import { AlertTriangle, Shield, X } from 'lucide-react';
-import { ChecklistState, ChecklistItem } from './DestructiveCommandChecklistUtils';
+import type { ChecklistState, ChecklistItem } from './DestructiveCommandChecklistUtils';
 
 interface ModalHeaderProps {
-  onCancel: () => void;
+  readonly onCancel: () => void;
 }
 
 export function ModalHeader({ onCancel }: ModalHeaderProps) {
@@ -29,7 +29,7 @@ export function ModalHeader({ onCancel }: ModalHeaderProps) {
 }
 
 interface CommandDisplayProps {
-  command: string;
+  readonly command: string;
 }
 
 export function CommandDisplay({ command }: CommandDisplayProps) {
@@ -59,15 +59,17 @@ export function WarningBanner() {
 }
 
 interface ChecklistItemRowProps {
-  item: ChecklistItem;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
+  readonly item: ChecklistItem;
+  readonly checked: boolean;
+  readonly onChange: (checked: boolean) => void;
 }
 
 export function ChecklistItemRow({ item, checked, onChange }: ChecklistItemRowProps) {
+  const checkboxId = `checklist-${item.key}`;
   return (
-    <label className="flex items-start space-x-3 cursor-pointer group">
+    <label htmlFor={checkboxId} className="flex items-start space-x-3 cursor-pointer group" aria-label={`${item.label} - ${item.helpText}`}>
       <input
+        id={checkboxId}
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
@@ -86,9 +88,9 @@ export function ChecklistItemRow({ item, checked, onChange }: ChecklistItemRowPr
 }
 
 interface SafetyChecklistProps {
-  items: ChecklistItem[];
-  checklist: ChecklistState;
-  onUpdate: (key: keyof ChecklistState, value: boolean) => void;
+  readonly items: ChecklistItem[];
+  readonly checklist: ChecklistState;
+  readonly onUpdate: (key: keyof ChecklistState, value: boolean) => void;
 }
 
 export function SafetyChecklist({ items, checklist, onUpdate }: SafetyChecklistProps) {
@@ -122,9 +124,9 @@ export function ProductionMindsetNotice() {
 }
 
 interface ActionButtonsProps {
-  allChecked: boolean;
-  onCancel: () => void;
-  onProceed: () => void;
+  readonly allChecked: boolean;
+  readonly onCancel: () => void;
+  readonly onProceed: () => void;
 }
 
 export function ActionButtons({ allChecked, onCancel, onProceed }: ActionButtonsProps) {

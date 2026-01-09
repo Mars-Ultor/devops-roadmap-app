@@ -13,7 +13,7 @@ import { DrillLoadingScreen, DrillBlockedHeader, TrainingBlockedWarning, WhyDril
 import { EXEMPT_ROUTES } from './daily-drill/DailyDrillBlockerUtils';
 
 interface DailyDrillBlockerProps {
-  children: React.ReactNode;
+  readonly children: React.ReactNode;
 }
 
 export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) {
@@ -47,7 +47,7 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
   useEffect(() => { if (isBlocked && !loading) { const interval = setInterval(() => { setCheckCount(prev => prev + 1); checkDrillStatus(); }, 10000); return () => clearInterval(interval); } }, [isBlocked, loading, checkDrillStatus]);
   useEffect(() => { const handleFocus = () => { if (isBlocked) checkDrillStatus(); }; window.addEventListener('focus', handleFocus); return () => window.removeEventListener('focus', handleFocus); }, [isBlocked, checkDrillStatus]);
 
-  const handleStartDrill = () => { try { navigate('/training?tab=daily'); } catch { window.location.href = '/training?tab=daily'; } };
+  const handleStartDrill = () => { try { navigate('/training?tab=daily'); } catch { globalThis.location.href = '/training?tab=daily'; } };
 
   if (loading) return <DrillLoadingScreen />;
   if (isBlocked) {

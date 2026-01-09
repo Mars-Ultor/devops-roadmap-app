@@ -67,7 +67,7 @@ class RedisCache {
     if (!this.client || !this.isConnected) return;
 
     try {
-      await this.client.disconnect();
+      await this.client.quit();
     } catch (error) {
       console.warn('Error disconnecting from Redis:', error);
     }
