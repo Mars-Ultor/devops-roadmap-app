@@ -8,6 +8,7 @@ import StruggleSessionManager from '../components/struggle/StruggleSessionManage
 import AdaptiveAARForm from '../components/aar/AdaptiveAARForm';
 import MasteryGate from '../components/MasteryGate';
 import { WalkLevelContent } from '../components/lessons/WalkLevelContent';
+import RunIndependentWorkspace from '../components/lessons/RunIndependentWorkspace';
 import { useMastery } from '../hooks/useMastery';
 import type { MasteryLevel } from '../types/training';
 import { loadLessonContent } from '../utils/lessonContentLoader';
@@ -79,6 +80,7 @@ export default function MasteryLesson() {
   });
   const [startTime] = useState<number>(Date.now());
   const [completedExercises, setCompletedExercises] = useState<number[]>([]);
+  const [runIndependentDraft, setRunIndependentDraft] = useState<string>('');
 
   const level = levelParam as MasteryLevel;
 
@@ -468,8 +470,28 @@ export default function MasteryLesson() {
       );
     }
 
-    // Run-Independent Level: Just objectives and criteria
+    // Run-Independent Level: Objective, criteria, and workspace
     if (level === 'run-independent' && 'objective' in rawContent) {
+      const handleRunIndependentSubmit = () => {
+        // Calculate time spent
+        const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+        setStruggleMetrics(prev => ({
+          ...prev,
+          timeSpentSeconds: timeSpent,
+          isPerfectCompletion: true // Run-independent is always "perfect" if completed
+        }));
+        setCompleted(true);
+      };
+
+      const handleSaveDraft = (draft: string) => {
+        setRunIndependentDraft(draft);
+        // Could also save to localStorage or Firestore for persistence
+        localStorage.setItem(`run-independent-draft-${lessonId}`, draft);
+      };
+
+      // Load saved draft on mount
+      const savedDraft = runIndependentDraft || localStorage.getItem(`run-independent-draft-${lessonId}`) || '';
+
       return (
         <div className="space-y-6">
           <div className="bg-slate-800 rounded-lg p-6 border border-purple-600">
@@ -477,42 +499,15 @@ export default function MasteryLesson() {
             <p className="text-white text-lg font-medium">{rawContent.objective}</p>
           </div>
           
-          {'timeTarget' in rawContent && (
-            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-              <div className="flex items-center space-x-2 text-yellow-400">
-                <Clock className="w-5 h-5" />
-                <span className="font-semibold">Time Target: {rawContent.timeTarget} minutes</span>
-              </div>
-            </div>
-          )}
-          
-          {'successCriteria' in rawContent && rawContent.successCriteria && (
-            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-              <h3 className="font-semibold mb-3 text-green-400">Success Criteria (All must pass)</h3>
-              <ul className="space-y-2">
-                {rawContent.successCriteria.map((criteria, i) => (
-                  <li key={`sc-${i}-${criteria.slice(0, 20)}`} className="text-slate-300 flex items-start">
-                    <CheckCircle className="w-5 h-5 text-green-400 mr-2 flex-shrink-0 mt-0.5" />
-                    {criteria}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          {'minimumRequirements' in rawContent && rawContent.minimumRequirements && (
-            <div className="bg-red-900/20 border border-red-600 rounded-lg p-6">
-              <h3 className="font-semibold mb-3 text-red-400">Minimum Requirements</h3>
-              <ul className="space-y-2">
-                {rawContent.minimumRequirements.map((req, i) => (
-                  <li key={`mr-${i}-${req.slice(0, 20)}`} className="text-red-200 flex items-start">
-                    <span className="text-red-400 mr-2">!</span>
-                    {req}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Workspace Component */}
+          <RunIndependentWorkspace
+            objective={rawContent.objective}
+            successCriteria={rawContent.successCriteria || []}
+            timeTarget={rawContent.timeTarget}
+            onSubmit={handleRunIndependentSubmit}
+            onSaveDraft={handleSaveDraft}
+            savedDraft={savedDraft}
+          />
         </div>
       );
     }
