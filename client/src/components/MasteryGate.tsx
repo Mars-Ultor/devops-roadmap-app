@@ -17,10 +17,10 @@ import {
 } from './mastery-gate/MasteryGateComponents';
 
 interface MasteryGateProps {
-  level: MasteryLevel;
-  progress: MasteryProgress;
-  nextLevelName?: string;
-  compact?: boolean;
+  readonly level: MasteryLevel;
+  readonly progress: MasteryProgress;
+  readonly nextLevelName?: string;
+  readonly compact?: boolean;
 }
 
 export default function MasteryGate({ level, progress, nextLevelName, compact = false }: MasteryGateProps) {
@@ -30,6 +30,15 @@ export default function MasteryGate({ level, progress, nextLevelName, compact = 
   const failedAttempts = attempts - perfectCompletions;
   const progressPercentage = (perfectCompletions / requiredPerfectCompletions) * 100;
   const color = getLevelColor(level);
+  
+  let containerClasses: string;
+  if (isMastered) {
+    containerClasses = 'bg-green-900/20 border-green-700';
+  } else if (unlocked) {
+    containerClasses = `bg-${color}-900/10 border-${color}-700/30`;
+  } else {
+    containerClasses = 'bg-slate-900/50 border-slate-700';
+  }
 
   if (compact) {
     return (
@@ -45,13 +54,7 @@ export default function MasteryGate({ level, progress, nextLevelName, compact = 
   }
 
   return (
-    <div className={`rounded-lg border p-6 ${
-      isMastered 
-        ? 'bg-green-900/20 border-green-700' 
-        : unlocked
-        ? `bg-${color}-900/10 border-${color}-700/30`
-        : 'bg-slate-900/50 border-slate-700'
-    }`}>
+    <div className={`rounded-lg border p-6 ${containerClasses}`}>
       <MasteryGateHeader
         isMastered={isMastered}
         unlocked={unlocked}
