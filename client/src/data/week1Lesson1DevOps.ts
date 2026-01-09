@@ -544,7 +544,7 @@ export const week1Lesson1WhatIsDevOps: LeveledLessonContent = {
   },
 
   runIndependent: {
-    objective: 'Create a comprehensive DevOps transformation strategy for a fictional company, demonstrating deep understanding of principles, culture, and measurement',
+    objective: 'Create a comprehensive DevOps transformation strategy for a fictional company, demonstrating deep understanding of principles, culture, and measurement. Your strategy should include: current state analysis with specific metrics (deployment frequency, lead time, failure rate), identified pain points across culture, automation, and monitoring, a phased transformation roadmap with clear goals and timelines, cultural transformation plan for shifting from blame to collaboration, technical transformation plan including CI/CD pipeline architecture and tool choices, measurement framework with baseline and target DORA metrics, risk mitigation strategies for common obstacles, and business case justification with estimated ROI and business value.',
     successCriteria: [
       'Detailed current state analysis with specific metrics (deploy frequency, lead time, failure rate)',
       'Identified 8+ pain points across culture, automation, and monitoring',
