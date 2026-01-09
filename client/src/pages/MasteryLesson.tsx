@@ -513,6 +513,8 @@ export default function MasteryLesson() {
             objective={rawContent.objective}
             successCriteria={rawContent.successCriteria || []}
             timeTarget={rawContent.timeTarget}
+            minimumRequirements={rawContent.minimumRequirements}
+            evaluationRubric={rawContent.evaluationRubric}
             onSubmit={handleRunIndependentSubmit}
             onSaveDraft={handleSaveDraft}
             savedDraft={savedDraft}
