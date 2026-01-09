@@ -76,7 +76,7 @@ router.get('/', authenticateToken, async (req, res: Response) => {
     if (lessonId) {
       aars = await aarService.getLessonAARs(userId, lessonId as string);
     } else {
-      aars = await aarService.getUserAARs(userId, limit ? parseInt(limit as string) : undefined);
+      aars = await aarService.getUserAARs(userId, limit ? Number.parseInt(limit as string, 10) : undefined);
     }
 
     res.json({
@@ -258,7 +258,7 @@ router.get('/patterns/common', authenticateToken, async (req, res: Response) => 
     const userId = (req as AuthenticatedRequest).user.id || (req as AuthenticatedRequest).user.userId;
     const { minFrequency = 2 } = req.query;
 
-    const patterns = await aarService.getCommonPatterns(userId, parseInt(minFrequency as string));
+    const patterns = await aarService.getCommonPatterns(userId, Number.parseInt(minFrequency as string, 10));
 
     res.json({
       success: true,

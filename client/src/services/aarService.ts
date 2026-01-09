@@ -189,31 +189,27 @@ export class AARService {
    * Generate follow-up questions to deepen reflection
    */
   private generateFollowUpQuestions(formData: AARFormData, score: number): string[] {
-    const questions: string[] = [];
-
-    if (score < 7) {
-      // General improvement questions
-      questions.push("What specific error messages or behaviors did you observe?");
-      questions.push("How does this lesson connect to your overall DevOps learning goals?");
-    }
-
-    // Context-based questions
     const allText = `${formData.whatWasAccomplished} ${formData.whyDidNotWork}`.toLowerCase();
-    
-    if (allText.includes('docker') || allText.includes('container')) {
-      questions.push("Have you considered how this Docker knowledge applies to orchestration tools like Kubernetes?");
-    }
 
-    if (allText.includes('error') || allText.includes('fail')) {
-      questions.push("What monitoring or alerting could help catch similar issues earlier?");
-    }
+    // Build questions array based on conditions
+    const potentialQuestions = [
+      ...(score < 7 ? [
+        "What specific error messages or behaviors did you observe?",
+        "How does this lesson connect to your overall DevOps learning goals?"
+      ] : []),
+      ...(allText.includes('docker') || allText.includes('container') ? [
+        "Have you considered how this Docker knowledge applies to orchestration tools like Kubernetes?"
+      ] : []),
+      ...(allText.includes('error') || allText.includes('fail') ? [
+        "What monitoring or alerting could help catch similar issues earlier?"
+      ] : []),
+      ...(formData.whatDidILearn.length < 50 ? [
+        "What would you teach someone else about this topic based on your experience?"
+      ] : [])
+    ];
 
-    if (formData.whatDidILearn.length < 50) {
-      questions.push("What would you teach someone else about this topic based on your experience?");
-    }
-
-    // Limit to 3 questions
-    return questions.slice(0, 3);
+    // Return up to 3 questions
+    return potentialQuestions.slice(0, 3);
   }
 
   /**

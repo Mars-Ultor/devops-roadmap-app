@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines-per-function, react/no-array-index-key */
 /**
  * WalkLevelContent - Fill-in-the-blank exercises
  * User fills in missing parameters to complete commands
@@ -7,6 +7,24 @@
 import { type FC, useState } from 'react';
 import { CheckCircle, XCircle, HelpCircle, Lightbulb } from 'lucide-react';
 import type { WalkContent } from '../../types/lessonContent';
+
+/** Regex pattern for blank placeholders */
+const BLANK_PATTERN = /__(\w+)__/;
+
+/** Get button style class based on exercise state */
+function getExerciseButtonClass(
+  exerciseNumber: number,
+  currentExercise: number,
+  completedExercises: number[]
+): string {
+  if (currentExercise === exerciseNumber) {
+    return 'bg-purple-600 text-white';
+  }
+  if (completedExercises.includes(exerciseNumber)) {
+    return 'bg-emerald-900/50 text-emerald-300 border border-emerald-500/50';
+  }
+  return 'bg-slate-800 text-slate-300 hover:bg-slate-700';
+}
 
 interface WalkLevelContentProps {
   content: WalkContent;
@@ -78,13 +96,7 @@ export const WalkLevelContent: FC<WalkLevelContentProps> = ({
           <button
             key={ex.exerciseNumber}
             onClick={() => setCurrentExercise(ex.exerciseNumber)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              currentExercise === ex.exerciseNumber
-                ? 'bg-purple-600 text-white'
-                : completedExercises.includes(ex.exerciseNumber)
-                ? 'bg-emerald-900/50 text-emerald-300 border border-emerald-500/50'
-                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-            }`}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${getExerciseButtonClass(ex.exerciseNumber, currentExercise, completedExercises)}`}
           >
             Exercise {ex.exerciseNumber}
             {completedExercises.includes(ex.exerciseNumber) && (
@@ -108,14 +120,14 @@ export const WalkLevelContent: FC<WalkLevelContentProps> = ({
           <div className="bg-slate-950 rounded-lg p-4 font-mono text-sm">
             <div className="flex flex-wrap items-center gap-2">
               {exercise.template.split(/(__\w+__)/).map((part, idx) => {
-                const blankMatch = part.match(/__(\w+)__/);
+                const blankMatch = BLANK_PATTERN.exec(part);
                 if (blankMatch) {
                   const blankId = blankMatch[1]; // Keep original case
                   const blank = exercise.blanks.find((b) => b.id === blankId);
-                  if (!blank) return <span key={idx} className="text-red-400">{part}</span>;
+                  if (!blank) return <span key={`error-${blankId}`} className="text-red-400">{part}</span>;
 
                   return (
-                    <div key={idx} className="inline-flex flex-col">
+                    <div key={`blank-${blank.id}`} className="inline-flex flex-col">
                       <input
                         type="text"
                         value={answers[blank.id] || ''}
@@ -139,7 +151,7 @@ export const WalkLevelContent: FC<WalkLevelContentProps> = ({
                   );
                 }
                 return (
-                  <span key={idx} className="text-emerald-400">
+                  <span key={`text-${part.slice(0, 10)}-${idx}`} className="text-emerald-400">
                     {part}
                   </span>
                 );
@@ -208,7 +220,7 @@ export const WalkLevelContent: FC<WalkLevelContentProps> = ({
         </h4>
         <ul className="space-y-1">
           {content.hints.map((hint, idx) => (
-            <li key={idx} className="text-sm text-slate-300">
+            <li key={`hint-${hint.slice(0, 15)}-${idx}`} className="text-sm text-slate-300">
               • {hint}
             </li>
           ))}

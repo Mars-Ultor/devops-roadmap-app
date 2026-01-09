@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function, complexity, sonarjs/no-duplicate-string */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Clock, Award, CheckCircle, Target, Brain, Zap, Lock, AlertTriangle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
@@ -14,6 +14,28 @@ import { loadLessonContent } from '../utils/lessonContentLoader';
 import type { LeveledLessonContent } from '../types/lessonContent';
 import type { StruggleMetrics } from '../types/aar';
 import { curriculumLoader } from '../utils/curriculumLoader';
+
+/** Helper to get next level name for display */
+function getNextLevelDisplayName(currentLevel: MasteryLevel): string | undefined {
+  const levelMap: Record<MasteryLevel, string | undefined> = {
+    'crawl': 'Walk',
+    'walk': 'Run-Guided',
+    'run-guided': 'Run-Independent',
+    'run-independent': undefined
+  };
+  return levelMap[currentLevel];
+}
+
+/** Helper to get next level ID for navigation */
+function getNextLevelId(currentLevel: MasteryLevel): MasteryLevel | null {
+  const levelMap: Record<MasteryLevel, MasteryLevel | null> = {
+    'crawl': 'walk',
+    'walk': 'run-guided',
+    'run-guided': 'run-independent',
+    'run-independent': null
+  };
+  return levelMap[currentLevel];
+}
 
 interface LessonData {
   id: string;
@@ -75,6 +97,26 @@ export default function MasteryLesson() {
   // Validate level parameter
   const validLevels: MasteryLevel[] = ['crawl', 'walk', 'run-guided', 'run-independent'];
   const isValidParams = lessonId && levelParam && validLevels.includes(level);
+
+  // Handler for AAR completion
+  const handleAARComplete = useCallback(async () => {
+    setAarSubmitted(true);
+    await refreshMastery();
+    
+    if (mastery && isLevelMastered(level)) {
+      const nextLevel = getNextLevelId(level);
+      if (nextLevel) {
+        const userConfirmed = globalThis.confirm(
+          `🎉 You've mastered this level!\n\nWould you like to continue to the next level (${nextLevel})?`
+        );
+        if (userConfirmed) {
+          navigate(`/lesson/${lessonId}/${nextLevel}`);
+          return;
+        }
+      }
+    }
+    navigate(weekNumber ? `/week/${weekNumber}` : '/curriculum');
+  }, [mastery, isLevelMastered, level, lessonId, weekNumber, navigate, refreshMastery]);
 
   useEffect(() => {
     if (!lessonId || !isValidParams) return;
@@ -283,8 +325,8 @@ export default function MasteryLesson() {
             <p className="text-slate-300">{rawContent.introduction}</p>
           </div>
           
-          {rawContent.steps.map((step, idx) => (
-            <div key={idx} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+          {rawContent.steps.map((step) => (
+            <div key={`step-${step.stepNumber}`} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold">
                   {step.stepNumber}
@@ -312,7 +354,7 @@ export default function MasteryLesson() {
                       <div className="text-sm font-semibold text-green-400 mb-2">✓ Validation Criteria:</div>
                       <ul className="space-y-1">
                         {step.validationCriteria.map((criteria, i) => (
-                          <li key={i} className="text-sm text-slate-300 flex items-start">
+                          <li key={`vc-${step.stepNumber}-${i}`} className="text-sm text-slate-300 flex items-start">
                             <span className="text-green-400 mr-2">•</span>
                             {criteria}
                           </li>
@@ -326,7 +368,7 @@ export default function MasteryLesson() {
                       <div className="text-sm font-semibold text-red-400 mb-2">⚠️ Common Mistakes:</div>
                       <ul className="space-y-1">
                         {step.commonMistakes.map((mistake, i) => (
-                          <li key={i} className="text-sm text-red-200 flex items-start">
+                          <li key={`cm-${step.stepNumber}-${i}`} className="text-sm text-red-200 flex items-start">
                             <span className="text-red-400 mr-2">•</span>
                             {mistake}
                           </li>
@@ -378,7 +420,7 @@ export default function MasteryLesson() {
               <h3 className="font-semibold mb-3">Conceptual Guidance</h3>
               <ul className="space-y-2">
                 {rawContent.conceptualGuidance.map((guidance, i) => (
-                  <li key={i} className="text-slate-300 flex items-start">
+                  <li key={`cg-${i}-${guidance.slice(0, 10)}`} className="text-slate-300 flex items-start">
                     <span className="text-yellow-400 mr-2">→</span>
                     {guidance}
                   </li>
@@ -392,7 +434,7 @@ export default function MasteryLesson() {
               <h3 className="font-semibold mb-3">Key Concepts to Apply</h3>
               <ul className="space-y-2">
                 {rawContent.keyConceptsToApply.map((concept, i) => (
-                  <li key={i} className="text-slate-300 flex items-start">
+                  <li key={`kc-${i}-${concept.slice(0, 10)}`} className="text-slate-300 flex items-start">
                     <span className="text-purple-400 mr-2">▸</span>
                     {concept}
                   </li>
@@ -404,8 +446,8 @@ export default function MasteryLesson() {
           {'checkpoints' in rawContent && rawContent.checkpoints && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Checkpoints</h3>
-              {rawContent.checkpoints.map((checkpoint, idx) => (
-                <div key={idx} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+              {rawContent.checkpoints.map((checkpoint) => (
+                <div key={`cp-${checkpoint.checkpoint}`} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
                   <h4 className="font-semibold text-white mb-2">{checkpoint.checkpoint}</h4>
                   <p className="text-slate-300 mb-3">{checkpoint.description}</p>
                   {checkpoint.validationCriteria && (
@@ -413,7 +455,7 @@ export default function MasteryLesson() {
                       <div className="text-green-400 font-semibold mb-1">Validation:</div>
                       <ul className="space-y-1">
                         {checkpoint.validationCriteria.map((criteria, i) => (
-                          <li key={i} className="text-slate-300">• {criteria}</li>
+                          <li key={`cpvc-${checkpoint.checkpoint}-${i}`} className="text-slate-300">• {criteria}</li>
                         ))}
                       </ul>
                     </div>
@@ -449,7 +491,7 @@ export default function MasteryLesson() {
               <h3 className="font-semibold mb-3 text-green-400">Success Criteria (All must pass)</h3>
               <ul className="space-y-2">
                 {rawContent.successCriteria.map((criteria, i) => (
-                  <li key={i} className="text-slate-300 flex items-start">
+                  <li key={`sc-${i}-${criteria.slice(0, 20)}`} className="text-slate-300 flex items-start">
                     <CheckCircle className="w-5 h-5 text-green-400 mr-2 flex-shrink-0 mt-0.5" />
                     {criteria}
                   </li>
@@ -463,7 +505,7 @@ export default function MasteryLesson() {
               <h3 className="font-semibold mb-3 text-red-400">Minimum Requirements</h3>
               <ul className="space-y-2">
                 {rawContent.minimumRequirements.map((req, i) => (
-                  <li key={i} className="text-red-200 flex items-start">
+                  <li key={`mr-${i}-${req.slice(0, 20)}`} className="text-red-200 flex items-start">
                     <span className="text-red-400 mr-2">!</span>
                     {req}
                   </li>
@@ -542,7 +584,7 @@ export default function MasteryLesson() {
                 <h2 className="text-xl font-semibold mb-4">Learning Objectives</h2>
                 <ul className="space-y-2">
                   {detailedContent.baseLesson.learningObjectives.map((objective, idx) => (
-                    <li key={idx} className="flex items-start space-x-2">
+                    <li key={`lo-${idx}-${objective.slice(0, 20)}`} className="flex items-start space-x-2">
                       <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                       <span className="text-slate-300">{objective}</span>
                     </li>
@@ -554,7 +596,7 @@ export default function MasteryLesson() {
                     <h3 className="text-sm font-semibold text-slate-400 mb-2">Prerequisites:</h3>
                     <ul className="space-y-1">
                       {detailedContent.baseLesson.prerequisites.map((prereq, idx) => (
-                        <li key={idx} className="text-sm text-slate-400">• {prereq}</li>
+                        <li key={`pr-${idx}-${prereq.slice(0, 20)}`} className="text-sm text-slate-400">• {prereq}</li>
                       ))}
                     </ul>
                   </div>
@@ -609,12 +651,7 @@ export default function MasteryLesson() {
                 <MasteryGate
                   level={level}
                   progress={getLevelProgress(level)!}
-                  nextLevelName={
-                    level === 'crawl' ? 'Walk' :
-                    level === 'walk' ? 'Run-Guided' :
-                    level === 'run-guided' ? 'Run-Independent' :
-                    undefined
-                  }
+                  nextLevelName={getNextLevelDisplayName(level)}
                 />
               </>
             )}
@@ -708,37 +745,9 @@ export default function MasteryLesson() {
             level={level}
             labId=""
             struggleMetrics={struggleMetrics}
-            onComplete={async () => {
-              setAarSubmitted(true);
-              
-              // Refresh mastery data to get latest state
-              await refreshMastery();
-              
-              // Show mastery status
-              if (mastery && isLevelMastered(level)) {
-                const nextLevel = 
-                  level === 'crawl' ? 'walk' :
-                  level === 'walk' ? 'run-guided' :
-                  level === 'run-guided' ? 'run-independent' :
-                  null;
-                
-                if (nextLevel) {
-                  const confirm = window.confirm(
-                    `🎉 You've mastered this level!\n\n` +
-                    `Would you like to continue to the next level (${nextLevel})?`
-                  );
-                  if (confirm) {
-                    navigate(`/lesson/${lessonId}/${nextLevel}`);
-                    return;
-                  }
-                }
-              }
-              
-              // Navigate back to the week page
-              navigate(weekNumber ? `/week/${weekNumber}` : '/curriculum');
-            }}
+            onComplete={handleAARComplete}
             onCancel={() => {
-              alert('AAR is required to save your progress.');
+              globalThis.alert('AAR is required to save your progress.');
             }}
           />
         </div>
