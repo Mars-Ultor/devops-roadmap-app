@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, Lightbulb, Target, Scale, FileText, HelpCircle } from 'lucide-react';
+import { ChevronDown, ChevronRight, Lightbulb, Target, Scale, FileText, HelpCircle, AlertTriangle, PenTool } from 'lucide-react';
 
 interface EvaluationCriterion {
   criterion: string;
@@ -148,6 +148,112 @@ function PromptsToConsider() {
   );
 }
 
+function CommonPitfalls() {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const pitfalls = [
+    {
+      pitfall: 'Being too vague with metrics',
+      solution: 'Use specific numbers: "Currently deploy once per month" instead of "deploy infrequently"'
+    },
+    {
+      pitfall: 'Focusing only on tools',
+      solution: 'DevOps is 80% culture, 20% tools. Spend equal time on people and process changes.'
+    },
+    {
+      pitfall: 'Trying to change everything at once',
+      solution: 'Start with quick wins. Phase 1 should be achievable in 3 months.'
+    },
+    {
+      pitfall: 'Ignoring resistance to change',
+      solution: 'Address "why change?" and "what\'s in it for me?" for each stakeholder group.'
+    },
+    {
+      pitfall: 'No measurement plan',
+      solution: 'Define how you\'ll track progress before starting. Use DORA metrics as your foundation.'
+    },
+    {
+      pitfall: 'Underestimating timeline',
+      solution: 'Cultural change takes 6-12 months. Technical changes can be faster but need people to adopt them.'
+    }
+  ];
+  
+  return (
+    <div className="border border-slate-600 rounded-lg overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-4 bg-slate-700/50 hover:bg-slate-700 transition text-left"
+      >
+        <div className="flex items-center space-x-3">
+          <AlertTriangle className="w-5 h-5 text-orange-400" />
+          <span className="font-semibold text-orange-400">Common Pitfalls to Avoid</span>
+        </div>
+        {isOpen ? <ChevronDown className="w-5 h-5 text-slate-400" /> : <ChevronRight className="w-5 h-5 text-slate-400" />}
+      </button>
+      {isOpen && (
+        <div className="p-4 bg-slate-800/50 space-y-3 text-sm">
+          <p className="text-slate-400 italic">Learn from others who have attempted DevOps transformations.</p>
+          
+          {pitfalls.map((item) => (
+            <div key={item.pitfall} className="bg-slate-900/50 rounded-lg p-3">
+              <div className="flex items-start space-x-2">
+                <AlertTriangle className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-orange-300 mb-1">{item.pitfall}</p>
+                  <p className="text-slate-400 text-xs">{item.solution}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WritingTips() {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const tips = [
+    'Start with the current state - be specific about problems and metrics',
+    'Use the suggested structure but adapt it to flow naturally',
+    'Include concrete examples: "Replace manual testing with automated tests" not "improve testing"',
+    'Quantify benefits: "Reduce deployment time from 2 weeks to 2 days" not "deploy faster"',
+    'Address skeptics: Explain ROI and how changes benefit different roles',
+    'Be realistic: Show understanding that transformation takes time and effort',
+    'End with next steps: What happens after your strategy is approved?'
+  ];
+  
+  return (
+    <div className="border border-slate-600 rounded-lg overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-4 bg-slate-700/50 hover:bg-slate-700 transition text-left"
+      >
+        <div className="flex items-center space-x-3">
+          <PenTool className="w-5 h-5 text-purple-400" />
+          <span className="font-semibold text-purple-400">Writing Tips</span>
+        </div>
+        {isOpen ? <ChevronDown className="w-5 h-5 text-slate-400" /> : <ChevronRight className="w-5 h-5 text-slate-400" />}
+      </button>
+      {isOpen && (
+        <div className="p-4 bg-slate-800/50 space-y-3 text-sm">
+          <p className="text-slate-400 italic">Make your strategy clear, convincing, and actionable.</p>
+          
+          <ul className="space-y-2">
+            {tips.map((tip) => (
+              <li key={tip} className="flex items-start text-slate-300">
+                <span className="text-purple-400 mr-2 font-bold">•</span>
+                {tip}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function EvaluationRubricSection({ rubric }: { readonly rubric: EvaluationCriterion[] }) {
   const [isOpen, setIsOpen] = useState(false);
   
@@ -246,6 +352,10 @@ export default function StrategyGuide({ minimumRequirements, evaluationRubric }:
           <StructureTemplate />
           
           <PromptsToConsider />
+          
+          <CommonPitfalls />
+          
+          <WritingTips />
           
           {evaluationRubric && evaluationRubric.length > 0 && (
             <EvaluationRubricSection rubric={evaluationRubric} />
