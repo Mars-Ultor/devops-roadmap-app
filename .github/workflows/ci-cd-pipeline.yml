@@ -269,10 +269,8 @@ jobs:
         run: |
           cd ml-service
           pip install flake8 black isort
-          flake8 . --count --select=E9,F63,F7,F82 --show-source \
-            --statistics || true
-          flake8 . --count --exit-zero --max-complexity=10 \
-            --max-line-length=127 --statistics || true
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || true
           black --check . || true
           isort --check-only . || true
         continue-on-error: true
@@ -372,14 +370,11 @@ jobs:
           name: client-build
           path: client/dist
 
-      # Deploy Client to Firebase Hosting (Staging)
       - name: Deploy Client to Firebase Hosting (Staging)
         run: |
           npm install -g firebase-tools
           cd client
-          firebase deploy --only hosting \
-            --project ${{ secrets.FIREBASE_PROJECT_ID_STAGING }} \
-            --token ${{ secrets.FIREBASE_TOKEN_STAGING }}
+          firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID_STAGING }} --token ${{ secrets.FIREBASE_TOKEN_STAGING }}
 
       # Deploy Server to Render (Staging)
       - name: Deploy Server to Render (Staging)
@@ -405,10 +400,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Staging Deployment Status*\nStatus: ${{ job.status }}\n\
-Repo: ${{ github.repository }}\nCommit: ${{ github.sha }}\n\
-Author: ${{ github.actor }}\nAction: ${{ github.event_name }}\n\
-Ref: ${{ github.ref }}\nWorkflow: ${{ github.workflow }}"
+                    "text": "*Staging Deployment Status*\nStatus: ${{ job.status }}\nRepo: ${{ github.repository }}\nCommit: ${{ github.sha }}\nAuthor: ${{ github.actor }}\nAction: ${{ github.event_name }}\nRef: ${{ github.ref }}\nWorkflow: ${{ github.workflow }}"
                   }
                 }
               ]
@@ -475,10 +467,7 @@ Ref: ${{ github.ref }}\nWorkflow: ${{ github.workflow }}"
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Production Deployment Status*\nStatus: ${{ job.status }}\n\
-Repo: ${{ github.repository }}\nCommit: ${{ github.sha }}\n\
-Author: ${{ github.actor }}\nAction: ${{ github.event_name }}\n\
-Ref: ${{ github.ref }}\nWorkflow: ${{ github.workflow }}"
+                    "text": "*Production Deployment Status*\nStatus: ${{ job.status }}\nRepo: ${{ github.repository }}\nCommit: ${{ github.sha }}\nAuthor: ${{ github.actor }}\nAction: ${{ github.event_name }}\nRef: ${{ github.ref }}\nWorkflow: ${{ github.workflow }}"
                   }
                 }
               ]
@@ -512,8 +501,7 @@ Ref: ${{ github.ref }}\nWorkflow: ${{ github.workflow }}"
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Rollback Completed*\nRolled back to version: ${{ github.event.inputs.rollback_version }}\n\
-Repo: ${{ github.repository }}\nAuthor: ${{ github.actor }}"
+                    "text": "*Rollback Completed*\nRolled back to version: ${{ github.event.inputs.rollback_version }}\nRepo: ${{ github.repository }}\nAuthor: ${{ github.actor }}"
                   }
                 }
               ]
