@@ -9,6 +9,7 @@ import AdaptiveAARForm from '../components/aar/AdaptiveAARForm';
 import MasteryGate from '../components/MasteryGate';
 import { WalkLevelContent } from '../components/lessons/WalkLevelContent';
 import RunIndependentWorkspace from '../components/lessons/RunIndependentWorkspace';
+import RunGuidedWorkspace from '../components/lessons/RunGuidedWorkspace';
 import { useMastery } from '../hooks/useMastery';
 import type { MasteryLevel } from '../types/training';
 import { loadLessonContent } from '../utils/lessonContentLoader';
@@ -408,18 +409,36 @@ export default function MasteryLesson() {
       );
     }
 
-    // Run-Guided Level: Conceptual guidance
+    // Run-Guided Level: Conceptual guidance with workspace
     if (level === 'run-guided' && 'objective' in rawContent) {
+      const handleRunGuidedSubmit = (responses: Record<string, string>, notes: string, hintsUsed: number) => {
+        const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+        setStruggleMetrics(prev => ({
+          ...prev,
+          hintsUsed: hintsUsed,
+          timeSpentSeconds: timeSpent,
+          isPerfectCompletion: hintsUsed === 0
+        }));
+        setCompleted(true);
+      };
+
+      const handleRunGuidedSaveDraft = (responses: Record<string, string>, notes: string) => {
+        // Draft is saved in the workspace component via localStorage
+        console.log('Run-guided draft saved', { responses, notes });
+      };
+
       return (
         <div className="space-y-6">
-          <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-            <h2 className="text-xl font-semibold mb-4">Objective</h2>
-            <p className="text-slate-300 text-lg">{rawContent.objective}</p>
+          {/* Objective */}
+          <div className="bg-slate-800 rounded-lg p-6 border border-cyan-600">
+            <h2 className="text-xl font-semibold mb-4 text-cyan-400">Objective</h2>
+            <p className="text-white text-lg">{rawContent.objective}</p>
           </div>
           
+          {/* Conceptual Guidance */}
           {'conceptualGuidance' in rawContent && rawContent.conceptualGuidance && (
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-              <h3 className="font-semibold mb-3">Conceptual Guidance</h3>
+              <h3 className="font-semibold mb-3 text-yellow-400">Conceptual Guidance</h3>
               <ul className="space-y-2">
                 {rawContent.conceptualGuidance.map((guidance, i) => (
                   <li key={`cg-${i}-${guidance.slice(0, 10)}`} className="text-slate-300 flex items-start">
@@ -431,9 +450,10 @@ export default function MasteryLesson() {
             </div>
           )}
           
+          {/* Key Concepts */}
           {'keyConceptsToApply' in rawContent && rawContent.keyConceptsToApply && (
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-              <h3 className="font-semibold mb-3">Key Concepts to Apply</h3>
+              <h3 className="font-semibold mb-3 text-purple-400">Key Concepts to Apply</h3>
               <ul className="space-y-2">
                 {rawContent.keyConceptsToApply.map((concept, i) => (
                   <li key={`kc-${i}-${concept.slice(0, 10)}`} className="text-slate-300 flex items-start">
@@ -445,26 +465,15 @@ export default function MasteryLesson() {
             </div>
           )}
           
+          {/* Workspace with Checkpoints */}
           {'checkpoints' in rawContent && rawContent.checkpoints && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Checkpoints</h3>
-              {rawContent.checkpoints.map((checkpoint) => (
-                <div key={`cp-${checkpoint.checkpoint}`} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                  <h4 className="font-semibold text-white mb-2">{checkpoint.checkpoint}</h4>
-                  <p className="text-slate-300 mb-3">{checkpoint.description}</p>
-                  {checkpoint.validationCriteria && (
-                    <div className="text-sm">
-                      <div className="text-green-400 font-semibold mb-1">Validation:</div>
-                      <ul className="space-y-1">
-                        {checkpoint.validationCriteria.map((criteria, i) => (
-                          <li key={`cpvc-${checkpoint.checkpoint}-${i}`} className="text-slate-300">• {criteria}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <RunGuidedWorkspace
+              lessonId={lessonId || ''}
+              checkpoints={rawContent.checkpoints}
+              resourcesAllowed={rawContent.resourcesAllowed}
+              onSubmit={handleRunGuidedSubmit}
+              onSaveDraft={handleRunGuidedSaveDraft}
+            />
           )}
         </div>
       );
