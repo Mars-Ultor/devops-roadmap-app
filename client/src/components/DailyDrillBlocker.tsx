@@ -53,9 +53,9 @@ export default function DailyDrillBlocker({ children }: DailyDrillBlockerProps) 
   if (isBlocked) {
     return (
       <div className="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 p-4">
-        <div className="max-w-2xl w-full bg-slate-800 border-2 border-yellow-500 rounded-lg shadow-2xl">
+        <div className="max-w-2xl w-full max-h-[90vh] bg-slate-800 border-2 border-yellow-500 rounded-lg shadow-2xl overflow-hidden flex flex-col">
           <DrillBlockedHeader />
-          <div className="px-8 py-6 space-y-6">
+          <div className="px-8 py-6 space-y-6 overflow-y-auto flex-1">
             <TrainingBlockedWarning />
             <WhyDrillsMatter />
             <StatusCheckInfo checkCount={checkCount} />

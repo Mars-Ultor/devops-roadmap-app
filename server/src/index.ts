@@ -24,8 +24,7 @@ if (!process.env.JWT_SECRET) {
   process.exit(1);
 }
 
-// Initialize Redis connection
-redisCache.connect().catch(console.error);
+// Redis cache is initialized lazily when needed
 
 // Security middleware
 app.use(helmet({

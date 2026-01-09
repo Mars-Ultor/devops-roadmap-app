@@ -1,54 +1,80 @@
 import { createClient, RedisClientType } from 'redis';
 
 class RedisCache {
-  private client: RedisClientType;
+  private client: RedisClientType | null = null;
   private isConnected: boolean = false;
+  private clientCreated: boolean = false;
 
   constructor() {
-    this.client = createClient({
-      url: process.env.REDIS_URL || 'redis://localhost:6379',
-      socket: {
-        connectTimeout: 60000,
-      },
-    });
+    // Don't create Redis client in constructor - do it lazily
+    console.log('Redis cache initialized (lazy loading)');
+  }
 
-    this.client.on('error', (err) => {
-      console.warn('Redis connection error:', err.message);
-      this.isConnected = false;
-    });
+  private async ensureClient(): Promise<void> {
+    if (this.clientCreated) return;
 
-    this.client.on('connect', () => {
-      console.log('Connected to Redis');
-      this.isConnected = true;
-    });
+    this.clientCreated = true;
 
-    this.client.on('ready', () => {
-      this.isConnected = true;
-    });
+    // Only create Redis client if Redis is available and not in test environment
+    if (!process.env.REDIS_URL || process.env.NODE_ENV === 'test') {
+      console.log('Redis not configured, running without cache');
+      return;
+    }
 
-    this.client.on('end', () => {
-      this.isConnected = false;
-    });
+    try {
+      this.client = createClient({
+        url: process.env.REDIS_URL,
+        socket: {
+          connectTimeout: 5000, // Reduced timeout
+        },
+      });
+
+      this.client.on('error', (err) => {
+        console.warn('Redis connection error:', err.message);
+        this.isConnected = false;
+      });
+
+      this.client.on('connect', () => {
+        console.log('Connected to Redis');
+        this.isConnected = true;
+      });
+
+      this.client.on('ready', () => {
+        this.isConnected = true;
+      });
+
+      this.client.on('end', () => {
+        this.isConnected = false;
+      });
+    } catch (error) {
+      console.warn('Failed to create Redis client:', error);
+      this.client = null;
+    }
   }
 
   async connect(): Promise<void> {
-    if (!this.isConnected) {
-      try {
-        await this.client.connect();
-      } catch (error) {
-        console.warn('Failed to connect to Redis, continuing without cache:', error);
-      }
+    await this.ensureClient();
+    if (!this.client || this.isConnected) return;
+
+    try {
+      await this.client.connect();
+    } catch (error) {
+      console.warn('Failed to connect to Redis, continuing without cache:', error);
     }
   }
 
   async disconnect(): Promise<void> {
-    if (this.isConnected) {
+    if (!this.client || !this.isConnected) return;
+
+    try {
       await this.client.disconnect();
+    } catch (error) {
+      console.warn('Error disconnecting from Redis:', error);
     }
   }
 
   async get<T>(key: string): Promise<T | null> {
-    if (!this.isConnected) return null;
+    if (!this.client || !this.isConnected) return null;
 
     try {
       const data = await this.client.get(key);
@@ -60,7 +86,7 @@ class RedisCache {
   }
 
   async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
-    if (!this.isConnected) return;
+    if (!this.client || !this.isConnected) return;
 
     try {
       const serializedValue = JSON.stringify(value);
@@ -75,7 +101,7 @@ class RedisCache {
   }
 
   async delete(key: string): Promise<void> {
-    if (!this.isConnected) return;
+    if (!this.client || !this.isConnected) return;
 
     try {
       await this.client.del(key);
@@ -85,7 +111,7 @@ class RedisCache {
   }
 
   async deletePattern(pattern: string): Promise<void> {
-    if (!this.isConnected) return;
+    if (!this.client || !this.isConnected) return;
 
     try {
       const keys = await this.client.keys(pattern);
@@ -98,7 +124,7 @@ class RedisCache {
   }
 
   async exists(key: string): Promise<boolean> {
-    if (!this.isConnected) return false;
+    if (!this.client || !this.isConnected) return false;
 
     try {
       const result = await this.client.exists(key);
@@ -106,6 +132,16 @@ class RedisCache {
     } catch (error) {
       console.warn('Redis exists error:', error);
       return false;
+    }
+  }
+
+  async clear(): Promise<void> {
+    if (!this.client || !this.isConnected) return;
+
+    try {
+      await this.client.flushAll();
+    } catch (error) {
+      console.warn('Redis clear error:', error);
     }
   }
 
