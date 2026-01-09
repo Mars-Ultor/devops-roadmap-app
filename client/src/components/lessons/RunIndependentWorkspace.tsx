@@ -114,8 +114,8 @@ function CurrentMetrics({ metrics }: {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4">
       <h4 className="text-green-400 font-semibold mb-3 flex items-center">
-        <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-        Current DORA Metrics
+        <div className="w-2 h-2 bg-green-400 rounded-full mr-2" aria-hidden="true"></div>
+        <span>Current DORA Metrics</span>
       </h4>
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
@@ -145,8 +145,8 @@ function TeamStructure({ team }: {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4">
       <h4 className="text-purple-400 font-semibold mb-3 flex items-center">
-        <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
-        Team Structure
+        <div className="w-2 h-2 bg-purple-400 rounded-full mr-2" aria-hidden="true"></div>
+        <span>Team Structure</span>
       </h4>
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
@@ -176,8 +176,8 @@ function TechnologyStack({ stack }: {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4">
       <h4 className="text-cyan-400 font-semibold mb-3 flex items-center">
-        <span className="w-2 h-2 bg-cyan-400 rounded-full mr-2"></span>
-        Technology Stack
+        <div className="w-2 h-2 bg-cyan-400 rounded-full mr-2" aria-hidden="true"></div>
+        <span>Technology Stack</span>
       </h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
         <div>
@@ -211,8 +211,8 @@ function CurrentChallenges({ challenges }: {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4">
       <h4 className="text-red-400 font-semibold mb-3 flex items-center">
-        <span className="w-2 h-2 bg-red-400 rounded-full mr-2"></span>
-        Current Challenges
+        <div className="w-2 h-2 bg-red-400 rounded-full mr-2" aria-hidden="true"></div>
+        <span>Current Challenges</span>
       </h4>
       <ul className="space-y-2">
         {challenges.map((challenge) => (
