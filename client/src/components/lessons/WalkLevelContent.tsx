@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function, react/no-array-index-key */
 /**
  * WalkLevelContent - Fill-in-the-blank exercises
  * User fills in missing parameters to complete commands

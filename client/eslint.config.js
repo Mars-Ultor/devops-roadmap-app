@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import globals from 'globals'
+import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import complexity from 'eslint-plugin-complexity'
@@ -14,6 +15,7 @@ export default defineConfig([
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
+      react.configs.flat.recommended,
       reactHooks.configs['recommended-latest'],
       reactRefresh.configs.vite,
     ],
@@ -21,11 +23,23 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
     plugins: {
+      react,
       complexity,
       sonarjs
     },
     rules: {
+      // React-specific rules
+      'react/react-in-jsx-scope': 'off', // Not needed in React 17+
+      'react/prop-types': 'off', // Using TypeScript for prop validation
+      'react/no-unescaped-entities': 'off', // Temporarily disabled - many existing unescaped entities
+      'react/no-array-index-key': 'warn', // Warn about array index keys
+
       // Complexity Analysis Rules (Relaxed for Baseline Establishment)
       'complexity': ['error', 20], // Cyclomatic complexity limit (relaxed from 10)
       'sonarjs/cognitive-complexity': ['error', 25], // Cognitive complexity limit (relaxed from 15)
