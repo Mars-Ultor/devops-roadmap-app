@@ -146,9 +146,10 @@ export default function WeeklyBossBattle() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {scenarios.map((scenario) => (
-                <div
+                <button
                   key={scenario.id}
-                  className="bg-slate-800 rounded-lg p-6 border-2 border-slate-700 hover:border-red-500 transition-colors cursor-pointer"
+                  type="button"
+                  className="bg-slate-800 rounded-lg p-6 border-2 border-slate-700 hover:border-red-500 transition-colors cursor-pointer text-left w-full"
                   onClick={() => selectScenario(scenario)}
                 >
                   <div className="flex items-start justify-between mb-4">
@@ -191,7 +192,7 @@ export default function WeeklyBossBattle() {
                       </span>
                     ))}
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -282,8 +283,9 @@ export default function WeeklyBossBattle() {
 
                 {/* Investigation Notes */}
                 <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Investigation Notes</label>
+                  <label htmlFor="investigation-notes" className="block text-sm font-medium mb-2">Investigation Notes</label>
                   <textarea
+                    id="investigation-notes"
                     value={investigationNotes}
                     onChange={(e) => setInvestigationNotes(e.target.value)}
                     placeholder="Document your investigation findings..."
@@ -294,7 +296,7 @@ export default function WeeklyBossBattle() {
 
                 {/* Resolution Steps */}
                 <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Resolution Steps</label>
+                  <label htmlFor="resolution-step-input" className="block text-sm font-medium mb-2">Resolution Steps</label>
                   <div className="space-y-2">
                     {resolutionSteps.map((step) => (
                       <div key={step} className="flex items-center gap-2 bg-slate-700 p-2 rounded">
@@ -303,6 +305,7 @@ export default function WeeklyBossBattle() {
                       </div>
                     ))}
                     <input
+                      id="resolution-step-input"
                       type="text"
                       placeholder="Add resolution step..."
                       onKeyDown={(e) => {
