@@ -127,7 +127,7 @@ export const PredictiveAnalytics: FC<PredictiveAnalyticsProps> = ({ data }) => {
               {completionPrediction.estimatedCompletionDate.toLocaleDateString()}
             </div>
             <div className="text-xs text-slate-500">
-              {Math.round((completionPrediction.estimatedCompletionDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
+              {Math.round((completionPrediction.estimatedCompletionDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days
             </div>
           </div>
 

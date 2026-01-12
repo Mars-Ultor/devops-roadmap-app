@@ -27,7 +27,7 @@ interface LearningVelocityChartProps {
 
 export const LearningVelocityChart: FC<LearningVelocityChartProps> = ({ data }) => {
   // Handle undefined data gracefully
-  if (!data || !data.weeklyProgress) {
+  if (!data?.weeklyProgress) {
     return (
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-8">
         <div className="text-center">

@@ -28,7 +28,7 @@ export const DestructiveCommandModal: FC<DestructiveCommandModalProps> = ({
 
   if (!isOpen) return null;
 
-  const allChecked = checkedItems.every(item => item) && understand;
+  const allChecked = checkedItems.every(Boolean) && understand;
 
   const toggleItem = (index: number) => {
     setCheckedItems(prev => {

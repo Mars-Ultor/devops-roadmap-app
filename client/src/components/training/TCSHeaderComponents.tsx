@@ -17,7 +17,7 @@ export function TCSHeaderTitle() {
 }
 
 interface TaskSectionProps {
-  task: TCSTask;
+  readonly task: TCSTask;
 }
 
 export function TaskSection({ task }: TaskSectionProps) {
@@ -38,8 +38,8 @@ export function TaskSection({ task }: TaskSectionProps) {
 }
 
 interface ResourceListProps {
-  items: string[];
-  label: string;
+  readonly items: string[];
+  readonly label: string;
 }
 
 function ResourceList({ items, label }: ResourceListProps) {
@@ -58,7 +58,7 @@ function ResourceList({ items, label }: ResourceListProps) {
 }
 
 interface ConditionsSectionProps {
-  conditions: TCSConditions;
+  readonly conditions: TCSConditions;
 }
 
 export function ConditionsSection({ conditions }: ConditionsSectionProps) {
@@ -96,7 +96,7 @@ export function ConditionsSection({ conditions }: ConditionsSectionProps) {
 }
 
 interface StandardItemProps {
-  criterion: string;
+  readonly criterion: string;
 }
 
 function StandardItem({ criterion }: StandardItemProps) {
@@ -109,7 +109,7 @@ function StandardItem({ criterion }: StandardItemProps) {
 }
 
 interface StandardsSectionProps {
-  standards: TCSStandards;
+  readonly standards: TCSStandards;
 }
 
 export function StandardsSection({ standards }: StandardsSectionProps) {

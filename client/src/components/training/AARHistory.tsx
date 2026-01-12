@@ -52,14 +52,14 @@ const AARCard: FC<AARCardProps> = ({ aar, isExpanded, onToggle }) => (
 );
 
 export default function AARHistory({ contentId, contentType, getAARs }: AARHistoryProps) {
-  const [aars, setAARs] = useState<AAR[]>([]);
+  const [aars, setAars] = useState<AAR[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadAARs() {
       setLoading(true);
-      try { setAARs(await getAARs(contentId, contentType)); } 
+      try { setAars(await getAARs(contentId, contentType)); } 
       catch (error) { console.error('Error loading AARs:', error); } 
       finally { setLoading(false); }
     }

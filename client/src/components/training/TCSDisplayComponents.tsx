@@ -51,7 +51,7 @@ export function TaskSection({ task }: TaskSectionProps) {
 
 // Conditions Section
 interface ConditionsSectionProps {
-  conditions: TCSTask['conditions'];
+  readonly conditions: TCSTask['conditions'];
 }
 
 export function ConditionsSection({ conditions }: ConditionsSectionProps) {
@@ -75,7 +75,7 @@ export function ConditionsSection({ conditions }: ConditionsSectionProps) {
   );
 }
 
-function TimeLimitItem({ timeLimit }: { timeLimit: number }) {
+function TimeLimitItem({ timeLimit }: { readonly timeLimit: number }) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
@@ -87,7 +87,7 @@ function TimeLimitItem({ timeLimit }: { timeLimit: number }) {
   );
 }
 
-function EnvironmentItem({ environment }: { environment: string }) {
+function EnvironmentItem({ environment }: { readonly environment: string }) {
   return (
     <div>
       <p className="text-sm font-semibold text-yellow-300 mb-2">Environment</p>
@@ -96,7 +96,7 @@ function EnvironmentItem({ environment }: { environment: string }) {
   );
 }
 
-function ResourcesItem({ resources }: { resources: string[] }) {
+function ResourcesItem({ resources }: { readonly resources: string[] }) {
   return (
     <div>
       <p className="text-sm font-semibold text-yellow-300 mb-2">Available Resources</p>
@@ -112,7 +112,7 @@ function ResourcesItem({ resources }: { resources: string[] }) {
   );
 }
 
-function RestrictionsItem({ restrictions }: { restrictions: string[] }) {
+function RestrictionsItem({ restrictions }: { readonly restrictions: string[] }) {
   return (
     <div>
       <p className="text-sm font-semibold text-yellow-300 mb-2">Restrictions</p>
@@ -130,10 +130,10 @@ function RestrictionsItem({ restrictions }: { restrictions: string[] }) {
 
 // Standards Section
 interface StandardsSectionProps {
-  standards: TCSStandard[];
-  allRequiredMet: boolean;
-  readOnly: boolean;
-  onStandardCheck?: (standardId: string, met: boolean) => void;
+  readonly standards: TCSStandard[];
+  readonly allRequiredMet: boolean;
+  readonly readOnly: boolean;
+  readonly onStandardCheck?: (standardId: string, met: boolean) => void;
 }
 
 export function StandardsSection({ standards, allRequiredMet, readOnly, onStandardCheck }: StandardsSectionProps) {
@@ -164,8 +164,8 @@ export function StandardsSection({ standards, allRequiredMet, readOnly, onStanda
 }
 
 interface StandardsHeaderProps {
-  allRequiredMet: boolean;
-  standards: TCSStandard[];
+  readonly allRequiredMet: boolean;
+  readonly standards: TCSStandard[];
 }
 
 function StandardsHeader({ allRequiredMet, standards }: StandardsHeaderProps) {
@@ -198,9 +198,9 @@ function StandardsHeader({ allRequiredMet, standards }: StandardsHeaderProps) {
 }
 
 interface StandardItemProps {
-  standard: TCSStandard;
-  readOnly: boolean;
-  onCheck?: (standardId: string, met: boolean) => void;
+  readonly standard: TCSStandard;
+  readonly readOnly: boolean;
+  readonly onCheck?: (standardId: string, met: boolean) => void;
 }
 
 function StandardItem({ standard, readOnly, onCheck }: StandardItemProps) {
@@ -237,13 +237,13 @@ function StandardItem({ standard, readOnly, onCheck }: StandardItemProps) {
   );
 }
 
-function StatusIcon({ status }: { status: 'met' | 'failed' | 'pending' }) {
+function StatusIcon({ status }: { readonly status: 'met' | 'failed' | 'pending' }) {
   if (status === 'met') return <CheckCircle className="w-6 h-6 text-green-400" />;
   if (status === 'failed') return <XCircle className="w-6 h-6 text-red-400" />;
   return <div className="w-6 h-6 rounded-full border-2 border-slate-500 hover:border-indigo-400 transition-colors" />;
 }
 
-function PassFailSummary({ allRequiredMet }: { allRequiredMet: boolean }) {
+function PassFailSummary({ allRequiredMet }: { readonly allRequiredMet: boolean }) {
   return (
     <div className={`mt-4 p-4 rounded-lg border-2 ${
       allRequiredMet

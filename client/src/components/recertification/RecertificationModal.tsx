@@ -41,7 +41,7 @@ export const RecertificationModal: FC<RecertificationModalProps> = ({
   const currentDrill = RECERTIFICATION_DRILLS[currentDrillIndex];
   const totalDrills = RECERTIFICATION_DRILLS.length;
   const completedDrills = Object.keys(drillResults).length;
-  const passedDrills = Object.values(drillResults).filter(r => r).length;
+  const passedDrills = Object.values(drillResults).filter(Boolean).length;
 
   const handleDrillResult = (passed: boolean) => {
     setDrillResults(prev => ({
@@ -91,7 +91,79 @@ export const RecertificationModal: FC<RecertificationModalProps> = ({
           </div>
         </div>
 
-        {!isTestingMode ? (
+        {isTestingMode ? (
+          <>
+            {/* Testing Mode */}
+            <div className="p-6 bg-slate-900 border-b border-slate-700">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-sm text-slate-400">Drill {completedDrills + 1} of {totalDrills}</p>
+                  <h3 className="text-2xl font-bold text-white">{currentDrill.name}</h3>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-slate-400">Time Limit</p>
+                  <p className="text-2xl font-bold text-amber-400">{currentDrill.timeLimit / 60} min</p>
+                </div>
+              </div>
+              <div className="w-full bg-slate-700 rounded-full h-2">
+                <div 
+                  className="bg-emerald-500 h-2 rounded-full transition-all"
+                  style={{ width: `${(completedDrills / totalDrills) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div className="bg-blue-900/20 border border-blue-500/50 rounded-lg p-6">
+                <h4 className="text-white font-semibold mb-3">Drill Instructions</h4>
+                <p className="text-blue-200 mb-4">
+                  Complete the {currentDrill.name} drill within {currentDrill.timeLimit / 60} minutes.
+                  You must achieve 100% accuracy to pass this drill.
+                </p>
+                <p className="text-sm text-slate-400">
+                  Navigate to <strong className="text-white">Battle Drills</strong> → <strong className="text-white">{currentDrill.name}</strong> to begin.
+                  Return here when complete.
+                </p>
+              </div>
+
+              {/* Results Summary */}
+              {completedDrills > 0 && (
+                <div>
+                  <h4 className="text-white font-semibold mb-3">Progress: {passedDrills}/{completedDrills} passed</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.entries(drillResults).map(([drillId, passed]) => {
+                      const drill = RECERTIFICATION_DRILLS.find(d => d.id === drillId);
+                      return (
+                        <div key={drillId} className={`rounded-lg p-2 text-sm flex items-center gap-2 ${
+                          passed ? 'bg-emerald-900/30 text-emerald-300' : 'bg-red-900/30 text-red-300'
+                        }`}>
+                          {passed ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                          {drill?.name}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Testing Mode Footer */}
+            <div className="sticky bottom-0 bg-slate-800 border-t border-slate-700 p-6 flex gap-3">
+              <button
+                onClick={() => handleDrillResult(false)}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold"
+              >
+                Failed ✗
+              </button>
+              <button
+                onClick={() => handleDrillResult(true)}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold"
+              >
+                Passed ✓
+              </button>
+            </div>
+          </>
+        ) : (
           <>
             {/* Skill Decay Alerts */}
             {skillDecayAlerts.length > 0 && (
@@ -180,78 +252,6 @@ export const RecertificationModal: FC<RecertificationModalProps> = ({
                 className="w-full bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-lg font-bold text-lg"
               >
                 Begin Recertification ({totalDrills} Drills)
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Testing Mode */}
-            <div className="p-6 bg-slate-900 border-b border-slate-700">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-sm text-slate-400">Drill {completedDrills + 1} of {totalDrills}</p>
-                  <h3 className="text-2xl font-bold text-white">{currentDrill.name}</h3>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-slate-400">Time Limit</p>
-                  <p className="text-2xl font-bold text-amber-400">{currentDrill.timeLimit / 60} min</p>
-                </div>
-              </div>
-              <div className="w-full bg-slate-700 rounded-full h-2">
-                <div 
-                  className="bg-emerald-500 h-2 rounded-full transition-all"
-                  style={{ width: `${(completedDrills / totalDrills) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="p-6 space-y-6">
-              <div className="bg-blue-900/20 border border-blue-500/50 rounded-lg p-6">
-                <h4 className="text-white font-semibold mb-3">Drill Instructions</h4>
-                <p className="text-blue-200 mb-4">
-                  Complete the {currentDrill.name} drill within {currentDrill.timeLimit / 60} minutes.
-                  You must achieve 100% accuracy to pass this drill.
-                </p>
-                <p className="text-sm text-slate-400">
-                  Navigate to <strong className="text-white">Battle Drills</strong> → <strong className="text-white">{currentDrill.name}</strong> to begin.
-                  Return here when complete.
-                </p>
-              </div>
-
-              {/* Results Summary */}
-              {completedDrills > 0 && (
-                <div>
-                  <h4 className="text-white font-semibold mb-3">Progress: {passedDrills}/{completedDrills} passed</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.entries(drillResults).map(([drillId, passed]) => {
-                      const drill = RECERTIFICATION_DRILLS.find(d => d.id === drillId);
-                      return (
-                        <div key={drillId} className={`rounded-lg p-2 text-sm flex items-center gap-2 ${
-                          passed ? 'bg-emerald-900/30 text-emerald-300' : 'bg-red-900/30 text-red-300'
-                        }`}>
-                          {passed ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                          {drill?.name}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Testing Mode Footer */}
-            <div className="sticky bottom-0 bg-slate-800 border-t border-slate-700 p-6 flex gap-3">
-              <button
-                onClick={() => handleDrillResult(false)}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold"
-              >
-                Failed ✗
-              </button>
-              <button
-                onClick={() => handleDrillResult(true)}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold"
-              >
-                Passed ✓
               </button>
             </div>
           </>

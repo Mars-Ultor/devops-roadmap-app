@@ -35,7 +35,7 @@ export const DocumentationRestrictor: React.FC<DocumentationRestrictorProps> = (
   useEffect(() => {
     const handleLinkClick = (event: MouseEvent) => {
       const target = event.target as HTMLAnchorElement;
-      if (target.tagName === 'A' && target.href && target.href.startsWith('http')) {
+      if (target.tagName === 'A' && target.href?.startsWith('http')) {
         const url = new URL(target.href);
         const domain = url.hostname.toLowerCase();
 
