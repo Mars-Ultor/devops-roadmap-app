@@ -76,6 +76,17 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
     }
   };
 
+  const getInsightStyles = (type: string) => {
+    switch (type) {
+      case 'success':
+        return 'bg-green-900/20 border-green-700';
+      case 'warning':
+        return 'bg-yellow-900/20 border-yellow-700';
+      default:
+        return 'bg-blue-900/20 border-blue-700';
+    }
+  };
+
   const formatHour = (hour: number) => {
     const period = hour >= 12 ? 'PM' : 'AM';
     const getDisplayHour = () => {
@@ -219,11 +230,7 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
         <h4 className="text-lg font-semibold text-white mb-4">Key Insights</h4>
         <div className="space-y-3">
           {insights.map((insight) => (
-            <div key={insight.title} className={`rounded-lg p-4 border ${
-              insight.type === 'success' ? 'bg-green-900/20 border-green-700' :
-              insight.type === 'warning' ? 'bg-yellow-900/20 border-yellow-700' :
-              'bg-blue-900/20 border-blue-700'
-            }`}>
+            <div key={insight.title} className={`rounded-lg p-4 border ${getInsightStyles(insight.type)}`}>
               <div className="flex items-start gap-3">
                 {getInsightIcon(insight.type)}
                 <div className="flex-1">

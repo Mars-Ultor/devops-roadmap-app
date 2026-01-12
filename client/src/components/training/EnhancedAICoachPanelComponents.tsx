@@ -7,11 +7,14 @@ import type { CoachFeedback, CodeAnalysis } from '../../types/aiCoach';
 import { getIconColor, getTypeLabel, getPriorityColor } from './EnhancedAICoachPanelUtils';
 
 function getIssueSeverityStyles(severity: string): string {
-  return severity === 'critical'
-    ? 'bg-red-900/50 border border-red-700'
-    : severity === 'high'
-    ? 'bg-amber-900/50 border border-amber-700'
-    : 'bg-slate-900/50';
+  switch (severity) {
+    case 'critical':
+      return 'bg-red-900/50 border border-red-700';
+    case 'high':
+      return 'bg-amber-900/50 border border-amber-700';
+    default:
+      return 'bg-slate-900/50';
+  }
 }
 
 export function LoadingState() {

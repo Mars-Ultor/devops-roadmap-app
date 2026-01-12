@@ -22,6 +22,12 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
   const [expandedStep, setExpandedStep] = useState<number | null>(1);
   const [showMistakes, setShowMistakes] = useState<Record<number, boolean>>({});
 
+  const getStepStyles = (isCompleted: boolean, canExpand: boolean) => {
+    if (isCompleted) return 'bg-emerald-900/20 border-emerald-500/50';
+    if (canExpand) return 'bg-slate-800/50 border-slate-600';
+    return 'bg-slate-900/50 border-slate-700 opacity-50';
+  };
+
   return (
     <div className="space-y-6">
       {/* Introduction */}
@@ -43,13 +49,7 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
           return (
             <div
               key={step.stepNumber}
-              className={`border rounded-lg transition-all ${
-                isCompleted
-                  ? 'bg-emerald-900/20 border-emerald-500/50'
-                  : canExpand
-                  ? 'bg-slate-800/50 border-slate-600'
-                  : 'bg-slate-900/50 border-slate-700 opacity-50'
-              }`}
+              className={`border rounded-lg transition-all ${getStepStyles(isCompleted, canExpand)}`}
             >
               {/* Step Header */}
               <button
@@ -76,7 +76,7 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
                   {/* Command */}
                   {step.command && (
                     <div>
-                      <label className="block text-sm text-slate-400 mb-2">Command to execute:</label>
+                      <p className="block text-sm text-slate-400 mb-2">Command to execute:</p>
                       <div className="bg-slate-950 rounded p-4 font-mono text-sm text-emerald-400 flex items-start gap-2">
                         <Terminal className="w-4 h-4 mt-1 flex-shrink-0" />
                         <code className="flex-1">{step.command}</code>
@@ -99,7 +99,7 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
                   {/* Expected Output */}
                   {step.expectedOutput && (
                     <div>
-                      <label className="block text-sm text-slate-400 mb-2">Expected output:</label>
+                      <p className="block text-sm text-slate-400 mb-2">Expected output:</p>
                       <div className="bg-slate-900 border border-slate-700 rounded p-3 font-mono text-xs text-slate-300">
                         {step.expectedOutput}
                       </div>
