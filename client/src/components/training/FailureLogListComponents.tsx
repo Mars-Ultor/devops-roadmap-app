@@ -10,11 +10,9 @@ type CategoryFilter = FailureCategory | 'all';
 type StatusFilter = 'all' | 'resolved' | 'unresolved';
 
 function getFailureItemBorderClass(failure: FailureLog): string {
-  return failure.resolvedAt
-    ? 'border-green-700/30'
-    : failure.isRecurring
-    ? 'border-orange-500/50'
-    : 'border-slate-700';
+  if (failure.resolvedAt) return 'border-green-700/30';
+  if (failure.isRecurring) return 'border-orange-500/50';
+  return 'border-slate-700';
 }
 
 interface StatsDisplayProps {
@@ -60,15 +58,15 @@ export function Filters({ categoryFilter, statusFilter, onCategoryChange, onStat
         <Filter className="w-5 h-5 text-slate-400" />
         <div className="flex-1 grid grid-cols-2 gap-4">
           <div>
-            <label className="text-sm text-slate-400 mb-1 block">Category</label>
-            <select value={categoryFilter} onChange={(e) => onCategoryChange(e.target.value as FailureCategory | 'all')}
+            <label htmlFor="category-filter" className="text-sm text-slate-400 mb-1 block">Category</label>
+            <select id="category-filter" value={categoryFilter} onChange={(e) => onCategoryChange(e.target.value as FailureCategory | 'all')}
               className="w-full bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-white text-sm focus:outline-none focus:border-indigo-500">
               {CATEGORY_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-sm text-slate-400 mb-1 block">Status</label>
-            <select value={statusFilter} onChange={(e) => onStatusChange(e.target.value as 'all' | 'resolved' | 'unresolved')}
+            <label htmlFor="status-filter" className="text-sm text-slate-400 mb-1 block">Status</label>
+            <select id="status-filter" value={statusFilter} onChange={(e) => onStatusChange(e.target.value as 'all' | 'resolved' | 'unresolved')}
               className="w-full bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-white text-sm focus:outline-none focus:border-indigo-500">
               {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>

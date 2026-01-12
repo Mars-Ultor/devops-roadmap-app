@@ -37,6 +37,19 @@ export default function AccountabilityDashboard() {
   const [checkInReflection, setCheckInReflection] = useState('');
   const [checkInFocus, setCheckInFocus] = useState('');
 
+  const getCommitmentStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-green-500';
+      case 'in-progress':
+        return 'bg-blue-500';
+      case 'failed':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-600';
+    }
+  };
+
   const loadStats = useCallback(async () => {
     const accountabilityStats = await getAccountabilityStats();
     setStats(accountabilityStats);
@@ -259,12 +272,7 @@ export default function AccountabilityDashboard() {
                     </div>
                     <div className="w-full bg-gray-900/50 rounded-full h-3 overflow-hidden">
                       <div
-                        className={`h-3 rounded-full transition-all ${
-                          commitment.status === 'completed' ? 'bg-green-500' :
-                          commitment.status === 'in-progress' ? 'bg-blue-500' :
-                          commitment.status === 'failed' ? 'bg-red-500' :
-                          'bg-gray-600'
-                        }`}
+                        className={`h-3 rounded-full transition-all ${getCommitmentStatusColor(commitment.status)}`}
                         style={{ width: `${Math.min((commitment.current / commitment.target) * 100, 100)}%` }}
                       />
                     </div>
@@ -297,10 +305,11 @@ export default function AccountabilityDashboard() {
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label htmlFor="checkin-reflection" className="block text-sm font-medium text-gray-300 mb-2">
                       What went well this week?
                     </label>
                     <textarea
+                      id="checkin-reflection"
                       value={checkInReflection}
                       onChange={(e) => setCheckInReflection(e.target.value)}
                       placeholder="Reflect on your accomplishments, challenges, and lessons learned..."
@@ -309,10 +318,11 @@ export default function AccountabilityDashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label htmlFor="checkin-focus" className="block text-sm font-medium text-gray-300 mb-2">
                       What will you focus on next week?
                     </label>
                     <textarea
+                      id="checkin-focus"
                       value={checkInFocus}
                       onChange={(e) => setCheckInFocus(e.target.value)}
                       placeholder="Set your intentions and priorities for the upcoming week..."

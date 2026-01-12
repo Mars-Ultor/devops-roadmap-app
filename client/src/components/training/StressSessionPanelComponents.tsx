@@ -118,8 +118,14 @@ interface TimeMetricProps {
   readonly isTimeCritical: boolean;
 }
 
+function getRingClass(isTimeCritical: boolean, isTimeWarning: boolean): string {
+  if (isTimeCritical) return 'ring-2 ring-red-500 animate-pulse';
+  if (isTimeWarning) return 'ring-2 ring-yellow-500';
+  return '';
+}
+
 function TimeMetric({ remainingSeconds, timeProgress, isTimeWarning, isTimeCritical }: TimeMetricProps) {
-  const ringClass = isTimeCritical ? 'ring-2 ring-red-500 animate-pulse' : isTimeWarning ? 'ring-2 ring-yellow-500' : '';
+  const ringClass = getRingClass(isTimeCritical, isTimeWarning);
 
   return (
     <div className={`bg-gray-900/50 rounded-lg p-4 ${ringClass}`}>
