@@ -3,7 +3,9 @@
  * Extracted UI components for linting compliance
  */
 
-import { Clock, Save, CheckCircle, FileText, AlertTriangle, Sparkles, Send } from 'lucide-react';
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import { Clock, Save, CheckCircle, FileText, AlertTriangle, Sparkles, Send, Eye } from 'lucide-react';
 
 interface TimerBarProps {
   readonly elapsedTime: number;
@@ -123,6 +125,8 @@ interface EditorProps {
 }
 
 export function ResponseEditor({ submission, objective, onChange }: EditorProps) {
+  const [isPreview, setIsPreview] = React.useState(false);
+
   return (
     <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
       <div className="bg-slate-900 px-4 py-3 border-b border-slate-700 flex items-center justify-between">
@@ -130,16 +134,64 @@ export function ResponseEditor({ submission, objective, onChange }: EditorProps)
           <FileText className="w-5 h-5 text-purple-400" />
           <span className="font-semibold text-white">Your Response</span>
         </div>
-        <div className="text-xs text-slate-500">
-          Markdown supported • Auto-saves every 30s
+        <div className="flex items-center space-x-4">
+          <div className="text-xs text-slate-500">
+            Markdown supported • Auto-saves every 30s
+          </div>
+          <div className="flex bg-slate-700 rounded-lg p-1">
+            <button
+              onClick={() => setIsPreview(false)}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition ${
+                !isPreview
+                  ? 'bg-purple-600 text-white'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => setIsPreview(true)}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition ${
+                isPreview
+                  ? 'bg-purple-600 text-white'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Eye className="w-3 h-3 inline mr-1" />
+              Preview
+            </button>
+          </div>
         </div>
       </div>
-      <textarea
-        value={submission}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={`Write your response here...\n\nObjective: ${objective}\n\nAddress each success criterion in your response. You can use markdown formatting:\n- **Bold** for emphasis\n- # Headers for sections\n- - Bullet points for lists\n- \`code\` for technical terms`}
-        className="w-full h-96 p-4 bg-slate-900 text-white resize-none focus:outline-none font-mono text-sm"
-      />
+      {isPreview ? (
+        <div className="p-4 bg-slate-900 text-white min-h-96 prose prose-invert max-w-none">
+          <ReactMarkdown
+            components={{
+              h1: ({ children }) => <h1 className="text-2xl font-bold text-purple-400 mb-4">{children}</h1>,
+              h2: ({ children }) => <h2 className="text-xl font-semibold text-purple-300 mb-3">{children}</h2>,
+              h3: ({ children }) => <h3 className="text-lg font-semibold text-purple-200 mb-2">{children}</h3>,
+              p: ({ children }) => <p className="text-slate-200 mb-3 leading-relaxed">{children}</p>,
+              ul: ({ children }) => <ul className="text-slate-200 mb-3 ml-4 space-y-1">{children}</ul>,
+              ol: ({ children }) => <ol className="text-slate-200 mb-3 ml-4 space-y-1">{children}</ol>,
+              li: ({ children }) => <li className="text-slate-200">{children}</li>,
+              code: ({ children }) => <code className="bg-slate-800 px-2 py-1 rounded text-purple-300 font-mono text-sm">{children}</code>,
+              pre: ({ children }) => <pre className="bg-slate-800 p-4 rounded-lg overflow-x-auto mb-3">{children}</pre>,
+              blockquote: ({ children }) => <blockquote className="border-l-4 border-purple-500 pl-4 italic text-slate-300 mb-3">{children}</blockquote>,
+              strong: ({ children }) => <strong className="text-purple-200 font-semibold">{children}</strong>,
+              em: ({ children }) => <em className="text-purple-300 italic">{children}</em>,
+            }}
+          >
+            {submission || '*No content yet - switch to Edit mode to start writing*'}
+          </ReactMarkdown>
+        </div>
+      ) : (
+        <textarea
+          value={submission}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={`Write your response here...\n\nObjective: ${objective}\n\nAddress each success criterion in your response. You can use markdown formatting:\n- **Bold** for emphasis\n- # Headers for sections\n- - Bullet points for lists\n- \`code\` for technical terms`}
+          className="w-full h-96 p-4 bg-slate-900 text-white resize-none focus:outline-none font-mono text-sm"
+        />
+      )}
     </div>
   );
 }
