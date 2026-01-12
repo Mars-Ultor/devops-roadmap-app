@@ -71,7 +71,7 @@ export const PersonalRunbook: FC<PersonalRunbookProps> = ({ entries }) => {
               Personal Troubleshooting Runbook
             </h2>
             <p className="text-purple-200">
-              Auto-generated from your {runbook.totalFailures} logged failure{runbook.totalFailures !== 1 ? 's' : ''}
+              Auto-generated from your {runbook.totalFailures} logged failure{runbook.totalFailures === 1 ? '' : 's'}
             </p>
           </div>
           <div className="flex gap-2">

@@ -24,7 +24,7 @@ const RunbookEntryCard: FC<RunbookEntryCardProps> = ({ entry, index }) => (
         <div className="flex items-center gap-4 text-sm text-slate-400">
           <div className="flex items-center gap-1">
             <AlertCircle className="w-4 h-4 text-amber-400" />
-            <span>{entry.occurrences} occurrence{entry.occurrences !== 1 ? 's' : ''}</span>
+            <span>{entry.occurrences} occurrence{entry.occurrences === 1 ? '' : 's'}</span>
           </div>
           <div className="flex items-center gap-1">
             <Clock className="w-4 h-4 text-blue-400" />
@@ -56,7 +56,7 @@ const RunbookEntryCard: FC<RunbookEntryCardProps> = ({ entry, index }) => (
     </div>
     {entry.relatedFailures.length > 1 && (
       <div className="mt-4 text-xs text-slate-500">
-        Related to {entry.relatedFailures.length - 1} other logged failure{entry.relatedFailures.length !== 2 ? 's' : ''}
+        Related to {entry.relatedFailures.length - 1} other logged failure{entry.relatedFailures.length - 1 === 1 ? '' : 's'}
       </div>
     )}
   </div>
@@ -81,7 +81,7 @@ export const RunbookCategory: FC<RunbookCategoryProps> = ({ category, defaultExp
           <div className="text-left">
             <h3 className="text-xl font-bold text-white">{category.category}</h3>
             <p className="text-sm text-slate-400">
-              {category.entries.length} unique issue{category.entries.length !== 1 ? 's' : ''} · {category.totalOccurrences} total occurrence{category.totalOccurrences !== 1 ? 's' : ''}
+              {category.entries.length} unique issue{category.entries.length === 1 ? '' : 's'} · {category.totalOccurrences} total occurrence{category.totalOccurrences === 1 ? '' : 's'}
             </p>
           </div>
         </div>

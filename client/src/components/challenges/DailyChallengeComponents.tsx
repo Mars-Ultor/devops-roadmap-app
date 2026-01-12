@@ -150,22 +150,22 @@ interface ChallengeFooterProps {
 export function ChallengeFooter({ isActive, timeLimit, completedCount, totalCount, onStart, onSubmit }: ChallengeFooterProps) {
   return (
     <div className="sticky bottom-0 bg-slate-800 border-t border-slate-700 p-6 flex justify-between items-center">
-      {!isActive ? (
-        <>
-          <p className="text-sm text-slate-400">
-            This is a timed challenge. You have {timeLimit / 60} {timeLimit / 60 === 1 ? 'minute' : 'minutes'} to complete all criteria.
-          </p>
-          <button onClick={onStart} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold">
-            Start Challenge
-          </button>
-        </>
-      ) : (
+      {isActive ? (
         <>
           <div className="text-sm text-slate-400">
             {completedCount} / {totalCount} criteria complete
           </div>
           <button onClick={onSubmit} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold">
             Submit Challenge
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="text-sm text-slate-400">
+            This is a timed challenge. You have {timeLimit / 60} {timeLimit / 60 === 1 ? 'minute' : 'minutes'} to complete all criteria.
+          </p>
+          <button onClick={onStart} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold">
+            Start Challenge
           </button>
         </>
       )}

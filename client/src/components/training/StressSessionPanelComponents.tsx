@@ -229,7 +229,7 @@ export function ProgressSection({ tasksCompleted, totalTasks, errorsCount }: Pro
       </div>
       {errorsCount > 0 && (
         <div className="mt-2 text-xs text-orange-400">
-          ⚠️ {errorsCount} error{errorsCount !== 1 ? 's' : ''} encountered
+          ⚠️ {errorsCount} error{errorsCount === 1 ? '' : 's'} encountered
         </div>
       )}
     </div>

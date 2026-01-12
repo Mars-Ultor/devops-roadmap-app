@@ -133,7 +133,7 @@ export const DocumentationRestrictor: React.FC<DocumentationRestrictorProps> = (
             className="flex items-center gap-1 text-sm text-red-400 hover:text-red-300"
           >
             <AlertCircle className="w-4 h-4" />
-            {blockedAttempts.length} blocked access attempt{blockedAttempts.length !== 1 ? 's' : ''}
+            {blockedAttempts.length} blocked access attempt{blockedAttempts.length === 1 ? '' : 's'}
           </button>
 
           {showBlocked && (

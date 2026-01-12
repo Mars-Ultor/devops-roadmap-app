@@ -128,7 +128,7 @@ export const CopyPasteBlocker: React.FC<CopyPasteBlockerProps> = ({
             className="flex items-center gap-1 text-sm text-red-400 hover:text-red-300"
           >
             <AlertTriangle className="w-4 h-4" />
-            {blockedActions.length} blocked attempt{blockedActions.length !== 1 ? 's' : ''}
+            {blockedActions.length} blocked attempt{blockedActions.length === 1 ? '' : 's'}
           </button>
 
           {showBlocked && (

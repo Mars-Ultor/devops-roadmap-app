@@ -80,7 +80,7 @@ export const RecertificationModal: FC<RecertificationModalProps> = ({
                 </div>
               </div>
             </div>
-            {!isTestingMode && (
+            {isTestingMode ? null : (
               <button
                 onClick={onClose}
                 className="text-slate-400 hover:text-white"
