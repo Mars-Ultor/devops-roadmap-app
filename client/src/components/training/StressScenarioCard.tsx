@@ -21,6 +21,46 @@ const stressLevelConfig = {
   extreme: { color: 'red', label: 'Extreme Stress', intensity: 4 }
 };
 
+function getCardClassName(locked: boolean, selected: boolean): string {
+  if (locked) {
+    return 'opacity-50 cursor-not-allowed bg-gray-800/30 border-gray-700';
+  }
+  if (selected) {
+    return 'border-blue-500 bg-blue-900/20';
+  }
+  return 'border-gray-700 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800';
+}
+
+function getStressLevelBadgeClass(color: string): string {
+  switch (color) {
+    case 'gray':
+      return 'bg-gray-700 text-gray-300';
+    case 'green':
+      return 'bg-green-900/50 text-green-300';
+    case 'yellow':
+      return 'bg-yellow-900/50 text-yellow-300';
+    case 'orange':
+      return 'bg-orange-900/50 text-orange-300';
+    case 'red':
+      return 'bg-red-900/50 text-red-300';
+    default:
+      return 'bg-red-900/50 text-red-300';
+  }
+}
+
+function getUnlockRequirement(stressLevel: string): string {
+  switch (stressLevel) {
+    case 'medium':
+      return 'low';
+    case 'high':
+      return 'medium';
+    case 'extreme':
+      return 'high';
+    default:
+      return 'previous';
+  }
+}
+
 export function StressScenarioCard({ scenario, onSelect, locked = false, selected = false }: StressScenarioCardProps) {
   const config = stressLevelConfig[scenario.stressLevel];
   const duration = Math.floor(scenario.duration / 60);
@@ -31,9 +71,7 @@ export function StressScenarioCard({ scenario, onSelect, locked = false, selecte
       disabled={locked}
       className={`
         w-full text-left p-4 rounded-lg border-2 transition-all
-        ${locked ? 'opacity-50 cursor-not-allowed bg-gray-800/30 border-gray-700' : 
-          selected ? 'border-blue-500 bg-blue-900/20' : 
-          'border-gray-700 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800'}
+        ${getCardClassName(locked, selected)}
       `}
     >
       {/* Header */}
@@ -47,11 +85,7 @@ export function StressScenarioCard({ scenario, onSelect, locked = false, selecte
           {/* Stress Level Badge */}
           <div className={`
             inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium
-            ${config.color === 'gray' ? 'bg-gray-700 text-gray-300' :
-              config.color === 'green' ? 'bg-green-900/50 text-green-300' :
-              config.color === 'yellow' ? 'bg-yellow-900/50 text-yellow-300' :
-              config.color === 'orange' ? 'bg-orange-900/50 text-orange-300' :
-              'bg-red-900/50 text-red-300'}
+            ${getStressLevelBadgeClass(config.color)}
           `}>
             <Zap className="w-3 h-3" />
             {config.label}
@@ -101,9 +135,7 @@ export function StressScenarioCard({ scenario, onSelect, locked = false, selecte
       {locked && (
         <div className="mt-3 pt-3 border-t border-gray-700">
           <p className="text-xs text-gray-400">
-            🔒 Complete {String(scenario.stressLevel) === 'medium' ? 'low' : 
-                         String(scenario.stressLevel) === 'high' ? 'medium' : 
-                         String(scenario.stressLevel) === 'extreme' ? 'high' : 'previous'} stress scenarios to unlock
+            🔒 Complete {getUnlockRequirement(String(scenario.stressLevel))} stress scenarios to unlock
           </p>
         </div>
       )}

@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function, complexity */
+/* eslint-disable max-lines-per-function */
 import { useEffect, useState } from 'react';
 import { collection, getDocs, query, where, getDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -16,6 +16,66 @@ interface WeekProgress {
   percentage: number;
 }
 
+function calculateWeekProgress(week: Week, completedLessons: Set<string>, completedLabs: Set<string>): WeekProgress {
+  const totalLessons = week.lessons.length;
+  const totalLabs = week.labs.length;
+  const totalItems = totalLessons + totalLabs;
+
+  const completedLessonsCount = week.lessons.filter((lesson) =>
+    completedLessons.has(lesson.id)
+  ).length;
+
+  const completedLabsCount = week.labs.filter((lab) =>
+    completedLabs.has(lab.id)
+  ).length;
+
+  const completedItems = completedLessonsCount + completedLabsCount;
+  const percentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+
+  return {
+    weekNumber: week.weekNumber,
+    completedLessons: completedLessonsCount,
+    totalLessons,
+    completedLabs: completedLabsCount,
+    totalLabs,
+    percentage
+  };
+}
+
+function getWeekCardClassName(isLocked: boolean, isRecommended: boolean, weekNumber: number, recommendedStartWeek: number | null): string {
+  if (isLocked) {
+    return 'border-slate-700 opacity-60';
+  }
+  if (isRecommended || weekNumber === recommendedStartWeek) {
+    return 'border-indigo-500 shadow-xl shadow-indigo-500/10';
+  }
+  return 'border-slate-700 hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/10';
+}
+
+function getProgressTextColor(percentage: number): string {
+  return percentage > 0 ? 'text-indigo-400' : 'text-gray-400';
+}
+
+function getButtonClassName(isComplete: boolean, percentage: number): string {
+  if (isComplete) {
+    return 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700';
+  }
+  if (percentage > 0) {
+    return 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white hover:from-yellow-700 hover:to-orange-700';
+  }
+  return 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700';
+}
+
+function getButtonText(isComplete: boolean, percentage: number): string {
+  if (isComplete) {
+    return '✓ Completed';
+  }
+  if (percentage > 0) {
+    return 'Continue →';
+  }
+  return 'Start Week →';
+}
+
 export default function Curriculum() {
   const { user } = useAuthStore();
   const [searchParams] = useSearchParams();
@@ -29,7 +89,7 @@ export default function Curriculum() {
   useEffect(() => {
     const startWeekParam = searchParams.get('startWeek');
     if (startWeekParam) {
-      const startWeek = parseInt(startWeekParam);
+      const startWeek = Number.parseInt(startWeekParam);
       if (startWeek >= 1 && startWeek <= 12) {
         setRecommendedStartWeek(startWeek);
         // Scroll to the recommended week after a short delay
@@ -143,29 +203,7 @@ export default function Curriculum() {
         const progressMap = new Map<number, WeekProgress>();
         
         weeksData.forEach(week => {
-          const totalLessons = week.lessons.length;
-          const totalLabs = week.labs.length;
-          const totalItems = totalLessons + totalLabs;
-          
-          const completedLessonsCount = week.lessons.filter((l: unknown) => 
-            completedLessons.has((l as { id: string }).id)
-          ).length;
-          
-          const completedLabsCount = week.labs.filter((l: unknown) => 
-            completedLabs.has((l as { id: string }).id)
-          ).length;
-          
-          const completedItems = completedLessonsCount + completedLabsCount;
-          const percentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-          
-          progressMap.set(week.weekNumber, {
-            weekNumber: week.weekNumber,
-            completedLessons: completedLessonsCount,
-            totalLessons,
-            completedLabs: completedLabsCount,
-            totalLabs,
-            percentage
-          });
+          progressMap.set(week.weekNumber, calculateWeekProgress(week, completedLessons, completedLabs));
         });
         
         setWeekProgress(progressMap);
@@ -237,13 +275,7 @@ export default function Curriculum() {
             <div 
               key={week.weekNumber} 
               id={`week-${week.weekNumber}`}
-              className={`bg-slate-800 rounded-xl p-8 border transition-all duration-300 ${
-                recommendedStartWeek === week.weekNumber
-                  ? 'border-green-500 shadow-xl shadow-green-500/20 ring-2 ring-green-500/50'
-                  : isLocked 
-                  ? 'border-slate-700 opacity-60' 
-                  : 'border-slate-700 hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/10'
-              }`}
+              className={`bg-slate-800 rounded-xl p-8 border transition-all duration-300 ${getWeekCardClassName(isLocked, recommendedStartWeek === week.weekNumber, week.weekNumber, recommendedStartWeek)}`}
             >
               {/* Recommended Start Week Banner */}
               {recommendedStartWeek === week.weekNumber && (
@@ -375,11 +407,7 @@ export default function Curriculum() {
                 <div className="flex flex-col items-end space-y-3 ml-6">
                   <div className="text-right">
                     <div className="text-sm text-gray-400 mb-1">Progress</div>
-                    <div className={`text-2xl font-bold ${
-                      isComplete ? 'text-green-400' : 
-                      percentage > 0 ? 'text-indigo-400' : 
-                      'text-gray-400'
-                    }`}>
+                    <div className={`text-2xl font-bold ${getProgressTextColor(percentage)}`}>
                       {percentage}%
                     </div>
                     {progress && (
@@ -398,15 +426,9 @@ export default function Curriculum() {
                   ) : (
                     <Link
                       to={`/week/${week.weekNumber}`}
-                      className={`px-6 py-3 rounded-lg font-bold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ${
-                        isComplete 
-                          ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700'
-                          : percentage > 0
-                          ? 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white hover:from-yellow-700 hover:to-orange-700'
-                          : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700'
-                      }`}
+                      className={`px-6 py-3 rounded-lg font-bold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ${getButtonClassName(isComplete, percentage)}`}
                     >
-                      {isComplete ? '✓ Completed' : percentage > 0 ? 'Continue →' : 'Start Week →'}
+                      {getButtonText(isComplete, percentage)}
                     </Link>
                   )}
                 </div>

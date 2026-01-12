@@ -43,6 +43,23 @@ export default function BattleDrillSession() {
   const [coachContext, setCoachContext] = useState<CoachContext | null>(null);
   const [showFailureLog, setShowFailureLog] = useState(false);
 
+  const getDifficultyStyles = (difficulty: string) => {
+    switch (difficulty) {
+      case 'basic':
+        return 'bg-green-900/30 text-green-400';
+      case 'intermediate':
+        return 'bg-yellow-900/30 text-yellow-400';
+      default:
+        return 'bg-red-900/30 text-red-400';
+    }
+  };
+
+  const getValidationTextColor = (isPassed: boolean, isFailed: boolean) => {
+    if (isPassed) return 'text-green-400';
+    if (isFailed) return 'text-red-400';
+    return 'text-slate-300';
+  };
+
   // Use ref to access current elapsed time without triggering re-renders
   const elapsedSecondsRef = useRef(0);
 
@@ -367,11 +384,7 @@ export default function BattleDrillSession() {
               <h1 className="text-2xl font-bold text-white mb-2">{drill.title}</h1>
               <p className="text-slate-300 mb-3">{drill.description}</p>
               <div className="flex items-center gap-4 text-sm">
-                <span className={`px-3 py-1 rounded ${
-                  drill.difficulty === 'basic' ? 'bg-green-900/30 text-green-400' :
-                  drill.difficulty === 'intermediate' ? 'bg-yellow-900/30 text-yellow-400' :
-                  'bg-red-900/30 text-red-400'
-                }`}>
+                <span className={`px-3 py-1 rounded ${getDifficultyStyles(drill.difficulty)}`}>
                   {drill.difficulty}
                 </span>
                 <span className="text-slate-400 capitalize">{drill.category}</span>
@@ -514,11 +527,7 @@ export default function BattleDrillSession() {
                             const isFailed = validation?.failedCriteria.includes(criteria);
                             
                             return (
-                              <div key={criteria} className={`flex items-center gap-2 text-sm ${
-                                isPassed ? 'text-green-400' :
-                                isFailed ? 'text-red-400' :
-                                'text-slate-300'
-                              }`}>
+                              <div key={criteria} className={`flex items-center gap-2 text-sm ${getValidationTextColor(isPassed, isFailed)}`}>
                                 {isPassed && <CheckCircle className="w-4 h-4" />}
                                 {isFailed && <XCircle className="w-4 h-4" />}
                                 {!isPassed && !isFailed && <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />}
@@ -548,10 +557,11 @@ export default function BattleDrillSession() {
                   {!isCompleted && (
                     <div className="mt-4 space-y-3">
                       <div>
-                        <label className="block text-sm text-slate-400 mb-2">
+                        <label htmlFor={`step-input-${index}`} className="block text-sm text-slate-400 mb-2">
                           Describe what you did or paste relevant output:
                         </label>
                         <textarea
+                          id={`step-input-${index}`}
                           value={stepInputs[index] || ''}
                           onChange={(e) => handleStepInput(index, e.target.value)}
                           placeholder="Example: Created Dockerfile with FROM node:18-alpine, COPY . ., RUN npm install, EXPOSE 3000, CMD npm start"

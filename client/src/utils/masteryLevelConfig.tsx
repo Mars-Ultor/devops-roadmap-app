@@ -2,7 +2,24 @@
  * Level configuration utilities for MasteryLesson component
  */
 
+/* eslint-disable sonarjs/no-duplicate-string */
+
 import { BookOpen, Target, Brain, Zap } from 'lucide-react';
+
+const SHOW_HINTS = true;
+const HIDE_HINTS = false;
+const HIDE_VIDEO = false;
+const ALLOW_STRUGGLE = true;
+
+const TARGET_ICON = () => <Target className="w-5 h-5" />;
+const BRAIN_ICON = () => <Brain className="w-5 h-5" />;
+const ZAP_ICON = () => <Zap className="w-5 h-5" />;
+const BOOK_OPEN_ICON = () => <BookOpen className="w-5 h-5" />;
+
+const BLUE_BG = 'bg-blue-900/20';
+const GREEN_BG = 'bg-green-900/20';
+const YELLOW_BG = 'bg-yellow-900/20';
+const PURPLE_BG = 'bg-purple-900/20';
 
 export interface LevelConfig {
   name: string;
@@ -48,9 +65,9 @@ export function getLevelConfig(level: MasteryLevel): LevelConfig {
     case 'crawl':
       return {
         name: 'Crawl - Guided Learning',
-        icon: () => <BookOpen className="w-5 h-5" />,
+        icon: BOOK_OPEN_ICON,
         color: 'text-blue-400',
-        bgColor: 'bg-blue-900/20',
+        bgColor: BLUE_BG,
         description: 'Step-by-step guided instruction with full support',
         showHints: true,
         showVideo: true,
@@ -59,35 +76,35 @@ export function getLevelConfig(level: MasteryLevel): LevelConfig {
     case 'walk':
       return {
         name: 'Walk - Interactive Learning',
-        icon: () => <Target className="w-5 h-5" />,
+        icon: TARGET_ICON,
         color: 'text-green-400',
-        bgColor: 'bg-green-900/20',
+        bgColor: GREEN_BG,
         description: 'Fill-in-the-blanks with some independence',
-        showHints: true,
-        showVideo: false,
-        allowStruggle: true
+        showHints: SHOW_HINTS,
+        showVideo: HIDE_VIDEO,
+        allowStruggle: ALLOW_STRUGGLE
       };
     case 'run-guided':
       return {
         name: 'Run-Guided - Conceptual Mastery',
-        icon: () => <Brain className="w-5 h-5" />,
+        icon: BRAIN_ICON,
         color: 'text-yellow-400',
-        bgColor: 'bg-yellow-900/20',
+        bgColor: YELLOW_BG,
         description: 'Conceptual understanding with minimal guidance',
-        showHints: false,
-        showVideo: false,
-        allowStruggle: true
+        showHints: HIDE_HINTS,
+        showVideo: HIDE_VIDEO,
+        allowStruggle: ALLOW_STRUGGLE
       };
     case 'run-independent':
       return {
         name: 'Run-Independent - Full Mastery',
-        icon: () => <Zap className="w-5 h-5" />,
+        icon: ZAP_ICON,
         color: 'text-purple-400',
-        bgColor: 'bg-purple-900/20',
+        bgColor: PURPLE_BG,
         description: 'Complete independence with no assistance',
-        showHints: false,
-        showVideo: false,
-        allowStruggle: true
+        showHints: HIDE_HINTS,
+        showVideo: HIDE_VIDEO,
+        allowStruggle: ALLOW_STRUGGLE
       };
   }
 }
