@@ -7,7 +7,7 @@ import { Brain, HelpCircle, Lightbulb } from 'lucide-react';
 import { reviewAAR } from '../../services/aiCoach';
 
 interface AARReviewPanelProps {
-  aar: {
+  readonly aar: {
     objective: string;
     whatWorked: string[];
     whatDidntWork: string[];

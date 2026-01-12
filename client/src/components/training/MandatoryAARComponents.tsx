@@ -6,7 +6,7 @@ import { AlertTriangle, CheckCircle, X, Brain } from 'lucide-react';
 import { countWords } from './MandatoryAARUtils';
 
 interface AARHeaderProps {
-  labTitle: string;
+  readonly labTitle: string;
 }
 
 export function AARHeader({ labTitle }: AARHeaderProps) {
@@ -34,7 +34,7 @@ export function AARHeader({ labTitle }: AARHeaderProps) {
 }
 
 interface ErrorsDisplayProps {
-  errors: string[];
+  readonly errors: string[];
 }
 
 export function ErrorsDisplay({ errors }: ErrorsDisplayProps) {
@@ -55,8 +55,8 @@ export function ErrorsDisplay({ errors }: ErrorsDisplayProps) {
 }
 
 interface AIFeedbackDisplayProps {
-  aiErrors: Record<string, string>;
-  showAIFeedback: boolean;
+  readonly aiErrors: Record<string, string>;
+  readonly showAIFeedback: boolean;
 }
 
 export function AIFeedbackDisplay({ aiErrors, showAIFeedback }: AIFeedbackDisplayProps) {
@@ -82,13 +82,13 @@ export function AIFeedbackDisplay({ aiErrors, showAIFeedback }: AIFeedbackDispla
 }
 
 interface TextAreaFieldProps {
-  label: string;
-  minWords: number;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  hasAIError?: boolean;
-  rows?: number;
+  readonly label: string;
+  readonly minWords: number;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly placeholder: string;
+  readonly hasAIError?: boolean;
+  readonly rows?: number;
 }
 
 export function TextAreaField({ label, minWords, value, onChange, placeholder, hasAIError, rows = 3 }: TextAreaFieldProps) {
@@ -113,15 +113,15 @@ export function TextAreaField({ label, minWords, value, onChange, placeholder, h
 }
 
 interface ArrayFieldProps {
-  label: string;
-  minItems: number;
-  minWords: number;
-  items: string[];
-  onChange: (items: string[]) => void;
-  onAdd: () => void;
-  addLabel: string;
-  placeholderBase: string;
-  icon: 'success' | 'failure';
+  readonly label: string;
+  readonly minItems: number;
+  readonly minWords: number;
+  readonly items: string[];
+  readonly onChange: (items: string[]) => void;
+  readonly onAdd: () => void;
+  readonly addLabel: string;
+  readonly placeholderBase: string;
+  readonly icon: 'success' | 'failure';
 }
 
 export function ArrayField({ label, minItems, minWords, items, onChange, onAdd, addLabel, placeholderBase, icon }: ArrayFieldProps) {
@@ -163,8 +163,8 @@ export function ArrayField({ label, minItems, minWords, items, onChange, onAdd, 
 }
 
 interface AARFooterProps {
-  submitting: boolean;
-  onSubmit: () => void;
+  readonly submitting: boolean;
+  readonly onSubmit: () => void;
 }
 
 export function AARFooter({ submitting, onSubmit }: AARFooterProps) {

@@ -45,7 +45,7 @@ export function FormHeader() {
 
 // Locked Notice
 interface LockedNoticeProps {
-  hintsUnlocked: boolean;
+  readonly hintsUnlocked: boolean;
 }
 
 export function LockedNotice({ hintsUnlocked }: LockedNoticeProps) {
@@ -66,10 +66,10 @@ export function LockedNotice({ hintsUnlocked }: LockedNoticeProps) {
 
 // Attempted Solutions Section
 interface AttemptedSolutionsSectionProps {
-  attemptedSolutions: string[];
-  hintsUnlocked: boolean;
-  onAttemptChange: (index: number, value: string) => void;
-  onAddAttempt: () => void;
+  readonly attemptedSolutions: string[];
+  readonly hintsUnlocked: boolean;
+  readonly onAttemptChange: (index: number, value: string) => void;
+  readonly onAddAttempt: () => void;
 }
 
 export function AttemptedSolutionsSection({ 
@@ -115,9 +115,9 @@ export function AttemptedSolutionsSection({
 
 // Stuck Location Section
 interface StuckLocationSectionProps {
-  value: string;
-  hintsUnlocked: boolean;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly hintsUnlocked: boolean;
+  readonly onChange: (value: string) => void;
 }
 
 export function StuckLocationSection({ value, hintsUnlocked, onChange }: StuckLocationSectionProps) {
@@ -143,9 +143,9 @@ export function StuckLocationSection({ value, hintsUnlocked, onChange }: StuckLo
 
 // Hypothesis Section
 interface HypothesisSectionProps {
-  value: string;
-  hintsUnlocked: boolean;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly hintsUnlocked: boolean;
+  readonly onChange: (value: string) => void;
 }
 
 export function HypothesisSection({ value, hintsUnlocked, onChange }: HypothesisSectionProps) {
@@ -171,9 +171,9 @@ export function HypothesisSection({ value, hintsUnlocked, onChange }: Hypothesis
 
 // Submit Button
 interface SubmitButtonProps {
-  isValid: boolean;
-  hintsUnlocked: boolean;
-  submitting: boolean;
+  readonly isValid: boolean;
+  readonly hintsUnlocked: boolean;
+  readonly submitting: boolean;
 }
 
 export function SubmitButton({ isValid, hintsUnlocked, submitting }: SubmitButtonProps) {

@@ -6,9 +6,9 @@ import { X, Clock, Target, AlertCircle } from 'lucide-react';
 import { type Challenge, getDifficultyStyle, formatTime } from './DailyChallengeUtils';
 
 interface ChallengeHeaderProps {
-  challenge: Challenge;
-  onClose: () => void;
-  isActive: boolean;
+  readonly challenge: Challenge;
+  readonly onClose: () => void;
+  readonly isActive: boolean;
 }
 
 export function ChallengeHeader({ challenge, onClose, isActive }: ChallengeHeaderProps) {
@@ -32,9 +32,9 @@ export function ChallengeHeader({ challenge, onClose, isActive }: ChallengeHeade
 }
 
 interface TimerDisplayProps {
-  timeLimit: number;
-  timeRemaining: number;
-  timerColor: string;
+  readonly timeLimit: number;
+  readonly timeRemaining: number;
+  readonly timerColor: string;
 }
 
 export function TimerDisplay({ timeLimit, timeRemaining, timerColor }: TimerDisplayProps) {
@@ -52,7 +52,7 @@ export function TimerDisplay({ timeLimit, timeRemaining, timerColor }: TimerDisp
 }
 
 interface ScenarioSectionProps {
-  scenario: string;
+  readonly scenario: string;
 }
 
 export function ScenarioSection({ scenario }: ScenarioSectionProps) {
@@ -70,7 +70,7 @@ export function ScenarioSection({ scenario }: ScenarioSectionProps) {
 }
 
 interface TaskSectionProps {
-  task: string;
+  readonly task: string;
 }
 
 export function TaskSection({ task }: TaskSectionProps) {
@@ -85,11 +85,11 @@ export function TaskSection({ task }: TaskSectionProps) {
 }
 
 interface CriteriaSectionProps {
-  criteria: string[];
-  completedCriteria: boolean[];
-  isActive: boolean;
-  timeRemaining: number;
-  onToggle: (index: number) => void;
+  readonly criteria: string[];
+  readonly completedCriteria: boolean[];
+  readonly isActive: boolean;
+  readonly timeRemaining: number;
+  readonly onToggle: (index: number) => void;
 }
 
 export function CriteriaSection({ criteria, completedCriteria, isActive, timeRemaining, onToggle }: CriteriaSectionProps) {
@@ -113,9 +113,9 @@ export function CriteriaSection({ criteria, completedCriteria, isActive, timeRem
 }
 
 interface HintsSectionProps {
-  hints: string[];
-  showHints: boolean;
-  onToggle: () => void;
+  readonly hints: string[];
+  readonly showHints: boolean;
+  readonly onToggle: () => void;
 }
 
 export function HintsSection({ hints, showHints, onToggle }: HintsSectionProps) {
@@ -139,12 +139,12 @@ export function HintsSection({ hints, showHints, onToggle }: HintsSectionProps) 
 }
 
 interface ChallengeFooterProps {
-  isActive: boolean;
-  timeLimit: number;
-  completedCount: number;
-  totalCount: number;
-  onStart: () => void;
-  onSubmit: () => void;
+  readonly isActive: boolean;
+  readonly timeLimit: number;
+  readonly completedCount: number;
+  readonly totalCount: number;
+  readonly onStart: () => void;
+  readonly onSubmit: () => void;
 }
 
 export function ChallengeFooter({ isActive, timeLimit, completedCount, totalCount, onStart, onSubmit }: ChallengeFooterProps) {
@@ -153,7 +153,7 @@ export function ChallengeFooter({ isActive, timeLimit, completedCount, totalCoun
       {!isActive ? (
         <>
           <p className="text-sm text-slate-400">
-            This is a timed challenge. You have {timeLimit / 60} minutes to complete all criteria.
+            This is a timed challenge. You have {timeLimit / 60} {timeLimit / 60 === 1 ? 'minute' : 'minutes'} to complete all criteria.
           </p>
           <button onClick={onStart} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold">
             Start Challenge

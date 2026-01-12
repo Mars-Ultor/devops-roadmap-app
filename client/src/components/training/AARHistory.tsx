@@ -7,15 +7,15 @@ import { BookOpen, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 import type { AAR } from '../../types/training';
 
 interface AARHistoryProps {
-  contentId: string;
-  contentType: 'lesson' | 'lab' | 'drill';
-  getAARs: (contentId: string, contentType: 'lesson' | 'lab' | 'drill') => Promise<AAR[]>;
+  readonly contentId: string;
+  readonly contentType: 'lesson' | 'lab' | 'drill';
+  readonly getAARs: (contentId: string, contentType: 'lesson' | 'lab' | 'drill') => Promise<AAR[]>;
 }
 
 interface AARCardProps {
-  aar: AAR;
-  isExpanded: boolean;
-  onToggle: () => void;
+  readonly aar: AAR;
+  readonly isExpanded: boolean;
+  readonly onToggle: () => void;
 }
 
 const AARSection: FC<{ title: string; color: string; items: string[] }> = ({ title, color, items }) => (

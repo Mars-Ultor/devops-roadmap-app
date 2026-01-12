@@ -30,7 +30,7 @@ export function TCSHeader() {
 
 // Task Section
 interface TaskSectionProps {
-  task: string;
+  readonly task: string;
 }
 
 export function TaskSection({ task }: TaskSectionProps) {

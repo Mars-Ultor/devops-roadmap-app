@@ -18,7 +18,7 @@ export function LoadingState() {
 }
 
 interface HeaderSectionProps {
-  analytics: PerformanceAnalytics;
+  readonly analytics: PerformanceAnalytics;
 }
 
 export function HeaderSection({ analytics }: HeaderSectionProps) {
@@ -41,7 +41,7 @@ export function HeaderSection({ analytics }: HeaderSectionProps) {
   );
 }
 
-function MetricsGrid({ analytics }: { analytics: PerformanceAnalytics }) {
+function MetricsGrid({ analytics }: { readonly analytics: PerformanceAnalytics }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <MetricCard icon={<Target className="w-4 h-4 text-blue-400" />} label="Attempts"
@@ -60,7 +60,7 @@ function MetricsGrid({ analytics }: { analytics: PerformanceAnalytics }) {
   );
 }
 
-function MetricCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string; color: string }) {
+function MetricCard({ icon, label, value, color }: { readonly icon: React.ReactNode; readonly label: string; readonly value: string; readonly color: string }) {
   return (
     <div className="bg-slate-900/50 rounded p-3">
       <div className="flex items-center gap-2 mb-1">{icon}<span className="text-xs text-slate-400">{label}</span></div>
@@ -69,7 +69,7 @@ function MetricCard({ icon, label, value, color }: { icon: React.ReactNode; labe
   );
 }
 
-export function TrendsSection({ analytics }: { analytics: PerformanceAnalytics }) {
+export function TrendsSection({ analytics }: { readonly analytics: PerformanceAnalytics }) {
   return (
     <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
       <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -90,7 +90,7 @@ export function TrendsSection({ analytics }: { analytics: PerformanceAnalytics }
   );
 }
 
-function TrendItem({ icon, label, color, items }: { icon: React.ReactNode; label: string; color: string; items: string[] }) {
+function TrendItem({ icon, label, color, items }: { readonly icon: React.ReactNode; readonly label: string; readonly color: string; readonly items: string[] }) {
   return (
     <div className="flex items-start gap-3">
       <span className="mt-0.5">{icon}</span>
@@ -99,7 +99,7 @@ function TrendItem({ icon, label, color, items }: { icon: React.ReactNode; label
   );
 }
 
-export function LearningPathSection({ learningPath }: { learningPath: LearningPath }) {
+export function LearningPathSection({ learningPath }: { readonly learningPath: LearningPath }) {
   return (
     <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
       <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -123,7 +123,7 @@ export function LearningPathSection({ learningPath }: { learningPath: LearningPa
   );
 }
 
-export function RecommendationsSection({ recommendations }: { recommendations: string[] }) {
+export function RecommendationsSection({ recommendations }: { readonly recommendations: string[] }) {
   if (recommendations.length === 0) return null;
   return (
     <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">

@@ -25,8 +25,8 @@ export function LoadingState() {
 
 // Daily Load Summary
 interface DailyLoadSummaryProps {
-  dailyLoad: DailyLoadData;
-  dueCount: number;
+  readonly dailyLoad: DailyLoadData;
+  readonly dueCount: number;
 }
 
 export function DailyLoadSummary({ dailyLoad, dueCount }: DailyLoadSummaryProps) {
@@ -62,10 +62,10 @@ export function DailyLoadSummary({ dailyLoad, dueCount }: DailyLoadSummaryProps)
 
 // Load Stat Card
 interface LoadStatCardProps {
-  value: number;
-  label: string;
-  color: string;
-  highlighted?: boolean;
+  readonly value: number;
+  readonly label: string;
+  readonly color: string;
+  readonly highlighted?: boolean;
 }
 
 function LoadStatCard({ value, label, color, highlighted }: LoadStatCardProps) {
@@ -81,9 +81,9 @@ function LoadStatCard({ value, label, color, highlighted }: LoadStatCardProps) {
 
 // Review Item
 interface ReviewItemProps {
-  review: ReviewSchedule;
-  index: number;
-  onClick: () => void;
+  readonly review: ReviewSchedule;
+  readonly index: number;
+  readonly onClick: () => void;
 }
 
 export function ReviewItem({ review, index, onClick }: ReviewItemProps) {
@@ -117,7 +117,7 @@ export function ReviewItem({ review, index, onClick }: ReviewItemProps) {
   );
 }
 
-function ReviewItemHeader({ review }: { review: ReviewSchedule }) {
+function ReviewItemHeader({ review }: { readonly review: ReviewSchedule }) {
   return (
     <div className="flex items-center gap-2 mb-2">
       <h4 className="font-semibold text-white">{review.contentTitle}</h4>
@@ -133,7 +133,7 @@ function ReviewItemHeader({ review }: { review: ReviewSchedule }) {
   );
 }
 
-function ReviewItemStats({ review }: { review: ReviewSchedule }) {
+function ReviewItemStats({ review }: { readonly review: ReviewSchedule }) {
   return (
     <div className="flex items-center gap-4 text-sm text-slate-400">
       {review.masteryLevel && (
@@ -150,8 +150,8 @@ function ReviewItemStats({ review }: { review: ReviewSchedule }) {
 
 // Reviews Due Today Section
 interface ReviewsDueTodayProps {
-  reviews: ReviewSchedule[];
-  onReviewClick: (contentId: string) => void;
+  readonly reviews: ReviewSchedule[];
+  readonly onReviewClick: (contentId: string) => void;
 }
 
 export function ReviewsDueToday({ reviews, onReviewClick }: ReviewsDueTodayProps) {
@@ -180,7 +180,7 @@ export function ReviewsDueToday({ reviews, onReviewClick }: ReviewsDueTodayProps
 
 // Upcoming Week Section
 interface UpcomingWeekProps {
-  reviews: ReviewSchedule[];
+  readonly reviews: ReviewSchedule[];
 }
 
 export function UpcomingWeek({ reviews }: UpcomingWeekProps) {
@@ -204,8 +204,8 @@ export function UpcomingWeek({ reviews }: UpcomingWeekProps) {
 }
 
 interface DayColumnProps {
-  day: number;
-  reviews: ReviewSchedule[];
+  readonly day: number;
+  readonly reviews: ReviewSchedule[];
 }
 
 function DayColumn({ day, reviews }: DayColumnProps) {

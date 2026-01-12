@@ -7,10 +7,10 @@ import { Clock, Zap, AlertTriangle, Users, Lock } from 'lucide-react';
 import type { StressScenario } from '../../types/training';
 
 interface StressScenarioCardProps {
-  scenario: StressScenario;
-  onSelect: () => void;
-  locked?: boolean;
-  selected?: boolean;
+  readonly scenario: StressScenario;
+  readonly onSelect: () => void;
+  readonly locked?: boolean;
+  readonly selected?: boolean;
 }
 
 const stressLevelConfig = {

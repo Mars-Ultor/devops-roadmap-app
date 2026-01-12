@@ -17,8 +17,8 @@ import {
 
 // Scenario Header
 interface ScenarioHeaderProps {
-  title: string;
-  description: string;
+  readonly title: string;
+  readonly description: string;
 }
 
 export function ScenarioHeader({ title, description }: ScenarioHeaderProps) {
@@ -32,13 +32,13 @@ export function ScenarioHeader({ title, description }: ScenarioHeaderProps) {
 
 // Metric Card Base
 interface MetricCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  valueColor: string;
-  barColor: string;
-  barValue: number;
-  className?: string;
+  readonly icon: React.ReactNode;
+  readonly label: string;
+  readonly value: number;
+  readonly valueColor: string;
+  readonly barColor: string;
+  readonly barValue: number;
+  readonly className?: string;
 }
 
 function MetricCard({ icon, label, value, valueColor, barColor, barValue, className = '' }: MetricCardProps) {
@@ -63,11 +63,11 @@ function MetricCard({ icon, label, value, valueColor, barColor, barValue, classN
 
 // Physiological Metrics Grid
 interface MetricsGridProps {
-  session: StressTrainingSession;
-  remainingSeconds: number;
-  timeProgress: number;
-  isTimeWarning: boolean;
-  isTimeCritical: boolean;
+  readonly session: StressTrainingSession;
+  readonly remainingSeconds: number;
+  readonly timeProgress: number;
+  readonly isTimeWarning: boolean;
+  readonly isTimeCritical: boolean;
 }
 
 export function MetricsGrid({ session, remainingSeconds, timeProgress, isTimeWarning, isTimeCritical }: MetricsGridProps) {
@@ -112,10 +112,10 @@ export function MetricsGrid({ session, remainingSeconds, timeProgress, isTimeWar
 
 // Time Metric (special case)
 interface TimeMetricProps {
-  remainingSeconds: number;
-  timeProgress: number;
-  isTimeWarning: boolean;
-  isTimeCritical: boolean;
+  readonly remainingSeconds: number;
+  readonly timeProgress: number;
+  readonly isTimeWarning: boolean;
+  readonly isTimeCritical: boolean;
 }
 
 function TimeMetric({ remainingSeconds, timeProgress, isTimeWarning, isTimeCritical }: TimeMetricProps) {
@@ -142,7 +142,7 @@ function TimeMetric({ remainingSeconds, timeProgress, isTimeWarning, isTimeCriti
 
 // Active Conditions Section
 interface ActiveConditionsProps {
-  conditions: StressTrainingSession['scenario']['conditions'];
+  readonly conditions: StressTrainingSession['scenario']['conditions'];
 }
 
 export function ActiveConditions({ conditions }: ActiveConditionsProps) {
@@ -171,8 +171,8 @@ export function ActiveConditions({ conditions }: ActiveConditionsProps) {
 
 // Success Criteria Section
 interface SuccessCriteriaProps {
-  criteria: string[];
-  tasksCompleted: number;
+  readonly criteria: string[];
+  readonly tasksCompleted: number;
 }
 
 export function SuccessCriteria({ criteria, tasksCompleted }: SuccessCriteriaProps) {
@@ -207,9 +207,9 @@ export function SuccessCriteria({ criteria, tasksCompleted }: SuccessCriteriaPro
 
 // Progress Section
 interface ProgressSectionProps {
-  tasksCompleted: number;
-  totalTasks: number;
-  errorsCount: number;
+  readonly tasksCompleted: number;
+  readonly totalTasks: number;
+  readonly errorsCount: number;
 }
 
 export function ProgressSection({ tasksCompleted, totalTasks, errorsCount }: ProgressSectionProps) {
@@ -238,8 +238,8 @@ export function ProgressSection({ tasksCompleted, totalTasks, errorsCount }: Pro
 
 // Warning Messages
 interface WarningMessagesProps {
-  isTimeWarning: boolean;
-  isTimeCritical: boolean;
+  readonly isTimeWarning: boolean;
+  readonly isTimeCritical: boolean;
 }
 
 export function WarningMessages({ isTimeWarning, isTimeCritical }: WarningMessagesProps) {

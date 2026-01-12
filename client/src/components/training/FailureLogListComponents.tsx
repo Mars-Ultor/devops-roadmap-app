@@ -6,8 +6,19 @@ import { AlertTriangle, CheckCircle, Clock, Filter } from 'lucide-react';
 import type { FailureLog, FailureCategory } from '../../types/training';
 import { getSeverityColor, type FailureStats, CATEGORY_OPTIONS, STATUS_OPTIONS } from './FailureLogListUtils';
 
+type CategoryFilter = FailureCategory | 'all';
+type StatusFilter = 'all' | 'resolved' | 'unresolved';
+
+function getFailureItemBorderClass(failure: FailureLog): string {
+  return failure.resolvedAt
+    ? 'border-green-700/30'
+    : failure.isRecurring
+    ? 'border-orange-500/50'
+    : 'border-slate-700';
+}
+
 interface StatsDisplayProps {
-  stats: FailureStats;
+  readonly stats: FailureStats;
 }
 
 export function StatsDisplay({ stats }: StatsDisplayProps) {
@@ -36,10 +47,10 @@ export function StatsDisplay({ stats }: StatsDisplayProps) {
 }
 
 interface FiltersProps {
-  categoryFilter: FailureCategory | 'all';
-  statusFilter: 'all' | 'resolved' | 'unresolved';
-  onCategoryChange: (value: FailureCategory | 'all') => void;
-  onStatusChange: (value: 'all' | 'resolved' | 'unresolved') => void;
+  readonly categoryFilter: CategoryFilter;
+  readonly statusFilter: StatusFilter;
+  readonly onCategoryChange: (value: CategoryFilter) => void;
+  readonly onStatusChange: (value: StatusFilter) => void;
 }
 
 export function Filters({ categoryFilter, statusFilter, onCategoryChange, onStatusChange }: FiltersProps) {
@@ -69,12 +80,12 @@ export function Filters({ categoryFilter, statusFilter, onCategoryChange, onStat
 }
 
 interface FailureItemProps {
-  failure: FailureLog;
-  onResolve: (failure: FailureLog) => void;
+  readonly failure: FailureLog;
+  readonly onResolve: (failure: FailureLog) => void;
 }
 
 export function FailureItem({ failure, onResolve }: FailureItemProps) {
-  const borderClass = failure.resolvedAt ? 'border-green-700/30' : failure.isRecurring ? 'border-orange-500/50' : 'border-slate-700';
+  const borderClass = getFailureItemBorderClass(failure);
 
   return (
     <div className={`bg-slate-800 rounded-lg p-5 border transition-all ${borderClass}`}>
@@ -104,7 +115,7 @@ export function FailureItem({ failure, onResolve }: FailureItemProps) {
   );
 }
 
-function ResolutionDetails({ failure }: { failure: FailureLog }) {
+function ResolutionDetails({ failure }: { readonly failure: FailureLog }) {
   return (
     <div className="mt-4 pt-4 border-t border-slate-700 space-y-3">
       <div><h4 className="text-sm font-semibold text-green-400 mb-1">Root Cause:</h4><p className="text-sm text-slate-300">{failure.rootCause}</p></div>
@@ -123,7 +134,7 @@ function ResolutionDetails({ failure }: { failure: FailureLog }) {
 }
 
 interface EmptyStateProps {
-  hasFailures: boolean;
+  readonly hasFailures: boolean;
 }
 
 export function EmptyState({ hasFailures }: EmptyStateProps) {

@@ -6,6 +6,14 @@ import { Brain, Sparkles, MessageCircle, AlertTriangle } from 'lucide-react';
 import type { CoachFeedback, CodeAnalysis } from '../../types/aiCoach';
 import { getIconColor, getTypeLabel, getPriorityColor } from './EnhancedAICoachPanelUtils';
 
+function getIssueSeverityStyles(severity: string): string {
+  return severity === 'critical'
+    ? 'bg-red-900/50 border border-red-700'
+    : severity === 'high'
+    ? 'bg-amber-900/50 border border-amber-700'
+    : 'bg-slate-900/50';
+}
+
 export function LoadingState() {
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
@@ -23,7 +31,7 @@ export function LoadingState() {
 }
 
 interface DisciplineAlertsProps {
-  alerts: string[];
+  readonly alerts: string[];
 }
 
 export function DisciplineAlerts({ alerts }: DisciplineAlertsProps) {
@@ -43,7 +51,7 @@ export function DisciplineAlerts({ alerts }: DisciplineAlertsProps) {
 }
 
 interface FeedbackHeaderProps {
-  feedback: CoachFeedback | null;
+  readonly feedback: CoachFeedback | null;
 }
 
 export function FeedbackHeader({ feedback }: FeedbackHeaderProps) {
@@ -61,7 +69,7 @@ export function FeedbackHeader({ feedback }: FeedbackHeaderProps) {
 }
 
 interface FeedbackContentProps {
-  feedback: CoachFeedback;
+  readonly feedback: CoachFeedback;
 }
 
 export function FeedbackContent({ feedback }: FeedbackContentProps) {
@@ -90,7 +98,7 @@ export function FeedbackContent({ feedback }: FeedbackContentProps) {
 }
 
 interface CodeAnalysisDisplayProps {
-  analysis: CodeAnalysis;
+  readonly analysis: CodeAnalysis;
 }
 
 export function CodeAnalysisDisplay({ analysis }: CodeAnalysisDisplayProps) {
@@ -100,10 +108,7 @@ export function CodeAnalysisDisplay({ analysis }: CodeAnalysisDisplayProps) {
       {analysis.issues.length > 0 && (
         <div className="space-y-2">
           {analysis.issues.map((issue) => (
-            <div key={issue.message} className={`p-3 rounded text-sm ${
-              issue.severity === 'critical' ? 'bg-red-900/50 border border-red-700' :
-              issue.severity === 'high' ? 'bg-amber-900/50 border border-amber-700' : 'bg-slate-900/50'
-            }`}>
+            <div key={issue.message} className={`p-3 rounded text-sm ${getIssueSeverityStyles(issue.severity)}`}>
               <div className="font-medium text-slate-200">{issue.message}</div>
               <div className="text-slate-400 mt-1">{issue.suggestion}</div>
             </div>
@@ -125,9 +130,9 @@ export function CodeAnalysisDisplay({ analysis }: CodeAnalysisDisplayProps) {
 }
 
 interface FeedbackFooterProps {
-  feedback: CoachFeedback | null;
-  loading: boolean;
-  onFetch: () => void;
+  readonly feedback: CoachFeedback | null;
+  readonly loading: boolean;
+  readonly onFetch: () => void;
 }
 
 export function FeedbackFooter({ feedback, loading, onFetch }: FeedbackFooterProps) {

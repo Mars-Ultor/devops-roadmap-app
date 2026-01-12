@@ -11,9 +11,9 @@ import {
 } from './ConstraintDisplayUtils';
 
 interface HeaderProps {
-  badgeColor: string;
-  badgeIcon: string;
-  badgeLabel: string;
+  readonly badgeColor: string;
+  readonly badgeIcon: string;
+  readonly badgeLabel: string;
 }
 
 export function ConstraintHeader({ badgeColor, badgeIcon, badgeLabel }: HeaderProps) {
@@ -31,7 +31,7 @@ export function ConstraintHeader({ badgeColor, badgeIcon, badgeLabel }: HeaderPr
 }
 
 interface WarningBannerProps {
-  message: string;
+  readonly message: string;
 }
 
 export function WarningBanner({ message }: WarningBannerProps) {
@@ -46,9 +46,9 @@ export function WarningBanner({ message }: WarningBannerProps) {
 }
 
 interface HintsCounterProps {
-  hintsRemaining: number;
-  maxHints: number;
-  hintsUsed: number;
+  readonly hintsRemaining: number;
+  readonly maxHints: number;
+  readonly hintsUsed: number;
 }
 
 export function HintsCounter({ hintsRemaining, maxHints, hintsUsed }: HintsCounterProps) {
@@ -76,9 +76,9 @@ export function HintsCounter({ hintsRemaining, maxHints, hintsUsed }: HintsCount
 }
 
 interface ResetsCounterProps {
-  resetsRemaining: number;
-  maxResets: number;
-  resetsUsed: number;
+  readonly resetsRemaining: number;
+  readonly maxResets: number;
+  readonly resetsUsed: number;
 }
 
 export function ResetsCounter({ resetsRemaining, maxResets, resetsUsed }: ResetsCounterProps) {
