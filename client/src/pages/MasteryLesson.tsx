@@ -380,8 +380,8 @@ export default function MasteryLesson() {
                     <div className="mb-3">
                       <div className="text-sm font-semibold text-green-400 mb-2">✓ Validation Criteria:</div>
                       <ul className="space-y-1">
-                        {step.validationCriteria.map((criteria, i) => (
-                          <li key={`vc-${step.stepNumber}-${i}`} className="text-sm text-slate-300 flex items-start">
+                        {step.validationCriteria.map((criteria) => (
+                          <li key={`vc-${step.stepNumber}-${criteria}`} className="text-sm text-slate-300 flex items-start">
                             <span className="text-green-400 mr-2">•</span>
                             {criteria}
                           </li>
@@ -394,8 +394,8 @@ export default function MasteryLesson() {
                     <div>
                       <div className="text-sm font-semibold text-red-400 mb-2">⚠️ Common Mistakes:</div>
                       <ul className="space-y-1">
-                        {step.commonMistakes.map((mistake, i) => (
-                          <li key={`cm-${step.stepNumber}-${i}`} className="text-sm text-red-200 flex items-start">
+                        {step.commonMistakes.map((mistake) => (
+                          <li key={`cm-${step.stepNumber}-${mistake}`} className="text-sm text-red-200 flex items-start">
                             <span className="text-red-400 mr-2">•</span>
                             {mistake}
                           </li>
@@ -464,8 +464,8 @@ export default function MasteryLesson() {
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
               <h3 className="font-semibold mb-3 text-yellow-400">Conceptual Guidance</h3>
               <ul className="space-y-2">
-                {rawContent.conceptualGuidance.map((guidance, i) => (
-                  <li key={`cg-${i}-${guidance.slice(0, 10)}`} className="text-slate-300 flex items-start">
+                {rawContent.conceptualGuidance.map((guidance) => (
+                  <li key={`cg-${guidance}`} className="text-slate-300 flex items-start">
                     <span className="text-yellow-400 mr-2">→</span>
                     {guidance}
                   </li>
@@ -479,8 +479,8 @@ export default function MasteryLesson() {
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
               <h3 className="font-semibold mb-3 text-purple-400">Key Concepts to Apply</h3>
               <ul className="space-y-2">
-                {rawContent.keyConceptsToApply.map((concept, i) => (
-                  <li key={`kc-${i}-${concept.slice(0, 10)}`} className="text-slate-300 flex items-start">
+                {rawContent.keyConcepts.map((concept) => (
+                  <li key={`kc-${concept}`} className="text-slate-300 flex items-start">
                     <span className="text-purple-400 mr-2">▸</span>
                     {concept}
                   </li>
@@ -614,8 +614,8 @@ export default function MasteryLesson() {
               <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
                 <h2 className="text-xl font-semibold mb-4">Learning Objectives</h2>
                 <ul className="space-y-2">
-                  {detailedContent.baseLesson.learningObjectives.map((objective, idx) => (
-                    <li key={`lo-${idx}-${objective.slice(0, 20)}`} className="flex items-start space-x-2">
+                  {detailedContent.baseLesson.learningObjectives.map((objective) => (
+                    <li key={`lo-${objective}`} className="flex items-start space-x-2">
                       <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                       <span className="text-slate-300">{objective}</span>
                     </li>
@@ -626,8 +626,8 @@ export default function MasteryLesson() {
                   <div className="mt-4 pt-4 border-t border-slate-700">
                     <h3 className="text-sm font-semibold text-slate-400 mb-2">Prerequisites:</h3>
                     <ul className="space-y-1">
-                      {detailedContent.baseLesson.prerequisites.map((prereq, idx) => (
-                        <li key={`pr-${idx}-${prereq.slice(0, 20)}`} className="text-sm text-slate-400">• {prereq}</li>
+                      {detailedContent.baseLesson.prerequisites.map((prereq) => (
+                        <li key={`pr-${prereq}`} className="text-sm text-slate-400">• {prereq}</li>
                       ))}
                     </ul>
                   </div>

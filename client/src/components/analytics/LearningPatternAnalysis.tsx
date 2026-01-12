@@ -78,7 +78,12 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
 
   const formatHour = (hour: number) => {
     const period = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    const getDisplayHour = () => {
+      if (hour === 0) return 12;
+      if (hour > 12) return hour - 12;
+      return hour;
+    };
+    const displayHour = getDisplayHour();
     return `${displayHour}${period}`;
   };
 
@@ -106,20 +111,22 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-lg font-semibold text-white">Study Consistency</h4>
-          <span className={`text-lg font-bold ${
-            patterns.studyConsistency.score >= 80 ? 'text-green-400' :
-            patterns.studyConsistency.score >= 60 ? 'text-yellow-400' : 'text-red-400'
-          }`}>
+          <span className={`text-lg font-bold ${(() => {
+            if (patterns.studyConsistency.score >= 80) return 'text-green-400';
+            if (patterns.studyConsistency.score >= 60) return 'text-yellow-400';
+            return 'text-red-400';
+          })()}`}>
             {patterns.studyConsistency.score}/100
           </span>
         </div>
         <p className="text-slate-300 text-sm mb-3">{patterns.studyConsistency.description}</p>
         <div className="w-full bg-slate-700 rounded-full h-2 mb-3">
           <div
-            className={`h-2 rounded-full transition-all ${
-              patterns.studyConsistency.score >= 80 ? 'bg-green-500' :
-              patterns.studyConsistency.score >= 60 ? 'bg-yellow-500' : 'bg-red-500'
-            }`}
+            className={`h-2 rounded-full transition-all ${(() => {
+              if (patterns.studyConsistency.score >= 80) return 'bg-green-500';
+              if (patterns.studyConsistency.score >= 60) return 'bg-yellow-500';
+              return 'bg-red-500';
+            })()}`}
             style={{ width: `${patterns.studyConsistency.score}%` }}
           />
         </div>

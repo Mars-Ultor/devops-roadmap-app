@@ -3,7 +3,8 @@ import { ValidationService, type ValidationRule } from '../services/validationSe
 import { StepStatusIcon, RunValidationButton, StepProgressBar, ValidationRuleItem, type LabStep } from './step-validation/StepValidationComponents';
 import { getStepStatusColor, getValidationStatus } from './step-validation/StepValidationUtils';
 
-export type { ValidationRule, LabStep };
+export type { ValidationRule } from '../services/validationService';
+export type { LabStep } from './step-validation/StepValidationComponents';
 
 interface ValidationResult {
   success: boolean;
@@ -12,9 +13,9 @@ interface ValidationResult {
 }
 
 interface StepValidationProps {
-  steps: LabStep[];
-  onStepComplete: (stepNumber: number) => void;
-  onValidationRun?: (stepNumber: number, rule: ValidationRule) => Promise<boolean>;
+  readonly steps: LabStep[];
+  readonly onStepComplete: (stepNumber: number) => void;
+  readonly onValidationRun?: (stepNumber: number, rule: ValidationRule) => Promise<boolean>;
 }
 
 export default function StepValidation({ steps, onStepComplete, onValidationRun }: StepValidationProps) {

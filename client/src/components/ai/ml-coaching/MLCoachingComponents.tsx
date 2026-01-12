@@ -49,7 +49,7 @@ export interface LearningStyleResult {
 // ============================================================================
 
 interface LearningStyleCardProps {
-  learningStyle: LearningStyleResult | null;
+  readonly learningStyle: LearningStyleResult | null;
 }
 
 export function LearningStyleCard({ learningStyle }: LearningStyleCardProps) {
@@ -85,7 +85,7 @@ export function LearningStyleCard({ learningStyle }: LearningStyleCardProps) {
 }
 
 interface PerformancePredictionCardProps {
-  prediction: PerformancePrediction | null;
+  readonly prediction: PerformancePrediction | null;
 }
 
 export function PerformancePredictionCard({ prediction }: PerformancePredictionCardProps) {
@@ -109,7 +109,7 @@ export function PerformancePredictionCard({ prediction }: PerformancePredictionC
             {prediction.riskFactors.length > 0 && (
               <div className="flex items-center gap-2 text-sm text-red-400">
                 <AlertTriangle className="w-4 h-4" />
-                {prediction.riskFactors.length} risk factor{prediction.riskFactors.length !== 1 ? 's' : ''}
+                {prediction.riskFactors.length} risk factor{prediction.riskFactors.length === 1 ? '' : 's'}
               </div>
             )}
           </div>
@@ -122,7 +122,7 @@ export function PerformancePredictionCard({ prediction }: PerformancePredictionC
 }
 
 interface SkillGapsCardProps {
-  skillGaps: SkillGap[];
+  readonly skillGaps: SkillGap[];
 }
 
 export function SkillGapsCard({ skillGaps }: SkillGapsCardProps) {
@@ -165,7 +165,7 @@ export function SkillGapsCard({ skillGaps }: SkillGapsCardProps) {
 }
 
 interface RecommendationsCardProps {
-  recommendations: string[];
+  readonly recommendations: string[];
 }
 
 export function RecommendationsCard({ recommendations }: RecommendationsCardProps) {
@@ -200,7 +200,7 @@ export function RecommendationsCard({ recommendations }: RecommendationsCardProp
 // ============================================================================
 
 interface LearningPathTabProps {
-  optimizedPath: OptimizedPath | null;
+  readonly optimizedPath: OptimizedPath | null;
 }
 
 export function LearningPathTab({ optimizedPath }: LearningPathTabProps) {
@@ -265,7 +265,7 @@ export function LearningPathTab({ optimizedPath }: LearningPathTabProps) {
 // ============================================================================
 
 interface SkillGapsTabProps {
-  skillGaps: SkillGap[];
+  readonly skillGaps: SkillGap[];
 }
 
 export function SkillGapsTab({ skillGaps }: SkillGapsTabProps) {
@@ -291,10 +291,16 @@ export function SkillGapsTab({ skillGaps }: SkillGapsTabProps) {
 }
 
 interface SkillGapItemProps {
-  gap: SkillGap;
+  readonly gap: SkillGap;
 }
 
 function SkillGapItem({ gap }: SkillGapItemProps) {
+  const getPriorityBadgeClass = (priority: 'high' | 'medium' | 'low') => {
+    if (priority === 'high') return 'bg-red-900/20 text-red-400 border border-red-800';
+    if (priority === 'medium') return 'bg-yellow-900/20 text-yellow-400 border border-yellow-800';
+    return 'bg-slate-700 text-gray-300';
+  };
+
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <div className="p-6 border-b border-gray-700">
@@ -303,13 +309,7 @@ function SkillGapItem({ gap }: SkillGapItemProps) {
             <Target className="w-5 h-5 text-indigo-400" />
             <h3 className="text-lg font-semibold text-white">{gap.topic}</h3>
           </span>
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            gap.priority === 'high'
-              ? 'bg-red-900/20 text-red-400 border border-red-800'
-              : gap.priority === 'medium'
-              ? 'bg-yellow-900/20 text-yellow-400 border border-yellow-800'
-              : 'bg-slate-700 text-gray-300'
-          }`}>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityBadgeClass(gap.priority)}`}>
             {gap.priority} priority
           </span>
         </div>
@@ -351,7 +351,7 @@ function SkillGapItem({ gap }: SkillGapItemProps) {
 // ============================================================================
 
 interface PerformanceTabProps {
-  prediction: PerformancePrediction | null;
+  readonly prediction: PerformancePrediction | null;
 }
 
 export function PerformanceTab({ prediction }: PerformanceTabProps) {
@@ -377,7 +377,7 @@ export function PerformanceTab({ prediction }: PerformanceTabProps) {
   );
 }
 
-function PerformanceContent({ prediction }: { prediction: PerformancePrediction }) {
+function PerformanceContent({ prediction }: { readonly prediction: PerformancePrediction }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -396,7 +396,7 @@ function PerformanceContent({ prediction }: { prediction: PerformancePrediction 
         <div className="text-center">
           <Calendar className="w-8 h-8 text-gray-400 mx-auto mb-2" />
           <p className="text-sm text-gray-400">
-            {Math.ceil((prediction.estimatedCompletionDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days remaining
+            {Math.ceil((prediction.estimatedCompletionDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days remaining
           </p>
         </div>
       </div>
@@ -441,7 +441,7 @@ function PerformanceContent({ prediction }: { prediction: PerformancePrediction 
 // ============================================================================
 
 interface LearningStyleTabProps {
-  learningStyle: LearningStyleResult | null;
+  readonly learningStyle: LearningStyleResult | null;
 }
 
 export function LearningStyleTab({ learningStyle }: LearningStyleTabProps) {
@@ -467,7 +467,7 @@ export function LearningStyleTab({ learningStyle }: LearningStyleTabProps) {
   );
 }
 
-function LearningStyleContent({ learningStyle }: { learningStyle: LearningStyleResult }) {
+function LearningStyleContent({ learningStyle }: { readonly learningStyle: LearningStyleResult }) {
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -512,7 +512,7 @@ function LearningStyleContent({ learningStyle }: { learningStyle: LearningStyleR
 // ============================================================================
 
 interface NoContextDisplayProps {
-  message?: string;
+  readonly message?: string;
 }
 
 export function NoContextDisplay({ message }: NoContextDisplayProps) {
@@ -527,7 +527,7 @@ export function NoContextDisplay({ message }: NoContextDisplayProps) {
 }
 
 interface ErrorDisplayProps {
-  error: string;
+  readonly error: string;
 }
 
 export function ErrorDisplay({ error }: ErrorDisplayProps) {

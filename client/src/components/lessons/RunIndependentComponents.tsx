@@ -4,8 +4,24 @@
  */
 
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { Components } from 'react-markdown';
 import { Clock, Save, CheckCircle, FileText, AlertTriangle, Sparkles, Send, Eye } from 'lucide-react';
+
+// Markdown components for ReactMarkdown preview
+const markdownComponents: Components = {
+  h1: ({ children }) => <h1 className="text-2xl font-bold text-purple-400 mb-4">{children}</h1>,
+  h2: ({ children }) => <h2 className="text-xl font-semibold text-purple-300 mb-3">{children}</h2>,
+  h3: ({ children }) => <h3 className="text-lg font-semibold text-purple-200 mb-2">{children}</h3>,
+  p: ({ children }) => <p className="text-slate-200 mb-3 leading-relaxed">{children}</p>,
+  ul: ({ children }) => <ul className="text-slate-200 mb-3 ml-4 space-y-1">{children}</ul>,
+  ol: ({ children }) => <ol className="text-slate-200 mb-3 ml-4 space-y-1">{children}</ol>,
+  li: ({ children }) => <li className="text-slate-200">{children}</li>,
+  code: ({ children }) => <code className="bg-slate-800 px-2 py-1 rounded text-purple-300 font-mono text-sm">{children}</code>,
+  pre: ({ children }) => <pre className="bg-slate-800 p-4 rounded-lg overflow-x-auto mb-3">{children}</pre>,
+  blockquote: ({ children }) => <blockquote className="border-l-4 border-purple-500 pl-4 italic text-slate-300 mb-3">{children}</blockquote>,
+  strong: ({ children }) => <strong className="text-purple-200 font-semibold">{children}</strong>,
+  em: ({ children }) => <em className="text-purple-300 italic">{children}</em>,
+};
 
 interface TimerBarProps {
   readonly elapsedTime: number;
@@ -142,9 +158,9 @@ export function ResponseEditor({ submission, objective, onChange }: EditorProps)
             <button
               onClick={() => setIsPreview(false)}
               className={`px-3 py-1 text-xs font-medium rounded-md transition ${
-                !isPreview
-                  ? 'bg-purple-600 text-white'
-                  : 'text-slate-400 hover:text-white'
+                isPreview
+                  ? 'text-slate-400 hover:text-white'
+                  : 'bg-purple-600 text-white'
               }`}
             >
               Edit
@@ -165,22 +181,7 @@ export function ResponseEditor({ submission, objective, onChange }: EditorProps)
       </div>
       {isPreview ? (
         <div className="p-4 bg-slate-900 text-white min-h-96 prose prose-invert max-w-none">
-          <ReactMarkdown
-            components={{
-              h1: ({ children }) => <h1 className="text-2xl font-bold text-purple-400 mb-4">{children}</h1>,
-              h2: ({ children }) => <h2 className="text-xl font-semibold text-purple-300 mb-3">{children}</h2>,
-              h3: ({ children }) => <h3 className="text-lg font-semibold text-purple-200 mb-2">{children}</h3>,
-              p: ({ children }) => <p className="text-slate-200 mb-3 leading-relaxed">{children}</p>,
-              ul: ({ children }) => <ul className="text-slate-200 mb-3 ml-4 space-y-1">{children}</ul>,
-              ol: ({ children }) => <ol className="text-slate-200 mb-3 ml-4 space-y-1">{children}</ol>,
-              li: ({ children }) => <li className="text-slate-200">{children}</li>,
-              code: ({ children }) => <code className="bg-slate-800 px-2 py-1 rounded text-purple-300 font-mono text-sm">{children}</code>,
-              pre: ({ children }) => <pre className="bg-slate-800 p-4 rounded-lg overflow-x-auto mb-3">{children}</pre>,
-              blockquote: ({ children }) => <blockquote className="border-l-4 border-purple-500 pl-4 italic text-slate-300 mb-3">{children}</blockquote>,
-              strong: ({ children }) => <strong className="text-purple-200 font-semibold">{children}</strong>,
-              em: ({ children }) => <em className="text-purple-300 italic">{children}</em>,
-            }}
-          >
+          <ReactMarkdown components={markdownComponents}>
             {submission || '*No content yet - switch to Edit mode to start writing*'}
           </ReactMarkdown>
         </div>

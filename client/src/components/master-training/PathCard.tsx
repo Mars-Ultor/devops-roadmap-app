@@ -43,8 +43,9 @@ const getCareerFocusColor = (focus: string) => {
 
 const PathCard: React.FC<PathCardProps> = ({ path, onPathSelect }) => {
   return (
-    <div
-      className="bg-slate-800 rounded-lg border border-slate-700 p-6 hover:border-slate-600 transition-colors cursor-pointer"
+    <button
+      type="button"
+      className="w-full text-left bg-slate-800 rounded-lg border border-slate-700 p-6 hover:border-slate-600 transition-colors cursor-pointer"
       onClick={() => onPathSelect(path)}
     >
       <div className="flex items-center justify-between mb-4">
@@ -114,7 +115,7 @@ const PathCard: React.FC<PathCardProps> = ({ path, onPathSelect }) => {
           </div>
         </div>
       )}
-    </div>
+    </button>
   );
 };
 

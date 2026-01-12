@@ -155,7 +155,7 @@ export function WhatTriedSection({ whatTried, validation, onChange, onAdd }: Wha
             {whatTried.filter(item => item.trim().length > 0).length} / 3 minimum
           </span>
         </span>
-      </label>
+      </div>
       <div className="space-y-2">
         {whatTried.map((item, idx) => (
           <input
