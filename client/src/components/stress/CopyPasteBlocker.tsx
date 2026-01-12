@@ -133,8 +133,8 @@ export const CopyPasteBlocker: React.FC<CopyPasteBlockerProps> = ({
 
           {showBlocked && (
             <div className="mt-2 max-h-32 overflow-y-auto">
-              {blockedActions.slice(-10).map((attempt, index) => (
-                <div key={index} className="flex items-center gap-2 text-xs text-red-300 py-1">
+              {blockedActions.slice(-10).map((attempt) => (
+                <div key={`${attempt.action}-${attempt.timestamp.getTime()}`} className="flex items-center gap-2 text-xs text-red-300 py-1">
                   <span className="capitalize">{attempt.action}</span>
                   <span>at {attempt.timestamp.toLocaleTimeString()}</span>
                 </div>

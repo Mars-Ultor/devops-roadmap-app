@@ -167,8 +167,8 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
       <div className="mb-6">
         <h4 className="text-lg font-semibold text-white mb-4">Performance Correlations</h4>
         <div className="space-y-3">
-          {patterns.performanceCorrelations.map((correlation, idx) => (
-            <div key={idx} className="bg-slate-900/50 rounded-lg p-4">
+          {patterns.performanceCorrelations.map((correlation) => (
+            <div key={correlation.factor} className="bg-slate-900/50 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-white font-medium">{correlation.factor}</span>
                 <div className="flex items-center gap-2">
@@ -191,8 +191,8 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
         <div className="mb-6">
           <h4 className="text-lg font-semibold text-white mb-4">Topic Struggle Patterns</h4>
           <div className="space-y-3">
-            {patterns.topicStruggles.map((struggle, idx) => (
-              <div key={idx} className="bg-orange-900/20 border border-orange-700 rounded-lg p-4">
+            {patterns.topicStruggles.map((struggle) => (
+              <div key={struggle.topic} className="bg-orange-900/20 border border-orange-700 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-white font-medium">{struggle.topic}</span>
                   <span className="text-orange-400 text-sm">
@@ -211,8 +211,8 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
       <div className="mb-6">
         <h4 className="text-lg font-semibold text-white mb-4">Key Insights</h4>
         <div className="space-y-3">
-          {insights.map((insight, idx) => (
-            <div key={idx} className={`rounded-lg p-4 border ${
+          {insights.map((insight) => (
+            <div key={insight.title} className={`rounded-lg p-4 border ${
               insight.type === 'success' ? 'bg-green-900/20 border-green-700' :
               insight.type === 'warning' ? 'bg-yellow-900/20 border-yellow-700' :
               'bg-blue-900/20 border-blue-700'
@@ -242,8 +242,8 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
           Adaptive Recommendations
         </h4>
         <ul className="space-y-2">
-          {patterns.adaptiveRecommendations.map((rec, idx) => (
-            <li key={idx} className="flex items-start gap-3 text-slate-300">
+          {patterns.adaptiveRecommendations.map((rec) => (
+            <li key={rec} className="flex items-start gap-3 text-slate-300">
               <span className="text-indigo-400 mt-1">•</span>
               <span className="text-sm">{rec}</span>
             </li>

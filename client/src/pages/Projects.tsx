@@ -103,8 +103,8 @@ export default function Projects() {
 
               {/* Phases */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                {cloudResumeChallenge.phases?.map((phase: unknown, idx: number) => (
-                  <div key={idx} className="bg-slate-800/80 rounded-xl p-6 border border-slate-600 hover:border-indigo-400 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/20">
+                {cloudResumeChallenge.phases?.map((phase: unknown) => (
+                  <div key={`phase-${(phase as { phase: number }).phase}`} className="bg-slate-800/80 rounded-xl p-6 border border-slate-600 hover:border-indigo-400 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/20">
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <div className="flex items-center space-x-2 mb-2">
@@ -121,8 +121,8 @@ export default function Projects() {
                     </div>
                     
                     <div className="space-y-2">
-                      {(phase as { tasks: string[] }).tasks.slice(0, 3).map((task: string, taskIdx: number) => (
-                        <div key={taskIdx} className="text-sm text-gray-300 flex items-start">
+                      {(phase as { tasks: string[] }).tasks.slice(0, 3).map((task: string) => (
+                        <div key={task} className="text-sm text-gray-300 flex items-start">
                           <CheckCircle className="w-4 h-4 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
                           <span>{task}</span>
                         </div>
@@ -146,8 +146,8 @@ export default function Projects() {
                   Skills You'll Master
                 </h4>
                 <div className="flex flex-wrap gap-3">
-                  {cloudResumeChallenge.skills?.map((skill: string, idx: number) => (
-                    <span key={idx} className="bg-gradient-to-r from-indigo-600/40 to-purple-600/40 text-indigo-200 px-4 py-2 rounded-lg text-sm border border-indigo-500/50 font-medium hover:border-indigo-400 transition">
+                  {cloudResumeChallenge.skills?.map((skill: string) => (
+                    <span key={skill} className="bg-gradient-to-r from-indigo-600/40 to-purple-600/40 text-indigo-200 px-4 py-2 rounded-lg text-sm border border-indigo-500/50 font-medium hover:border-indigo-400 transition">
                       {skill}
                     </span>
                   ))}
@@ -163,9 +163,9 @@ export default function Projects() {
                   Resources
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {cloudResumeChallenge.resources?.map((resource: unknown, idx: number) => (
+                  {cloudResumeChallenge.resources?.map((resource: unknown) => (
                     <a 
-                      key={idx}
+                      key={(resource as { title: string }).title}
                       href={(resource as { url: string }).url}
                       target="_blank"
                       rel="noopener noreferrer"

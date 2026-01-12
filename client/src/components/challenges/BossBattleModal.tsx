@@ -15,10 +15,10 @@ import {
 import { useBossBattle } from './useBossBattle';
 
 interface BossBattleModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  week: number;
-  onComplete: (success: boolean) => void;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly week: number;
+  readonly onComplete: (success: boolean) => void;
 }
 
 export default function BossBattleModal({
@@ -55,7 +55,7 @@ export default function BossBattleModal({
           <div className="space-y-6">
             {battle.phases.map((phase, phaseIndex) => (
               <PhaseSection
-                key={phaseIndex}
+                key={phase.name}
                 phase={phase}
                 phaseIndex={phaseIndex}
                 phaseCompletion={phaseCompletion[phaseIndex] || []}

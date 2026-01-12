@@ -167,7 +167,7 @@ export function ReviewsDueToday({ reviews, onReviewClick }: ReviewsDueTodayProps
       <div className="space-y-2">
         {reviews.map((review, index) => (
           <ReviewItem
-            key={`${review.contentId}-${index}`}
+            key={review.contentId}
             review={review}
             index={index}
             onClick={() => onReviewClick(review.contentId)}

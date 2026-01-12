@@ -481,8 +481,8 @@ export default function WeekProject() {
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
               <h3 className="text-lg font-semibold text-white mb-4">Deliverables</h3>
               <ul className="space-y-2">
-                {project.deliverables.map((deliverable, index) => (
-                  <li key={index} className="flex items-start gap-2 text-sm text-slate-300">
+                {project.deliverables.map((deliverable) => (
+                  <li key={deliverable} className="flex items-start gap-2 text-sm text-slate-300">
                     <CheckCircle className="w-4 h-4 text-indigo-400 mt-0.5 flex-shrink-0" />
                     <span>{deliverable}</span>
                   </li>
@@ -494,8 +494,8 @@ export default function WeekProject() {
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
               <h3 className="text-lg font-semibold text-white mb-4">Helpful Resources</h3>
               <ul className="space-y-2">
-                {project.resources.map((resource, index) => (
-                  <li key={index} className="flex items-start gap-2 text-sm text-slate-300">
+                {project.resources.map((resource) => (
+                  <li key={resource} className="flex items-start gap-2 text-sm text-slate-300">
                     <ExternalLink className="w-4 h-4 text-indigo-400 mt-0.5 flex-shrink-0" />
                     <span>{resource}</span>
                   </li>

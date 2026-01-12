@@ -824,9 +824,9 @@ export default function AdvancedIntegrationScenarios() {
 
                         {currentChallenge.options && (
                           <div className="space-y-3">
-                            {currentChallenge.options.map((option, index) => (
+                            {currentChallenge.options.map((option) => (
                               <label
-                                key={index}
+                                key={option}
                                 className={`flex items-center p-4 rounded-lg border cursor-pointer transition-colors ${
                                   selectedApproach === option
                                     ? 'border-indigo-500 bg-indigo-500/10'
@@ -913,11 +913,11 @@ export default function AdvancedIntegrationScenarios() {
 
                           {communications.length > 0 && (
                             <div className="space-y-2 max-h-40 overflow-y-auto">
-                              {communications.map((comm, index) => {
+                              {communications.map((comm) => {
                                 const fromTeam = selectedScenario.teams.find(t => t.id === comm.fromTeam);
                                 const toTeam = selectedScenario.teams.find(t => t.id === comm.toTeam);
                                 return (
-                                  <div key={index} className="bg-slate-900 rounded p-3 border border-slate-600">
+                                  <div key={comm.timestamp.getTime()} className="bg-slate-900 rounded p-3 border border-slate-600">
                                     <div className="flex items-center justify-between text-sm text-slate-400 mb-1">
                                       <span>{fromTeam?.name} → {toTeam?.name}</span>
                                       <span>{comm.timestamp.toLocaleTimeString()}</span>
@@ -1008,10 +1008,10 @@ export default function AdvancedIntegrationScenarios() {
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-white mb-4">Decision Summary</h3>
                 <div className="space-y-3">
-                  {decisions.map((decision, index) => {
+                  {decisions.map((decision) => {
                     const challenge = selectedScenario.challenges.find(c => c.id === decision.challengeId);
                     return (
-                      <div key={index} className="flex items-center justify-between p-4 bg-slate-900 rounded-lg">
+                      <div key={decision.challengeId} className="flex items-center justify-between p-4 bg-slate-900 rounded-lg">
                         <div className="flex items-center">
                           {decision.isCorrect ? (
                             <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
@@ -1041,11 +1041,11 @@ export default function AdvancedIntegrationScenarios() {
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold text-white mb-4">Communication Log</h3>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {communications.map((comm, index) => {
+                    {communications.map((comm) => {
                       const fromTeam = selectedScenario.teams.find(t => t.id === comm.fromTeam);
                       const toTeam = selectedScenario.teams.find(t => t.id === comm.toTeam);
                       return (
-                        <div key={index} className="bg-slate-900 rounded p-3 border border-slate-600">
+                        <div key={comm.timestamp.getTime()} className="bg-slate-900 rounded p-3 border border-slate-600">
                           <div className="flex items-center justify-between text-sm text-slate-400 mb-1">
                             <span>{fromTeam?.name} → {toTeam?.name}</span>
                             <span>{comm.timestamp.toLocaleTimeString()}</span>
@@ -1066,8 +1066,8 @@ export default function AdvancedIntegrationScenarios() {
                     Key Takeaways
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.keyTakeaways.map((takeaway, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.keyTakeaways.map((takeaway) => (
+                      <li key={takeaway} className="flex items-start text-slate-300">
                         <CheckCircle className="w-4 h-4 mr-2 text-green-400 mt-0.5 flex-shrink-0" />
                         {takeaway}
                       </li>
@@ -1081,8 +1081,8 @@ export default function AdvancedIntegrationScenarios() {
                     Common Mistakes
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.commonMistakes.map((mistake, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.commonMistakes.map((mistake) => (
+                      <li key={mistake} className="flex items-start text-slate-300">
                         <XCircle className="w-4 h-4 mr-2 text-red-400 mt-0.5 flex-shrink-0" />
                         {mistake}
                       </li>
@@ -1098,8 +1098,8 @@ export default function AdvancedIntegrationScenarios() {
                     Best Practices
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.bestPractices.map((practice, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.bestPractices.map((practice) => (
+                      <li key={practice} className="flex items-start text-slate-300">
                         <Target className="w-4 h-4 mr-2 text-blue-400 mt-0.5 flex-shrink-0" />
                         {practice}
                       </li>
@@ -1113,8 +1113,8 @@ export default function AdvancedIntegrationScenarios() {
                     Next Steps
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.nextSteps.map((step, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.nextSteps.map((step) => (
+                      <li key={step} className="flex items-start text-slate-300">
                         <Activity className="w-4 h-4 mr-2 text-indigo-400 mt-0.5 flex-shrink-0" />
                         {step}
                       </li>

@@ -748,9 +748,9 @@ export default function SpecializedOperations() {
                 </div>
 
                 <div className="flex flex-wrap gap-1 mb-4">
-                  {scenario.objectives.slice(0, 2).map((objective, index) => (
+                  {scenario.objectives.slice(0, 2).map((objective) => (
                     <span
-                      key={index}
+                      key={objective}
                       className="px-2 py-1 bg-slate-700 text-xs text-slate-300 rounded"
                     >
                       {objective}
@@ -821,8 +821,8 @@ export default function SpecializedOperations() {
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-white mb-4">Objectives</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {selectedScenario.objectives.map((objective, index) => (
-                    <div key={index} className="flex items-center text-slate-300">
+                  {selectedScenario.objectives.map((objective) => (
+                    <div key={objective} className="flex items-center text-slate-300">
                       <CheckCircle className="w-5 h-5 mr-3 text-green-400 flex-shrink-0" />
                       {objective}
                     </div>
@@ -897,9 +897,9 @@ export default function SpecializedOperations() {
 
                     {currentChallenge.type === 'decision' && currentChallenge.options && (
                       <div className="space-y-3">
-                        {currentChallenge.options.map((option, index) => (
+                        {currentChallenge.options.map((option) => (
                           <label
-                            key={index}
+                            key={option}
                             className={`flex items-center p-4 rounded-lg border cursor-pointer transition-colors ${
                               selectedAnswer === option
                                 ? 'border-indigo-500 bg-indigo-500/10'
@@ -989,10 +989,10 @@ export default function SpecializedOperations() {
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-white mb-4">Decision Summary</h3>
                 <div className="space-y-3">
-                  {decisions.map((decision, index) => {
+                  {decisions.map((decision) => {
                     const challenge = selectedScenario.challenges.find(c => c.id === decision.challengeId);
                     return (
-                      <div key={index} className="flex items-center justify-between p-4 bg-slate-900 rounded-lg">
+                      <div key={`${decision.challengeId}-${decision.selectedAnswer}`} className="flex items-center justify-between p-4 bg-slate-900 rounded-lg">
                         <div className="flex items-center">
                           {decision.isCorrect ? (
                             <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
@@ -1022,8 +1022,8 @@ export default function SpecializedOperations() {
                     Key Takeaways
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.keyTakeaways.map((takeaway, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.keyTakeaways.map((takeaway) => (
+                      <li key={takeaway} className="flex items-start text-slate-300">
                         <CheckCircle className="w-4 h-4 mr-2 text-green-400 mt-0.5 flex-shrink-0" />
                         {takeaway}
                       </li>
@@ -1037,8 +1037,8 @@ export default function SpecializedOperations() {
                     Common Mistakes
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.commonMistakes.map((mistake, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.commonMistakes.map((mistake) => (
+                      <li key={mistake} className="flex items-start text-slate-300">
                         <XCircle className="w-4 h-4 mr-2 text-red-400 mt-0.5 flex-shrink-0" />
                         {mistake}
                       </li>
@@ -1054,8 +1054,8 @@ export default function SpecializedOperations() {
                     Best Practices
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.bestPractices.map((practice, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.bestPractices.map((practice) => (
+                      <li key={practice} className="flex items-start text-slate-300">
                         <Target className="w-4 h-4 mr-2 text-blue-400 mt-0.5 flex-shrink-0" />
                         {practice}
                       </li>
@@ -1069,8 +1069,8 @@ export default function SpecializedOperations() {
                     Next Steps
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.nextSteps.map((step, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.nextSteps.map((step) => (
+                      <li key={step} className="flex items-start text-slate-300">
                         <Activity className="w-4 h-4 mr-2 text-indigo-400 mt-0.5 flex-shrink-0" />
                         {step}
                       </li>

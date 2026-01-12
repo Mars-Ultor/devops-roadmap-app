@@ -49,8 +49,8 @@ function ResourceList({ items, label }: ResourceListProps) {
     <div>
       <p className="text-gray-400 text-sm mb-1">{label}:</p>
       <ul className="list-disc list-inside text-gray-300 space-y-1">
-        {items.map((item, idx) => (
-          <li key={idx}>{item}</li>
+        {items.map((item) => (
+          <li key={item}>{item}</li>
         ))}
       </ul>
     </div>
@@ -124,8 +124,8 @@ export function StandardsSection({ standards }: StandardsSectionProps) {
       <div className="bg-slate-900 border border-slate-700 rounded-lg p-4">
         <p className="text-gray-400 text-sm mb-3">{standards.completionRequirements}</p>
         <ul className="space-y-2">
-          {standards.criteria.map((criterion, idx) => (
-            <StandardItem key={idx} criterion={criterion} />
+          {standards.criteria.map((criterion) => (
+            <StandardItem key={criterion} criterion={criterion} />
           ))}
         </ul>
         {standards.timeRequirement && (

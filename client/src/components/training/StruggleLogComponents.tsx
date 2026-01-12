@@ -46,7 +46,7 @@ export function WhyThisMatters() {
 
 // Errors Display
 interface ErrorsDisplayProps {
-  errors: string[];
+  readonly errors: string[];
 }
 
 export function ErrorsDisplay({ errors }: ErrorsDisplayProps) {
@@ -59,8 +59,8 @@ export function ErrorsDisplay({ errors }: ErrorsDisplayProps) {
         <div className="flex-1">
           <p className="text-red-300 font-semibold mb-2">Please complete all fields:</p>
           <ul className="text-sm text-red-200/80 space-y-1">
-            {errors.map((error, idx) => (
-              <li key={idx}>• {error}</li>
+            {errors.map((error) => (
+              <li key={error}>• {error}</li>
             ))}
           </ul>
         </div>
@@ -71,21 +71,21 @@ export function ErrorsDisplay({ errors }: ErrorsDisplayProps) {
 
 // What Tried Section
 interface WhatTriedSectionProps {
-  whatTried: string[];
-  onUpdate: (index: number, value: string) => void;
-  onAddMore: () => void;
+  readonly whatTried: string[];
+  readonly onUpdate: (index: number, value: string) => void;
+  readonly onAddMore: () => void;
 }
 
 export function WhatTriedSection({ whatTried, onUpdate, onAddMore }: WhatTriedSectionProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2">
+      <div className="block text-sm font-semibold text-slate-300 mb-2">
         What have you tried? <span className="text-red-400">*</span>
         <span className="text-slate-500 text-xs ml-2">(minimum 3 things)</span>
-      </label>
+      </div>
       <div className="space-y-2">
         {whatTried.map((tried, idx) => (
-          <div key={idx} className="flex items-start gap-2">
+          <div key={tried || `attempt-${idx}`} className="flex items-start gap-2">
             <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-300 mt-2 flex-shrink-0">
               {idx + 1}
             </div>
@@ -113,17 +113,18 @@ export function WhatTriedSection({ whatTried, onUpdate, onAddMore }: WhatTriedSe
 
 // Where Stuck Section
 interface WhereStuckSectionProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function WhereStuckSection({ value, onChange }: WhereStuckSectionProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2">
+      <label htmlFor="where-stuck-textarea" className="block text-sm font-semibold text-slate-300 mb-2">
         Where specifically are you stuck? <span className="text-red-400">*</span>
       </label>
       <textarea
+        id="where-stuck-textarea"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="e.g., I can deploy the pod but the service isn't routing traffic to it. When I curl the service ClusterIP, I get connection refused. The pod is running and healthy according to kubectl get pods."
@@ -138,17 +139,18 @@ export function WhereStuckSection({ value, onChange }: WhereStuckSectionProps) {
 
 // Suspected Problem Section
 interface SuspectedProblemSectionProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function SuspectedProblemSection({ value, onChange }: SuspectedProblemSectionProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2">
+      <label htmlFor="suspected-problem-textarea" className="block text-sm font-semibold text-slate-300 mb-2">
         What do you think the problem might be? <span className="text-red-400">*</span>
       </label>
       <textarea
+        id="suspected-problem-textarea"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="e.g., I suspect the service selector might not match the pod labels, or maybe the target port is wrong in the service definition. Could also be a network policy blocking traffic."
@@ -163,8 +165,8 @@ export function SuspectedProblemSection({ value, onChange }: SuspectedProblemSec
 
 // Action Buttons
 interface ActionButtonsProps {
-  onCancel?: () => void;
-  onSubmit: () => void;
+  readonly onCancel?: () => void;
+  readonly onSubmit: () => void;
 }
 
 export function ActionButtons({ onCancel, onSubmit }: ActionButtonsProps) {

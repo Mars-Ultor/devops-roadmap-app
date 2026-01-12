@@ -101,8 +101,8 @@ function ResourcesItem({ resources }: { resources: string[] }) {
     <div>
       <p className="text-sm font-semibold text-yellow-300 mb-2">Available Resources</p>
       <ul className="space-y-1">
-        {resources.map((resource, idx) => (
-          <li key={idx} className="flex items-start gap-2 text-white">
+        {resources.map((resource) => (
+          <li key={resource} className="flex items-start gap-2 text-white">
             <span className="text-green-400 mt-1">✓</span>
             <span>{resource}</span>
           </li>
@@ -117,8 +117,8 @@ function RestrictionsItem({ restrictions }: { restrictions: string[] }) {
     <div>
       <p className="text-sm font-semibold text-yellow-300 mb-2">Restrictions</p>
       <ul className="space-y-1">
-        {restrictions.map((restriction, idx) => (
-          <li key={idx} className="flex items-start gap-2 text-white">
+        {restrictions.map((restriction) => (
+          <li key={restriction} className="flex items-start gap-2 text-white">
             <span className="text-red-400 mt-1">✗</span>
             <span>{restriction}</span>
           </li>

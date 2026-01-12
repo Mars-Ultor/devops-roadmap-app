@@ -29,8 +29,8 @@ const WeakAreas: React.FC<WeakAreasProps> = ({ analytics }) => {
       </div>
 
       <div className="space-y-3">
-        {analytics.weakTopics.map((topic, idx) => (
-          <div key={idx} className="bg-gray-900/50 border border-red-800 rounded-lg p-4">
+        {analytics.weakTopics.map((topic) => (
+          <div key={topic.topic} className="bg-gray-900/50 border border-red-800 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="font-semibold text-white">{topic.topic}</div>
               <div className="flex items-center gap-2">

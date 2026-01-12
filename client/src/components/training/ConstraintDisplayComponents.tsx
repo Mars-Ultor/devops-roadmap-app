@@ -127,8 +127,8 @@ export function PhaseProgressionInfo() {
   return (
     <div className="mt-4 pt-4 border-t border-slate-700">
       <div className="text-xs text-gray-400 space-y-1">
-        {PHASE_PROGRESSION.map((phase, idx) => (
-          <div key={idx} className="flex items-center gap-2">
+        {PHASE_PROGRESSION.map((phase) => (
+          <div key={phase.label} className="flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${phase.color}`}></span>
             <span>{phase.label}</span>
           </div>

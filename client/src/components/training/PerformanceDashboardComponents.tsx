@@ -109,12 +109,12 @@ export function LearningPathSection({ learningPath }: { learningPath: LearningPa
         <div><div className="text-sm text-slate-400 mb-1">Current Level</div><div className="text-white font-medium capitalize">{learningPath.currentLevel}</div></div>
         {learningPath.recommendedNext.length > 0 && (
           <div><div className="text-sm text-slate-400 mb-2">Recommended Next</div>
-            <div className="space-y-1">{learningPath.recommendedNext.map((item, i) => <div key={i} className="text-green-400 text-sm flex items-center gap-2"><CheckCircle className="w-4 h-4" />{item}</div>)}</div>
+            <div className="space-y-1">{learningPath.recommendedNext.map((item) => <div key={item} className="text-green-400 text-sm flex items-center gap-2"><CheckCircle className="w-4 h-4" />{item}</div>)}</div>
           </div>
         )}
         {learningPath.blockedBy.length > 0 && (
           <div><div className="text-sm text-slate-400 mb-2">Blocked By</div>
-            <div className="space-y-1">{learningPath.blockedBy.map((item, i) => <div key={i} className="text-amber-400 text-sm flex items-center gap-2"><AlertTriangle className="w-4 h-4" />{item}</div>)}</div>
+            <div className="space-y-1">{learningPath.blockedBy.map((item) => <div key={item} className="text-amber-400 text-sm flex items-center gap-2"><AlertTriangle className="w-4 h-4" />{item}</div>)}</div>
           </div>
         )}
         <div><div className="text-sm text-slate-400 mb-1">Estimated Completion</div><div className="text-white font-medium">{learningPath.estimatedCompletion} weeks</div></div>
@@ -131,8 +131,8 @@ export function RecommendationsSection({ recommendations }: { recommendations: s
         <Target className="w-5 h-5 text-indigo-400" />Tactical Recommendations
       </h4>
       <div className="space-y-2">
-        {recommendations.map((rec, index) => (
-          <div key={index} className="bg-slate-900/50 rounded p-3 border-l-4 border-indigo-500"><div className="text-slate-200">{rec}</div></div>
+        {recommendations.map((rec) => (
+          <div key={rec} className="bg-slate-900/50 rounded p-3 border-l-4 border-indigo-500"><div className="text-slate-200">{rec}</div></div>
         ))}
       </div>
     </div>

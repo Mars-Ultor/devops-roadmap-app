@@ -128,9 +128,9 @@ export const PersonalRunbook: FC<PersonalRunbookProps> = ({ entries }) => {
             <h3 className="font-semibold text-purple-300">Recent Patterns (Last 30 Days)</h3>
           </div>
           <div className="flex flex-wrap gap-2">
-            {runbook.recentPatterns.map((pattern, index) => (
+            {runbook.recentPatterns.map((pattern) => (
               <span
-                key={index}
+                key={pattern}
                 className="px-3 py-1 bg-purple-800/50 text-purple-200 rounded-full text-sm"
               >
                 {pattern}

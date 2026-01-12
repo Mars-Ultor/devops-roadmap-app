@@ -34,8 +34,8 @@ const StrengthsAreas: React.FC<StrengthsAreasProps> = ({ selectedPath }) => {
             Your Strengths
           </h4>
           <div className="space-y-2">
-            {selectedPath.strengths.map((strength, index) => (
-              <div key={index} className="flex items-center justify-between bg-slate-900 rounded p-3">
+            {selectedPath.strengths.map((strength) => (
+              <div key={strength} className="flex items-center justify-between bg-slate-900 rounded p-3">
                 <span className="text-slate-300">{strength}</span>
                 <div className="flex items-center">
                   <div className="w-16 bg-slate-700 rounded-full h-2 mr-2">
@@ -56,8 +56,8 @@ const StrengthsAreas: React.FC<StrengthsAreasProps> = ({ selectedPath }) => {
             Areas for Growth
           </h4>
           <div className="space-y-2">
-            {selectedPath.areasForImprovement.map((area, index) => (
-              <div key={index} className="flex items-center justify-between bg-slate-900 rounded p-3">
+            {selectedPath.areasForImprovement.map((area) => (
+              <div key={area} className="flex items-center justify-between bg-slate-900 rounded p-3">
                 <span className="text-slate-300">{area}</span>
                 <div className="flex items-center">
                   <div className="w-16 bg-slate-700 rounded-full h-2 mr-2">

@@ -20,6 +20,7 @@ export function ProgressDots({ level }: { level: LessonMasteryLevel }) {
   return (
     <div className="flex items-center space-x-1">
       {Array.from({ length: level.requiredPerfect }).map((_, i) => (
+        // eslint-disable-next-line react/no-array-index-key
         <span key={i} className={`w-2 h-2 rounded-full ${i < level.perfectCount ? 'bg-green-400' : 'bg-gray-600'}`} />
       ))}
     </div>

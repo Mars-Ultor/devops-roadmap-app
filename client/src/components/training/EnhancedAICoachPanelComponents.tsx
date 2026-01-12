@@ -30,8 +30,8 @@ export function DisciplineAlerts({ alerts }: DisciplineAlertsProps) {
   if (alerts.length === 0) return null;
   return (
     <div className="mb-4 space-y-2">
-      {alerts.map((alert, index) => (
-        <div key={index} className="bg-red-900/50 border border-red-700 rounded p-3">
+      {alerts.map((alert) => (
+        <div key={alert} className="bg-red-900/50 border border-red-700 rounded p-3">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-red-400" />
             <span className="text-red-200 text-sm font-medium">{alert}</span>
@@ -72,8 +72,8 @@ export function FeedbackContent({ feedback }: FeedbackContentProps) {
         <div className="bg-slate-900/50 rounded p-3">
           <div className="text-sm text-slate-300 font-medium mb-2">Follow-up Questions:</div>
           <ul className="space-y-1">
-            {feedback.followUpQuestions.map((question, index) => (
-              <li key={index} className="text-sm text-slate-400 flex items-start gap-2">
+            {feedback.followUpQuestions.map((question) => (
+              <li key={question} className="text-sm text-slate-400 flex items-start gap-2">
                 <span className="text-indigo-400 mt-1">•</span>{question}
               </li>
             ))}
@@ -99,8 +99,8 @@ export function CodeAnalysisDisplay({ analysis }: CodeAnalysisDisplayProps) {
       <div className="text-sm font-medium text-slate-300">Code Analysis:</div>
       {analysis.issues.length > 0 && (
         <div className="space-y-2">
-          {analysis.issues.map((issue, index) => (
-            <div key={index} className={`p-3 rounded text-sm ${
+          {analysis.issues.map((issue) => (
+            <div key={issue.message} className={`p-3 rounded text-sm ${
               issue.severity === 'critical' ? 'bg-red-900/50 border border-red-700' :
               issue.severity === 'high' ? 'bg-amber-900/50 border border-amber-700' : 'bg-slate-900/50'
             }`}>
@@ -113,8 +113,8 @@ export function CodeAnalysisDisplay({ analysis }: CodeAnalysisDisplayProps) {
       {analysis.suggestions.length > 0 && (
         <div className="space-y-2">
           <div className="text-sm text-slate-400">Suggestions:</div>
-          {analysis.suggestions.map((suggestion, index) => (
-            <div key={index} className="p-2 bg-blue-900/20 border border-blue-700/50 rounded text-sm">
+          {analysis.suggestions.map((suggestion) => (
+            <div key={suggestion.description} className="p-2 bg-blue-900/20 border border-blue-700/50 rounded text-sm">
               <div className="text-blue-200">{suggestion.description}</div>
             </div>
           ))}

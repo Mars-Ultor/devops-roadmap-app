@@ -177,8 +177,8 @@ export default function StressTraining() {
                   <div className="bg-gray-900/50 rounded-lg p-4 mb-6">
                     <h3 className="text-sm font-semibold text-gray-400 mb-3">You will face:</h3>
                     <ul className="space-y-2">
-                      {selectedScenario.conditions.map((condition, index) => (
-                        <li key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                      {selectedScenario.conditions.map((condition) => (
+                        <li key={condition.description} className="text-sm text-gray-300 flex items-start gap-2">
                           <span className="text-yellow-400">▸</span>
                           {condition.description}
                         </li>

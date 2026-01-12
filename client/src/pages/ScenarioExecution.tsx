@@ -198,8 +198,8 @@ export default function ScenarioExecution() {
                 Initial Symptoms
               </h3>
               <div className="space-y-3">
-                {scenario.symptoms.map((symptom, index) => (
-                  <div key={index} className="bg-gray-900/50 border border-gray-700 rounded p-4">
+                {scenario.symptoms.map((symptom) => (
+                  <div key={`${symptom.type}-${symptom.description}`} className="bg-gray-900/50 border border-gray-700 rounded p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
@@ -231,8 +231,8 @@ export default function ScenarioExecution() {
                 Learning Objectives
               </h3>
               <ul className="space-y-2">
-                {scenario.learningObjectives.map((obj, index) => (
-                  <li key={index} className="flex items-start gap-2 text-gray-300">
+                {scenario.learningObjectives.map((obj) => (
+                  <li key={obj} className="flex items-start gap-2 text-gray-300">
                     <span className="text-blue-400">→</span>
                     {obj}
                   </li>
@@ -423,7 +423,7 @@ export default function ScenarioExecution() {
             <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-4">Lessons Learned (minimum 20 characters each)</h3>
               {lessonsLearned.map((lesson, index) => (
-                <div key={index} className="mb-4">
+                <div key={lesson || `lesson-${index}`} className="mb-4">
                   <label className="block text-sm text-gray-400 mb-2">Lesson {index + 1}</label>
                   <textarea
                     value={lesson}
@@ -482,8 +482,8 @@ export default function ScenarioExecution() {
             <div className="mb-8">
               <h3 className="text-lg font-semibold mb-4">Prevention Measures</h3>
               <ul className="space-y-2">
-                {scenario.preventionMeasures.map((measure, index) => (
-                  <li key={index} className="flex items-start gap-2 text-gray-300">
+                {scenario.preventionMeasures.map((measure) => (
+                  <li key={measure} className="flex items-start gap-2 text-gray-300">
                     <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                     {measure}
                   </li>

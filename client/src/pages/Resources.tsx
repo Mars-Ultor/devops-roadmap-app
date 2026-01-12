@@ -224,12 +224,12 @@ export default function Resources() {
           </div>
           
           <div className="space-y-6">
-            {interviewQuestions.map((category, idx) => (
-              <div key={idx} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+            {interviewQuestions.map((category) => (
+              <div key={category.category} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
                 <h3 className="text-2xl font-semibold text-indigo-400 mb-4">{category.category}</h3>
                 <div className="space-y-4">
-                  {category.questions.map((item, qIdx) => (
-                    <div key={qIdx} className="border-l-4 border-indigo-500 pl-4 py-2">
+                  {category.questions.map((item) => (
+                    <div key={item.q} className="border-l-4 border-indigo-500 pl-4 py-2">
                       <p className="text-lg font-semibold text-white mb-2">Q: {item.q}</p>
                       <p className="text-slate-300 leading-relaxed">A: {item.a}</p>
                     </div>
@@ -248,15 +248,15 @@ export default function Resources() {
           </div>
           
           <div className="grid md:grid-cols-2 gap-6">
-            {cheatSheets.map((sheet, idx) => (
-              <div key={idx} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+            {cheatSheets.map((sheet) => (
+              <div key={sheet.title} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
                 <div className="flex items-center gap-3 mb-4">
                   <sheet.icon className="w-6 h-6 text-green-400" />
                   <h3 className="text-xl font-semibold text-white">{sheet.title}</h3>
                 </div>
                 <div className="space-y-3">
-                  {sheet.commands.map((cmd, cIdx) => (
-                    <div key={cIdx} className="flex flex-col gap-1">
+                  {sheet.commands.map((cmd) => (
+                    <div key={cmd.cmd} className="flex flex-col gap-1">
                       <code className="text-sm text-green-400 bg-slate-900 px-3 py-2 rounded font-mono">
                         {cmd.cmd}
                       </code>
@@ -278,8 +278,8 @@ export default function Resources() {
           
           <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
             <div className="grid md:grid-cols-2 gap-4">
-              {glossary.map((item, idx) => (
-                <div key={idx} className="border-l-4 border-purple-500 pl-4 py-2">
+              {glossary.map((item) => (
+                <div key={item.term} className="border-l-4 border-purple-500 pl-4 py-2">
                   <p className="text-lg font-semibold text-purple-400">{item.term}</p>
                   <p className="text-sm text-slate-300">{item.definition}</p>
                 </div>
@@ -456,8 +456,8 @@ export default function Resources() {
                   { week: 10, title: 'CI/CD with GitHub Actions', hours: '15-20h', tasks: ['Create workflows', 'Automated testing', 'Automated deployments', 'Labs & quiz'] },
                   { week: 11, title: 'Containers with Docker', hours: '15-20h', tasks: ['Docker basics', 'Dockerfile creation', 'Multi-stage builds', 'Labs & quiz'] },
                   { week: 12, title: 'Monitoring & Job Prep', hours: '20-25h', tasks: ['CloudWatch monitoring', 'Final project polish', 'Resume prep', 'Interview practice', 'Quiz'] }
-                ].map((item, idx) => (
-                  <div key={idx} className="bg-slate-900 rounded-lg p-4 border border-slate-700 hover:border-yellow-500 transition">
+                ].map((item) => (
+                  <div key={item.title} className="bg-slate-900 rounded-lg p-4 border border-slate-700 hover:border-yellow-500 transition">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h4 className="text-lg font-semibold text-white">Week {item.week}: {item.title}</h4>
@@ -468,8 +468,8 @@ export default function Resources() {
                       </span>
                     </div>
                     <ul className="space-y-1">
-                      {item.tasks.map((task, tIdx) => (
-                        <li key={tIdx} className="text-sm text-slate-300 flex items-start gap-2">
+                      {item.tasks.map((task) => (
+                        <li key={task} className="text-sm text-slate-300 flex items-start gap-2">
                           <span className="text-yellow-400 mt-1">→</span>
                           <span>{task}</span>
                         </li>

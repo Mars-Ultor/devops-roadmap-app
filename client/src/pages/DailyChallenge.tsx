@@ -250,7 +250,7 @@ export default function DailyChallenge() {
 
                   return (
                     <div
-                      key={index}
+                      key={objective}
                       className={`flex items-start gap-3 p-3 rounded border ${
                         isCompleted
                           ? 'bg-green-900/20 border-green-500'
@@ -294,8 +294,8 @@ export default function DailyChallenge() {
                   {commandHistory.length === 0 ? (
                     <div className="text-gray-500">No commands executed yet...</div>
                   ) : (
-                    commandHistory.map((cmd, index) => (
-                      <div key={index} className="mb-1">
+                    commandHistory.map((cmd) => (
+                      <div key={cmd} className="mb-1">
                         <span className="text-green-400">$</span> {cmd}
                       </div>
                     ))
@@ -424,8 +424,8 @@ export default function DailyChallenge() {
                 Resources
               </h3>
               <div className="space-y-2">
-                {scenario.resources.map((resource, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
+                {scenario.resources.map((resource) => (
+                  <div key={resource.url} className="flex items-center gap-2 text-sm">
                     {resource.type === 'documentation' && <BookOpen className="w-4 h-4 text-blue-400" />}
                     {resource.type === 'tool' && <Code className="w-4 h-4 text-green-400" />}
                     {resource.type === 'command' && <Terminal className="w-4 h-4 text-purple-400" />}
@@ -468,9 +468,9 @@ export default function DailyChallenge() {
             <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
               <h3 className="font-semibold mb-3">Skills Covered</h3>
               <div className="flex flex-wrap gap-2">
-                {scenario.tags.map((tag, index) => (
+                {scenario.tags.map((tag) => (
                   <span
-                    key={index}
+                    key={tag}
                     className="px-2 py-1 bg-slate-700 text-xs rounded-full text-gray-300"
                   >
                     {tag}

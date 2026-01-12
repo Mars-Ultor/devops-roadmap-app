@@ -25,7 +25,7 @@ export const AnswerReviewItem: React.FC<AnswerReviewItemProps> = ({ question, us
           <p className="text-white font-medium mb-2">{question.question}</p>
           <p className="text-sm text-slate-400">
             Your answer: <span className={isCorrect ? 'text-green-400' : 'text-red-400'}>
-              {userAnswer !== null ? question.options[userAnswer] : 'Not answered'}
+              {userAnswer === null ? 'Not answered' : question.options[userAnswer]}
             </span>
           </p>
           {!isCorrect && (
@@ -99,7 +99,7 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
       <h3 className="text-xl font-semibold text-white mb-4">Answer Review</h3>
       {questions.map((q, index) => (
         <AnswerReviewItem 
-          key={index} 
+          key={q.question} 
           question={q} 
           userAnswer={selectedAnswers[index]} 
           index={index} 
@@ -271,7 +271,7 @@ export const QuizQuestionView: React.FC<QuizQuestionViewProps> = ({
         <div className="space-y-3">
           {question.options.map((option, idx) => (
             <QuizOption
-              key={idx}
+              key={option}
               option={option}
               index={idx}
               isSelected={userAnswer === idx}

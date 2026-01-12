@@ -5,6 +5,8 @@
 import { Plus, X, AlertCircle, CheckCircle, BookOpen } from 'lucide-react';
 import { STRUGGLE_SESSION_CONFIG } from '../../../types/struggle';
 
+type ConfidenceLevel = 1 | 2 | 3 | 4 | 5;
+
 // ============================================================================
 // Form Header Component
 // ============================================================================
@@ -28,17 +30,18 @@ export function StruggleLogFormHeader() {
 // ============================================================================
 
 interface ProblemDescriptionFieldProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function ProblemDescriptionField({ value, onChange }: ProblemDescriptionFieldProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-300 mb-2">
+      <label htmlFor="problem-description" className="block text-sm font-medium text-gray-300 mb-2">
         What Problem Are You Trying to Solve? *
       </label>
       <textarea
+        id="problem-description"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Describe the specific problem or concept you're struggling with..."
@@ -51,19 +54,19 @@ export function ProblemDescriptionField({ value, onChange }: ProblemDescriptionF
 }
 
 interface ApproachesTriedFieldProps {
-  approaches: string[];
-  onAdd: () => void;
-  onRemove: (index: number) => void;
-  onUpdate: (index: number, value: string) => void;
+  readonly approaches: string[];
+  readonly onAdd: () => void;
+  readonly onRemove: (index: number) => void;
+  readonly onUpdate: (index: number, value: string) => void;
 }
 
 export function ApproachesTriedField({ approaches, onAdd, onRemove, onUpdate }: ApproachesTriedFieldProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <label className="block text-sm font-medium text-gray-300">
+        <div className="block text-sm font-medium text-gray-300">
           What Approaches Have You Tried? *
-        </label>
+        </div>
         <button
           type="button"
           onClick={onAdd}
@@ -75,7 +78,7 @@ export function ApproachesTriedField({ approaches, onAdd, onRemove, onUpdate }: 
       </div>
       <div className="space-y-2">
         {approaches.map((approach, index) => (
-          <div key={index} className="flex items-center gap-2">
+          <div key={approach || `approach-${index}`} className="flex items-center gap-2">
             <input
               type="text"
               value={approach}
@@ -100,17 +103,18 @@ export function ApproachesTriedField({ approaches, onAdd, onRemove, onUpdate }: 
 }
 
 interface StuckPointFieldProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function StuckPointField({ value, onChange }: StuckPointFieldProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-300 mb-2">
+      <label htmlFor="stuck-point" className="block text-sm font-medium text-gray-300 mb-2">
         Where Are You Currently Stuck? *
       </label>
       <textarea
+        id="stuck-point"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Describe exactly where you're stuck and what you don't understand..."
@@ -123,21 +127,22 @@ export function StuckPointField({ value, onChange }: StuckPointFieldProps) {
 }
 
 interface TimeSpentFieldProps {
-  value: number;
-  onChange: (value: number) => void;
+  readonly value: number;
+  readonly onChange: (value: number) => void;
 }
 
 export function TimeSpentField({ value, onChange }: TimeSpentFieldProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-300 mb-2">
+      <label htmlFor="time-spent" className="block text-sm font-medium text-gray-300 mb-2">
         Time Spent Struggling (minutes) *
       </label>
       <input
+        id="time-spent"
         type="number"
         min={STRUGGLE_SESSION_CONFIG.MIN_STRUGGLE_TIME_MINUTES}
         value={value}
-        onChange={(e) => onChange(parseInt(e.target.value) || 0)}
+        onChange={(e) => onChange(Number.parseInt(e.target.value) || 0)}
         className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         required
       />
@@ -149,23 +154,24 @@ export function TimeSpentField({ value, onChange }: TimeSpentFieldProps) {
 }
 
 interface ConfidenceLevelFieldProps {
-  value: 1 | 2 | 3 | 4 | 5;
-  onChange: (value: 1 | 2 | 3 | 4 | 5) => void;
+  readonly value: ConfidenceLevel;
+  readonly onChange: (value: ConfidenceLevel) => void;
 }
 
 export function ConfidenceLevelField({ value, onChange }: ConfidenceLevelFieldProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-300 mb-2">
+      <label htmlFor="confidence-level" className="block text-sm font-medium text-gray-300 mb-2">
         Confidence Level (1-5)
       </label>
       <div className="flex items-center space-x-2">
         <input
+          id="confidence-level"
           type="range"
           min="1"
           max="5"
           value={value}
-          onChange={(e) => onChange(parseInt(e.target.value) as 1 | 2 | 3 | 4 | 5)}
+          onChange={(e) => onChange(Number.parseInt(e.target.value) as ConfidenceLevel)}
           className="flex-1"
         />
         <span className="text-white font-mono w-8 text-center">
@@ -181,17 +187,18 @@ export function ConfidenceLevelField({ value, onChange }: ConfidenceLevelFieldPr
 }
 
 interface LearningPointsFieldProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function LearningPointsField({ value, onChange }: LearningPointsFieldProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-300 mb-2">
+      <label htmlFor="learning-points" className="block text-sm font-medium text-gray-300 mb-2">
         What Have You Learned So Far? (Optional)
       </label>
       <textarea
+        id="learning-points"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Any insights or concepts you've discovered..."
@@ -207,7 +214,7 @@ export function LearningPointsField({ value, onChange }: LearningPointsFieldProp
 // ============================================================================
 
 interface FormErrorsDisplayProps {
-  errors: string[];
+  readonly errors: string[];
 }
 
 export function FormErrorsDisplay({ errors }: FormErrorsDisplayProps) {
@@ -222,8 +229,8 @@ export function FormErrorsDisplay({ errors }: FormErrorsDisplayProps) {
             Please Complete Required Fields:
           </h4>
           <ul className="text-xs text-red-200 space-y-1">
-            {errors.map((error, index) => (
-              <li key={index}>• {error}</li>
+            {errors.map((error) => (
+              <li key={error}>• {error}</li>
             ))}
           </ul>
         </div>
@@ -237,9 +244,9 @@ export function FormErrorsDisplay({ errors }: FormErrorsDisplayProps) {
 // ============================================================================
 
 interface FormActionsProps {
-  onCancel: () => void;
-  isValid: boolean;
-  isSubmitting: boolean;
+  readonly onCancel: () => void;
+  readonly isValid: boolean;
+  readonly isSubmitting: boolean;
 }
 
 export function FormActions({ onCancel, isValid, isSubmitting }: FormActionsProps) {
@@ -279,8 +286,8 @@ export function FormActions({ onCancel, isValid, isSubmitting }: FormActionsProp
 // ============================================================================
 
 interface FormHeaderProps {
-  title?: string;
-  description?: string;
+  readonly title?: string;
+  readonly description?: string;
 }
 
 export function FormHeader({ title, description }: FormHeaderProps) {

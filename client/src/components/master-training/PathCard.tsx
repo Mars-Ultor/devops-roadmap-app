@@ -79,8 +79,8 @@ const PathCard: React.FC<PathCardProps> = ({ path, onPathSelect }) => {
           <div>
             <h4 className="text-white font-medium mb-2">Strengths</h4>
             <ul className="space-y-1">
-              {path.strengths.slice(0, 2).map((strength, index) => (
-                <li key={index} className="flex items-center text-slate-300">
+              {path.strengths.slice(0, 2).map((strength) => (
+                <li key={strength} className="flex items-center text-slate-300">
                   <span className="w-3 h-3 mr-2 rounded-full bg-green-400"></span>
                   {strength}
                 </li>
@@ -90,8 +90,8 @@ const PathCard: React.FC<PathCardProps> = ({ path, onPathSelect }) => {
           <div>
             <h4 className="text-white font-medium mb-2">Focus Areas</h4>
             <ul className="space-y-1">
-              {path.areasForImprovement.slice(0, 2).map((area, index) => (
-                <li key={index} className="flex items-center text-slate-300">
+              {path.areasForImprovement.slice(0, 2).map((area) => (
+                <li key={area} className="flex items-center text-slate-300">
                   <span className="w-3 h-3 mr-2 rounded-full bg-blue-400"></span>
                   {area}
                 </li>

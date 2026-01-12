@@ -101,8 +101,8 @@ export const RecertificationModal: FC<RecertificationModalProps> = ({
                   Skill Decay Detected
                 </h3>
                 <div className="space-y-3">
-                  {skillDecayAlerts.map((alert, index) => (
-                    <div key={index} className="bg-slate-900 rounded-lg p-4">
+                  {skillDecayAlerts.map((alert) => (
+                    <div key={alert.skill} className="bg-slate-900 rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div>
                           <h4 className="text-white font-semibold">{alert.skill}</h4>

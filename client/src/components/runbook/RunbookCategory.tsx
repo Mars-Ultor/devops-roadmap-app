@@ -89,7 +89,7 @@ export const RunbookCategory: FC<RunbookCategoryProps> = ({ category, defaultExp
       </button>
       {isExpanded && (
         <div className="border-t border-slate-700 divide-y divide-slate-700">
-          {category.entries.map((entry, index) => <RunbookEntryCard key={index} entry={entry} index={index} />)}
+          {category.entries.map((entry, index) => <RunbookEntryCard key={entry.problem} entry={entry} index={index} />)}
         </div>
       )}
     </div>

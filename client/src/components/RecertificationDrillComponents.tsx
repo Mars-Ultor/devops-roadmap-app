@@ -27,10 +27,10 @@ export function DrillLoadingState() {
 
 // Drill Header Component
 interface DrillHeaderProps {
-  title: string;
-  subtitle: string;
-  certLevel: CertificationLevel;
-  timeRemaining?: number;
+  readonly title: string;
+  readonly subtitle: string;
+  readonly certLevel: CertificationLevel;
+  readonly timeRemaining?: number;
 }
 
 export function DrillHeader({ title, subtitle, certLevel, timeRemaining }: DrillHeaderProps) {
@@ -61,8 +61,8 @@ export function DrillHeader({ title, subtitle, certLevel, timeRemaining }: Drill
 
 // Progress Bar Component
 interface DrillProgressProps {
-  current: number;
-  total: number;
+  readonly current: number;
+  readonly total: number;
 }
 
 export function DrillProgressBar({ current, total }: DrillProgressProps) {
@@ -82,9 +82,9 @@ export function DrillProgressBar({ current, total }: DrillProgressProps) {
 
 // Multiple Choice Options Component
 interface MultipleChoiceProps {
-  options: string[];
-  selectedAnswer: number | null;
-  onSelect: (index: number) => void;
+  readonly options: string[];
+  readonly selectedAnswer: number | null;
+  readonly onSelect: (index: number) => void;
 }
 
 export function MultipleChoiceOptions({ options, selectedAnswer, onSelect }: MultipleChoiceProps) {
@@ -96,9 +96,9 @@ export function MultipleChoiceOptions({ options, selectedAnswer, onSelect }: Mul
           ? 'border-blue-500 bg-blue-900/50' 
           : 'border-slate-600 hover:border-slate-500 bg-slate-800 hover:bg-slate-700';
         return (
-          <button key={index} onClick={() => onSelect(index)} 
+          <button key={`option-${option}`} onClick={() => onSelect(index)}
             className={`w-full text-left p-4 rounded-lg border-2 transition-all ${baseClass}`}>
-            <span className="font-medium text-white">{String.fromCharCode(65 + index)}. {option}</span>
+            <span className="font-medium text-white">{String.fromCodePoint(65 + index)}. {option}</span>
           </button>
         );
       })}
@@ -108,8 +108,8 @@ export function MultipleChoiceOptions({ options, selectedAnswer, onSelect }: Mul
 
 // True/False Options Component
 interface TrueFalseProps {
-  selectedAnswer: boolean | null;
-  onSelect: (value: boolean) => void;
+  readonly selectedAnswer: boolean | null;
+  readonly onSelect: (value: boolean) => void;
 }
 
 export function TrueFalseOptions({ selectedAnswer, onSelect }: TrueFalseProps) {
@@ -133,13 +133,13 @@ export function TrueFalseOptions({ selectedAnswer, onSelect }: TrueFalseProps) {
 
 // Question Navigation Component
 interface DrillNavigationProps {
-  currentIndex: number;
-  totalQuestions: number;
-  answers: RecertificationAnswer[];
-  onPrevious: () => void;
-  onNext: () => void;
-  onSubmit: () => void;
-  canProceed: boolean;
+  readonly currentIndex: number;
+  readonly totalQuestions: number;
+  readonly answers: RecertificationAnswer[];
+  readonly onPrevious: () => void;
+  readonly onNext: () => void;
+  readonly onSubmit: () => void;
+  readonly canProceed: boolean;
 }
 
 export function DrillNavigation({ currentIndex, totalQuestions, answers, onPrevious, onNext, onSubmit, canProceed }: DrillNavigationProps) {
@@ -153,11 +153,20 @@ export function DrillNavigation({ currentIndex, totalQuestions, answers, onPrevi
         Previous
       </button>
       <div className="flex space-x-2">
-        {Array.from({ length: totalQuestions }).map((_, index) => (
-          <div key={index} className={`w-3 h-3 rounded-full ${
-            index === currentIndex ? 'bg-blue-600' : answers[index] ? 'bg-green-500' : 'bg-gray-300'
-          }`} />
-        ))}
+        {Array.from({ length: totalQuestions }).map((_, index) => {
+          let dotColor;
+          if (index === currentIndex) {
+            dotColor = 'bg-blue-600';
+          } else if (answers[index]) {
+            dotColor = 'bg-green-500';
+          } else {
+            dotColor = 'bg-gray-300';
+          }
+          return (
+            // eslint-disable-next-line react/no-array-index-key
+            <div key={index} className={`w-3 h-3 rounded-full ${dotColor}`} />
+          );
+        })}
       </div>
       {isLastQuestion ? (
         <button onClick={onSubmit} disabled={!allAnswered}
@@ -176,9 +185,9 @@ export function DrillNavigation({ currentIndex, totalQuestions, answers, onPrevi
 
 // Results Stats Component
 interface ResultsStatsProps {
-  score: number;
-  passed: boolean;
-  timeSpentMinutes: number;
+  readonly score: number;
+  readonly passed: boolean;
+  readonly timeSpentMinutes: number;
 }
 
 export function DrillResultsStats({ score, passed, timeSpentMinutes }: ResultsStatsProps) {
@@ -210,10 +219,10 @@ export function DrillResultsStats({ score, passed, timeSpentMinutes }: ResultsSt
 
 // Requirements Check Component
 interface RequirementsCheckProps {
-  score: number;
-  timeSpentMinutes: number;
-  certLevel: CertificationLevel;
-  timeLimit: number;
+  readonly score: number;
+  readonly timeSpentMinutes: number;
+  readonly certLevel: CertificationLevel;
+  readonly timeLimit: number;
 }
 
 export function DrillRequirementsCheck({ score, timeSpentMinutes, certLevel, timeLimit }: RequirementsCheckProps) {
@@ -241,8 +250,8 @@ export function DrillRequirementsCheck({ score, timeSpentMinutes, certLevel, tim
 
 // Question Review Item Component
 interface QuestionReviewProps {
-  question: RecertificationQuestion;
-  answer?: RecertificationAnswer;
+  readonly question: RecertificationQuestion;
+  readonly answer?: RecertificationAnswer;
 }
 
 export function QuestionReviewItem({ question, answer }: QuestionReviewProps) {

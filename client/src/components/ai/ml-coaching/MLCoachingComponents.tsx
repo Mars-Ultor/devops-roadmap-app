@@ -71,8 +71,8 @@ export function LearningStyleCard({ learningStyle }: LearningStyleCardProps) {
               </span>
             </div>
             <div className="space-y-1">
-              {learningStyle.recommendations.slice(0, 2).map((rec, index) => (
-                <p key={index} className="text-sm text-gray-400">• {rec}</p>
+              {learningStyle.recommendations.slice(0, 2).map((rec) => (
+                <p key={rec} className="text-sm text-gray-400">• {rec}</p>
               ))}
             </div>
           </div>
@@ -142,8 +142,8 @@ export function SkillGapsCard({ skillGaps }: SkillGapsCardProps) {
             </div>
             <p className="text-sm text-gray-400">areas need attention</p>
             <div className="space-y-1">
-              {skillGaps.slice(0, 2).map((gap, index) => (
-                <div key={index} className="flex items-center justify-between">
+              {skillGaps.slice(0, 2).map((gap) => (
+                <div key={gap.topic} className="flex items-center justify-between">
                   <span className="text-sm text-white truncate">{gap.topic}</span>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     gap.priority === 'high' 
@@ -180,8 +180,8 @@ export function RecommendationsCard({ recommendations }: RecommendationsCardProp
       <div className="p-6">
         {recommendations.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {recommendations.slice(0, 4).map((rec, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 bg-gray-700 rounded-lg">
+            {recommendations.slice(0, 4).map((rec) => (
+              <div key={rec} className="flex items-start gap-3 p-3 bg-gray-700 rounded-lg">
                 <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-gray-300">{rec}</p>
               </div>
@@ -230,7 +230,7 @@ export function LearningPathTab({ optimizedPath }: LearningPathTabProps) {
               <p className="text-sm text-gray-400 mb-3">Recommended Next Topics:</p>
               <div className="space-y-3">
                 {optimizedPath.topics.map((topic, index) => (
-                  <div key={index} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
+                  <div key={topic} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
                     <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
                       <span className="text-sm font-bold text-white">{index + 1}</span>
                     </div>
@@ -283,8 +283,8 @@ export function SkillGapsTab({ skillGaps }: SkillGapsTabProps) {
 
   return (
     <div className="space-y-6">
-      {skillGaps.map((gap, index) => (
-        <SkillGapItem key={index} gap={gap} />
+      {skillGaps.map((gap) => (
+        <SkillGapItem key={gap.topic} gap={gap} />
       ))}
     </div>
   );
@@ -332,8 +332,8 @@ function SkillGapItem({ gap }: SkillGapItemProps) {
           <div>
             <p className="text-sm font-medium text-gray-300 mb-2">Recommended Actions:</p>
             <ul className="space-y-2">
-              {gap.recommendedActions.map((action, actionIndex) => (
-                <li key={actionIndex} className="flex items-start gap-2 text-sm">
+              {gap.recommendedActions.map((action) => (
+                <li key={action} className="flex items-start gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-300">{action}</span>
                 </li>
@@ -408,8 +408,8 @@ function PerformanceContent({ prediction }: { prediction: PerformancePrediction 
             Risk Factors
           </h4>
           <div className="space-y-2">
-            {prediction.riskFactors.map((risk, index) => (
-              <div key={index} className="flex items-start gap-2 p-3 bg-red-900/20 rounded-lg">
+            {prediction.riskFactors.map((risk) => (
+              <div key={risk} className="flex items-start gap-2 p-3 bg-red-900/20 rounded-lg">
                 <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-red-300">{risk}</p>
               </div>
@@ -424,8 +424,8 @@ function PerformanceContent({ prediction }: { prediction: PerformancePrediction 
           Recommended Interventions
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {prediction.interventions.map((intervention, index) => (
-            <div key={index} className="flex items-start gap-2 p-3 bg-green-900/20 rounded-lg">
+          {prediction.interventions.map((intervention) => (
+            <div key={intervention} className="flex items-start gap-2 p-3 bg-green-900/20 rounded-lg">
               <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
               <p className="text-sm text-green-300">{intervention}</p>
             </div>
@@ -486,8 +486,8 @@ function LearningStyleContent({ learningStyle }: { learningStyle: LearningStyleR
       <div>
         <h4 className="font-medium text-white mb-3">Personalized Recommendations:</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {learningStyle.recommendations.map((rec, index) => (
-            <div key={index} className="flex items-start gap-3 p-3 bg-gray-700 rounded-lg">
+          {learningStyle.recommendations.map((rec) => (
+            <div key={rec} className="flex items-start gap-3 p-3 bg-gray-700 rounded-lg">
               <Lightbulb className="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0" />
               <p className="text-sm text-gray-300">{rec}</p>
             </div>

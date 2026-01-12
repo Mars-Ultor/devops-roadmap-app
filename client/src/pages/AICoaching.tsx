@@ -174,8 +174,8 @@ export default function AICoachingPage() {
             <div>
               <h3 className="text-xl font-bold mb-6">AI/ML Coaching Features</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {features.map((feature, index) => (
-                  <div key={index} className="bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-750 transition-colors">
+                {features.map((feature) => (
+                  <div key={feature.title} className="bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-750 transition-colors">
                     <div className="p-6">
                       <div className="flex items-center gap-3 mb-4">
                         <feature.icon className="w-6 h-6 text-indigo-400" />
@@ -183,8 +183,8 @@ export default function AICoachingPage() {
                       </div>
                       <p className="text-gray-400 text-sm mb-4">{feature.description}</p>
                       <div className="space-y-2">
-                        {feature.capabilities.map((capability, capIndex) => (
-                          <div key={capIndex} className="flex items-center gap-2 text-sm">
+                        {feature.capabilities.map((capability) => (
+                          <div key={capability} className="flex items-center gap-2 text-sm">
                             <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
                             <span className="text-gray-300">{capability}</span>
                           </div>

@@ -301,8 +301,8 @@ export default function Curriculum() {
                   <div className="mb-6 bg-slate-900 rounded-lg p-4 border border-slate-700">
                     <h5 className="text-sm font-bold text-indigo-300 mb-3 uppercase tracking-wide">Learning Objectives</h5>
                     <ul className="space-y-2">
-                      {week.objectives.map((obj, idx) => (
-                        <li key={idx} className="text-sm text-gray-300 flex items-start">
+                      {week.objectives.map((obj) => (
+                        <li key={obj} className="text-sm text-gray-300 flex items-start">
                           <span className="text-indigo-400 mr-3 mt-1 text-lg">✓</span>
                           <span>{obj}</span>
                         </li>
@@ -359,9 +359,9 @@ export default function Curriculum() {
                   {/* Quick Lab Links */}
                   {!isLocked && week.labs.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {week.labs.map((lab: unknown, idx: number) => (
+                      {week.labs.map((lab: unknown) => (
                         <Link
-                          key={idx}
+                          key={(lab as { id: string }).id}
                           to={`/lab/${(lab as { id: string }).id}`}
                           className="text-xs bg-slate-700 hover:bg-indigo-600 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium border border-slate-600 hover:border-indigo-500"
                         >

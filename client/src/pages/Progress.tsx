@@ -213,9 +213,9 @@ export default function Progress() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {labProgress.slice(0, 10).map((lab, index) => (
+                  {labProgress.slice(0, 10).map((lab) => (
                     <div
-                      key={`${lab.labId}-${index}`}
+                      key={lab.labId}
                       className="flex items-center justify-between p-5 rounded-lg bg-slate-700/50 hover:bg-slate-700 transition-all duration-200 border border-slate-600 hover:border-green-500/50"
                     >
                       <div className="flex items-center space-x-4">

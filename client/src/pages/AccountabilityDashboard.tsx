@@ -364,7 +364,7 @@ export default function AccountabilityDashboard() {
                 
                 <div className="space-y-6">
                   {newCommitments.map((commitment, index) => (
-                    <div key={index} className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                    <div key={commitment.type || `commitment-${index}`} className="bg-gray-800 border border-gray-700 rounded-lg p-4">
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">Type</label>

@@ -172,8 +172,8 @@ export default function AdaptiveDifficultyDashboard() {
                 </p>
                 
                 <ul className="space-y-1 mb-4">
-                  {recommendation.reasoning.map((reason, idx) => (
-                    <li key={idx} className="text-sm flex items-start gap-2">
+                  {recommendation.reasoning.map((reason) => (
+                    <li key={reason} className="text-sm flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-green-400" />
                       <span>{reason}</span>
                     </li>

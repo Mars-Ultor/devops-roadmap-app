@@ -85,7 +85,7 @@ export function AttemptedSolutionsSection({
       </label>
       <div className="space-y-3">
         {attemptedSolutions.map((attempt, index) => (
-          <div key={index}>
+          <div key={attempt || `attempt-${index}`}>
             <textarea
               value={attempt}
               onChange={(e) => onAttemptChange(index, e.target.value)}

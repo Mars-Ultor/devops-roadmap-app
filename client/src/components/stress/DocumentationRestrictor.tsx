@@ -117,8 +117,8 @@ export const DocumentationRestrictor: React.FC<DocumentationRestrictorProps> = (
         <div className="mb-3">
           <h4 className="text-sm font-medium mb-1">Allowed Domains:</h4>
           <div className="flex flex-wrap gap-1">
-            {allowedUrls.map((url, index) => (
-              <span key={index} className="px-2 py-1 bg-black/30 rounded text-xs">
+            {allowedUrls.map((url) => (
+              <span key={url} className="px-2 py-1 bg-black/30 rounded text-xs">
                 {url}
               </span>
             ))}
@@ -138,8 +138,8 @@ export const DocumentationRestrictor: React.FC<DocumentationRestrictorProps> = (
 
           {showBlocked && (
             <div className="mt-2 max-h-32 overflow-y-auto">
-              {blockedAttempts.map((url, index) => (
-                <div key={index} className="flex items-center gap-2 text-xs text-red-300 py-1">
+              {blockedAttempts.map((url) => (
+                <div key={url} className="flex items-center gap-2 text-xs text-red-300 py-1">
                   <ExternalLink className="w-3 h-3" />
                   <span className="truncate">{url}</span>
                 </div>

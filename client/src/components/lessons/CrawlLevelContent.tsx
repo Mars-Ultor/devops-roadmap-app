@@ -110,8 +110,8 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
                   <div>
                     <h5 className="text-sm font-semibold text-white mb-2">Check that:</h5>
                     <ul className="space-y-1">
-                      {step.validationCriteria.map((criteria, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-slate-300">
+                      {step.validationCriteria.map((criteria) => (
+                        <li key={criteria} className="flex items-start gap-2 text-sm text-slate-300">
                           <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
                           {criteria}
                         </li>
@@ -141,8 +141,8 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
                       </button>
                       {showMistakes[step.stepNumber] && (
                         <div className="px-4 py-3 space-y-2">
-                          {step.commonMistakes.map((mistake, idx) => (
-                            <p key={idx} className="text-sm text-slate-300">
+                          {step.commonMistakes.map((mistake) => (
+                            <p key={mistake} className="text-sm text-slate-300">
                               • {mistake}
                             </p>
                           ))}

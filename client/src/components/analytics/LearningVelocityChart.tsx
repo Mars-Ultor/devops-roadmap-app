@@ -120,8 +120,8 @@ export const LearningVelocityChart: FC<LearningVelocityChartProps> = ({ data }) 
           <span>Week</span>
           <span>Items Completed</span>
         </div>
-        {weeklyProgress.map((week, idx) => (
-          <div key={idx} className="flex items-center gap-3">
+        {weeklyProgress.map((week) => (
+          <div key={`week-${week.week}`} className="flex items-center gap-3">
             {/* Week Label */}
             <div className="w-12 text-sm text-slate-300 font-mono">
               W{week.week}

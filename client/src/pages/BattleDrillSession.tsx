@@ -508,13 +508,13 @@ export default function BattleDrillSession() {
                         {/* Validation Criteria */}
                         <div className="space-y-1">
                           <div className="text-sm text-slate-400 mb-1">Validation Criteria:</div>
-                          {step.validationCriteria.map((criteria, idx) => {
+                          {step.validationCriteria.map((criteria) => {
                             const validation = validationResults[index];
                             const isPassed = validation?.passedCriteria.includes(criteria);
                             const isFailed = validation?.failedCriteria.includes(criteria);
                             
                             return (
-                              <div key={idx} className={`flex items-center gap-2 text-sm ${
+                              <div key={criteria} className={`flex items-center gap-2 text-sm ${
                                 isPassed ? 'text-green-400' :
                                 isFailed ? 'text-red-400' :
                                 'text-slate-300'
@@ -612,8 +612,8 @@ export default function BattleDrillSession() {
                           {validationResults[index].specificErrors.length > 0 && (
                             <div className="mt-3 space-y-1">
                               <div className="text-sm text-red-300 font-semibold">Issues Found:</div>
-                              {validationResults[index].specificErrors.map((error, idx) => (
-                                <div key={idx} className="text-sm text-red-200 flex items-start gap-2">
+                              {validationResults[index].specificErrors.map((error) => (
+                                <div key={error} className="text-sm text-red-200 flex items-start gap-2">
                                   <XCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                   {error}
                                 </div>
@@ -625,8 +625,8 @@ export default function BattleDrillSession() {
                           {validationResults[index].suggestions.length > 0 && (
                             <div className="mt-3 space-y-1">
                               <div className="text-sm text-yellow-300 font-semibold">Suggestions:</div>
-                              {validationResults[index].suggestions.map((suggestion, idx) => (
-                                <div key={idx} className="text-sm text-yellow-200 flex items-start gap-2">
+                              {validationResults[index].suggestions.map((suggestion) => (
+                                <div key={suggestion} className="text-sm text-yellow-200 flex items-start gap-2">
                                   <Lightbulb className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                   {suggestion}
                                 </div>
@@ -653,7 +653,7 @@ export default function BattleDrillSession() {
                       </div>
                       <div className="space-y-2">
                         {step.hints.map((hint, idx) => (
-                          <div key={idx} className="text-sm text-slate-300">
+                          <div key={hint} className="text-sm text-slate-300">
                             {idx + 1}. {hint}
                           </div>
                         ))}

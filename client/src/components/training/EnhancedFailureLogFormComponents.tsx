@@ -12,7 +12,7 @@ import { CATEGORIES, SEVERITIES } from './EnhancedFailureLogFormUtils';
 // ============================================================================
 
 interface FormHeaderProps {
-  onCancel?: () => void;
+  readonly onCancel?: () => void;
 }
 
 export function FormHeader({ onCancel }: FormHeaderProps) {
@@ -39,7 +39,7 @@ export function FormHeader({ onCancel }: FormHeaderProps) {
 // ============================================================================
 
 interface PatternAlertProps {
-  pattern: PatternDetection;
+  readonly pattern: PatternDetection;
 }
 
 export function PatternAlert({ pattern }: PatternAlertProps) {
@@ -68,8 +68,8 @@ export function PatternAlert({ pattern }: PatternAlertProps) {
 // ============================================================================
 
 interface ContextInfoProps {
-  contentType: string;
-  contentTitle: string;
+  readonly contentType: string;
+  readonly contentTitle: string;
 }
 
 export function ContextInfo({ contentType, contentTitle }: ContextInfoProps) {
@@ -87,18 +87,19 @@ export function ContextInfo({ contentType, contentTitle }: ContextInfoProps) {
 // ============================================================================
 
 interface CategorySeverityProps {
-  category: FailureCategory;
-  severity: FailureSeverity;
-  onCategoryChange: (cat: FailureCategory) => void;
-  onSeverityChange: (sev: FailureSeverity) => void;
+  readonly category: FailureCategory;
+  readonly severity: FailureSeverity;
+  readonly onCategoryChange: (cat: FailureCategory) => void;
+  readonly onSeverityChange: (sev: FailureSeverity) => void;
 }
 
 export function CategorySeveritySelector({ category, severity, onCategoryChange, onSeverityChange }: CategorySeverityProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
-        <label className="block text-sm font-semibold text-slate-300 mb-2">Category *</label>
+        <label htmlFor="category-select" className="block text-sm font-semibold text-slate-300 mb-2">Category *</label>
         <select
+          id="category-select"
           value={category}
           onChange={(e) => onCategoryChange(e.target.value as FailureCategory)}
           className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
@@ -109,7 +110,7 @@ export function CategorySeveritySelector({ category, severity, onCategoryChange,
         </select>
       </div>
       <div>
-        <label className="block text-sm font-semibold text-slate-300 mb-2">Severity *</label>
+        <div className="block text-sm font-semibold text-slate-300 mb-2">Severity *</div>
         <div className="grid grid-cols-2 gap-2">
           {SEVERITIES.map(sev => (
             <button
@@ -136,18 +137,18 @@ export function CategorySeveritySelector({ category, severity, onCategoryChange,
 // ============================================================================
 
 interface WhatTriedSectionProps {
-  whatTried: string[];
-  validation: ValidationState;
-  onChange: (index: number, value: string) => void;
-  onAdd: () => void;
+  readonly whatTried: string[];
+  readonly validation: ValidationState;
+  readonly onChange: (index: number, value: string) => void;
+  readonly onAdd: () => void;
 }
 
 export function WhatTriedSection({ whatTried, validation, onChange, onAdd }: WhatTriedSectionProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">
+      <div className="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">
         <span className="flex items-center gap-2">
-          What I Tried * 
+          What I Tried *{' '}
           <span className={`text-xs px-2 py-0.5 rounded ${
             validation.whatTried ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
           }`}>
@@ -158,7 +159,7 @@ export function WhatTriedSection({ whatTried, validation, onChange, onAdd }: Wha
       <div className="space-y-2">
         {whatTried.map((item, idx) => (
           <input
-            key={idx}
+            key={item || `approach-${idx}`}
             type="text"
             value={item}
             onChange={(e) => onChange(idx, e.target.value)}
@@ -179,18 +180,18 @@ export function WhatTriedSection({ whatTried, validation, onChange, onAdd }: Wha
 // ============================================================================
 
 interface RootCauseSectionProps {
-  rootCause: string;
-  wordCount: number;
-  validation: ValidationState;
-  onChange: (value: string) => void;
+  readonly rootCause: string;
+  readonly wordCount: number;
+  readonly validation: ValidationState;
+  readonly onChange: (value: string) => void;
 }
 
 export function RootCauseSection({ rootCause, wordCount, validation, onChange }: RootCauseSectionProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">
+      <label htmlFor="root-cause-textarea" className="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">
         <span className="flex items-center gap-2">
-          Root Cause Analysis *
+          Root Cause Analysis *{' '}
           <span className={`text-xs px-2 py-0.5 rounded ${
             validation.rootCause ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
           }`}>
@@ -199,6 +200,7 @@ export function RootCauseSection({ rootCause, wordCount, validation, onChange }:
         </span>
       </label>
       <textarea
+        id="root-cause-textarea"
         value={rootCause}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Analyze the root cause, not just symptoms. What was the underlying reason for the failure? What misunderstanding or gap in knowledge led to this?"
@@ -217,9 +219,9 @@ export function RootCauseSection({ rootCause, wordCount, validation, onChange }:
 // ============================================================================
 
 interface RunbookDisplayProps {
-  runbook: string;
-  copied: boolean;
-  onCopy: () => void;
+  readonly runbook: string;
+  readonly copied: boolean;
+  readonly onCopy: () => void;
 }
 
 export function RunbookDisplay({ runbook, copied, onCopy }: RunbookDisplayProps) {
@@ -256,9 +258,9 @@ export function RunbookDisplay({ runbook, copied, onCopy }: RunbookDisplayProps)
 // ============================================================================
 
 interface FormActionsProps {
-  validation: ValidationState;
-  submitting: boolean;
-  onCancel?: () => void;
+  readonly validation: ValidationState;
+  readonly submitting: boolean;
+  readonly onCancel?: () => void;
 }
 
 export function FormActions({ validation, submitting, onCancel }: FormActionsProps) {
@@ -314,15 +316,16 @@ export function FormActions({ validation, submitting, onCancel }: FormActionsPro
 // ============================================================================
 
 interface TitleFieldProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function TitleField({ value, onChange }: TitleFieldProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2">Failure Title *</label>
+      <label htmlFor="failure-title" className="block text-sm font-semibold text-slate-300 mb-2">Failure Title *</label>
       <input
+        id="failure-title"
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -334,15 +337,16 @@ export function TitleField({ value, onChange }: TitleFieldProps) {
 }
 
 interface DescriptionFieldProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function DescriptionField({ value, onChange }: DescriptionFieldProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2">Description</label>
+      <label htmlFor="description-textarea" className="block text-sm font-semibold text-slate-300 mb-2">Description</label>
       <textarea
+        id="description-textarea"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Detailed description of what happened..."
@@ -354,8 +358,8 @@ export function DescriptionField({ value, onChange }: DescriptionFieldProps) {
 }
 
 interface ErrorMessageFieldProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function ErrorMessageField({ value, onChange }: ErrorMessageFieldProps) {
@@ -363,8 +367,9 @@ export function ErrorMessageField({ value, onChange }: ErrorMessageFieldProps) {
   
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2">Error Message</label>
+      <label htmlFor="error-message-textarea" className="block text-sm font-semibold text-slate-300 mb-2">Error Message</label>
       <textarea
+        id="error-message-textarea"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={3}

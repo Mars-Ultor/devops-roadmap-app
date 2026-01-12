@@ -11,12 +11,12 @@ import { formatTime, getTimerColor, isPhaseComplete } from './BossBattleUtils';
 // ============================================================================
 
 interface BattleHeaderProps {
-  week: number;
-  battle: BossBattle;
-  timeRemaining: number;
-  currentScore: number;
-  isActive: boolean;
-  onClose: () => void;
+  readonly week: number;
+  readonly battle: BossBattle;
+  readonly timeRemaining: number;
+  readonly currentScore: number;
+  readonly isActive: boolean;
+  readonly onClose: () => void;
 }
 
 export function BattleHeader({ week, battle, timeRemaining, currentScore, isActive, onClose }: BattleHeaderProps) {
@@ -63,8 +63,8 @@ export function BattleHeader({ week, battle, timeRemaining, currentScore, isActi
 // ============================================================================
 
 interface WarningBannerProps {
-  battle: BossBattle;
-  week: number;
+  readonly battle: BossBattle;
+  readonly week: number;
 }
 
 export function WarningBanner({ battle, week }: WarningBannerProps) {
@@ -92,7 +92,7 @@ export function WarningBanner({ battle, week }: WarningBannerProps) {
 // ============================================================================
 
 interface ScenarioSectionProps {
-  battle: BossBattle;
+  readonly battle: BossBattle;
 }
 
 export function ScenarioSection({ battle }: ScenarioSectionProps) {
@@ -114,12 +114,12 @@ export function ScenarioSection({ battle }: ScenarioSectionProps) {
 // ============================================================================
 
 interface PhaseSectionProps {
-  phase: BattlePhase;
-  phaseIndex: number;
-  phaseCompletion: boolean[][];
-  isActive: boolean;
-  timeRemaining: number;
-  onToggleTask: (phaseIndex: number, taskIndex: number) => void;
+  readonly phase: BattlePhase;
+  readonly phaseIndex: number;
+  readonly phaseCompletion: boolean[][];
+  readonly isActive: boolean;
+  readonly timeRemaining: number;
+  readonly onToggleTask: (phaseIndex: number, taskIndex: number) => void;
 }
 
 export function PhaseSection({ phase, phaseIndex, phaseCompletion, isActive, timeRemaining, onToggleTask }: PhaseSectionProps) {
@@ -136,9 +136,9 @@ export function PhaseSection({ phase, phaseIndex, phaseCompletion, isActive, tim
       </div>
       <p className="text-slate-300 text-sm mb-4">{phase.description}</p>
       <div className="space-y-2">
-        {phase.tasks.map((task, taskIndex) => (
+        {phase.tasks.map((task) => (
           <label
-            key={taskIndex}
+            key={task}
             className="flex items-start gap-3 bg-slate-800 rounded-lg p-3 cursor-pointer hover:bg-slate-700 transition-colors"
           >
             <input
@@ -163,34 +163,22 @@ export function PhaseSection({ phase, phaseIndex, phaseCompletion, isActive, tim
 // ============================================================================
 
 interface BattleFooterProps {
-  battle: BossBattle;
-  isActive: boolean;
-  currentScore: number;
-  phaseCompletion: boolean[][];
-  onStart: () => void;
-  onSubmit: () => void;
+  readonly battle: BossBattle;
+  readonly isActive: boolean;
+  readonly currentScore: number;
+  readonly phaseCompletion: boolean[][];
+  readonly onStart: () => void;
+  readonly onSubmit: () => void;
 }
 
 export function BattleFooter({ battle, isActive, currentScore, phaseCompletion, onStart, onSubmit }: BattleFooterProps) {
-  const tasksComplete = phaseCompletion.flat().filter(t => t).length;
+  const tasksComplete = phaseCompletion.flat().filter(Boolean).length;
   const totalTasks = battle.phases.reduce((sum, p) => sum + p.tasks.length, 0);
   const isPassing = currentScore >= battle.minimumPassScore;
   
   return (
     <div className="sticky bottom-0 bg-slate-800 border-t border-slate-700 p-6">
-      {!isActive ? (
-        <div className="flex justify-between items-center">
-          <p className="text-sm text-slate-400">
-            Ready to begin? Make sure you have {battle.timeLimit / 3600} hours available.
-          </p>
-          <button
-            onClick={onStart}
-            className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-bold text-lg flex items-center gap-2"
-          >
-            <Swords className="w-5 h-5" />Start Boss Battle
-          </button>
-        </div>
-      ) : (
+      {isActive ? (
         <div className="flex justify-between items-center">
           <div>
             <div className="text-sm text-slate-400">{tasksComplete} / {totalTasks} tasks complete</div>
@@ -207,6 +195,18 @@ export function BattleFooter({ battle, isActive, currentScore, phaseCompletion, 
             className={`px-8 py-3 rounded-lg font-bold text-lg ${isPassing ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-amber-600 hover:bg-amber-700 text-white'}`}
           >
             Submit Battle {isPassing && '✓'}
+          </button>
+        </div>
+      ) : (
+        <div className="flex justify-between items-center">
+          <p className="text-sm text-slate-400">
+            Ready to begin? Make sure you have {battle.timeLimit / 3600} hours available.
+          </p>
+          <button
+            onClick={onStart}
+            className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-bold text-lg flex items-center gap-2"
+          >
+            <Swords className="w-5 h-5" />Start Boss Battle
           </button>
         </div>
       )}

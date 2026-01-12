@@ -906,8 +906,8 @@ export default function LeadershipCommand() {
                     <div>
                       <h4 className="font-semibold text-green-400 mb-2">Leadership Focus</h4>
                       <ul className="text-sm text-gray-300 space-y-1">
-                        {scenario.leadershipFocus.map((focus, index) => (
-                          <li key={index} className="flex items-center gap-2">
+                        {scenario.leadershipFocus.map((focus) => (
+                          <li key={focus} className="flex items-center gap-2">
                             <CheckCircle className="w-4 h-4 text-green-400" />
                             {focus}
                           </li>
@@ -918,8 +918,8 @@ export default function LeadershipCommand() {
                     <div>
                       <h4 className="font-semibold text-yellow-400 mb-2">Communication Challenges</h4>
                       <ul className="text-sm text-gray-300 space-y-1">
-                        {scenario.communicationChallenges.slice(0, 3).map((challenge, index) => (
-                          <li key={index} className="flex items-center gap-2">
+                        {scenario.communicationChallenges.slice(0, 3).map((challenge) => (
+                          <li key={challenge} className="flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4 text-yellow-400" />
                             {challenge}
                           </li>
@@ -930,8 +930,8 @@ export default function LeadershipCommand() {
                     <div>
                       <h4 className="font-semibold text-blue-400 mb-2">Key Objectives</h4>
                       <ul className="text-sm text-gray-300 space-y-1">
-                        {scenario.objectives.slice(0, 3).map((objective, index) => (
-                          <li key={index} className="flex items-center gap-2">
+                        {scenario.objectives.slice(0, 3).map((objective) => (
+                          <li key={objective} className="flex items-center gap-2">
                             <Target className="w-4 h-4 text-blue-400" />
                             {objective}
                           </li>
@@ -1149,11 +1149,11 @@ export default function LeadershipCommand() {
                   Decision History
                 </h4>
                 <div className="max-h-64 overflow-y-auto space-y-2">
-                  {decisions.map((decision, index) => {
+                  {decisions.map((decision) => {
                     const dp = selectedScenario.decisionPoints.find(p => p.id === decision.decisionPointId);
                     const option = dp?.options.find(o => o.id === decision.selectedOptionId);
                     return (
-                      <div key={index} className="bg-slate-700/50 p-2 rounded text-sm">
+                      <div key={`${decision.decisionPointId}-${decision.selectedOptionId}`} className="bg-slate-700/50 p-2 rounded text-sm">
                         <div className="flex items-center gap-2 mb-1">
                           {option?.impact === 'positive' ? (
                             <CheckCircle className="w-4 h-4 text-green-400" />

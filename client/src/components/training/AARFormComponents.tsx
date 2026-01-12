@@ -113,7 +113,7 @@ export function ArrayInputField({
       <div className="space-y-2">
         {items.map((item, index) => isTextarea ? (
           <textarea
-            key={`textarea-${index}-${item.slice(0, 10)}`}
+            key={item || `textarea-${index}`}
             value={item}
             onChange={(e) => onItemChange(index, e.target.value)}
             placeholder={placeholder(index)}
@@ -122,7 +122,7 @@ export function ArrayInputField({
           />
         ) : (
           <input
-            key={`input-${index}-${item.slice(0, 10)}`}
+            key={item || `input-${index}`}
             type="text"
             value={item}
             onChange={(e) => onItemChange(index, e.target.value)}

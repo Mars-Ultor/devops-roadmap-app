@@ -119,7 +119,7 @@ function StepsPreview({ steps }: { readonly steps: BattleDrill['steps'] }) {
       <div className="text-xs text-slate-500 mb-2">{steps.length} Steps Total</div>
       <div className="space-y-1 max-h-32 overflow-y-auto">
         {steps.slice(0, 5).map((step, idx) => (
-          <div key={`step-${idx}-${step.description.slice(0, 10)}`} className="flex items-center gap-2 text-sm text-slate-400">
+          <div key={step.description} className="flex items-center gap-2 text-sm text-slate-400">
             <div className="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-300">{idx + 1}</div>
             <span className="truncate">{step.description}</span>
           </div>

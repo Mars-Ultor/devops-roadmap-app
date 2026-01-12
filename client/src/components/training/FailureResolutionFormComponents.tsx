@@ -8,7 +8,7 @@ import { countWords, MIN_LESSONS } from './FailureResolutionFormUtils';
 
 // Header Component
 interface FormHeaderProps {
-  onCancel: () => void;
+  readonly onCancel: () => void;
 }
 
 export function FormHeader({ onCancel }: FormHeaderProps) {
@@ -35,7 +35,7 @@ export function FormHeader({ onCancel }: FormHeaderProps) {
 
 // Original Failure Display
 interface OriginalFailureProps {
-  failure: FailureLog;
+  readonly failure: FailureLog;
 }
 
 export function OriginalFailure({ failure }: OriginalFailureProps) {
@@ -55,18 +55,19 @@ export function OriginalFailure({ failure }: OriginalFailureProps) {
 
 // Root Cause Input
 interface RootCauseInputProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function RootCauseInput({ value, onChange }: RootCauseInputProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2">
+      <label htmlFor="root-cause-textarea" className="block text-sm font-semibold text-slate-300 mb-2">
         <Search className="w-4 h-4 inline mr-1" />
         Root Cause Analysis * <span className="text-slate-500">(Why did this happen?)</span>
       </label>
       <textarea
+        id="root-cause-textarea"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Dig deep - what was the underlying cause? Not just the symptom..."
@@ -82,18 +83,19 @@ export function RootCauseInput({ value, onChange }: RootCauseInputProps) {
 
 // Resolution Input
 interface ResolutionInputProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function ResolutionInput({ value, onChange }: ResolutionInputProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2">
+      <label htmlFor="resolution-textarea" className="block text-sm font-semibold text-slate-300 mb-2">
         <CheckCircle className="w-4 h-4 inline mr-1" />
         Resolution * <span className="text-slate-500">(How did you fix it?)</span>
       </label>
       <textarea
+        id="resolution-textarea"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Step-by-step: what actions did you take to resolve this?"
@@ -109,18 +111,19 @@ export function ResolutionInput({ value, onChange }: ResolutionInputProps) {
 
 // Prevention Strategy Input
 interface PreventionInputProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function PreventionInput({ value, onChange }: PreventionInputProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2">
+      <label htmlFor="prevention-textarea" className="block text-sm font-semibold text-slate-300 mb-2">
         <Shield className="w-4 h-4 inline mr-1" />
         Prevention Strategy <span className="text-slate-500">(How to avoid this in future?)</span>
       </label>
       <textarea
+        id="prevention-textarea"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="What process, checklist, or practice will prevent this from happening again?"
@@ -133,22 +136,22 @@ export function PreventionInput({ value, onChange }: PreventionInputProps) {
 
 // Lessons Learned Section
 interface LessonsLearnedSectionProps {
-  lessons: string[];
-  onUpdate: (index: number, value: string) => void;
-  onAdd: () => void;
-  onRemove: (index: number) => void;
+  readonly lessons: string[];
+  readonly onUpdate: (index: number, value: string) => void;
+  readonly onAdd: () => void;
+  readonly onRemove: (index: number) => void;
 }
 
 export function LessonsLearnedSection({ lessons, onUpdate, onAdd, onRemove }: LessonsLearnedSectionProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-300 mb-2">
+      <div className="block text-sm font-semibold text-slate-300 mb-2">
         <BookOpen className="w-4 h-4 inline mr-1" />
         Lessons Learned * <span className="text-slate-500">(At least {MIN_LESSONS})</span>
-      </label>
+      </div>
       <div className="space-y-2">
         {lessons.map((lesson, index) => (
-          <div key={index} className="flex gap-2">
+          <div key={lesson || `lesson-${index}`} className="flex gap-2">
             <input
               type="text"
               value={lesson}
@@ -192,9 +195,9 @@ export function InfoBox() {
 
 // Action Buttons
 interface ActionButtonsProps {
-  onCancel: () => void;
-  submitting: boolean;
-  canSubmit: boolean;
+  readonly onCancel: () => void;
+  readonly submitting: boolean;
+  readonly canSubmit: boolean;
 }
 
 export function ActionButtons({ onCancel, submitting, canSubmit }: ActionButtonsProps) {

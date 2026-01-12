@@ -213,7 +213,7 @@ function PredictionValues({ prediction }: { readonly prediction: number[] }) {
       <p className="text-sm font-medium text-white mb-2">Prediction Values:</p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {prediction.map((value, index) => (
-          <div key={`prediction-${index}-${value}`} className="text-center p-2 bg-gray-700 rounded">
+          <div key={`prediction-${value}`} className="text-center p-2 bg-gray-700 rounded">
             <p className="text-sm font-mono text-white">{value.toFixed(3)}</p>
             <p className="text-xs text-gray-400">Output {index}</p>
           </div>
@@ -229,7 +229,7 @@ function ProbabilitiesDisplay({ probabilities }: { readonly probabilities: numbe
       <p className="text-sm font-medium text-white mb-2">Probabilities:</p>
       <div className="space-y-2">
         {probabilities.map((prob, index) => (
-          <div key={`probability-${index}-${prob}`} className="flex items-center gap-2">
+          <div key={`probability-${prob}`} className="flex items-center gap-2">
             <span className="text-sm text-white w-16">Class {index}:</span>
             <div className="flex-1 bg-gray-700 rounded-full h-2">
               <div

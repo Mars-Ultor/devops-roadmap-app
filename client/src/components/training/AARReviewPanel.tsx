@@ -70,8 +70,8 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
             <h4 className="font-semibold text-white">Insights</h4>
           </div>
           <div className="space-y-2">
-            {review.insights.map((insight, idx) => (
-              <div key={idx} className="bg-purple-900/20 border border-purple-500/20 rounded-lg p-3">
+            {review.insights.map((insight) => (
+              <div key={insight} className="bg-purple-900/20 border border-purple-500/20 rounded-lg p-3">
                 <p className="text-purple-100 text-sm">{insight}</p>
               </div>
             ))}
@@ -85,8 +85,8 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
             <h4 className="font-semibold text-white">Follow-up Questions</h4>
           </div>
           <div className="space-y-3">
-            {review.questions.map((question, idx) => (
-              <div key={idx} className="bg-indigo-900/20 border border-indigo-500/20 rounded-lg p-4">
+            {review.questions.map((question) => (
+              <div key={question} className="bg-indigo-900/20 border border-indigo-500/20 rounded-lg p-4">
                 <p className="text-indigo-100">{question}</p>
                 <textarea
                   placeholder="Reflect on this question... (optional)"

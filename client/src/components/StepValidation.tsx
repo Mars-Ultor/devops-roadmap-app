@@ -68,7 +68,7 @@ export default function StepValidation({ steps, onStepComplete, onValidationRun 
                 const validationKey = `${step.number}-${index}`;
                 const isRunning = runningValidations.has(validationKey);
                 const result = validationResults.get(validationKey);
-                return <ValidationRuleItem key={index} rule={rule} isLocked={isLocked} isRunning={isRunning} result={result} statusText={getValidationStatus(result, isLocked)} />;
+                return <ValidationRuleItem key={validationKey} rule={rule} isLocked={isLocked} isRunning={isRunning} result={result} statusText={getValidationStatus(result, isLocked)} />;
               })}
             </div>
             {step.validations.length > 0 && <StepProgressBar completed={step.completedValidations} total={step.validations.length} />}

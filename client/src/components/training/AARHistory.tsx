@@ -22,7 +22,7 @@ const AARSection: FC<{ title: string; color: string; items: string[] }> = ({ tit
   <div>
     <h4 className={`text-sm font-semibold text-${color}-400 mb-1`}>{title}</h4>
     <ul className="text-slate-300 text-sm space-y-1 ml-4 list-disc">
-      {items.map((item, idx) => <li key={idx}>{item}</li>)}
+      {items.map((item) => <li key={item}>{item}</li>)}
     </ul>
   </div>
 );

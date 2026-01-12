@@ -10,7 +10,7 @@ import type { CoachFeedback } from '../../../types/aiCoach';
 // ============================================================================
 
 interface CoachFeedbackDisplayProps {
-  feedback: CoachFeedback;
+  readonly feedback: CoachFeedback;
 }
 
 export function CoachFeedbackDisplay({ feedback }: CoachFeedbackDisplayProps) {
@@ -54,8 +54,8 @@ export function CoachFeedbackDisplay({ feedback }: CoachFeedbackDisplayProps) {
           <div className="space-y-2">
             <p className="text-sm font-medium">Follow-up questions:</p>
             <ul className="space-y-1">
-              {feedback.followUpQuestions.map((question, index) => (
-                <li key={index} className="text-sm flex items-start gap-2">
+              {feedback.followUpQuestions.map((question) => (
+                <li key={question} className="text-sm flex items-start gap-2">
                   <span className="text-indigo-500 mt-1">•</span>
                   {question}
                 </li>
@@ -73,8 +73,8 @@ export function CoachFeedbackDisplay({ feedback }: CoachFeedbackDisplayProps) {
 // ============================================================================
 
 interface DashboardHeaderProps {
-  onRefresh: () => void;
-  isLoading: boolean;
+  readonly onRefresh: () => void;
+  readonly isLoading: boolean;
 }
 
 export function DashboardHeader({ onRefresh, isLoading }: DashboardHeaderProps) {

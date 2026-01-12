@@ -70,9 +70,9 @@ export function StressScenarioCard({ scenario, onSelect, locked = false, selecte
 
       {/* Conditions Overview */}
       <div className="flex flex-wrap gap-2 mb-3">
-        {scenario.conditions.map((condition, index) => (
+        {scenario.conditions.map((condition) => (
           <div
-            key={index}
+            key={condition.type}
             className="flex items-center gap-1 px-2 py-1 bg-gray-700/50 rounded text-xs text-gray-300"
           >
             {condition.type === 'time-pressure' && <Clock className="w-3 h-3" />}

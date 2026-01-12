@@ -140,8 +140,8 @@ export const DistractionSimulator: React.FC<DistractionSimulatorProps> = ({
           </h4>
 
           <div className="max-h-32 overflow-y-auto space-y-1">
-            {distractionsHistory.slice(-5).map((distraction, index) => (
-              <div key={index} className="flex items-center justify-between text-xs text-gray-400 py-1">
+            {distractionsHistory.slice(-5).map((distraction) => (
+              <div key={`${distraction.message}-${distraction.timeToDismiss}`} className="flex items-center justify-between text-xs text-gray-400 py-1">
                 <span className="truncate flex-1">{distraction.message}</span>
                 <span>{Math.round(distraction.timeToDismiss / 1000)}s</span>
               </div>

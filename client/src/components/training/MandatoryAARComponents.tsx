@@ -46,7 +46,7 @@ export function ErrorsDisplay({ errors }: ErrorsDisplayProps) {
         <div className="flex-1">
           <h4 className="text-red-400 font-semibold mb-2">Please fix the following:</h4>
           <ul className="list-disc list-inside text-red-300 text-sm space-y-1">
-            {errors.map((error, idx) => (<li key={idx}>{error}</li>))}
+            {errors.map((error) => (<li key={error}>{error}</li>))}
           </ul>
         </div>
       </div>
@@ -136,7 +136,7 @@ export function ArrayField({ label, minItems, minWords, items, onChange, onAdd, 
         <span className="text-gray-400 text-sm font-normal ml-2">(min {minItems} items, {minWords}+ words each)</span>
       </label>
       {items.map((item, idx) => (
-        <div key={idx} className="mb-3">
+        <div key={item || `item-${idx}`} className="mb-3">
           <div className="flex items-start space-x-2">
             <Icon className={`w-5 h-5 ${iconColor} mt-3 flex-shrink-0`} />
             <div className="flex-1">

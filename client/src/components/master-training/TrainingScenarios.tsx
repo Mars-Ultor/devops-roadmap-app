@@ -107,8 +107,8 @@ const TrainingScenarios: React.FC<TrainingScenariosProps> = ({
                 </span>
               </div>
               <div className="flex flex-wrap gap-2 mb-2">
-                {scenario.skills.map((skill, idx) => (
-                  <span key={idx} className="text-xs px-2 py-1 bg-slate-800 text-slate-300 rounded">
+                {scenario.skills.map((skill) => (
+                  <span key={skill} className="text-xs px-2 py-1 bg-slate-800 text-slate-300 rounded">
                     {skill}
                   </span>
                 ))}

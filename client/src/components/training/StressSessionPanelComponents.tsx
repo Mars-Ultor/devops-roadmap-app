@@ -150,9 +150,9 @@ export function ActiveConditions({ conditions }: ActiveConditionsProps) {
     <div className="mb-6">
       <h3 className="text-sm font-semibold text-gray-400 mb-3">ACTIVE CONDITIONS</h3>
       <div className="grid grid-cols-2 gap-3">
-        {conditions.map((condition, index) => (
+        {conditions.map((condition) => (
           <div
-            key={index}
+            key={condition.type}
             className="flex items-start gap-3 p-3 bg-gray-900/30 rounded border border-gray-700"
           >
             <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
@@ -184,7 +184,7 @@ export function SuccessCriteria({ criteria, tasksCompleted }: SuccessCriteriaPro
           const isComplete = index < tasksCompleted;
           return (
             <div
-              key={index}
+              key={index} // eslint-disable-line react/no-array-index-key
               className={`flex items-center gap-3 p-3 rounded ${
                 isComplete ? 'bg-green-900/20 border border-green-700' : 'bg-gray-900/30 border border-gray-700'
               }`}

@@ -98,7 +98,7 @@ export function CriteriaSection({ criteria, completedCriteria, isActive, timeRem
       <h3 className="text-lg font-semibold text-white mb-2">Success Criteria</h3>
       <div className="space-y-2">
         {criteria.map((criterion, index) => (
-          <label key={index} className="flex items-start gap-3 bg-slate-900 rounded-lg p-3 cursor-pointer hover:bg-slate-800 transition-colors">
+          <label key={criterion} className="flex items-start gap-3 bg-slate-900 rounded-lg p-3 cursor-pointer hover:bg-slate-800 transition-colors">
             <input type="checkbox" checked={completedCriteria[index]} onChange={() => onToggle(index)}
               disabled={!isActive || timeRemaining === 0}
               className="mt-1 w-4 h-4 rounded border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900" />
@@ -127,8 +127,8 @@ export function HintsSection({ hints, showHints, onToggle }: HintsSectionProps) 
       </button>
       {showHints && (
         <div className="mt-2 space-y-2">
-          {hints.map((hint, index) => (
-            <div key={index} className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-3">
+          {hints.map((hint) => (
+            <div key={hint} className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-3">
               <p className="text-sm text-amber-200">💡 {hint}</p>
             </div>
           ))}

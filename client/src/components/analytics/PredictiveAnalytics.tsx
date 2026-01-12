@@ -174,8 +174,8 @@ export const PredictiveAnalytics: FC<PredictiveAnalyticsProps> = ({ data }) => {
               Risk Factors
             </h5>
             <ul className="space-y-1">
-              {completionPrediction.riskFactors.map((risk, idx) => (
-                <li key={idx} className="text-red-300 text-sm flex items-start gap-2">
+              {completionPrediction.riskFactors.map((risk) => (
+                <li key={risk} className="text-red-300 text-sm flex items-start gap-2">
                   <span>•</span>
                   <span>{risk}</span>
                 </li>
@@ -193,8 +193,8 @@ export const PredictiveAnalytics: FC<PredictiveAnalyticsProps> = ({ data }) => {
         </h4>
 
         <div className="space-y-3">
-          {weakAreaPredictions.map((prediction, idx) => (
-            <div key={idx} className={`rounded-lg p-4 border ${getRiskColor(prediction.riskLevel)}`}>
+          {weakAreaPredictions.map((prediction) => (
+            <div key={prediction.topic} className={`rounded-lg p-4 border ${getRiskColor(prediction.riskLevel)}`}>
               <div className="flex items-center justify-between mb-2">
                 <span className="font-semibold">{prediction.topic}</span>
                 <div className="flex items-center gap-2">
@@ -212,8 +212,8 @@ export const PredictiveAnalytics: FC<PredictiveAnalyticsProps> = ({ data }) => {
               <div>
                 <h6 className="text-sm font-semibold mb-2">Preventive Actions:</h6>
                 <ul className="space-y-1">
-                  {prediction.preventiveActions.map((action, actionIdx) => (
-                    <li key={actionIdx} className="text-sm flex items-start gap-2 opacity-85">
+                  {prediction.preventiveActions.map((action) => (
+                    <li key={action} className="text-sm flex items-start gap-2 opacity-85">
                       <CheckCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
                       <span>{action}</span>
                     </li>
@@ -293,8 +293,8 @@ export const PredictiveAnalytics: FC<PredictiveAnalyticsProps> = ({ data }) => {
           <div>
             <h5 className="text-indigo-400 font-semibold mb-2">Recommended Adjustments</h5>
             <ul className="space-y-1">
-              {learningTrajectory.adjustments.map((adjustment, idx) => (
-                <li key={idx} className="text-slate-300 text-sm flex items-start gap-2">
+              {learningTrajectory.adjustments.map((adjustment) => (
+                <li key={adjustment} className="text-slate-300 text-sm flex items-start gap-2">
                   <span className="text-indigo-400">•</span>
                   <span>{adjustment}</span>
                 </li>

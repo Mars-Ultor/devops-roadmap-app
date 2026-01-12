@@ -1419,7 +1419,7 @@ export default function WeekAssessment() {
               
               return (
                 <button
-                  key={index}
+                  key={option}
                   onClick={() => handleAnswer(currentQ.id, index)}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     isSelected

@@ -15,9 +15,9 @@ interface Constraint {
 }
 
 interface ConstraintDisplayProps {
-  constraints: Constraint[];
-  timeRemaining?: number;
-  onConstraintClick?: (constraint: Constraint) => void;
+  readonly constraints: Constraint[];
+  readonly timeRemaining?: number;
+  readonly onConstraintClick?: (constraint: Constraint) => void;
 }
 
 function getStatusColor(status: Constraint['status']): string {
@@ -52,12 +52,22 @@ export default function ConstraintDisplay({ constraints, timeRemaining, onConstr
         <h3 className="text-lg font-semibold text-white flex items-center gap-2">
           <Clock className="w-5 h-5 text-indigo-400" />Constraints
         </h3>
-        {timeRemaining !== undefined && (
-          <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${timeRemaining < 60 ? 'bg-red-900/30 text-red-400' : timeRemaining < 300 ? 'bg-yellow-900/30 text-yellow-400' : 'bg-slate-700 text-slate-300'}`}>
-            <Timer className="w-4 h-4" />
-            <span className="font-mono font-bold">{formatTime(timeRemaining)}</span>
-          </div>
-        )}
+        {timeRemaining !== undefined && (() => {
+          let timeColor;
+          if (timeRemaining < 60) {
+            timeColor = 'bg-red-900/30 text-red-400';
+          } else if (timeRemaining < 300) {
+            timeColor = 'bg-yellow-900/30 text-yellow-400';
+          } else {
+            timeColor = 'bg-slate-700 text-slate-300';
+          }
+          return (
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${timeColor}`}>
+              <Timer className="w-4 h-4" />
+              <span className="font-mono font-bold">{formatTime(timeRemaining)}</span>
+            </div>
+          );
+        })()}
       </div>
 
       {(criticalCount > 0 || warningCount > 0) && (
@@ -68,18 +78,33 @@ export default function ConstraintDisplay({ constraints, timeRemaining, onConstr
       )}
 
       <div className="space-y-2">
-        {constraints.map((constraint, index) => (
-          <div key={index} onClick={() => onConstraintClick?.(constraint)}
-            className={`p-3 rounded-lg border ${getStatusColor(constraint.status)} ${onConstraintClick ? 'cursor-pointer hover:opacity-80' : ''}`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                {getStatusIcon(constraint.status)}
-                <span className="font-medium">{constraint.name}</span>
+        {constraints.map((constraint) => (
+          onConstraintClick ? (
+            <button key={constraint.name} 
+              onClick={() => onConstraintClick(constraint)}
+              className={`w-full text-left p-3 rounded-lg border ${getStatusColor(constraint.status)} cursor-pointer hover:opacity-80`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {getStatusIcon(constraint.status)}
+                  <span className="font-medium">{constraint.name}</span>
+                </div>
+                <span className="text-sm font-mono">{constraint.value}</span>
               </div>
-              <span className="text-sm font-mono">{constraint.value}</span>
+              {constraint.description && <p className="text-sm text-slate-400 mt-1">{constraint.description}</p>}
+            </button>
+          ) : (
+            <div key={constraint.name} 
+              className={`p-3 rounded-lg border ${getStatusColor(constraint.status)}`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {getStatusIcon(constraint.status)}
+                  <span className="font-medium">{constraint.name}</span>
+                </div>
+                <span className="text-sm font-mono">{constraint.value}</span>
+              </div>
+              {constraint.description && <p className="text-sm text-slate-400 mt-1">{constraint.description}</p>}
             </div>
-            {constraint.description && <p className="text-sm text-slate-400 mt-1">{constraint.description}</p>}
-          </div>
+          )
         ))}
       </div>
     </div>

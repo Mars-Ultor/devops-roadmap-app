@@ -182,9 +182,9 @@ export default function WeeklyBossBattle() {
                   </div>
 
                   <div className="flex flex-wrap gap-1">
-                    {scenario.tags.slice(0, 3).map((tag, index) => (
+                    {scenario.tags.slice(0, 3).map((tag) => (
                       <span
-                        key={index}
+                        key={tag}
                         className="px-2 py-1 bg-red-900/50 text-red-200 text-xs rounded-full"
                       >
                         {tag}
@@ -241,8 +241,8 @@ export default function WeeklyBossBattle() {
 
                   <h4 className="font-semibold mb-2">Prerequisites</h4>
                   <div className="space-y-1">
-                    {selectedScenario.prerequisites?.map((prereq, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm">
+                    {selectedScenario.prerequisites?.map((prereq) => (
+                      <div key={prereq} className="flex items-center gap-2 text-sm">
                         <CheckCircle className="w-4 h-4 text-green-400" />
                         <span>{prereq}</span>
                       </div>
@@ -296,8 +296,8 @@ export default function WeeklyBossBattle() {
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2">Resolution Steps</label>
                   <div className="space-y-2">
-                    {resolutionSteps.map((step, index) => (
-                      <div key={index} className="flex items-center gap-2 bg-slate-700 p-2 rounded">
+                    {resolutionSteps.map((step) => (
+                      <div key={step} className="flex items-center gap-2 bg-slate-700 p-2 rounded">
                         <CheckCircle className="w-4 h-4 text-green-400" />
                         <span className="text-sm">{step}</span>
                       </div>
@@ -330,7 +330,7 @@ export default function WeeklyBossBattle() {
 
                     return (
                       <div
-                        key={index}
+                        key={objective}
                         className={`flex items-start gap-3 p-3 rounded border ${
                           isCompleted
                             ? 'bg-green-900/20 border-green-500'
@@ -412,8 +412,8 @@ export default function WeeklyBossBattle() {
                 <div className="space-y-2">
                   {selectedScenario.resources
                     .filter(resource => resource.available)
-                    .map((resource, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm">
+                    .map((resource) => (
+                      <div key={resource.title} className="flex items-center gap-2 text-sm">
                         {resource.type === 'documentation' && <BookOpen className="w-4 h-4 text-blue-400" />}
                         {resource.type === 'tool' && <Terminal className="w-4 h-4 text-green-400" />}
                         <span>{resource.title}</span>
