@@ -254,7 +254,7 @@ export default function DiagnosticQuiz() {
     } else {
       skillLevel = 'beginner';
       recommendedMode = 'deep-dive';
-      suggestedStartWeek = 1;
+      // suggestedStartWeek = 1; // Already initialized to 1
     }
 
     // Save diagnostic results to Firestore
@@ -499,9 +499,9 @@ export default function DiagnosticQuiz() {
             onClick={handleNext}
             disabled={answers[currentQ.id] === undefined}
             className={`w-full py-3 px-6 rounded-lg font-semibold flex items-center justify-center gap-2 ${
-              answers[currentQ.id] !== undefined
-                ? 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer'
-                : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+              answers[currentQ.id] === undefined
+                ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                : 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer'
             }`}
           >
             {currentQuestion < diagnosticQuestions.length - 1 ? 'Next Question' : 'See Results'}

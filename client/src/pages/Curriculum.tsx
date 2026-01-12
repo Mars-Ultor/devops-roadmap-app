@@ -6,6 +6,7 @@ import { BookOpen, Code, Trophy, Lock } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { curriculumLoader, type Week } from '../utils/curriculumLoader';
+import type { LeveledLessonContent } from '../types/lessonContent';
 
 interface WeekProgress {
   weekNumber: number;
@@ -21,8 +22,8 @@ function calculateWeekProgress(week: Week, completedLessons: Set<string>, comple
   const totalLabs = week.labs.length;
   const totalItems = totalLessons + totalLabs;
 
-  const completedLessonsCount = week.lessons.filter((lesson) =>
-    completedLessons.has(lesson.id)
+  const completedLessonsCount = (week.lessons as LeveledLessonContent[]).filter((lesson) =>
+    lesson.lessonId && completedLessons.has(lesson.lessonId)
   ).length;
 
   const completedLabsCount = week.labs.filter((lab) =>

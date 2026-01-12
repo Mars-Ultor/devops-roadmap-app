@@ -671,7 +671,7 @@ export default function LeadershipCommand() {
     const currentDecisions = updatedDecisions || decisions;
 
     const remainingDecisions = selectedScenario.decisionPoints.filter(
-      dp => !currentDecisions.find(d => d.decisionPointId === dp.id)
+      dp => !currentDecisions.some(d => d.decisionPointId === dp.id)
     );
 
     if (remainingDecisions.length > 0) {
@@ -731,6 +731,30 @@ export default function LeadershipCommand() {
     });
 
     setLeadershipMetrics(updates);
+  };
+
+  const getLeadershipStyleClassName = (style: string): string => {
+    switch (style) {
+      case 'authoritative':
+        return 'bg-red-900/50 text-red-200';
+      case 'democratic':
+        return 'bg-green-900/50 text-green-200';
+      case 'delegative':
+        return 'bg-blue-900/50 text-blue-200';
+      default:
+        return 'bg-gray-900/50 text-gray-200';
+    }
+  };
+
+  const getImpactClassName = (impact: string): string => {
+    switch (impact) {
+      case 'positive':
+        return 'bg-green-900/50 text-green-200';
+      case 'negative':
+        return 'bg-red-900/50 text-red-200';
+      default:
+        return 'bg-yellow-900/50 text-yellow-200';
+    }
   };
 
   const completeLeadershipTraining = () => {
@@ -1048,19 +1072,10 @@ export default function LeadershipCommand() {
                           <div className="flex-1">
                             <p className="text-gray-200 mb-2">{option.text}</p>
                             <div className="flex items-center gap-4 text-sm">
-                              <span className={`px-2 py-1 rounded text-xs ${
-                                option.leadershipStyle === 'authoritative' ? 'bg-red-900/50 text-red-200' :
-                                option.leadershipStyle === 'democratic' ? 'bg-green-900/50 text-green-200' :
-                                option.leadershipStyle === 'delegative' ? 'bg-blue-900/50 text-blue-200' :
-                                'bg-gray-900/50 text-gray-200'
-                              }`}>
+                              <span className={`px-2 py-1 rounded text-xs ${getLeadershipStyleClassName(option.leadershipStyle)}`}>
                                 {option.leadershipStyle}
                               </span>
-                              <span className={`px-2 py-1 rounded text-xs ${
-                                option.impact === 'positive' ? 'bg-green-900/50 text-green-200' :
-                                option.impact === 'negative' ? 'bg-red-900/50 text-red-200' :
-                                'bg-yellow-900/50 text-yellow-200'
-                              }`}>
+                              <span className={`px-2 py-1 rounded text-xs ${getImpactClassName(option.impact)}`}>
                                 {option.impact} impact
                               </span>
                             </div>

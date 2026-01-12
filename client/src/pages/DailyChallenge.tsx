@@ -39,14 +39,22 @@ export default function DailyChallenge() {
   const [availableHints, setAvailableHints] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
+  type Resource = {
+    available: boolean;
+    title: string;
+    content?: string;
+  };
+
+  function getResourceClassName(resource: Resource): string {
+    return resource.available ? 'text-gray-300' : 'text-gray-500';
+  }
+
   const challengeService = ScenarioChallengeService.getInstance();
 
   useEffect(() => {
     console.log('DailyChallenge: user =', user);
     if (!user) {
       console.log('DailyChallenge: No user, would redirect to login');
-      // navigate('/login');
-      // return;
     }
 
     // Get user's current week from their profile
@@ -309,7 +317,7 @@ export default function DailyChallenge() {
                     type="text"
                     value={currentCommand}
                     onChange={(e) => setCurrentCommand(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && executeCommand()}
+                    onKeyDown={(e) => e.key === 'Enter' && executeCommand()}
                     placeholder="Enter command..."
                     className="flex-1 bg-slate-700 border border-slate-600 rounded px-3 py-2 font-mono text-sm focus:outline-none focus:border-blue-500"
                     disabled={!isActive}
@@ -376,7 +384,7 @@ export default function DailyChallenge() {
                     Back to Dashboard
                   </button>
                   <button
-                    onClick={() => window.location.reload()}
+                    onClick={() => globalThis.location.reload()}
                     className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded font-semibold transition-colors"
                   >
                     Try Again
@@ -442,7 +450,7 @@ export default function DailyChallenge() {
                         {!resource.available && ' (Locked)'}
                       </a>
                     ) : resource.content ? (
-                      <details className={resource.available ? 'text-gray-300' : 'text-gray-500'}>
+                      <details className={getResourceClassName(resource)}>
                         <summary className={`cursor-pointer ${resource.available ? 'hover:text-white' : 'cursor-not-allowed'}`}>
                           {resource.title}
                           {!resource.available && ' (Locked)'}

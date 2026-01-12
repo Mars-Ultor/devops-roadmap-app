@@ -28,6 +28,17 @@ interface WeekProject {
   deliverables: string[];
 }
 
+const getDifficultyColorClass = (difficulty: string): string => {
+  switch (difficulty) {
+    case 'beginner':
+      return 'text-green-400';
+    case 'intermediate':
+      return 'text-yellow-400';
+    default:
+      return 'text-red-400';
+  }
+};
+
 const weekProjects: Record<number, WeekProject> = {
   1: {
     id: 'week1-linux-setup',
@@ -243,7 +254,7 @@ export default function WeekProject() {
   }, [user, weekNumber]);
 
   useEffect(() => {
-    const week = parseInt(weekNumber || '1');
+    const week = Number.parseInt(weekNumber || '1');
     const weekProject = weekProjects[week];
     
     if (weekProject) {
@@ -338,11 +349,7 @@ export default function WeekProject() {
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center gap-2 px-3 py-1 bg-slate-800 rounded-full">
               <span className="text-slate-400 text-sm">Difficulty:</span>
-              <span className={`font-semibold text-sm ${
-                project.difficulty === 'beginner' ? 'text-green-400' :
-                project.difficulty === 'intermediate' ? 'text-yellow-400' :
-                'text-red-400'
-              }`}>
+              <span className={`font-semibold text-sm ${getDifficultyColorClass(project.difficulty)}`}>
                 {project.difficulty.charAt(0).toUpperCase() + project.difficulty.slice(1)}
               </span>
             </div>

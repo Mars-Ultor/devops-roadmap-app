@@ -46,13 +46,46 @@ export default function ScenarioExecution() {
   useEffect(() => {
     if (currentAttempt && phase !== 'briefing') {
       const interval = setInterval(() => {
-        const elapsed = Math.floor((new Date().getTime() - currentAttempt.startedAt.getTime()) / 1000);
+        const elapsed = Math.floor((Date.now() - currentAttempt.startedAt.getTime()) / 1000);
         setElapsedTime(elapsed);
       }, 1000);
 
       return () => clearInterval(interval);
     }
   }, [currentAttempt, phase]);
+
+  const getPhaseIndicatorClassName = (phaseName: string, currentPhase: string, index: number): string => {
+    const phases = ['briefing', 'investigation', 'diagnosis', 'resolution', 'review'];
+    const currentPhaseIndex = phases.indexOf(currentPhase);
+
+    if (phaseName === currentPhase) {
+      return 'bg-blue-600 text-white';
+    } else if (currentPhaseIndex > index) {
+      return 'bg-green-900/30 text-green-400';
+    } else {
+      return 'bg-gray-800 text-gray-500';
+    }
+  };
+
+  const getPhaseCircleClassName = (phaseName: string, currentPhase: string, index: number): string => {
+    const phases = ['briefing', 'investigation', 'diagnosis', 'resolution', 'review'];
+    const currentPhaseIndex = phases.indexOf(currentPhase);
+
+    if (currentPhaseIndex > index) {
+      return 'bg-green-600';
+    } else if (phaseName === currentPhase) {
+      return 'bg-white text-blue-600';
+    } else {
+      return 'bg-gray-700';
+    }
+  };
+
+  const getPhaseCircleContent = (phaseName: string, currentPhase: string, index: number): string | number => {
+    const phases = ['briefing', 'investigation', 'diagnosis', 'resolution', 'review'];
+    const currentPhaseIndex = phases.indexOf(currentPhase);
+
+    return currentPhaseIndex > index ? '✓' : index + 1;
+  };
 
   const handleStart = async () => {
     if (scenario) {
@@ -148,18 +181,10 @@ export default function ScenarioExecution() {
           {['briefing', 'investigation', 'diagnosis', 'resolution', 'review'].map((p, index) => (
             <div
               key={p}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-                phase === p ? 'bg-blue-600 text-white' :
-                ['briefing', 'investigation', 'diagnosis', 'resolution', 'review'].indexOf(phase) > index ?
-                'bg-green-900/30 text-green-400' :
-                'bg-gray-800 text-gray-500'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg ${getPhaseIndicatorClassName(p, phase, index)}`}
             >
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                ['briefing', 'investigation', 'diagnosis', 'resolution', 'review'].indexOf(phase) > index ?
-                'bg-green-600' : phase === p ? 'bg-white text-blue-600' : 'bg-gray-700'
-              }`}>
-                {['briefing', 'investigation', 'diagnosis', 'resolution', 'review'].indexOf(phase) > index ? '✓' : index + 1}
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${getPhaseCircleClassName(p, phase, index)}`}>
+                {getPhaseCircleContent(p, phase, index)}
               </div>
               <span className="text-sm font-medium capitalize whitespace-nowrap">{p}</span>
             </div>

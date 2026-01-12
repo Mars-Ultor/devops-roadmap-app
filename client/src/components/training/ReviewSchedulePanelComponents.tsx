@@ -99,6 +99,15 @@ export function ReviewItem({ review, index, onClick }: ReviewItemProps) {
       key={`${review.contentId}-${index}`}
       className={`rounded-lg p-4 border-2 transition-all hover:bg-slate-700/50 cursor-pointer ${getPriorityColor(review.priority)}`}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Review ${review.contentId} - Priority ${review.priority}`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">

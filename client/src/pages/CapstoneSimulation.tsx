@@ -142,7 +142,7 @@ export default function CapstoneSimulation() {
   const completeObjective = (objectiveId: string) => {
     if (!completedObjectives.includes(objectiveId)) {
       setCompletedObjectives([...completedObjectives, objectiveId]);
-      addTimelineEntry(`Objective completed: ${selectedScenario?.objectives[parseInt(objectiveId.split('_')[1])]}`);
+      addTimelineEntry(`Objective completed: ${selectedScenario?.objectives[Number.parseInt(objectiveId.split('_')[1])]}`);
     }
   };
 
@@ -400,7 +400,7 @@ export default function CapstoneSimulation() {
                       type="text"
                       placeholder="Enter communication..."
                       className="flex-1 bg-slate-700 border border-slate-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-                      onKeyPress={(e) => {
+                      onKeyDown={(e) => {
                         if (e.key === 'Enter' && e.currentTarget.value.trim()) {
                           addCommunication({
                             type: 'internal',
@@ -632,7 +632,7 @@ export default function CapstoneSimulation() {
                   Return to Dashboard
                 </button>
                 <button
-                  onClick={() => window.location.reload()}
+                  onClick={() => globalThis.location.reload()}
                   className="bg-purple-600 hover:bg-purple-500 px-8 py-3 rounded font-bold transition-colors"
                 >
                   Command Another Incident

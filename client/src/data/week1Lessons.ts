@@ -310,7 +310,7 @@ export const week1Lesson2LinuxBasics: LeveledLessonContent = {
             label: 'MODE',
             hint: 'Permission mode to add execute for user',
             correctValue: 'u+x',
-            validationPattern: '^(u\\+x|700|740|750)$'
+            validationPattern: String.raw`^(u\+x|700|740|750)$`
           }
         ],
         solution: 'chmod u+x app.log',

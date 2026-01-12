@@ -136,7 +136,7 @@ export function PhaseSection({ phase, phaseIndex, phaseCompletion, isActive, tim
       </div>
       <p className="text-slate-300 text-sm mb-4">{phase.description}</p>
       <div className="space-y-2">
-        {phase.tasks.map((task) => (
+        {phase.tasks.map((task, taskIndex) => (
           <label
             key={task}
             className="flex items-start gap-3 bg-slate-800 rounded-lg p-3 cursor-pointer hover:bg-slate-700 transition-colors"

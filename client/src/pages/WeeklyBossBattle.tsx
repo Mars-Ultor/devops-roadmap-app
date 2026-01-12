@@ -305,7 +305,7 @@ export default function WeeklyBossBattle() {
                     <input
                       type="text"
                       placeholder="Add resolution step..."
-                      onKeyPress={(e) => {
+                      onKeyDown={(e) => {
                         if (e.key === 'Enter' && e.currentTarget.value.trim()) {
                           addResolutionStep(e.currentTarget.value.trim());
                           e.currentTarget.value = '';
@@ -492,7 +492,7 @@ export default function WeeklyBossBattle() {
                   Back to Dashboard
                 </button>
                 <button
-                  onClick={() => window.location.reload()}
+                  onClick={() => globalThis.location.reload()}
                   className="bg-gray-600 hover:bg-gray-500 px-6 py-2 rounded font-semibold transition-colors"
                 >
                   Fight Again

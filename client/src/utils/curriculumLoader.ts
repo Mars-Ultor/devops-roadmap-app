@@ -3,13 +3,13 @@
  * Uses eager loading via Vite's import.meta.glob to avoid circular dependency issues
  */
 
-import { baseWeeks, type Week } from '../data/baseWeeks';
+import { baseWeeks } from '../data/baseWeeks';
 
 // Eagerly load all lesson modules at build time to avoid runtime circular dependency issues
-const lessonModules = import.meta.glob('../data/week*Lessons.ts', { eager: true }) as Record<string, Record<string, unknown>>;
+const lessonModules = import.meta.glob('../data/week*Lessons.ts', { eager: true });
 
 class CurriculumLoader {
-  private cache = new Map<number, Week>();
+  private readonly cache = new Map<number, Week>();
   private allWeeksCache: Week[] | null = null;
 
   constructor() {
@@ -127,4 +127,4 @@ class CurriculumLoader {
 export const curriculumLoader = new CurriculumLoader();
 
 // Export types
-export type { Week };
+export { type Week } from '../data/baseWeeks';
