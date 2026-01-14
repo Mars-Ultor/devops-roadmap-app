@@ -20,7 +20,7 @@ interface BattleHeaderProps {
 }
 
 export function BattleHeader({ week, battle, timeRemaining, currentScore, isActive, onClose }: BattleHeaderProps) {
-  const timerColor = getTimerColor(timeRemaining, battle.timeLimit);
+  const timerColor = getTimerColor(timeRemaining, battle?.timeLimit || 0);
   
   return (
     <div className="sticky top-0 bg-gradient-to-r from-red-900/50 to-slate-800 border-b border-red-500/50 p-6">
@@ -30,7 +30,7 @@ export function BattleHeader({ week, battle, timeRemaining, currentScore, isActi
             <Swords className="w-8 h-8 text-red-400" />
             <div>
               <h2 className="text-3xl font-bold text-white">Week {week} Boss Battle</h2>
-              <p className="text-slate-300 text-sm mt-1">{battle.title}</p>
+              <p className="text-slate-300 text-sm mt-1">{battle?.title || 'Unknown Battle'}</p>
             </div>
           </div>
           <div className="flex items-center gap-4 mt-4">
@@ -40,11 +40,11 @@ export function BattleHeader({ week, battle, timeRemaining, currentScore, isActi
             </div>
             <div className="bg-slate-900/50 rounded-lg px-4 py-2">
               <div className="text-xs text-slate-400">Current Score</div>
-              <div className={`text-2xl font-bold ${currentScore >= battle.minimumPassScore ? 'text-emerald-400' : 'text-amber-400'}`}>{currentScore}%</div>
+              <div className={`text-2xl font-bold ${currentScore >= (battle?.minimumPassScore || 0) ? 'text-emerald-400' : 'text-amber-400'}`}>{currentScore}%</div>
             </div>
             <div className="bg-slate-900/50 rounded-lg px-4 py-2">
               <div className="text-xs text-slate-400">Pass Threshold</div>
-              <div className="text-2xl font-bold text-slate-300">{battle.minimumPassScore}%</div>
+              <div className="text-2xl font-bold text-slate-300">{battle?.minimumPassScore || 0}%</div>
             </div>
           </div>
         </div>
@@ -75,8 +75,8 @@ export function WarningBanner({ battle, week }: WarningBannerProps) {
         <div>
           <h3 className="text-red-300 font-semibold mb-1">WARNING: This is a Boss Battle</h3>
           <ul className="text-sm text-red-200 space-y-1">
-            <li>• You have {battle.timeLimit / 3600} hours to complete this challenge</li>
-            <li>• You must score at least {battle.minimumPassScore}% to pass</li>
+            <li>• You have {(battle?.timeLimit || 0) / 3600} hours to complete this challenge</li>
+            <li>• You must score at least {battle?.minimumPassScore || 0}% to pass</li>
             <li>• You CANNOT advance to Week {week + 1} until you pass this battle</li>
             <li>• Once started, the timer cannot be paused</li>
             <li>• This tests everything you've learned this week</li>
@@ -100,9 +100,9 @@ export function ScenarioSection({ battle }: ScenarioSectionProps) {
     <div>
       <h3 className="text-xl font-bold text-white mb-3">Mission Scenario</h3>
       <div className="bg-slate-900 rounded-lg p-4">
-        <p className="text-slate-300 whitespace-pre-line mb-4">{battle.scenario}</p>
+        <p className="text-slate-300 whitespace-pre-line mb-4">{battle?.scenario || 'No scenario available'}</p>
         <div className="bg-blue-900/20 border border-blue-500/50 rounded-lg p-3">
-          <p className="text-blue-200 font-semibold">Objective: {battle.objective}</p>
+          <p className="text-blue-200 font-semibold">Objective: {battle?.objective || 'No objective available'}</p>
         </div>
       </div>
     </div>
@@ -129,14 +129,14 @@ export function PhaseSection({ phase, phaseIndex, phaseCompletion, isActive, tim
     <div className="bg-slate-900 rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
-          Phase {phaseIndex + 1}: {phase.name}
+          Phase {phaseIndex + 1}: {phase?.name || 'Unknown Phase'}
           {phaseComplete && <CheckCircle className="w-5 h-5 text-emerald-400" />}
         </h3>
-        <span className="text-sm text-slate-400">{phase.points} points</span>
+        <span className="text-sm text-slate-400">{phase?.points || 0} points</span>
       </div>
-      <p className="text-slate-300 text-sm mb-4">{phase.description}</p>
+      <p className="text-slate-300 text-sm mb-4">{phase?.description || 'No description available'}</p>
       <div className="space-y-2">
-        {phase.tasks?.map((task, taskIndex) => (
+        {(phase?.tasks || []).map((task, taskIndex) => (
           <label
             key={task}
             className="flex items-start gap-3 bg-slate-800 rounded-lg p-3 cursor-pointer hover:bg-slate-700 transition-colors"
@@ -152,7 +152,7 @@ export function PhaseSection({ phase, phaseIndex, phaseCompletion, isActive, tim
               {task}
             </span>
           </label>
-        )) || []}
+        ))}
       </div>
     </div>
   );
@@ -173,8 +173,8 @@ interface BattleFooterProps {
 
 export function BattleFooter({ battle, isActive, currentScore, phaseCompletion, onStart, onSubmit }: BattleFooterProps) {
   const tasksComplete = phaseCompletion.flat().filter(Boolean).length;
-  const totalTasks = battle.phases.reduce((sum, p) => sum + p.tasks.length, 0);
-  const isPassing = currentScore >= battle.minimumPassScore;
+  const totalTasks = battle?.phases?.reduce((sum, p) => sum + (p?.tasks?.length || 0), 0) || 0;
+  const isPassing = currentScore >= (battle?.minimumPassScore || 0);
   
   return (
     <div className="sticky bottom-0 bg-slate-800 border-t border-slate-700 p-6">
