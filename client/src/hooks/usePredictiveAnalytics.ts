@@ -18,12 +18,6 @@ export function usePredictiveAnalytics() {
   const [predictiveData, setPredictiveData] = useState<PredictiveData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user?.uid) {
-      generatePredictions();
-    }
-  }, [user?.uid, generatePredictions]);
-
   const generatePredictions = useCallback(async () => {
     if (!user?.uid) return;
     try {
@@ -42,7 +36,11 @@ export function usePredictiveAnalytics() {
     finally { setLoading(false); }
   }, [user?.uid]);
 
-  useEffect(() => { if (user) generatePredictions(); }, [user, generatePredictions]);
+  useEffect(() => {
+    if (user?.uid) {
+      generatePredictions();
+    }
+  }, [user?.uid, generatePredictions]);
 
   return { predictiveData, loading, generatePredictions };
 }

@@ -25,12 +25,6 @@ export function useLearningVelocity() {
   const [velocityData, setVelocityData] = useState<LearningVelocityData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user?.uid) {
-      analyzeLearningVelocity();
-    }
-  }, [user?.uid, analyzeLearningVelocity]);
-
   const analyzeLearningVelocity = useCallback(async () => {
     if (!user?.uid) return;
     try {
@@ -68,7 +62,11 @@ export function useLearningVelocity() {
     finally { setLoading(false); }
   }, [user?.uid]);
 
-  useEffect(() => { if (user) analyzeLearningVelocity(); }, [user, analyzeLearningVelocity]);
+  useEffect(() => {
+    if (user?.uid) {
+      analyzeLearningVelocity();
+    }
+  }, [user?.uid, analyzeLearningVelocity]);
 
   return { velocityData, loading, analyzeLearningVelocity };
 }
