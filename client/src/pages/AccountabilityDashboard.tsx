@@ -1,9 +1,10 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Accountability Dashboard Page
  * Weekly commitments, partners, and public goals
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Target, Users, TrendingUp, CheckCircle,
@@ -36,14 +37,27 @@ export default function AccountabilityDashboard() {
   const [checkInReflection, setCheckInReflection] = useState('');
   const [checkInFocus, setCheckInFocus] = useState('');
 
-  useEffect(() => {
-    loadStats();
-  }, []);
+  const getCommitmentStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-green-500';
+      case 'in-progress':
+        return 'bg-blue-500';
+      case 'failed':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-600';
+    }
+  };
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     const accountabilityStats = await getAccountabilityStats();
     setStats(accountabilityStats);
-  };
+  }, [getAccountabilityStats]);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   const handleCreateCommitments = async () => {
     try {
@@ -258,12 +272,7 @@ export default function AccountabilityDashboard() {
                     </div>
                     <div className="w-full bg-gray-900/50 rounded-full h-3 overflow-hidden">
                       <div
-                        className={`h-3 rounded-full transition-all ${
-                          commitment.status === 'completed' ? 'bg-green-500' :
-                          commitment.status === 'in-progress' ? 'bg-blue-500' :
-                          commitment.status === 'failed' ? 'bg-red-500' :
-                          'bg-gray-600'
-                        }`}
+                        className={`h-3 rounded-full transition-all ${getCommitmentStatusColor(commitment.status)}`}
                         style={{ width: `${Math.min((commitment.current / commitment.target) * 100, 100)}%` }}
                       />
                     </div>
@@ -296,10 +305,11 @@ export default function AccountabilityDashboard() {
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label htmlFor="checkin-reflection" className="block text-sm font-medium text-gray-300 mb-2">
                       What went well this week?
                     </label>
                     <textarea
+                      id="checkin-reflection"
                       value={checkInReflection}
                       onChange={(e) => setCheckInReflection(e.target.value)}
                       placeholder="Reflect on your accomplishments, challenges, and lessons learned..."
@@ -308,10 +318,11 @@ export default function AccountabilityDashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label htmlFor="checkin-focus" className="block text-sm font-medium text-gray-300 mb-2">
                       What will you focus on next week?
                     </label>
                     <textarea
+                      id="checkin-focus"
                       value={checkInFocus}
                       onChange={(e) => setCheckInFocus(e.target.value)}
                       placeholder="Set your intentions and priorities for the upcoming week..."
@@ -363,15 +374,16 @@ export default function AccountabilityDashboard() {
                 
                 <div className="space-y-6">
                   {newCommitments.map((commitment, index) => (
-                    <div key={index} className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                    <div key={commitment.type || `commitment-${index}`} className="bg-gray-800 border border-gray-700 rounded-lg p-4">
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
+                          <label htmlFor={`commitment-type-${index}`} className="block text-sm font-medium text-gray-300 mb-2">Type</label>
                           <select
+                            id={`commitment-type-${index}`}
                             value={commitment.type}
                             onChange={(e) => {
                               const updated = [...newCommitments];
-                              updated[index].type = e.target.value as any;
+                              updated[index].type = e.target.value as 'study-hours' | 'battle-drills' | 'labs-completed' | 'custom';
                               setNewCommitments(updated);
                             }}
                             className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"
@@ -386,13 +398,14 @@ export default function AccountabilityDashboard() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">Target</label>
+                          <label htmlFor={`commitment-target-${index}`} className="block text-sm font-medium text-gray-300 mb-2">Target</label>
                           <input
+                            id={`commitment-target-${index}`}
                             type="number"
                             value={commitment.target}
                             onChange={(e) => {
                               const updated = [...newCommitments];
-                              updated[index].target = parseInt(e.target.value) || 0;
+                              updated[index].target = Number.parseInt(e.target.value) || 0;
                               setNewCommitments(updated);
                             }}
                             className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"
@@ -401,8 +414,9 @@ export default function AccountabilityDashboard() {
                       </div>
 
                       <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+                        <label htmlFor={`commitment-description-${index}`} className="block text-sm font-medium text-gray-300 mb-2">Description</label>
                         <input
+                          id={`commitment-description-${index}`}
                           type="text"
                           value={commitment.description}
                           onChange={(e) => {
@@ -417,12 +431,13 @@ export default function AccountabilityDashboard() {
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">Importance</label>
+                          <label htmlFor={`commitment-importance-${index}`} className="block text-sm font-medium text-gray-300 mb-2">Importance</label>
                           <select
+                            id={`commitment-importance-${index}`}
                             value={commitment.importance}
                             onChange={(e) => {
                               const updated = [...newCommitments];
-                              updated[index].importance = e.target.value as any;
+                              updated[index].importance = e.target.value as unknown;
                               setNewCommitments(updated);
                             }}
                             className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"
@@ -436,6 +451,7 @@ export default function AccountabilityDashboard() {
 
                         <div className="flex items-center gap-2 pt-7">
                           <input
+                            id={`commitment-public-${index}`}
                             type="checkbox"
                             checked={commitment.public}
                             onChange={(e) => {
@@ -445,7 +461,7 @@ export default function AccountabilityDashboard() {
                             }}
                             className="w-4 h-4"
                           />
-                          <label className="text-sm text-gray-300">Make Public</label>
+                          <label htmlFor={`commitment-public-${index}`} className="text-sm text-gray-300">Make Public</label>
                         </div>
                       </div>
                     </div>

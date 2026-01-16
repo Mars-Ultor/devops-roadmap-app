@@ -12,10 +12,9 @@ class SkillGapAnalyzer(BaseMLModel):
     """Analyzes skill gaps across DevOps topics"""
 
     def __init__(self):
-        super().__init__("skill_gap_analyzer")
-
         # Topics to analyze
         self.topics = ['git', 'linux', 'docker', 'kubernetes', 'aws', 'terraform', 'jenkins', 'monitoring']
+        super().__init__("skill_gap_analyzer")
 
         # Create feature names for each topic
         self.feature_names = []
@@ -49,7 +48,16 @@ class SkillGapAnalyzer(BaseMLModel):
         return np.array(features)
 
     def _train_model(self, X: np.ndarray, y: np.ndarray):
-        """Train using simple multi-output regression"""
+        """
+        Train the model using multi-output regression
+        
+        Learns to predict skill gaps across multiple DevOps topics simultaneously.
+        Each topic gets its own regression model trained jointly.
+        
+        Args:
+            X: Feature matrix of shape (n_samples, n_features)
+            y: Target matrix of shape (n_samples, n_topics) with gap scores (0-1)
+        """
         if self.weights is None:
             self.weights = np.random.randn(X.shape[1], y.shape[1]) * 0.1
 

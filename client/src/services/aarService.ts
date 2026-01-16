@@ -1,19 +1,17 @@
 /**
  * After Action Review (AAR) Service
- * Handles AAR creation, storage, analysis, and pattern recognition
+ * Handles AAR validation, AI analysis, and fetching from Firebase Firestore
  */
 
-import axios from 'axios';
+import { collection, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import type {
-  AfterActionReview,
   AARFormData,
   AARValidationResult,
-  AARStats,
-  AARPattern
+  AfterActionReview,
+  AARReview
 } from '../types/aar';
 import { AAR_REQUIREMENTS } from '../types/aar';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 export class AARService {
   private static instance: AARService;
@@ -55,21 +53,15 @@ export class AARService {
     }
 
     // Validate minimum item counts
-    if (formData.whatWorkedWell.length < AAR_REQUIREMENTS.MIN_ITEMS_WORKED_WELL) {
-      errors.whatWorkedWell = `Minimum ${AAR_REQUIREMENTS.MIN_ITEMS_WORKED_WELL} items required (currently ${formData.whatWorkedWell.length})`;
+    const nonEmptyWorkedWell = formData.whatWorkedWell.filter(item => item.trim());
+    const nonEmptyDidNotWork = formData.whatDidNotWork.filter(item => item.trim());
+
+    if (nonEmptyWorkedWell.length < AAR_REQUIREMENTS.MIN_ITEMS_WORKED_WELL) {
+      errors.whatWorkedWell = `Minimum ${AAR_REQUIREMENTS.MIN_ITEMS_WORKED_WELL} items required (currently ${nonEmptyWorkedWell.length})`;
     }
 
-    if (formData.whatDidNotWork.length < AAR_REQUIREMENTS.MIN_ITEMS_DID_NOT_WORK) {
-      errors.whatDidNotWork = `Minimum ${AAR_REQUIREMENTS.MIN_ITEMS_DID_NOT_WORK} items required (currently ${formData.whatDidNotWork.length})`;
-    }
-
-    // Check for empty items
-    if (formData.whatWorkedWell.some(item => !item.trim())) {
-      errors.whatWorkedWell = 'All items must have content';
-    }
-
-    if (formData.whatDidNotWork.some(item => !item.trim())) {
-      errors.whatDidNotWork = 'All items must have content';
+    if (nonEmptyDidNotWork.length < AAR_REQUIREMENTS.MIN_ITEMS_DID_NOT_WORK) {
+      errors.whatDidNotWork = `Minimum ${AAR_REQUIREMENTS.MIN_ITEMS_DID_NOT_WORK} items required (currently ${nonEmptyDidNotWork.length})`;
     }
 
     return {
@@ -80,227 +72,193 @@ export class AARService {
   }
 
   /**
-   * Create and save a new AAR
+   * Generate AI review/insights for an AAR
    */
-  async createAAR(
-    userId: string,
-    lessonId: string,
-    level: 'crawl' | 'walk' | 'run-guided' | 'run-independent',
-    labId: string,
-    formData: AARFormData
-  ): Promise<AfterActionReview> {
-    const validation = this.validateAARForm(formData);
-    if (!validation.isValid) {
-      throw new Error('AAR form validation failed: ' + Object.values(validation.errors).join(', '));
-    }
+  generateAIReview(formData: AARFormData, wordCounts: Record<string, number>): AARReview {
+    const qualityScore = this.calculateQualityScore(formData, wordCounts);
+    const feedback = this.generateFeedback(qualityScore);
+    const suggestions = this.generateSuggestions(formData, qualityScore);
+    const followUpQuestions = this.generateFollowUpQuestions(formData, qualityScore);
 
-    try {
-      const response = await axios.post(`${API_BASE_URL}/aar`, {
-        lessonId,
-        level,
-        labId,
-        ...formData
-      }, {
-        headers: {
-          'Authorization': `Bearer ${this.getAuthToken()}`
-        }
-      });
+    return {
+      reviewedAt: new Date(),
+      reviewer: 'ai',
+      score: qualityScore,
+      feedback,
+      suggestions,
+      followUpQuestions
+    };
+  }
 
-      return response.data.data;
-    } catch (error: any) {
-      console.error('Error creating AAR:', error);
-      throw new Error(error.response?.data?.message || 'Failed to create AAR');
+  /**
+   * Calculate quality score (1-10) based on AAR content
+   */
+  private calculateQualityScore(formData: AARFormData, wordCounts: Record<string, number>): number {
+    let score = 5; // Base score
+
+    // Word count quality (up to 2 points)
+    const totalWords = wordCounts.whatWasAccomplished +
+                      wordCounts.whyDidNotWork +
+                      wordCounts.whatWouldIDoDifferently +
+                      wordCounts.whatDidILearn;
+
+    if (totalWords > 200) score += 2;
+    else if (totalWords > 100) score += 1;
+    else if (totalWords > 50) score += 0.5;
+
+    // Content depth analysis (up to 2 points)
+    const allText = `${formData.whatWasAccomplished} ${formData.whyDidNotWork} ${formData.whatWouldIDoDifferently} ${formData.whatDidILearn}`.toLowerCase();
+    
+    // Check for specific examples
+    const specificIndicators = ['command', 'error', 'config', 'file', 'docker', 'kubernetes', 'aws', 'linux', 'bash', 'git'];
+    if (specificIndicators.some(ind => allText.includes(ind))) score += 0.5;
+
+    // Check for root cause analysis
+    const rootCauseIndicators = ['because', 'due to', 'caused by', 'reason', 'root cause', 'misconfigured', 'missing'];
+    if (rootCauseIndicators.some(ind => allText.includes(ind))) score += 0.8;
+
+    // Check for actionable improvements
+    const actionableIndicators = ['check', 'verify', 'test', 'validate', 'use', 'create', 'add', 'review', 'practice'];
+    if (actionableIndicators.some(ind => formData.whatWouldIDoDifferently.toLowerCase().includes(ind))) score += 0.7;
+
+    // Self-reflection quality (up to 1 point)
+    const reflectionIndicators = ['learned', 'understand', 'realized', 'important', 'need to', 'better', 'improve'];
+    if (reflectionIndicators.some(ind => formData.whatDidILearn.toLowerCase().includes(ind))) score += 1;
+
+    // List items quality (up to 0.5 points)
+    const workedWellItems = formData.whatWorkedWell.filter(item => item.trim().length > 10).length;
+    const didNotWorkItems = formData.whatDidNotWork.filter(item => item.trim().length > 10).length;
+    if (workedWellItems >= 3 && didNotWorkItems >= 2) score += 0.5;
+
+    return Math.min(Math.max(Math.round(score * 10) / 10, 1), 10);
+  }
+
+  /**
+   * Generate feedback based on AAR quality
+   */
+  private generateFeedback(score: number): string {
+    if (score >= 8) {
+      return "Excellent reflection! Your AAR demonstrates deep analysis with specific examples and actionable improvements. This level of self-reflection will accelerate your DevOps mastery.";
+    } else if (score >= 6) {
+      return "Good AAR with solid reflection. Consider adding more specific technical details and concrete action items for even better learning outcomes.";
+    } else if (score >= 4) {
+      return "Decent start on your reflection. Try to dig deeper into root causes and be more specific about what you'll do differently next time.";
+    } else {
+      return "Your AAR could benefit from more detail. Focus on specific examples, clear root cause analysis, and actionable next steps.";
     }
   }
 
   /**
-   * Get AARs for a specific user
+   * Generate improvement suggestions
    */
-  async getUserAARs(userId: string, limitCount?: number): Promise<AfterActionReview[]> {
-    try {
-      const params = limitCount ? { limit: limitCount } : {};
-      const response = await axios.get(`${API_BASE_URL}/aar`, {
-        params,
-        headers: {
-          'Authorization': `Bearer ${this.getAuthToken()}`
-        }
-      });
+  private generateSuggestions(formData: AARFormData, score: number): string[] {
+    const suggestions: string[] = [];
 
-      return response.data.data.map((aar: any) => ({
-        ...aar,
-        createdAt: new Date(aar.createdAt),
-        updatedAt: new Date(aar.updatedAt),
-        completedAt: new Date(aar.completedAt)
-      }));
-    } catch (error: any) {
-      console.error('Error fetching user AARs:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch AARs');
+    const wordCounts = {
+      whatWasAccomplished: this.countWords(formData.whatWasAccomplished),
+      whyDidNotWork: this.countWords(formData.whyDidNotWork),
+      whatWouldIDoDifferently: this.countWords(formData.whatWouldIDoDifferently),
+      whatDidILearn: this.countWords(formData.whatDidILearn)
+    };
+
+    if (wordCounts.whatWasAccomplished < 30) {
+      suggestions.push("Add more detail about what you were trying to accomplish and why it matters.");
     }
+
+    if (wordCounts.whyDidNotWork < 20) {
+      suggestions.push("Expand on root causes - ask 'why' multiple times to get to the real issue.");
+    }
+
+    if (!formData.whatWouldIDoDifferently.toLowerCase().includes('will') && 
+        !formData.whatWouldIDoDifferently.toLowerCase().includes('next time')) {
+      suggestions.push("Frame improvements as concrete future actions: 'Next time I will...'");
+    }
+
+    if (wordCounts.whatDidILearn < 20) {
+      suggestions.push("Reflect more on transferable knowledge - what principles apply beyond this specific task?");
+    }
+
+    if (suggestions.length === 0 && score < 9) {
+      suggestions.push("Great work! Consider adding even more technical specifics to maximize learning.");
+    }
+
+    return suggestions;
   }
 
   /**
-   * Get AARs for a specific lesson
+   * Generate follow-up questions to deepen reflection
    */
-  async getLessonAARs(userId: string, lessonId: string): Promise<AfterActionReview[]> {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/aar`, {
-        params: { lessonId },
-        headers: {
-          'Authorization': `Bearer ${this.getAuthToken()}`
-        }
-      });
+  private generateFollowUpQuestions(formData: AARFormData, score: number): string[] {
+    const allText = `${formData.whatWasAccomplished} ${formData.whyDidNotWork}`.toLowerCase();
 
-      return response.data.data.map((aar: any) => ({
-        ...aar,
-        createdAt: new Date(aar.createdAt),
-        updatedAt: new Date(aar.updatedAt),
-        completedAt: new Date(aar.completedAt)
-      }));
-    } catch (error: any) {
-      console.error('Error fetching lesson AARs:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch lesson AARs');
-    }
+    // Build questions array based on conditions
+    const potentialQuestions = [
+      ...(score < 7 ? [
+        "What specific error messages or behaviors did you observe?",
+        "How does this lesson connect to your overall DevOps learning goals?"
+      ] : []),
+      ...(allText.includes('docker') || allText.includes('container') ? [
+        "Have you considered how this Docker knowledge applies to orchestration tools like Kubernetes?"
+      ] : []),
+      ...(allText.includes('error') || allText.includes('fail') ? [
+        "What monitoring or alerting could help catch similar issues earlier?"
+      ] : []),
+      ...(formData.whatDidILearn.length < 50 ? [
+        "What would you teach someone else about this topic based on your experience?"
+      ] : [])
+    ];
+
+    // Return up to 3 questions
+    return potentialQuestions.slice(0, 3);
   }
 
   /**
-   * Get AAR statistics for a user
+   * Count words in a text string (public for use by AdaptiveAARForm)
    */
-  async getUserAARStats(userId: string): Promise<AARStats> {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/aar/stats/overview`, {
-        headers: {
-          'Authorization': `Bearer ${this.getAuthToken()}`
-        }
-      });
-
-      return response.data.data;
-    } catch (error: any) {
-      console.error('Error fetching AAR stats:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch AAR statistics');
-    }
-  }
-
-  /**
-   * Validate AAR form data without saving
-   */
-  async validateAARFormRemote(formData: AARFormData): Promise<AARValidationResult> {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/aar/validate`, formData, {
-        headers: {
-          'Authorization': `Bearer ${this.getAuthToken()}`
-        }
-      });
-
-      return response.data.data;
-    } catch (error: any) {
-      console.error('Error validating AAR form:', error);
-      throw new Error(error.response?.data?.message || 'Failed to validate AAR form');
-    }
-  }
-
-  /**
-   * Get common patterns across user's AARs
-   */
-  async getCommonPatterns(minFrequency: number = 2): Promise<AARPattern[]> {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/aar/patterns/common`, {
-        params: { minFrequency },
-        headers: {
-          'Authorization': `Bearer ${this.getAuthToken()}`
-        }
-      });
-
-      return response.data.data;
-    } catch (error: any) {
-      console.error('Error fetching common patterns:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch common patterns');
-    }
-  }
-
-  /**
-   * Get a specific AAR by ID
-   */
-  async getAARById(aarId: string): Promise<AfterActionReview | null> {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/aar/${aarId}`, {
-        headers: {
-          'Authorization': `Bearer ${this.getAuthToken()}`
-        }
-      });
-
-      const aar = response.data.data;
-      return {
-        ...aar,
-        createdAt: new Date(aar.createdAt),
-        updatedAt: new Date(aar.updatedAt),
-        completedAt: new Date(aar.completedAt)
-      };
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        return null;
-      }
-      console.error('Error fetching AAR:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch AAR');
-    }
-  }
-
-  /**
-   * Update an existing AAR
-   */
-  async updateAAR(aarId: string, updateData: Partial<AARFormData>): Promise<AfterActionReview | null> {
-    try {
-      const response = await axios.put(`${API_BASE_URL}/aar/${aarId}`, updateData, {
-        headers: {
-          'Authorization': `Bearer ${this.getAuthToken()}`
-        }
-      });
-
-      const aar = response.data.data;
-      return {
-        ...aar,
-        createdAt: new Date(aar.createdAt),
-        updatedAt: new Date(aar.updatedAt),
-        completedAt: new Date(aar.completedAt)
-      };
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        return null;
-      }
-      console.error('Error updating AAR:', error);
-      throw new Error(error.response?.data?.message || 'Failed to update AAR');
-    }
-  }
-
-  /**
-   * Delete an AAR
-   */
-  async deleteAAR(aarId: string): Promise<boolean> {
-    try {
-      await axios.delete(`${API_BASE_URL}/aar/${aarId}`, {
-        headers: {
-          'Authorization': `Bearer ${this.getAuthToken()}`
-        }
-      });
-
-      return true;
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        return false;
-      }
-      console.error('Error deleting AAR:', error);
-      throw new Error(error.response?.data?.message || 'Failed to delete AAR');
-    }
-  }
-
-  /**
-   * Get authentication token from localStorage
-   */
-  private getAuthToken(): string | null {
-    return localStorage.getItem('authToken');
-  }
-
-  private countWords(text: string): number {
+  countWords(text: string): number {
     return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  }
+
+  /**
+   * Get all AARs for a user from Firebase Firestore
+   */
+  async getUserAARs(userId: string): Promise<AfterActionReview[]> {
+    try {
+      const aarsRef = collection(db, 'afterActionReviews');
+      const q = query(
+        aarsRef,
+        where('userId', '==', userId),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          userId: data.userId,
+          lessonId: data.lessonId,
+          level: data.level,
+          labId: data.labId,
+          completedAt: data.completedAt instanceof Timestamp ? data.completedAt.toDate() : new Date(data.completedAt),
+          whatWasAccomplished: data.whatWasAccomplished,
+          whatWorkedWell: data.whatWorkedWell || [],
+          whatDidNotWork: data.whatDidNotWork || [],
+          whyDidNotWork: data.whyDidNotWork,
+          whatWouldIDoDifferently: data.whatWouldIDoDifferently,
+          whatDidILearn: data.whatDidILearn,
+          wordCounts: data.wordCounts,
+          qualityScore: data.qualityScore,
+          aiReview: data.aiReview,
+          patterns: data.patterns,
+          createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date(data.createdAt),
+          updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : new Date(data.updatedAt)
+        } as AfterActionReview;
+      });
+    } catch (error) {
+      console.error('Error fetching AARs from Firestore:', error);
+      return [];
+    }
   }
 }
 

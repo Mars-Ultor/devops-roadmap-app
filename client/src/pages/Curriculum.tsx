@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { useEffect, useState } from 'react';
 import { collection, getDocs, query, where, getDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -5,6 +6,7 @@ import { BookOpen, Code, Trophy, Lock } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { curriculumLoader, type Week } from '../utils/curriculumLoader';
+import type { LeveledLessonContent } from '../types/lessonContent';
 
 interface WeekProgress {
   weekNumber: number;
@@ -13,6 +15,66 @@ interface WeekProgress {
   completedLabs: number;
   totalLabs: number;
   percentage: number;
+}
+
+function calculateWeekProgress(week: Week, completedLessons: Set<string>, completedLabs: Set<string>): WeekProgress {
+  const totalLessons = week.lessons.length;
+  const totalLabs = week.labs.length;
+  const totalItems = totalLessons + totalLabs;
+
+  const completedLessonsCount = (week.lessons as LeveledLessonContent[]).filter((lesson) =>
+    lesson.lessonId && completedLessons.has(lesson.lessonId)
+  ).length;
+
+  const completedLabsCount = week.labs.filter((lab) =>
+    completedLabs.has(lab.id)
+  ).length;
+
+  const completedItems = completedLessonsCount + completedLabsCount;
+  const percentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+
+  return {
+    weekNumber: week.weekNumber,
+    completedLessons: completedLessonsCount,
+    totalLessons,
+    completedLabs: completedLabsCount,
+    totalLabs,
+    percentage
+  };
+}
+
+function getWeekCardClassName(isLocked: boolean, isRecommended: boolean, weekNumber: number, recommendedStartWeek: number | null): string {
+  if (isLocked) {
+    return 'border-slate-700 opacity-60';
+  }
+  if (isRecommended || weekNumber === recommendedStartWeek) {
+    return 'border-indigo-500 shadow-xl shadow-indigo-500/10';
+  }
+  return 'border-slate-700 hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/10';
+}
+
+function getProgressTextColor(percentage: number): string {
+  return percentage > 0 ? 'text-indigo-400' : 'text-gray-400';
+}
+
+function getButtonClassName(isComplete: boolean, percentage: number): string {
+  if (isComplete) {
+    return 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700';
+  }
+  if (percentage > 0) {
+    return 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white hover:from-yellow-700 hover:to-orange-700';
+  }
+  return 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700';
+}
+
+function getButtonText(isComplete: boolean, percentage: number): string {
+  if (isComplete) {
+    return '✓ Completed';
+  }
+  if (percentage > 0) {
+    return 'Continue →';
+  }
+  return 'Start Week →';
 }
 
 export default function Curriculum() {
@@ -28,7 +90,7 @@ export default function Curriculum() {
   useEffect(() => {
     const startWeekParam = searchParams.get('startWeek');
     if (startWeekParam) {
-      const startWeek = parseInt(startWeekParam);
+      const startWeek = Number.parseInt(startWeekParam);
       if (startWeek >= 1 && startWeek <= 12) {
         setRecommendedStartWeek(startWeek);
         // Scroll to the recommended week after a short delay
@@ -64,12 +126,13 @@ export default function Curriculum() {
   const isWeekUnlocked = (weekNumber: number): boolean => {
     if (weekNumber === 1) return true;
 
-    // First check if user has diagnostic results that allow bypassing the gate
-    if (diagnosticStartWeek !== null && diagnosticStartWeek <= weekNumber) {
+    // Diagnostic can unlock ONLY UP TO the suggested start week (not beyond)
+    // e.g., if diagnostic suggests week 5, unlock weeks 1-5 but not 6+
+    if (diagnosticStartWeek !== null && weekNumber <= diagnosticStartWeek) {
       return true;
     }
 
-    // Otherwise check progress requirements
+    // For weeks beyond the diagnostic start week, check progress requirements
     const previousWeek = weeks.find(w => w.weekNumber === weekNumber - 1);
     if (!previousWeek) return false;
 
@@ -81,8 +144,11 @@ export default function Curriculum() {
   useEffect(() => {
     async function fetchCurriculum() {
       try {
+        console.log('Curriculum: Starting to fetch curriculum...');
         // Load all weeks data
         const weeksData = await curriculumLoader.loadAllWeeks();
+        console.log('Curriculum: Received weeks data:', weeksData.length, 'weeks');
+        console.log('Curriculum: Week numbers:', weeksData.map(w => w.weekNumber));
         setWeeks(weeksData);
 
         // Fetch progress for each week
@@ -90,8 +156,9 @@ export default function Curriculum() {
           await fetchProgress(weeksData);
         }
       } catch (error) {
-        console.error('Error fetching curriculum:', error);
+        console.error('Curriculum: Error fetching curriculum:', error);
       } finally {
+        console.log('Curriculum: Finished loading, setting loading to false');
         setLoading(false);
       }
     }
@@ -137,29 +204,7 @@ export default function Curriculum() {
         const progressMap = new Map<number, WeekProgress>();
         
         weeksData.forEach(week => {
-          const totalLessons = week.lessons.length;
-          const totalLabs = week.labs.length;
-          const totalItems = totalLessons + totalLabs;
-          
-          const completedLessonsCount = week.lessons.filter((l: any) => 
-            completedLessons.has(l.id)
-          ).length;
-          
-          const completedLabsCount = week.labs.filter((l: any) => 
-            completedLabs.has(l.id)
-          ).length;
-          
-          const completedItems = completedLessonsCount + completedLabsCount;
-          const percentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-          
-          progressMap.set(week.weekNumber, {
-            weekNumber: week.weekNumber,
-            completedLessons: completedLessonsCount,
-            totalLessons,
-            completedLabs: completedLabsCount,
-            totalLabs,
-            percentage
-          });
+          progressMap.set(week.weekNumber, calculateWeekProgress(week, completedLessons, completedLabs));
         });
         
         setWeekProgress(progressMap);
@@ -231,13 +276,7 @@ export default function Curriculum() {
             <div 
               key={week.weekNumber} 
               id={`week-${week.weekNumber}`}
-              className={`bg-slate-800 rounded-xl p-8 border transition-all duration-300 ${
-                recommendedStartWeek === week.weekNumber
-                  ? 'border-green-500 shadow-xl shadow-green-500/20 ring-2 ring-green-500/50'
-                  : isLocked 
-                  ? 'border-slate-700 opacity-60' 
-                  : 'border-slate-700 hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/10'
-              }`}
+              className={`bg-slate-800 rounded-xl p-8 border transition-all duration-300 ${getWeekCardClassName(isLocked, recommendedStartWeek === week.weekNumber, week.weekNumber, recommendedStartWeek)}`}
             >
               {/* Recommended Start Week Banner */}
               {recommendedStartWeek === week.weekNumber && (
@@ -295,8 +334,8 @@ export default function Curriculum() {
                   <div className="mb-6 bg-slate-900 rounded-lg p-4 border border-slate-700">
                     <h5 className="text-sm font-bold text-indigo-300 mb-3 uppercase tracking-wide">Learning Objectives</h5>
                     <ul className="space-y-2">
-                      {week.objectives.map((obj, idx) => (
-                        <li key={idx} className="text-sm text-gray-300 flex items-start">
+                      {week.objectives.map((obj) => (
+                        <li key={obj} className="text-sm text-gray-300 flex items-start">
                           <span className="text-indigo-400 mr-3 mt-1 text-lg">✓</span>
                           <span>{obj}</span>
                         </li>
@@ -312,9 +351,9 @@ export default function Curriculum() {
                         Lessons
                       </h5>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {week.lessons.map((lesson: any, idx: number) => (
+                        {week.lessons.map((lesson: unknown, idx: number) => (
                           <div
-                            key={lesson.lessonId}
+                            key={(lesson as { lessonId: string }).lessonId}
                             className="bg-slate-900 rounded-lg p-3 border border-slate-700 hover:border-indigo-500 transition-colors"
                           >
                             <div className="flex items-start space-x-3">
@@ -322,8 +361,8 @@ export default function Curriculum() {
                                 {idx + 1}
                               </span>
                               <div className="flex-1 min-w-0">
-                                <h6 className="font-medium text-white text-sm mb-1">{lesson.baseLesson.title}</h6>
-                                <p className="text-xs text-gray-400 line-clamp-2">{lesson.baseLesson.description}</p>
+                                <h6 className="font-medium text-white text-sm mb-1">{(lesson as { baseLesson: { title: string } }).baseLesson.title}</h6>
+                                <p className="text-xs text-gray-400 line-clamp-2">{(lesson as { baseLesson: { description: string } }).baseLesson.description}</p>
                               </div>
                             </div>
                           </div>
@@ -353,13 +392,13 @@ export default function Curriculum() {
                   {/* Quick Lab Links */}
                   {!isLocked && week.labs.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {week.labs.map((lab: any, idx: number) => (
+                      {week.labs.map((lab: unknown) => (
                         <Link
-                          key={idx}
-                          to={`/lab/${lab.id}`}
+                          key={(lab as { id: string }).id}
+                          to={`/lab/${(lab as { id: string }).id}`}
                           className="text-xs bg-slate-700 hover:bg-indigo-600 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium border border-slate-600 hover:border-indigo-500"
                         >
-                          {lab.title}
+                          {(lab as { title: string }).title}
                         </Link>
                       ))}
                     </div>
@@ -369,11 +408,7 @@ export default function Curriculum() {
                 <div className="flex flex-col items-end space-y-3 ml-6">
                   <div className="text-right">
                     <div className="text-sm text-gray-400 mb-1">Progress</div>
-                    <div className={`text-2xl font-bold ${
-                      isComplete ? 'text-green-400' : 
-                      percentage > 0 ? 'text-indigo-400' : 
-                      'text-gray-400'
-                    }`}>
+                    <div className={`text-2xl font-bold ${getProgressTextColor(percentage)}`}>
                       {percentage}%
                     </div>
                     {progress && (
@@ -392,15 +427,9 @@ export default function Curriculum() {
                   ) : (
                     <Link
                       to={`/week/${week.weekNumber}`}
-                      className={`px-6 py-3 rounded-lg font-bold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ${
-                        isComplete 
-                          ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700'
-                          : percentage > 0
-                          ? 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white hover:from-yellow-700 hover:to-orange-700'
-                          : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700'
-                      }`}
+                      className={`px-6 py-3 rounded-lg font-bold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ${getButtonClassName(isComplete, percentage)}`}
                     >
-                      {isComplete ? '✓ Completed' : percentage > 0 ? 'Continue →' : 'Start Week →'}
+                      {getButtonText(isComplete, percentage)}
                     </Link>
                   )}
                 </div>

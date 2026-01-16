@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import ContentGate from '../../components/ContentGate'
@@ -22,7 +23,7 @@ vi.mock('react-router-dom', () => ({
   useLocation: () => ({ pathname: '/training' }),
 }))
 
-const AnyContentGate = ContentGate as unknown as (props: any) => ReactElement
+const AnyContentGate = ContentGate as unknown as (props: unknown) => ReactElement
 
 describe('ContentGate', () => {
   beforeEach(() => {
@@ -45,7 +46,7 @@ describe('ContentGate', () => {
     // Mock getDoc to return incomplete drill status
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -70,7 +71,7 @@ describe('ContentGate', () => {
         completedAt: new Date(),
         score: 85,
       }),
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -88,7 +89,7 @@ describe('ContentGate', () => {
   it('prevents modal dismissal via click outside', async () => {
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -111,7 +112,7 @@ describe('ContentGate', () => {
   it('prevents modal dismissal via escape key', async () => {
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -130,7 +131,7 @@ describe('ContentGate', () => {
   it('shows drill details and requirements', async () => {
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -155,7 +156,7 @@ describe('ContentGate', () => {
   it('explains why daily drills matter', async () => {
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">
@@ -176,7 +177,7 @@ describe('ContentGate', () => {
   it('re-checks drill status when route changes', async () => {
     mockGetDoc.mockResolvedValue({
       exists: () => false,
-    } as any)
+    } as unknown)
 
     const { rerender } = render(
       <AnyContentGate contentType="lesson" contentId="test-lesson">

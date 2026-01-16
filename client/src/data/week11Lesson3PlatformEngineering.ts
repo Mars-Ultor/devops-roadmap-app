@@ -1,6 +1,8 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 /**
  * Week 11 Lesson 3 - Platform Engineering & Developer Experience
  * 4-Level Mastery Progression: Internal developer platforms, self-service, golden paths
+ * Contains intentionally repeated content type values
  */
 
 import type { LeveledLessonContent } from '../types/lessonContent';

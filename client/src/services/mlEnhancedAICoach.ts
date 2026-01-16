@@ -4,15 +4,13 @@
  */
 
 import { MLModelService } from './mlModelService';
-import type { MLInput, MLPrediction } from './mlModelService';
+import type { MLInput } from './mlModelService';
 import type {
   CoachFeedback,
   CoachContext,
   CoachMode,
-  LearningPath,
   MotivationalProfile
 } from '../types/aiCoach';
-import { COACH_CONFIG } from '../types/aiCoach';
 
 export interface MLCoachInsights {
   learningStyle: {
@@ -167,7 +165,7 @@ export class MLEnhancedAICoach {
         confidence: prediction.confidence,
         recommendations: this.getLearningStyleRecommendations(primaryStyle)
       };
-    } catch (error) {
+    } catch {
       return {
         primary: 'kinesthetic',
         confidence: 0.5,
@@ -203,7 +201,7 @@ export class MLEnhancedAICoach {
       });
 
       return skillGaps.sort((a, b) => b.gapSize - a.gapSize);
-    } catch (error) {
+    } catch {
       return [];
     }
   }
@@ -240,7 +238,7 @@ export class MLEnhancedAICoach {
         confidence: prediction.confidence,
         reasoning: prediction.explanation || 'Based on your current progress and performance patterns'
       };
-    } catch (error) {
+    } catch {
       return {
         nextTopics: ['Continue with current topic', 'Review fundamentals'],
         estimatedTime: 5,
@@ -272,7 +270,7 @@ export class MLEnhancedAICoach {
         riskFactors: this.identifyRiskFactors(completionProbability, context),
         interventions: this.getPerformanceInterventions(completionProbability, context)
       };
-    } catch (error) {
+    } catch {
       const defaultDate = new Date();
       defaultDate.setMonth(defaultDate.getMonth() + 3);
 
@@ -318,7 +316,7 @@ export class MLEnhancedAICoach {
     ];
   }
 
-  private extractSkillGapFeatures(context: CoachContext): number[] {
+  private extractSkillGapFeatures(): number[] {
     // Mock features representing topic performance
     return new Array(50).fill(0).map(() => Math.random());
   }
@@ -507,7 +505,7 @@ export class MLEnhancedAICoach {
     return 'independent';
   }
 
-  private getFallbackInsights(context: CoachContext): MLCoachInsights {
+  private getFallbackInsights(): MLCoachInsights {
     const defaultDate = new Date();
     defaultDate.setMonth(defaultDate.getMonth() + 3);
 

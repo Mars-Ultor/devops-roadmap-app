@@ -45,42 +45,32 @@ export interface PersonalRunbookData {
   generatedAt: Date;
 }
 
+// Category keyword mappings for failure categorization
+const CATEGORY_KEYWORDS: Array<{ keywords: string[]; category: string }> = [
+  { keywords: ['docker', 'container'], category: 'Docker & Containers' },
+  { keywords: ['kubernetes', 'k8s', 'kubectl'], category: 'Kubernetes' },
+  { keywords: ['git', 'merge', 'commit'], category: 'Git & Version Control' },
+  { keywords: ['ci/cd', 'pipeline', 'jenkins', 'github actions'], category: 'CI/CD & Automation' },
+  { keywords: ['network', 'port', 'connection', 'dns'], category: 'Networking' },
+  { keywords: ['permission', 'auth', 'security', 'access denied'], category: 'Security & Permissions' },
+  { keywords: ['database', 'sql', 'mongodb', 'postgres'], category: 'Databases' },
+  { keywords: ['deploy', 'deployment'], category: 'Deployment' },
+  { keywords: ['linux', 'bash', 'shell', 'command'], category: 'Linux & Shell' },
+  { keywords: ['terraform', 'infrastructure', 'iac'], category: 'Infrastructure as Code' }
+];
+
 /**
  * Categorize failure by technology/domain
  */
 function categorizeFailure(failure: FailureEntry): string {
   const whatBroke = failure.whatBroke.toLowerCase();
   const task = failure.task?.toLowerCase() || '';
+  const combined = whatBroke + ' ' + task;
   
-  if (whatBroke.includes('docker') || whatBroke.includes('container') || task.includes('docker')) {
-    return 'Docker & Containers';
-  }
-  if (whatBroke.includes('kubernetes') || whatBroke.includes('k8s') || whatBroke.includes('kubectl')) {
-    return 'Kubernetes';
-  }
-  if (whatBroke.includes('git') || whatBroke.includes('merge') || whatBroke.includes('commit')) {
-    return 'Git & Version Control';
-  }
-  if (whatBroke.includes('ci/cd') || whatBroke.includes('pipeline') || whatBroke.includes('jenkins') || whatBroke.includes('github actions')) {
-    return 'CI/CD & Automation';
-  }
-  if (whatBroke.includes('network') || whatBroke.includes('port') || whatBroke.includes('connection') || whatBroke.includes('dns')) {
-    return 'Networking';
-  }
-  if (whatBroke.includes('permission') || whatBroke.includes('auth') || whatBroke.includes('security') || whatBroke.includes('access denied')) {
-    return 'Security & Permissions';
-  }
-  if (whatBroke.includes('database') || whatBroke.includes('sql') || whatBroke.includes('mongodb') || whatBroke.includes('postgres')) {
-    return 'Databases';
-  }
-  if (whatBroke.includes('deploy') || whatBroke.includes('deployment')) {
-    return 'Deployment';
-  }
-  if (whatBroke.includes('linux') || whatBroke.includes('bash') || whatBroke.includes('shell') || whatBroke.includes('command')) {
-    return 'Linux & Shell';
-  }
-  if (whatBroke.includes('terraform') || whatBroke.includes('infrastructure') || whatBroke.includes('iac')) {
-    return 'Infrastructure as Code';
+  for (const { keywords, category } of CATEGORY_KEYWORDS) {
+    if (keywords.some(kw => combined.includes(kw))) {
+      return category;
+    }
   }
   
   return 'General';

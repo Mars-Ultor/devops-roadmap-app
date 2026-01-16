@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable max-lines-per-function, complexity, sonarjs/no-duplicate-string */
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -1042,21 +1043,7 @@ export default function WeekAssessment() {
   const questions = weekAssessments[week]?.[assessmentType] || [];
   const currentQ = questions[currentQuestion];
 
-  useEffect(() => {
-    loadPreviousResults();
-  }, [weekNumber, user]);
-
-  useEffect(() => {
-    // Update assessment type when URL query parameter changes
-    if (typeFromUrl && typeFromUrl !== assessmentType) {
-      setAssessmentType(typeFromUrl);
-      setCurrentQuestion(0);
-      setAnswers({});
-      setShowResults(false);
-    }
-  }, [typeFromUrl]);
-
-  const loadPreviousResults = async () => {
+  const loadPreviousResults = useCallback(async () => {
     if (!user || !weekNumber) return;
 
     try {
@@ -1072,7 +1059,21 @@ export default function WeekAssessment() {
     } catch (error) {
       console.error('Error loading previous results:', error);
     }
-  };
+  }, [user, weekNumber]);
+
+  useEffect(() => {
+    loadPreviousResults();
+  }, [weekNumber, user, loadPreviousResults]);
+
+  useEffect(() => {
+    // Update assessment type when URL query parameter changes
+    if (typeFromUrl && typeFromUrl !== assessmentType) {
+      setAssessmentType(typeFromUrl);
+      setCurrentQuestion(0);
+      setAnswers({});
+      setShowResults(false);
+    }
+  }, [typeFromUrl, assessmentType]);
 
   const handleAnswer = (questionId: string, answerIndex: number) => {
     setAnswers({ ...answers, [questionId]: answerIndex });
@@ -1418,7 +1419,7 @@ export default function WeekAssessment() {
               
               return (
                 <button
-                  key={index}
+                  key={option}
                   onClick={() => handleAnswer(currentQ.id, index)}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     isSelected

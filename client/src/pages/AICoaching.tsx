@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * AI/ML Coaching Page
  * Comprehensive AI-powered coaching with machine learning insights
@@ -117,7 +118,7 @@ export default function AICoachingPage() {
             ].map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as 'coaching' | 'models')}
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? 'border-indigo-400 text-indigo-400'
@@ -160,7 +161,7 @@ export default function AICoachingPage() {
                       <Target className="w-3 h-3 mr-1" />
                       Adaptive Learning
                     </span>
-                    <span className="inline-flex items-3 py-1 rounded-full text-sm font-medium bg-purple-900/30 text-purple-400 border border-purple-400">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-900/30 text-purple-400 border border-purple-400">
                       <Sparkles className="w-3 h-3 mr-1" />
                       ML-Powered
                     </span>
@@ -173,8 +174,8 @@ export default function AICoachingPage() {
             <div>
               <h3 className="text-xl font-bold mb-6">AI/ML Coaching Features</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {features.map((feature, index) => (
-                  <div key={index} className="bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-750 transition-colors">
+                {features.map((feature) => (
+                  <div key={feature.title} className="bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-750 transition-colors">
                     <div className="p-6">
                       <div className="flex items-center gap-3 mb-4">
                         <feature.icon className="w-6 h-6 text-indigo-400" />
@@ -182,8 +183,8 @@ export default function AICoachingPage() {
                       </div>
                       <p className="text-gray-400 text-sm mb-4">{feature.description}</p>
                       <div className="space-y-2">
-                        {feature.capabilities.map((capability, capIndex) => (
-                          <div key={capIndex} className="flex items-center gap-2 text-sm">
+                        {feature.capabilities.map((capability) => (
+                          <div key={capability} className="flex items-center gap-2 text-sm">
                             <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
                             <span className="text-gray-300">{capability}</span>
                           </div>
@@ -253,18 +254,18 @@ export default function AICoachingPage() {
                 to provide personalized guidance. The system analyzes your performance patterns, learning style,
                 and progress trajectory to offer targeted recommendations and interventions.
               </p>
-              <div className="flex justify-center gap-6 text-sm text-gray-500">
+              <div className="flex justify-center gap-6 text-sm text-gray-400">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  Continuously Learning
+                  <div className="w-2 h-2 bg-green-500/60 rounded-full"></div>
+                  <span>Continuously Learning</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  Privacy-First
+                  <div className="w-2 h-2 bg-blue-500/60 rounded-full"></div>
+                  <span>Privacy-First</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  Research-Backed
+                  <div className="w-2 h-2 bg-purple-500/60 rounded-full"></div>
+                  <span>Research-Backed</span>
                 </div>
               </div>
             </div>

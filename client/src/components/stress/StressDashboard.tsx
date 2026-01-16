@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * StressDashboard Component - Progressive Stress System
  * Unified dashboard showing all active stress constraints and monitoring

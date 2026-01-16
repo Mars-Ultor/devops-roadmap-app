@@ -4,6 +4,7 @@ import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/', // Explicitly set base path for Firebase hosting
   plugins: [
     react(),
     // Only include visualizer in production builds when ANALYZE env var is set
@@ -24,8 +25,6 @@ export default defineConfig({
           'scenarios': ['./src/data/scenarios.ts', './src/data/productionScenarios.ts', './src/data/stressScenarios.ts'],
           // Group UI libraries
           'ui-vendor': ['lucide-react', '@radix-ui/react-icons'],
-          // Group Firebase
-          'firebase-vendor': ['firebase'],
           // Group React ecosystem
           'react-vendor': ['react', 'react-dom', 'react-router-dom', 'zustand'],
           // Group utilities
@@ -51,5 +50,35 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     css: true,
+    watch: false,
+    testTimeout: 5000,
+    hookTimeout: 5000,
+    pool: 'forks',
+    isolate: false,
+    exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**'],
+    server: {
+      deps: {
+        inline: ['firebase'],
+      },
+    },
+    coverage: {
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        'dist/',
+        'coverage/',
+      ],
+      thresholds: {
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80,
+        },
+      },
+    },
   },
 })

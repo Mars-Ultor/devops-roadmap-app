@@ -1,15 +1,11 @@
-name: Deploy Client to Firebase
+name: Firebase Deploy
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'client/**'
-      - '.github/workflows/firebase-deploy.yml'
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy-client:
+    name: Deploy Client to Firebase
     runs-on: ubuntu-latest
 
     steps:
@@ -43,3 +39,8 @@ jobs:
       run: |
         cd client
         firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
+
+    - name: Deployment Summary
+      run: |
+        echo "🚀 Firebase Deployment Complete"
+        echo "Status: ${{ job.status }}"

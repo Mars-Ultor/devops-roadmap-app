@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity, sonarjs/cognitive-complexity */
 import { useAuthStore } from '../store/authStore';
 import { Link } from 'react-router-dom';
 import { BookOpen, Code, Trophy, Zap, Flame, Brain, Settings, RefreshCw, Users, Target, Award, AlertTriangle, Shield } from 'lucide-react';

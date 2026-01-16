@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable max-lines-per-function */
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -26,6 +27,17 @@ interface WeekProject {
   resources: string[];
   deliverables: string[];
 }
+
+const getDifficultyColorClass = (difficulty: string): string => {
+  switch (difficulty) {
+    case 'beginner':
+      return 'text-green-400';
+    case 'intermediate':
+      return 'text-yellow-400';
+    default:
+      return 'text-red-400';
+  }
+};
 
 const weekProjects: Record<number, WeekProject> = {
   1: {
@@ -221,17 +233,7 @@ export default function WeekProject() {
   const [submitting, setSubmitting] = useState(false);
   const [projectCompleted, setProjectCompleted] = useState(false);
 
-  useEffect(() => {
-    const week = parseInt(weekNumber || '1');
-    const weekProject = weekProjects[week];
-    
-    if (weekProject) {
-      setProject(weekProject);
-      loadProgress();
-    }
-  }, [weekNumber]);
-
-  const loadProgress = async () => {
+  const loadProgress = useCallback(async () => {
     if (!user || !weekNumber) return;
 
     try {
@@ -249,7 +251,17 @@ export default function WeekProject() {
     } catch (error) {
       console.error('Error loading project progress:', error);
     }
-  };
+  }, [user, weekNumber]);
+
+  useEffect(() => {
+    const week = Number.parseInt(weekNumber || '1');
+    const weekProject = weekProjects[week];
+    
+    if (weekProject) {
+      setProject(weekProject);
+      loadProgress();
+    }
+  }, [weekNumber, loadProgress]);
 
   const toggleTask = (taskId: string) => {
     const newCompleted = new Set(completedTasks);
@@ -337,11 +349,7 @@ export default function WeekProject() {
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center gap-2 px-3 py-1 bg-slate-800 rounded-full">
               <span className="text-slate-400 text-sm">Difficulty:</span>
-              <span className={`font-semibold text-sm ${
-                project.difficulty === 'beginner' ? 'text-green-400' :
-                project.difficulty === 'intermediate' ? 'text-yellow-400' :
-                'text-red-400'
-              }`}>
+              <span className={`font-semibold text-sm ${getDifficultyColorClass(project.difficulty)}`}>
                 {project.difficulty.charAt(0).toUpperCase() + project.difficulty.slice(1)}
               </span>
             </div>
@@ -480,8 +488,8 @@ export default function WeekProject() {
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
               <h3 className="text-lg font-semibold text-white mb-4">Deliverables</h3>
               <ul className="space-y-2">
-                {project.deliverables.map((deliverable, index) => (
-                  <li key={index} className="flex items-start gap-2 text-sm text-slate-300">
+                {project.deliverables.map((deliverable) => (
+                  <li key={deliverable} className="flex items-start gap-2 text-sm text-slate-300">
                     <CheckCircle className="w-4 h-4 text-indigo-400 mt-0.5 flex-shrink-0" />
                     <span>{deliverable}</span>
                   </li>
@@ -493,8 +501,8 @@ export default function WeekProject() {
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
               <h3 className="text-lg font-semibold text-white mb-4">Helpful Resources</h3>
               <ul className="space-y-2">
-                {project.resources.map((resource, index) => (
-                  <li key={index} className="flex items-start gap-2 text-sm text-slate-300">
+                {project.resources.map((resource) => (
+                  <li key={resource} className="flex items-start gap-2 text-sm text-slate-300">
                     <ExternalLink className="w-4 h-4 text-indigo-400 mt-0.5 flex-shrink-0" />
                     <span>{resource}</span>
                   </li>

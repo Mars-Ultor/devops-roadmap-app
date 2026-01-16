@@ -1,9 +1,10 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Battle Drills Library Page
  * Shows all available drills with performance stats
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Target, Clock, Trophy, TrendingUp, Lock, CheckCircle, Zap, AlertTriangle } from 'lucide-react';
 import { BATTLE_DRILLS, getBattleDrillsByDifficulty } from '../data/battleDrills';
@@ -19,11 +20,7 @@ export default function BattleDrills() {
   const [selectedCategory, setSelectedCategory] = useState<'all' | string>('all');
   const [performanceMap, setPerformanceMap] = useState<Map<string, BattleDrillPerformance>>(new Map());
 
-  useEffect(() => {
-    loadPerformance();
-  }, [user?.uid]);
-
-  const loadPerformance = async () => {
+  const loadPerformance = useCallback(async () => {
     if (!user?.uid) return;
 
     try {
@@ -43,7 +40,11 @@ export default function BattleDrills() {
     } catch (error) {
       console.error('Error loading performance:', error);
     }
-  };
+  }, [user?.uid]);
+
+  useEffect(() => {
+    loadPerformance();
+  }, [user?.uid, loadPerformance]);
 
   const getFilteredDrills = (): BattleDrill[] => {
     let drills = BATTLE_DRILLS;
@@ -155,7 +156,7 @@ export default function BattleDrills() {
                 {['all', 'basic', 'intermediate', 'advanced'].map(diff => (
                   <button
                     key={diff}
-                    onClick={() => setSelectedDifficulty(diff as any)}
+                    onClick={() => setSelectedDifficulty(diff as unknown)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       selectedDifficulty === diff
                         ? 'bg-indigo-600 text-white'

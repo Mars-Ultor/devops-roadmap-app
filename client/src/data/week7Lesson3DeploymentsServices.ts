@@ -985,7 +985,7 @@ spec:
             label: 'CPU request',
             hint: 'Minimum CPU for scheduling',
             correctValue: '100m',
-            validationPattern: '100m|0\.1'
+            validationPattern: '100m|0\\.1'
           },
           {
             id: 'memory_request',
@@ -999,7 +999,7 @@ spec:
             label: 'CPU limit',
             hint: 'Maximum CPU usage',
             correctValue: '500m',
-            validationPattern: '500m|0\.5'
+            validationPattern: '500m|0\\.5'
           },
           {
             id: 'memory_limit',

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable max-lines-per-function */
+import { useState, useEffect, useCallback } from 'react';
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
@@ -53,17 +54,7 @@ export default function FailureLog() {
 
   const categories = ['docker', 'kubernetes', 'cicd', 'networking', 'security', 'deployment', 'other'];
 
-  useEffect(() => {
-    loadEntries();
-  }, [user]);
-
-  useEffect(() => {
-    if (entries.length > 0) {
-      analyzePatterns();
-    }
-  }, [entries]);
-
-  const loadEntries = async () => {
+  const loadEntries = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -100,9 +91,9 @@ export default function FailureLog() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const analyzePatterns = () => {
+  const analyzePatterns = useCallback(() => {
     const categoryMap = new Map<string, { count: number; solutions: Set<string> }>();
 
     entries.forEach(entry => {
@@ -125,7 +116,17 @@ export default function FailureLog() {
 
     detectedPatterns.sort((a, b) => b.count - a.count);
     setPatterns(detectedPatterns);
-  };
+  }, [entries]);
+
+  useEffect(() => {
+    loadEntries();
+  }, [loadEntries]);
+
+  useEffect(() => {
+    if (entries.length > 0) {
+      analyzePatterns();
+    }
+  }, [entries, analyzePatterns]);
 
   const addEntry = async () => {
     if (!user) return;

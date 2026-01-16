@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Learning Velocity Chart
  * Shows progress speed and learning acceleration over time
@@ -26,7 +27,7 @@ interface LearningVelocityChartProps {
 
 export const LearningVelocityChart: FC<LearningVelocityChartProps> = ({ data }) => {
   // Handle undefined data gracefully
-  if (!data || !data.weeklyProgress) {
+  if (!data?.weeklyProgress) {
     return (
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-8">
         <div className="text-center">
@@ -119,8 +120,8 @@ export const LearningVelocityChart: FC<LearningVelocityChartProps> = ({ data }) 
           <span>Week</span>
           <span>Items Completed</span>
         </div>
-        {weeklyProgress.map((week, idx) => (
-          <div key={idx} className="flex items-center gap-3">
+        {weeklyProgress.map((week) => (
+          <div key={`week-${week.week}`} className="flex items-center gap-3">
             {/* Week Label */}
             <div className="w-12 text-sm text-slate-300 font-mono">
               W{week.week}

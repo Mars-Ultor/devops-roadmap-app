@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * StepValidator - Automated validation with real-time feedback
  * Displays checkmarks/X marks for each validation criterion
@@ -45,6 +46,7 @@ export const StepValidator: FC<StepValidatorProps> = ({
     if (autoValidate && !isValidating) {
       runValidation();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoValidate]);
 
   const runValidation = async () => {

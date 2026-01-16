@@ -5,12 +5,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite" // Use PostgreSQL in production
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   email       String    @unique
   password    String
   name        String
@@ -23,10 +23,12 @@ model User {
   badges       Badge[]
   labSessions  LabSession[]
   aars         AfterActionReview[]
+  certifications Certification[]
+  recertificationAttempts RecertificationAttempt[]
 }
 
 model Progress {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   userId      String
   weekId      Int
   lessonId    String
@@ -40,7 +42,7 @@ model Progress {
 }
 
 model Project {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   userId      String
   projectId   String    // "project-1", "project-2", "project-3"
   title       String
@@ -56,7 +58,7 @@ model Project {
 }
 
 model Badge {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   userId      String
   badgeType   String    // "linux-explorer", "git-master", etc.
   badgeName   String
@@ -66,7 +68,7 @@ model Badge {
 }
 
 model LabSession {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   userId      String
   exerciseId  String    // "lab-1", "lab-2", etc.
   code        String?   // User's submitted code
@@ -106,4 +108,37 @@ model AfterActionReview {
   updatedAt    DateTime  @updatedAt
 
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Certification {
+  id                    String    @id @default(uuid())
+  userId                String
+  skillId               String    // "docker-basics", "kubernetes-fundamentals", etc.
+  certificationLevel    String    // "bronze", "silver", "gold", "platinum", "master"
+  earnedAt              DateTime  @default(now())
+  expiresAt             DateTime
+  lastRecertifiedAt     DateTime  @default(now())
+  recertificationRequired Boolean @default(false)
+  gracePeriodDays       Int       @default(30)
+  consecutivePasses     Int       @default(1)
+  totalAttempts         Int       @default(1)
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attempts              RecertificationAttempt[]
+
+  @@unique([userId, skillId])
+}
+
+model RecertificationAttempt {
+  id                    String    @id @default(uuid())
+  userId                String
+  certificationId       String
+  drillId               String    // "docker-basics-bronze-1", etc.
+  score                 Int       // 0-100
+  passed                Boolean
+  timeSpentMinutes      Float
+  completedAt           DateTime  @default(now())
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  certification         Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
 }

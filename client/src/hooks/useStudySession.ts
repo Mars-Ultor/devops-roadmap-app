@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
@@ -14,6 +14,46 @@ export function useStudySession({ contentId, contentType }: UseStudySessionProps
   const intervalRef = useRef<number | null>(null);
   const sessionIdRef = useRef<string | null>(null);
   const sessionStartTimeRef = useRef<Date | null>(null);
+
+  const logSessionStart = useCallback(async () => {
+    if (!user || !sessionIdRef.current) return;
+
+    try {
+      await setDoc(doc(db, 'studySessions', sessionIdRef.current), {
+        userId: user.uid,
+        contentId,
+        contentType,
+        startTime: serverTimestamp(),
+        endTime: null,
+        duration: 0,
+        completed: false
+      });
+      console.log('✅ Study session started:', sessionIdRef.current);
+    } catch (error) {
+      console.error('Error logging session start:', error);
+    }
+  }, [user, contentId, contentType]);
+
+  const logSessionEnd = useCallback(async (endTime: Date) => {
+    if (!user || !sessionIdRef.current || !sessionStartTimeRef.current) return;
+
+    const duration = Math.floor((endTime.getTime() - sessionStartTimeRef.current.getTime()) / 1000);
+
+    try {
+      await setDoc(doc(db, 'studySessions', sessionIdRef.current), {
+        userId: user.uid,
+        contentId,
+        contentType,
+        startTime: sessionStartTimeRef.current,
+        endTime: serverTimestamp(),
+        duration,
+        completed: true
+      });
+      console.log('✅ Study session ended:', sessionIdRef.current, 'Duration:', duration, 'seconds');
+    } catch (error) {
+      console.error('Error logging session end:', error);
+    }
+  }, [user, contentId, contentType]);
 
   // Start session on mount
   useEffect(() => {
@@ -40,47 +80,7 @@ export function useStudySession({ contentId, contentType }: UseStudySessionProps
         logSessionEnd(new Date());
       }
     };
-  }, [user, contentId]);
-
-  const logSessionStart = async () => {
-    if (!user || !sessionIdRef.current) return;
-
-    try {
-      await setDoc(doc(db, 'studySessions', sessionIdRef.current), {
-        userId: user.uid,
-        contentId,
-        contentType,
-        startTime: serverTimestamp(),
-        endTime: null,
-        duration: 0,
-        completed: false
-      });
-      console.log('✅ Study session started:', sessionIdRef.current);
-    } catch (error) {
-      console.error('Error logging session start:', error);
-    }
-  };
-
-  const logSessionEnd = async (endTime: Date) => {
-    if (!user || !sessionIdRef.current || !sessionStartTimeRef.current) return;
-
-    const duration = Math.floor((endTime.getTime() - sessionStartTimeRef.current.getTime()) / 1000);
-
-    try {
-      await setDoc(doc(db, 'studySessions', sessionIdRef.current), {
-        userId: user.uid,
-        contentId,
-        contentType,
-        startTime: sessionStartTimeRef.current,
-        endTime: serverTimestamp(),
-        duration,
-        completed: true
-      });
-      console.log('✅ Study session ended:', sessionIdRef.current, 'Duration:', duration, 'seconds');
-    } catch (error) {
-      console.error('Error logging session end:', error);
-    }
-  };
+  }, [user, contentId, logSessionStart, logSessionEnd]);
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);

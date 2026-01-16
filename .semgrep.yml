@@ -1,0 +1,60 @@
+# Semgrep Configuration for DevOps Roadmap App
+# Semantic code analysis for security vulnerabilities and best practices
+
+rules:
+  # Security rules
+  - id: javascript.security
+  - id: typescript.security
+  - id: python.security
+  - id: docker.security
+
+  # Best practices
+  - id: javascript.best-practices
+  - id: typescript.best-practices
+  - id: python.best-practices
+
+  # React-specific rules
+  - id: react.best-practices
+  - id: react.security
+
+config:
+  # Use community rules from r2c
+  - rules: https://semgrep.dev/p/r2c-security-audit
+  - rules: https://semgrep.dev/p/r2c-best-practices
+  - rules: https://semgrep.dev/p/r2c
+
+# Scan configuration
+paths:
+  include:
+    - client/src
+    - server/src
+    - ml-service
+  exclude:
+    - "**/node_modules/**"
+    - "**/dist/**"
+    - "**/build/**"
+    - "**/*.test.*"
+    - "**/*.spec.*"
+    - "**/*.config.*"
+    - "**/coverage/**"
+
+# Output configuration
+output:
+  format: json
+  output: semgrep-report.json
+
+# Severity levels to scan
+severity:
+  - ERROR
+  - WARNING
+  - INFO
+
+# Languages to scan
+languages:
+  - javascript
+  - typescript
+  - python
+  - dockerfile
+  - yaml
+  - json</content>
+<parameter name="filePath">c:\Users\ayode\Desktop\devops-roadmap-app\.semgrep.yml

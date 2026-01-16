@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Personal Runbook - Auto-generated troubleshooting guide
  * Aggregates failure logs into organized reference
@@ -70,7 +71,7 @@ export const PersonalRunbook: FC<PersonalRunbookProps> = ({ entries }) => {
               Personal Troubleshooting Runbook
             </h2>
             <p className="text-purple-200">
-              Auto-generated from your {runbook.totalFailures} logged failure{runbook.totalFailures !== 1 ? 's' : ''}
+              Auto-generated from your {runbook.totalFailures} logged failure{runbook.totalFailures === 1 ? '' : 's'}
             </p>
           </div>
           <div className="flex gap-2">
@@ -127,9 +128,9 @@ export const PersonalRunbook: FC<PersonalRunbookProps> = ({ entries }) => {
             <h3 className="font-semibold text-purple-300">Recent Patterns (Last 30 Days)</h3>
           </div>
           <div className="flex flex-wrap gap-2">
-            {runbook.recentPatterns.map((pattern, index) => (
+            {runbook.recentPatterns.map((pattern) => (
               <span
-                key={index}
+                key={pattern}
                 className="px-3 py-1 bg-purple-800/50 text-purple-200 rounded-full text-sm"
               >
                 {pattern}

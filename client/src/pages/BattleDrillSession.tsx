@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity */
 /**
  * Battle Drill Execution Page
  * Timed drill execution with step-by-step validation
@@ -32,7 +33,7 @@ export default function BattleDrillSession() {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [showHints, setShowHints] = useState<Set<number>>(new Set());
   const [sessionComplete, setSessionComplete] = useState(false);
-  const [sessionResult, setSessionResult] = useState<any>(null);
+  const [sessionResult, setSessionResult] = useState<unknown>(null);
   const [stepInputs, setStepInputs] = useState<Record<number, string>>({});
   const [validationResults, setValidationResults] = useState<Record<number, ValidationResult>>({});
   const [validatingStep, setValidatingStep] = useState<number | null>(null);
@@ -41,6 +42,23 @@ export default function BattleDrillSession() {
   const [submittedAAR, setSubmittedAAR] = useState<AAR | null>(null);
   const [coachContext, setCoachContext] = useState<CoachContext | null>(null);
   const [showFailureLog, setShowFailureLog] = useState(false);
+
+  const getDifficultyStyles = (difficulty: string) => {
+    switch (difficulty) {
+      case 'basic':
+        return 'bg-green-900/30 text-green-400';
+      case 'intermediate':
+        return 'bg-yellow-900/30 text-yellow-400';
+      default:
+        return 'bg-red-900/30 text-red-400';
+    }
+  };
+
+  const getValidationTextColor = (isPassed: boolean, isFailed: boolean) => {
+    if (isPassed) return 'text-green-400';
+    if (isFailed) return 'text-red-400';
+    return 'text-slate-300';
+  };
 
   // Use ref to access current elapsed time without triggering re-renders
   const elapsedSecondsRef = useRef(0);
@@ -156,7 +174,7 @@ export default function BattleDrillSession() {
     recordHintUsed();
   };
 
-  const handleLogFailure = async (failureData: any) => {
+  const handleLogFailure = async (failureData: unknown) => {
     try {
       await logFailure(failureData);
       setShowFailureLog(false);
@@ -366,11 +384,7 @@ export default function BattleDrillSession() {
               <h1 className="text-2xl font-bold text-white mb-2">{drill.title}</h1>
               <p className="text-slate-300 mb-3">{drill.description}</p>
               <div className="flex items-center gap-4 text-sm">
-                <span className={`px-3 py-1 rounded ${
-                  drill.difficulty === 'basic' ? 'bg-green-900/30 text-green-400' :
-                  drill.difficulty === 'intermediate' ? 'bg-yellow-900/30 text-yellow-400' :
-                  'bg-red-900/30 text-red-400'
-                }`}>
+                <span className={`px-3 py-1 rounded ${getDifficultyStyles(drill.difficulty)}`}>
                   {drill.difficulty}
                 </span>
                 <span className="text-slate-400 capitalize">{drill.category}</span>
@@ -507,17 +521,13 @@ export default function BattleDrillSession() {
                         {/* Validation Criteria */}
                         <div className="space-y-1">
                           <div className="text-sm text-slate-400 mb-1">Validation Criteria:</div>
-                          {step.validationCriteria.map((criteria, idx) => {
+                          {step.validationCriteria.map((criteria) => {
                             const validation = validationResults[index];
                             const isPassed = validation?.passedCriteria.includes(criteria);
                             const isFailed = validation?.failedCriteria.includes(criteria);
                             
                             return (
-                              <div key={idx} className={`flex items-center gap-2 text-sm ${
-                                isPassed ? 'text-green-400' :
-                                isFailed ? 'text-red-400' :
-                                'text-slate-300'
-                              }`}>
+                              <div key={criteria} className={`flex items-center gap-2 text-sm ${getValidationTextColor(isPassed, isFailed)}`}>
                                 {isPassed && <CheckCircle className="w-4 h-4" />}
                                 {isFailed && <XCircle className="w-4 h-4" />}
                                 {!isPassed && !isFailed && <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />}
@@ -547,10 +557,11 @@ export default function BattleDrillSession() {
                   {!isCompleted && (
                     <div className="mt-4 space-y-3">
                       <div>
-                        <label className="block text-sm text-slate-400 mb-2">
+                        <label htmlFor={`step-input-${index}`} className="block text-sm text-slate-400 mb-2">
                           Describe what you did or paste relevant output:
                         </label>
                         <textarea
+                          id={`step-input-${index}`}
                           value={stepInputs[index] || ''}
                           onChange={(e) => handleStepInput(index, e.target.value)}
                           placeholder="Example: Created Dockerfile with FROM node:18-alpine, COPY . ., RUN npm install, EXPOSE 3000, CMD npm start"
@@ -611,8 +622,8 @@ export default function BattleDrillSession() {
                           {validationResults[index].specificErrors.length > 0 && (
                             <div className="mt-3 space-y-1">
                               <div className="text-sm text-red-300 font-semibold">Issues Found:</div>
-                              {validationResults[index].specificErrors.map((error, idx) => (
-                                <div key={idx} className="text-sm text-red-200 flex items-start gap-2">
+                              {validationResults[index].specificErrors.map((error) => (
+                                <div key={error} className="text-sm text-red-200 flex items-start gap-2">
                                   <XCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                   {error}
                                 </div>
@@ -624,8 +635,8 @@ export default function BattleDrillSession() {
                           {validationResults[index].suggestions.length > 0 && (
                             <div className="mt-3 space-y-1">
                               <div className="text-sm text-yellow-300 font-semibold">Suggestions:</div>
-                              {validationResults[index].suggestions.map((suggestion, idx) => (
-                                <div key={idx} className="text-sm text-yellow-200 flex items-start gap-2">
+                              {validationResults[index].suggestions.map((suggestion) => (
+                                <div key={suggestion} className="text-sm text-yellow-200 flex items-start gap-2">
                                   <Lightbulb className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                   {suggestion}
                                 </div>
@@ -652,7 +663,7 @@ export default function BattleDrillSession() {
                       </div>
                       <div className="space-y-2">
                         {step.hints.map((hint, idx) => (
-                          <div key={idx} className="text-sm text-slate-300">
+                          <div key={hint} className="text-sm text-slate-300">
                             {idx + 1}. {hint}
                           </div>
                         ))}

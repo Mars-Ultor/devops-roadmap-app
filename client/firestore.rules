@@ -14,7 +14,7 @@ service cloud.firestore {
     
     // Users collection - users can only read/write their own data
     match /users/{userId} {
-      allow read: if isAuthenticated();
+      allow read: if isOwner(userId);
       allow write: if isOwner(userId);
       
       // User progress subcollection - users can only read/write their own progress

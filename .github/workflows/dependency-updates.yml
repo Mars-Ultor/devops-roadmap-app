@@ -1,0 +1,82 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run weekly on Mondays at 8 AM UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js for Client
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      # Update Client Dependencies
+      - name: Update Client Dependencies
+        run: |
+          npm install
+          npm update
+          npm audit fix
+        working-directory: client
+
+      - name: Setup Node.js for Server
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      # Update Server Dependencies
+      - name: Update Server Dependencies
+        run: |
+          npm install
+          npm update
+          npm audit fix
+        working-directory: server
+
+      # Setup Python for ML Service
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Update ML Service Dependencies
+      - name: Update ML Service Dependencies
+        run: |
+          cd ml-service
+          python -m pip install --upgrade pip
+          pip install --upgrade -r requirements.txt
+
+      - name: Run tests after updates
+        run: |
+          npm run test:ci
+        working-directory: client
+
+      - name: Run Server Tests
+        run: |
+          npm test
+        working-directory: server
+
+      - name: Run ML Service Tests
+        run: |
+          python -m pytest
+        working-directory: ml-service
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update dependencies"

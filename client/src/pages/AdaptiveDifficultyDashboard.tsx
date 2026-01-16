@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Adaptive Difficulty Dashboard
  * View and manage difficulty settings
@@ -5,8 +6,8 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, TrendingUp, TrendingDown, Minus, Award, 
+import {
+  ArrowLeft, TrendingUp, TrendingDown, Minus, Award,
   Target, Brain, Zap, Shield, AlertCircle, CheckCircle
 } from 'lucide-react';
 import { useAdaptiveDifficulty } from '../hooks/useAdaptiveDifficulty';
@@ -31,7 +32,7 @@ export default function AdaptiveDifficultyDashboard() {
 
   useEffect(() => {
     evaluateRecommendation();
-  }, []);
+  }, [evaluateRecommendation]);
 
   const handleLevelChange = (level: DifficultyLevel) => {
     setSelectedLevel(level);
@@ -171,8 +172,8 @@ export default function AdaptiveDifficultyDashboard() {
                 </p>
                 
                 <ul className="space-y-1 mb-4">
-                  {recommendation.reasoning.map((reason, idx) => (
-                    <li key={idx} className="text-sm flex items-start gap-2">
+                  {recommendation.reasoning.map((reason) => (
+                    <li key={reason} className="text-sm flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-green-400" />
                       <span>{reason}</span>
                     </li>

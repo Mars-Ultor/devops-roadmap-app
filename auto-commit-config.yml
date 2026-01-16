@@ -1,0 +1,39 @@
+# Auto-commit Configuration
+# This file contains settings for automatic GitHub pushes
+
+# Git settings
+default_branch: master
+commit_message_prefix: "Auto-commit"
+include_timestamp: true
+
+# File patterns to include/exclude
+include_patterns:
+  - "*.js"
+  - "*.ts"
+  - "*.tsx"
+  - "*.py"
+  - "*.md"
+  - "*.json"
+  - "*.yml"
+  - "*.yaml"
+
+exclude_patterns:
+  - "node_modules/**"
+  - ".git/**"
+  - "*.log"
+  - ".env*"
+  - "dist/**"
+  - "build/**"
+
+# Auto-commit behavior
+auto_push: true
+require_confirmation: false
+max_commit_frequency_minutes: 30
+
+# Notifications (future feature)
+enable_notifications: false
+notification_email: ""
+
+# CI/CD integration
+trigger_ci_cd: true
+wait_for_ci_completion: false

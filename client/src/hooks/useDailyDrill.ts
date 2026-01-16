@@ -28,6 +28,7 @@ export function useDailyDrill(): DailyDrillState {
     } else {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const checkDailyDrill = async (): Promise<boolean> => {

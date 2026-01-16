@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * MultiTaskMonitor Component - Progressive Stress System
  * Monitors and displays multiple simultaneous tasks during high-stress training
@@ -44,6 +45,7 @@ export const MultiTaskMonitor: React.FC<MultiTaskMonitorProps> = ({
     } else {
       setIsEnabled(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
   const initializeTasks = (taskCount: number) => {

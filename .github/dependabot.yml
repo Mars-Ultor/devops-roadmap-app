@@ -1,0 +1,69 @@
+version: 2
+updates:
+  # Client dependencies
+  - package-ecosystem: "npm"
+    directory: "/client"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "Mars-Ultor"
+    assignees:
+      - "Mars-Ultor"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+
+  # Server dependencies
+  - package-ecosystem: "npm"
+    directory: "/server"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "Mars-Ultor"
+    assignees:
+      - "Mars-Ultor"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+
+  # ML Service dependencies
+  - package-ecosystem: "pip"
+    directory: "/ml-service"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "Mars-Ultor"
+    assignees:
+      - "Mars-Ultor"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "Mars-Ultor"
+    assignees:
+      - "Mars-Ultor"
+    commit-message:
+      prefix: "ci"
+      prefix-development: "ci"
+      include: "scope"

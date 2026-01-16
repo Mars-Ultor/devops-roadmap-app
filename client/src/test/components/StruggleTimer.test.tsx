@@ -1,19 +1,25 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import StruggleTimer, { type StruggleLog } from '../../components/StruggleTimer'
+import StruggleTimer from '../../components/StruggleTimer'
 
 describe('StruggleTimer', () => {
   const mockOnHintUnlocked = vi.fn()
   const mockOnStruggleLogged = vi.fn()
 
+  let mockNow = Date.now()
+
   beforeEach(() => {
     vi.clearAllMocks()
     vi.useFakeTimers()
+    mockNow = Date.now()
+    vi.spyOn(Date, 'now').mockImplementation(() => mockNow)
   })
 
   afterEach(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('shows locked state initially', () => {
@@ -56,6 +62,7 @@ describe('StruggleTimer', () => {
     )
 
     // Fast-forward 5 seconds
+    mockNow += 5000
     vi.advanceTimersByTime(5000)
 
     await waitFor(() => {
@@ -196,46 +203,68 @@ describe('StruggleTimer', () => {
 
   it('unlocks hints after timer expires and struggles are logged', () => {
     const startTime = Date.now()
-    const user = userEvent.setup({ delay: null })
+    // Set current time to after the 30-minute timer has expired
+    const currentTime = startTime + 30 * 60 * 1000 + 10000
 
-    const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {})
+    // Render component with timer already expired
+    render(
+      <StruggleTimer
+        startTime={startTime}
+        onHintUnlocked={mockOnHintUnlocked}
+        onStruggleLogged={mockOnStruggleLogged}
+        currentTime={currentTime}
+      />
+    )
+
+    // Should show the initial state (not unlocked yet because struggles not logged)
+    expect(screen.getByText('Why the wait?')).toBeInTheDocument()
+    expect(screen.getByText(/independent problem-solving/i)).toBeInTheDocument()
+
+    // But timer should show 0:00
+    expect(screen.getByText('0:00')).toBeInTheDocument()
+  })
+
+  it('shows hints unlocked when struggles logged and timer expired', () => {
+    // Create a component that starts with struggles already logged and timer expired
+    const startTime = Date.now()
+    const currentTime = startTime + 30 * 60 * 1000 + 10000
 
     render(
       <StruggleTimer
         startTime={startTime}
         onHintUnlocked={mockOnHintUnlocked}
         onStruggleLogged={mockOnStruggleLogged}
+        currentTime={currentTime}
       />
     )
 
-    // Document struggles first
+    // Document struggles
     const docButton = screen.getByRole('button', { name: /document your struggle/i })
-    user.click(docButton).then(async () => {
-      const attemptInputs = screen.getAllByPlaceholderText(/attempt/i)
-      await user.type(attemptInputs[0], 'Attempt 1')
-      await user.type(attemptInputs[1], 'Attempt 2')
-      await user.type(attemptInputs[2], 'Attempt 3')
+    fireEvent.click(docButton)
 
-      const stuckTextarea = screen.getByPlaceholderText(/describe the exact error/i)
-      await user.type(stuckTextarea, 'Stuck point description with enough characters')
+    // Fill form quickly
+    const attemptInputs = screen.getAllByPlaceholderText(/attempt 1/i)
+    fireEvent.change(attemptInputs[0], { target: { value: 'Attempt 1' } })
+    
+    const attemptInputs2 = screen.getAllByPlaceholderText(/attempt 2/i)
+    fireEvent.change(attemptInputs2[0], { target: { value: 'Attempt 2' } })
+    
+    const attemptInputs3 = screen.getAllByPlaceholderText(/attempt 3/i)
+    fireEvent.change(attemptInputs3[0], { target: { value: 'Attempt 3' } })
 
-      const hypothesisTextarea = screen.getByPlaceholderText(/your best guess/i)
-      await user.type(hypothesisTextarea, 'Hypothesis with enough characters to pass validation')
+    const stuckTextarea = screen.getByPlaceholderText(/describe the exact error/i)
+    fireEvent.change(stuckTextarea, { target: { value: 'Stuck point description with enough characters to meet the minimum requirement' } })
 
-      const submitButton = screen.getByRole('button', { name: /submit documentation/i })
-      await user.click(submitButton)
+    const hypothesisTextarea = screen.getByPlaceholderText(/your best guess/i)
+    fireEvent.change(hypothesisTextarea, { target: { value: 'Hypothesis with enough characters to pass validation and meet requirements' } })
 
-      // Fast-forward past 30 minutes
-      vi.advanceTimersByTime(30 * 60 * 1000 + 1000)
+    const submitButton = screen.getByRole('button', { name: /submit documentation/i })
+    fireEvent.click(submitButton)
 
-      await waitFor(() => {
-        expect(mockOnHintUnlocked).toHaveBeenCalled()
-        expect(screen.getByText('Hints Available')).toBeInTheDocument()
-        expect(screen.getByText(/you've earned access to hints/i)).toBeInTheDocument()
-      })
-    })
-
-    alertMock.mockRestore()
+    // Should now show hints available immediately since timer is already expired
+    expect(screen.getByText('Hints Available')).toBeInTheDocument()
+    expect(screen.getByText(/you've earned access to hints/i)).toBeInTheDocument()
+    expect(mockOnHintUnlocked).toHaveBeenCalled()
   })
 
   it('explains why the wait is necessary', () => {

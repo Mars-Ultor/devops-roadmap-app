@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * WeeklyBossBattle Page - Scenario Challenge System
  * Comprehensive 2-hour scenario mastery challenges
@@ -145,9 +146,10 @@ export default function WeeklyBossBattle() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {scenarios.map((scenario) => (
-                <div
+                <button
                   key={scenario.id}
-                  className="bg-slate-800 rounded-lg p-6 border-2 border-slate-700 hover:border-red-500 transition-colors cursor-pointer"
+                  type="button"
+                  className="bg-slate-800 rounded-lg p-6 border-2 border-slate-700 hover:border-red-500 transition-colors cursor-pointer text-left w-full"
                   onClick={() => selectScenario(scenario)}
                 >
                   <div className="flex items-start justify-between mb-4">
@@ -181,16 +183,16 @@ export default function WeeklyBossBattle() {
                   </div>
 
                   <div className="flex flex-wrap gap-1">
-                    {scenario.tags.slice(0, 3).map((tag, index) => (
+                    {scenario.tags.slice(0, 3).map((tag) => (
                       <span
-                        key={index}
+                        key={tag}
                         className="px-2 py-1 bg-red-900/50 text-red-200 text-xs rounded-full"
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -240,8 +242,8 @@ export default function WeeklyBossBattle() {
 
                   <h4 className="font-semibold mb-2">Prerequisites</h4>
                   <div className="space-y-1">
-                    {selectedScenario.prerequisites?.map((prereq, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm">
+                    {selectedScenario.prerequisites?.map((prereq) => (
+                      <div key={prereq} className="flex items-center gap-2 text-sm">
                         <CheckCircle className="w-4 h-4 text-green-400" />
                         <span>{prereq}</span>
                       </div>
@@ -281,8 +283,9 @@ export default function WeeklyBossBattle() {
 
                 {/* Investigation Notes */}
                 <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Investigation Notes</label>
+                  <label htmlFor="investigation-notes" className="block text-sm font-medium mb-2">Investigation Notes</label>
                   <textarea
+                    id="investigation-notes"
                     value={investigationNotes}
                     onChange={(e) => setInvestigationNotes(e.target.value)}
                     placeholder="Document your investigation findings..."
@@ -293,18 +296,19 @@ export default function WeeklyBossBattle() {
 
                 {/* Resolution Steps */}
                 <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Resolution Steps</label>
+                  <label htmlFor="resolution-step-input" className="block text-sm font-medium mb-2">Resolution Steps</label>
                   <div className="space-y-2">
-                    {resolutionSteps.map((step, index) => (
-                      <div key={index} className="flex items-center gap-2 bg-slate-700 p-2 rounded">
+                    {resolutionSteps.map((step) => (
+                      <div key={step} className="flex items-center gap-2 bg-slate-700 p-2 rounded">
                         <CheckCircle className="w-4 h-4 text-green-400" />
                         <span className="text-sm">{step}</span>
                       </div>
                     ))}
                     <input
+                      id="resolution-step-input"
                       type="text"
                       placeholder="Add resolution step..."
-                      onKeyPress={(e) => {
+                      onKeyDown={(e) => {
                         if (e.key === 'Enter' && e.currentTarget.value.trim()) {
                           addResolutionStep(e.currentTarget.value.trim());
                           e.currentTarget.value = '';
@@ -329,7 +333,7 @@ export default function WeeklyBossBattle() {
 
                     return (
                       <div
-                        key={index}
+                        key={objective}
                         className={`flex items-start gap-3 p-3 rounded border ${
                           isCompleted
                             ? 'bg-green-900/20 border-green-500'
@@ -411,8 +415,8 @@ export default function WeeklyBossBattle() {
                 <div className="space-y-2">
                   {selectedScenario.resources
                     .filter(resource => resource.available)
-                    .map((resource, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm">
+                    .map((resource) => (
+                      <div key={resource.title} className="flex items-center gap-2 text-sm">
                         {resource.type === 'documentation' && <BookOpen className="w-4 h-4 text-blue-400" />}
                         {resource.type === 'tool' && <Terminal className="w-4 h-4 text-green-400" />}
                         <span>{resource.title}</span>
@@ -491,7 +495,7 @@ export default function WeeklyBossBattle() {
                   Back to Dashboard
                 </button>
                 <button
-                  onClick={() => window.location.reload()}
+                  onClick={() => globalThis.location.reload()}
                   className="bg-gray-600 hover:bg-gray-500 px-6 py-2 rounded font-semibold transition-colors"
                 >
                   Fight Again

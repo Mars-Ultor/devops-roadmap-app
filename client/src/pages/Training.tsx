@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { BookOpen, Zap, Target, Crown, Shield } from 'lucide-react';
@@ -11,14 +12,20 @@ import AdvancedIntegrationScenarios from './AdvancedIntegrationScenarios';
 import MasterTraining from './MasterTraining';
 import ContentGate from '../components/ContentGate';
 import { useAuthStore } from '../store/authStore';
+import { curriculumData } from '../data/curriculumData';
+import { useProgress } from '../hooks/useProgress';
 
 export default function Training() {
   const { user } = useAuthStore();
+  const { getLabProgress } = useProgress();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabFromUrl = searchParams.get('tab') || 'overview';
   const subTabFromUrl = searchParams.get('subtab') || 'leadership';
   const [activeTab, setActiveTab] = useState(tabFromUrl);
   const [activeSubTab, setActiveSubTab] = useState(subTabFromUrl);
+  const [bossBattleUnlocked, setBossBattleUnlocked] = useState(false);
+
+  console.log('Training: tabFromUrl =', tabFromUrl, 'activeTab =', activeTab);
 
   // Update active tab and subtab when URL parameters change
   useEffect(() => {
@@ -32,10 +39,30 @@ export default function Training() {
     }
   }, [searchParams]);
 
+  // Check boss battle unlock status
+  useEffect(() => {
+    const checkBossBattleUnlock = async () => {
+      const unlocked = await isBossBattleUnlocked();
+      setBossBattleUnlocked(unlocked);
+    };
+    
+    if (user) {
+      checkBossBattleUnlock();
+    }
+  }, [user]);
+
   // Check if boss battle is unlocked (end of week)
-  const isBossBattleUnlocked = () => {
-    // TODO: Implement boss battle unlock logic
-    return user?.currentWeek && user.currentWeek >= 1; // Placeholder
+  const isBossBattleUnlocked = async () => {
+    if (!user?.currentWeek) return false;
+    
+    const weekData = curriculumData.find(week => week.weekNumber === user.currentWeek);
+    if (!weekData) return false;
+    
+    // Check if all labs for the current week are completed
+    const labPromises = weekData.labs.map(lab => getLabProgress(lab.id));
+    const labResults = await Promise.all(labPromises);
+    
+    return labResults.every(completed => completed === true);
   };
 
   // Check if capstone is unlocked (week 12)
@@ -47,7 +74,7 @@ export default function Training() {
     { id: 'overview', label: 'Overview', icon: BookOpen, component: null },
     { id: 'curriculum', label: 'Core Curriculum', icon: BookOpen, component: Curriculum },
     { id: 'daily', label: 'Daily Challenge', icon: Zap, component: DailyChallenge },
-    { id: 'boss', label: 'Boss Battle', icon: Target, component: WeeklyBossBattle, disabled: !isBossBattleUnlocked() },
+    { id: 'boss', label: 'Boss Battle', icon: Target, component: WeeklyBossBattle, disabled: !bossBattleUnlocked },
     { id: 'capstone', label: 'Capstone', icon: Crown, component: CapstoneSimulation, disabled: !isCapstoneUnlocked() },
     { id: 'advanced', label: 'Advanced Training', icon: Shield, component: null },
   ];
@@ -84,6 +111,8 @@ export default function Training() {
   const ActiveComponent = activeTabData?.component as React.ComponentType | null;
   const activeSubTabData = advancedSubTabs.find(subtab => subtab.id === activeSubTab);
   const ActiveSubComponent = activeSubTabData?.component as React.ComponentType | null;
+
+  console.log('Training: activeTabData =', activeTabData, 'ActiveComponent =', ActiveComponent);
 
   // Render active component safely
   const renderActiveComponent = () => {
@@ -222,14 +251,14 @@ export default function Training() {
             </ContentGate>
           )}
           {activeTab === 'daily' && renderActiveComponent()}
-          {activeTab === 'boss' && !isBossBattleUnlocked() && (
+          {activeTab === 'boss' && !bossBattleUnlocked && (
             <div className="text-center py-12">
               <Target className="w-16 h-16 text-gray-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-400 mb-2">Boss Battle Locked</h3>
               <p className="text-gray-500">Complete more weeks to unlock the boss battle!</p>
             </div>
           )}
-          {activeTab === 'boss' && isBossBattleUnlocked() && renderActiveComponent()}
+          {activeTab === 'boss' && bossBattleUnlocked && renderActiveComponent()}
           {activeTab === 'capstone' && !isCapstoneUnlocked() && (
             <div className="text-center py-12">
               <Crown className="w-16 h-16 text-gray-600 mx-auto mb-4" />

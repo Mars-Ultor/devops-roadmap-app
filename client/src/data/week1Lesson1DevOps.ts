@@ -359,7 +359,7 @@ export const week1Lesson1WhatIsDevOps: LeveledLessonContent = {
             label: 'MTTR',
             hint: 'DevOps metric: Mean Time to...',
             correctValue: 'Recovery',
-            validationPattern: '^[Rr]ecovery$'
+            validationPattern: '.*(recover|restoration|repair).*'
           },
           {
             id: 'MINUTES',
@@ -440,35 +440,35 @@ export const week1Lesson1WhatIsDevOps: LeveledLessonContent = {
             label: 'DEPLOY_FREQUENCY',
             hint: 'How often code is deployed to production',
             correctValue: 'Deployment Frequency',
-            validationPattern: '.*(deploy.*freq|freq.*deploy).*'
+            validationPattern: '.*(deploy|frequency|how.*often).*'
           },
           {
             id: 'LEAD_TIME',
             label: 'LEAD_TIME',
             hint: 'Time from code commit to running in production',
             correctValue: 'Lead Time for Changes',
-            validationPattern: '.*(lead.*time|time.*to.*prod).*'
+            validationPattern: '.*(lead.*time|time.*change|cycle.*time).*'
           },
           {
             id: 'MTTR',
             label: 'MTTR',
             hint: 'Mean Time to...',
             correctValue: 'Recovery',
-            validationPattern: '^[Rr]ecovery$'
+            validationPattern: '.*(recover|restoration|repair).*'
           },
           {
             id: 'CHANGE_FAIL_RATE',
             label: 'CHANGE_FAIL_RATE',
             hint: 'What percentage of changes cause production incidents',
             correctValue: 'Change Failure Rate',
-            validationPattern: '.*(change.*fail|fail.*rate).*'
+            validationPattern: '.*(change.*fail|fail.*rate|failure).*'
           },
           {
             id: 'MULTIPLE_TIMES_DAILY',
             label: 'MULTIPLE_TIMES_DAILY',
             hint: 'Elite teams deploy on-demand, often multiple times per...',
             correctValue: 'multiple times per day',
-            validationPattern: '.*(multiple.*day|on.*demand|many.*day).*'
+            validationPattern: '.*(multiple|daily|day|on.*demand|frequent).*'
           }
         ],
         solution: 'The 4 DORA Metrics:\n1. Deployment Frequency: How often we release to production\n2. Lead Time for Changes: Time from commit to production deployment\n3. Mean Time to Recovery: Mean time to recover from failures\n4. Change Failure Rate: Percentage of deployments causing incidents\n\nElite Performance: Deploy multiple times per day with <1 hour recovery',
@@ -544,7 +544,40 @@ export const week1Lesson1WhatIsDevOps: LeveledLessonContent = {
   },
 
   runIndependent: {
-    objective: 'Create a comprehensive DevOps transformation strategy for a fictional company, demonstrating deep understanding of principles, culture, and measurement',
+    objective: 'Create a comprehensive DevOps transformation strategy for a fictional company, demonstrating deep understanding of principles, culture, and measurement. Your strategy should include: current state analysis with specific metrics (deployment frequency, lead time, failure rate), identified pain points across culture, automation, and monitoring, a phased transformation roadmap with clear goals and timelines, cultural transformation plan for shifting from blame to collaboration, technical transformation plan including CI/CD pipeline architecture and tool choices, measurement framework with baseline and target DORA metrics, risk mitigation strategies for common obstacles, and business case justification with estimated ROI and business value.',
+    companyProfile: {
+      name: 'TechCorp Solutions',
+      description: 'TechCorp Solutions is a mid-sized software company (150 employees) that builds SaaS applications for small businesses. They have been in business for 8 years and serve 5,000+ customers with their project management and invoicing platform.',
+      currentMetrics: {
+        deploymentFrequency: 'Monthly (1 deployment per month on average)',
+        leadTimeForChanges: '2-3 weeks from code commit to production',
+        changeFailureRate: '25% of deployments cause incidents requiring hotfixes',
+        timeToRestoreService: '4-6 hours to recover from production incidents'
+      },
+      teamStructure: {
+        development: '12 developers across 3 teams',
+        operations: '4 system administrators',
+        qa: '3 manual testers',
+        management: 'No dedicated DevOps or SRE roles'
+      },
+      technologyStack: {
+        frontend: 'React.js with manual deployment to shared hosting',
+        backend: 'Node.js API with manual database migrations',
+        infrastructure: 'AWS EC2 instances with manual scaling',
+        ciCd: 'GitHub for version control, no automated pipelines',
+        monitoring: 'Basic server monitoring, no application performance monitoring'
+      },
+      currentChallenges: [
+        'Developers throw code "over the wall" to ops team',
+        'Manual testing takes 3-4 days per release',
+        'Production deployments happen at 2 AM on weekends',
+        'Frequent "it works on my machine" issues',
+        'No visibility into application performance or errors',
+        'Security vulnerabilities discovered months after deployment',
+        'Customer complaints about slow feature delivery'
+      ],
+      businessContext: 'TechCorp is losing market share to more agile competitors. Leadership recognizes they need to deliver features faster and more reliably. They have budget for tools and training but need a clear transformation plan.'
+    },
     successCriteria: [
       'Detailed current state analysis with specific metrics (deploy frequency, lead time, failure rate)',
       'Identified 8+ pain points across culture, automation, and monitoring',

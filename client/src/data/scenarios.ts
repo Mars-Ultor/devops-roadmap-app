@@ -1047,7 +1047,418 @@ export const SCENARIO_CHALLENGES: ChallengeScenario[] = [
     tags: ['incident-response', 'production', 'global-outage', 'leadership', 'communication'],
     estimatedDifficulty: 5,
     prerequisites: ['All DevOps concepts', 'Incident management', 'Leadership experience']
+  },
+
+  // Additional Daily Drills - Week 1-4 (Beginner)
+  {
+    id: 'daily-009',
+    title: 'Environment Variable Configuration',
+    description: 'Fix application configuration using environment variables',
+    difficulty: 'week1-4',
+    type: 'daily',
+    timeLimitSeconds: 480, // 8 minutes
+    scenario: 'Your Node.js application is failing to connect to the database. The connection string is hardcoded in the source code, but it should use environment variables. The app crashes on startup with connection errors.',
+    objectives: [
+      'Identify hardcoded configuration values',
+      'Create proper environment variable setup',
+      'Update application to use environment variables',
+      'Test configuration loading'
+    ],
+    successCriteria: [
+      'Application starts without configuration errors',
+      'Database connection works with env vars',
+      'No sensitive data in source code',
+      'Environment-specific configs work'
+    ],
+    hints: [
+      {
+        id: 'hint-009-1',
+        trigger: 'request',
+        content: 'Check for process.env usage in the application code',
+        penalty: 1.0,
+        category: 'solution'
+      }
+    ],
+    resources: [
+      {
+        type: 'documentation',
+        title: 'Node.js Environment Variables',
+        url: 'https://nodejs.org/en/learn/command-line/how-to-read-environment-variables',
+        available: true
+      },
+      {
+        type: 'command',
+        title: 'Set Environment Variable',
+        content: 'export DATABASE_URL="postgresql://user:pass@localhost:5432/db"',
+        available: true
+      }
+    ],
+    tags: ['configuration', 'environment-variables', 'nodejs', 'security'],
+    estimatedDifficulty: 2,
+    prerequisites: ['Basic Node.js', 'Command line basics']
+  },
+
+  {
+    id: 'daily-010',
+    title: 'Basic Linux File Permissions',
+    description: 'Fix file permission issues preventing application access',
+    difficulty: 'week1-4',
+    type: 'daily',
+    timeLimitSeconds: 420, // 7 minutes
+    scenario: 'Your web application cannot read its configuration files. The error shows "Permission denied" when trying to access config files. The application user doesn\'t have proper permissions.',
+    objectives: [
+      'Check current file permissions',
+      'Identify the application user',
+      'Set correct permissions on config files',
+      'Verify application can read configs'
+    ],
+    successCriteria: [
+      'Application starts without permission errors',
+      'Config files readable by app user',
+      'No overly permissive permissions (no 777)',
+      'Application functions normally'
+    ],
+    hints: [
+      {
+        id: 'hint-010-1',
+        trigger: 'stuck',
+        triggerValue: 180,
+        content: 'Use ls -la to check permissions, chmod to change them',
+        penalty: 1.0,
+        category: 'solution'
+      }
+    ],
+    resources: [
+      {
+        type: 'documentation',
+        title: 'Linux File Permissions',
+        url: 'https://www.linux.com/training-tutorials/understanding-linux-file-permissions/',
+        available: true
+      },
+      {
+        type: 'command',
+        title: 'Check Permissions',
+        content: 'ls -la /path/to/config/file',
+        available: true
+      },
+      {
+        type: 'command',
+        title: 'Change Permissions',
+        content: 'chmod 644 config.json',
+        available: true
+      }
+    ],
+    tags: ['linux', 'permissions', 'security', 'file-system'],
+    estimatedDifficulty: 2,
+    prerequisites: ['Basic Linux commands']
+  },
+
+  // Additional Daily Drills - Week 5-8 (Intermediate)
+  {
+    id: 'daily-011',
+    title: 'Docker Compose Service Dependencies',
+    description: 'Fix service startup order in Docker Compose',
+    difficulty: 'week5-8',
+    type: 'daily',
+    timeLimitSeconds: 600, // 10 minutes
+    scenario: 'Your multi-service application using Docker Compose is failing because services are starting in the wrong order. The web app starts before the database is ready, causing connection failures.',
+    objectives: [
+      'Analyze service dependencies',
+      'Configure depends_on in docker-compose.yml',
+      'Add health checks for dependencies',
+      'Test proper startup sequence'
+    ],
+    successCriteria: [
+      'Services start in correct order',
+      'No connection failures on startup',
+      'Health checks prevent premature connections',
+      'Application fully functional'
+    ],
+    hints: [
+      {
+        id: 'hint-011-1',
+        trigger: 'time',
+        triggerValue: 240,
+        content: 'Use depends_on with healthcheck conditions in docker-compose.yml',
+        penalty: 1.2,
+        category: 'solution'
+      }
+    ],
+    resources: [
+      {
+        type: 'documentation',
+        title: 'Docker Compose Dependencies',
+        url: 'https://docs.docker.com/compose/startup-order/',
+        available: true
+      },
+      {
+        type: 'command',
+        title: 'Check Service Health',
+        content: 'docker-compose ps',
+        available: true
+      }
+    ],
+    tags: ['docker-compose', 'dependencies', 'orchestration', 'health-checks'],
+    estimatedDifficulty: 3,
+    prerequisites: ['Docker basics', 'Docker Compose']
+  },
+
+  {
+    id: 'daily-012',
+    title: 'Git Merge Conflict Resolution',
+    description: 'Resolve merge conflicts in a feature branch',
+    difficulty: 'week5-8',
+    type: 'daily',
+    timeLimitSeconds: 540, // 9 minutes
+    scenario: 'Your feature branch has merge conflicts with main branch. Multiple developers modified the same files. You need to resolve conflicts and complete the merge without breaking functionality.',
+    objectives: [
+      'Identify conflicting files',
+      'Resolve conflicts manually',
+      'Ensure code still works after merge',
+      'Complete the merge successfully'
+    ],
+    successCriteria: [
+      'All conflicts resolved',
+      'Code compiles and tests pass',
+      'No functionality broken',
+      'Merge completes successfully'
+    ],
+    hints: [
+      {
+        id: 'hint-012-1',
+        trigger: 'request',
+        content: 'Use git status to see conflicted files, then edit them manually',
+        penalty: 1.0,
+        category: 'solution'
+      },
+      {
+        id: 'hint-012-2',
+        trigger: 'stuck',
+        triggerValue: 300,
+        content: 'Look for <<<<<<< HEAD, =======, and >>>>>>> markers in conflicted files',
+        penalty: 1.2,
+        category: 'solution'
+      }
+    ],
+    resources: [
+      {
+        type: 'documentation',
+        title: 'Git Merge Conflicts',
+        url: 'https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging#_basic_merge_conflicts',
+        available: true
+      },
+      {
+        type: 'command',
+        title: 'Check Conflicts',
+        content: 'git status',
+        available: true
+      },
+      {
+        type: 'command',
+        title: 'Mark Resolved',
+        content: 'git add <resolved-file>',
+        available: true
+      }
+    ],
+    tags: ['git', 'merge-conflicts', 'version-control', 'collaboration'],
+    estimatedDifficulty: 3,
+    prerequisites: ['Git basics', 'Branching']
+  },
+
+  // Additional Daily Drills - Week 9-12 (Advanced)
+  {
+    id: 'daily-013',
+    title: 'Kubernetes Resource Limits',
+    description: 'Fix pod resource limits causing OOM kills',
+    difficulty: 'week9-12',
+    type: 'daily',
+    timeLimitSeconds: 720, // 12 minutes
+    scenario: 'Production pods are being killed by Kubernetes due to out-of-memory errors. The application needs proper resource limits and requests configured to prevent OOM kills while ensuring efficient resource usage.',
+    objectives: [
+      'Analyze pod resource usage',
+      'Set appropriate CPU and memory limits',
+      'Configure resource requests',
+      'Test stability under load'
+    ],
+    successCriteria: [
+      'No more OOM kills',
+      'Pods have proper resource limits',
+      'Resource requests match actual usage',
+      'Cluster resource utilization optimized'
+    ],
+    hints: [
+      {
+        id: 'hint-013-1',
+        trigger: 'time',
+        triggerValue: 360,
+        content: 'Use kubectl top pods to monitor resource usage, set limits 20-50% above normal usage',
+        penalty: 1.3,
+        category: 'diagnostic'
+      }
+    ],
+    resources: [
+      {
+        type: 'documentation',
+        title: 'Kubernetes Resource Management',
+        url: 'https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/',
+        available: true
+      },
+      {
+        type: 'command',
+        title: 'Check Pod Resources',
+        content: 'kubectl describe pod <pod-name>',
+        available: true
+      },
+      {
+        type: 'command',
+        title: 'Monitor Usage',
+        content: 'kubectl top pods',
+        available: true
+      }
+    ],
+    tags: ['kubernetes', 'resource-limits', 'performance', 'monitoring'],
+    estimatedDifficulty: 4,
+    prerequisites: ['Kubernetes basics', 'Resource management']
+  },
+
+  {
+    id: 'daily-014',
+    title: 'Prometheus Alert Rules',
+    description: 'Create and tune Prometheus alerting rules',
+    difficulty: 'week9-12',
+    type: 'daily',
+    timeLimitSeconds: 780, // 13 minutes
+    scenario: 'Your monitoring system is missing critical alerts. You need to create Prometheus alerting rules for service availability, error rates, and resource usage. Current alerts are either too noisy or missing important issues.',
+    objectives: [
+      'Analyze service metrics',
+      'Create appropriate alerting rules',
+      'Tune alert thresholds',
+      'Test alert conditions'
+    ],
+    successCriteria: [
+      'Critical issues generate alerts',
+      'No false positive alerts',
+      'Alert severity properly configured',
+      'Alert rules are maintainable'
+    ],
+    hints: [
+      {
+        id: 'hint-014-1',
+        trigger: 'stuck',
+        triggerValue: 420,
+        content: 'Use PromQL queries to test alert conditions before creating rules',
+        penalty: 1.4,
+        category: 'solution'
+      }
+    ],
+    resources: [
+      {
+        type: 'documentation',
+        title: 'Prometheus Alerting',
+        url: 'https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/',
+        available: true
+      },
+      {
+        type: 'command',
+        title: 'Test PromQL Query',
+        content: 'kubectl exec -it prometheus-pod -- promtool check rules /etc/prometheus/alerts.yml',
+        available: true
+      }
+    ],
+    tags: ['prometheus', 'monitoring', 'alerting', 'observability'],
+    estimatedDifficulty: 4,
+    prerequisites: ['Prometheus basics', 'Metrics collection']
+  },
+
+  // Additional Daily Drills - Week 13-16 (Expert)
+  {
+    id: 'daily-015',
+    title: 'Multi-Cloud Disaster Recovery',
+    description: 'Implement cross-cloud failover strategy',
+    difficulty: 'week13-16',
+    type: 'daily',
+    timeLimitSeconds: 1800, // 30 minutes
+    scenario: 'Your primary cloud provider is experiencing region-wide outage. You must failover your entire application stack to a secondary cloud provider. This involves DNS updates, database replication, and service migration with zero data loss.',
+    objectives: [
+      'Assess current multi-cloud setup',
+      'Execute DNS failover',
+      'Migrate active database connections',
+      'Verify application continuity',
+      'Document failover process'
+    ],
+    successCriteria: [
+      'Traffic routing to secondary cloud',
+      'Database consistency maintained',
+      'All services operational',
+      'RTO and RPO requirements met'
+    ],
+    hints: [
+      {
+        id: 'hint-015-1',
+        trigger: 'time',
+        triggerValue: 900,
+        content: 'Use global DNS services (Route53, Cloudflare) for instant failover',
+        penalty: 2.0,
+        category: 'strategy'
+      }
+    ],
+    resources: [
+      {
+        type: 'documentation',
+        title: 'Multi-Cloud Architecture',
+        url: 'https://aws.amazon.com/architecture/well-architected-framework/',
+        available: true
+      }
+    ],
+    tags: ['multi-cloud', 'disaster-recovery', 'high-availability', 'dns'],
+    estimatedDifficulty: 5,
+    prerequisites: ['Cloud architecture', 'Disaster recovery planning']
+  },
+
+  {
+    id: 'daily-016',
+    title: 'Platform Engineering Pipeline',
+    description: 'Build internal developer platform CI/CD pipeline',
+    difficulty: 'week13-16',
+    type: 'daily',
+    timeLimitSeconds: 1500, // 25 minutes
+    scenario: 'Your organization needs a self-service platform for developers to deploy applications. Create a GitOps-based pipeline that automatically provisions infrastructure, deploys applications, and manages environments based on pull requests.',
+    objectives: [
+      'Design platform architecture',
+      'Implement GitOps workflow',
+      'Create automated provisioning',
+      'Build self-service interfaces',
+      'Test end-to-end deployment'
+    ],
+    successCriteria: [
+      'Developers can deploy via PR',
+      'Infrastructure automatically provisioned',
+      'Environments isolated and secure',
+      'Platform is self-documenting'
+    ],
+    hints: [
+      {
+        id: 'hint-016-1',
+        trigger: 'stuck',
+        triggerValue: 750,
+        content: 'Use ArgoCD for GitOps, Crossplane for infrastructure provisioning',
+        penalty: 1.8,
+        category: 'architecture'
+      }
+    ],
+    resources: [
+      {
+        type: 'documentation',
+        title: 'Platform Engineering',
+        url: 'https://platformengineering.org/',
+        available: true
+      }
+    ],
+    tags: ['platform-engineering', 'gitops', 'infrastructure-as-code', 'developer-experience'],
+    estimatedDifficulty: 5,
+    prerequisites: ['Advanced CI/CD', 'Infrastructure automation']
   }
+
 ];
 
 // Helper functions for scenario management

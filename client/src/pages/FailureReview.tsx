@@ -1,9 +1,10 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Failure Review Page - Pattern analysis and resolution tracking
  * Military-style incident review for continuous improvement
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AlertTriangle, TrendingDown, Target, Brain } from 'lucide-react';
 import { useFailureLog } from '../hooks/useFailureLog';
 import FailureLogList from '../components/training/FailureLogList';
@@ -15,11 +16,7 @@ export default function FailureReview() {
   const [analytics, setAnalytics] = useState<FailureAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const [detectedPatterns, allFailures] = await Promise.all([
@@ -55,13 +52,13 @@ export default function FailureReview() {
         : 0;
 
       // Group by category
-      const failuresByCategory: any = {};
+      const failuresByCategory: Record<string, number> = {};
       allFailures.forEach(f => {
         failuresByCategory[f.category] = (failuresByCategory[f.category] || 0) + 1;
       });
 
       // Group by severity
-      const failuresBySeverity: any = {};
+      const failuresBySeverity: Record<string, number> = {};
       allFailures.forEach(f => {
         failuresBySeverity[f.severity] = (failuresBySeverity[f.severity] || 0) + 1;
       });
@@ -85,7 +82,11 @@ export default function FailureReview() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [detectPatterns, getFailureLogs]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   if (loading) {
     return (

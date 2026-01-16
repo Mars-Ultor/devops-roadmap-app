@@ -45,7 +45,7 @@ router.get('/file-exists', async (req: Request, res: Response) => {
     } catch {
       res.json({ exists: false });
     }
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'File existence check failed' });
   }
 });
@@ -87,7 +87,7 @@ router.post('/file-contains', async (req: Request, res: Response) => {
     } catch {
       res.json({ contains: false });
     }
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'File content check failed' });
   }
 });
@@ -123,14 +123,15 @@ router.post('/command', async (req: Request, res: Response) => {
 
     // Execute command with timeout
     exec(command, { timeout: 10000, maxBuffer: 1024 * 1024 }, (error: Error | null, stdout: string, stderr: string) => {
-      const exitCode = error ? (error as any).code || 1 : 0;
+      const execError = error as NodeJS.ErrnoException | null;
+      const exitCode = execError ? (execError.code as unknown as number) || 1 : 0;
       res.json({
         exitCode,
         stdout: stdout.toString(),
         stderr: stderr.toString()
       });
     });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Command execution failed' });
   }
 });
@@ -158,7 +159,7 @@ router.get('/image-exists', async (req: Request, res: Response) => {
       const exists = !error && !stderr.toString().includes('Error: No such image');
       res.json({ exists });
     });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Image existence check failed' });
   }
 });
@@ -221,16 +222,16 @@ router.post('/syntax', async (req: Request, res: Response) => {
             // For other files, just check if they're readable
             break;
         }
-      } catch (parseError: any) {
+      } catch (parseError: unknown) {
         valid = false;
-        error = parseError.message;
+        error = parseError instanceof Error ? parseError.message : 'Parse error';
       }
 
       res.json({ valid, error });
     } catch {
       res.json({ valid: false, error: 'File not found or unreadable' });
     }
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Syntax validation failed' });
   }
 });

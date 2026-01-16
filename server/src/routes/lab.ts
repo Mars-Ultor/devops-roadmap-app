@@ -6,7 +6,7 @@ const router = express.Router();
 // Validate lab exercise
 router.post('/validate', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { exerciseId, code, output } = req.body;
+    const { exerciseId, output } = req.body;
     
     // Simple validation logic (enhance with actual test cases)
     let passed = false;
@@ -23,7 +23,7 @@ router.post('/validate', authenticateToken, async (req: Request, res: Response) 
       feedback,
       xpEarned: passed ? 50 : 0,
     });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Validation failed' });
   }
 });

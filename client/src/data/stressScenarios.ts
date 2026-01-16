@@ -1,6 +1,8 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 /**
  * Stress Training Scenarios
  * Progressive difficulty scenarios simulating real production pressure
+ * Contains intentionally repeated stress level and condition type values
  */
 
 import type { StressScenario, TimePressureCondition, MultiTaskingCondition, ProductionIncidentCondition, StressLevel, ResourceConstraintCondition, InterruptionCondition } from '../types/training';

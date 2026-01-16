@@ -185,7 +185,7 @@ export class ScenarioChallengeService {
         switch (hint.trigger) {
           case 'time':
             return elapsedSeconds >= (hint.triggerValue || 0);
-          case 'stuck':
+          case 'stuck': {
             // Consider stuck if no commands executed in last 5 minutes
             const lastCommand = attempt.commandsExecuted[attempt.commandsExecuted.length - 1];
             if (!lastCommand) return elapsedSeconds >= (hint.triggerValue || 300);
@@ -193,6 +193,7 @@ export class ScenarioChallengeService {
               (Date.now() - lastCommand.executedAt.getTime()) / 1000
             );
             return timeSinceLastCommand >= (hint.triggerValue || 300);
+          }
           case 'request':
             return true; // Always available on request
           default:
@@ -236,15 +237,8 @@ export class ScenarioChallengeService {
     const progress = this.getUserProgress(userId, userCurrentWeek);
     const completedScenarios = new Set(progress.recommendedScenarios);
 
-    // Determine which difficulty levels the user has access to based on their current week
-    const accessibleDifficulties: ChallengeScenario['difficulty'][] = [];
-    if (userCurrentWeek >= 1) accessibleDifficulties.push('week1-4');
-    if (userCurrentWeek >= 5) accessibleDifficulties.push('week5-8');
-    if (userCurrentWeek >= 9) accessibleDifficulties.push('week9-12');
-    if (userCurrentWeek >= 13) accessibleDifficulties.push('week13-16');
-
     // Get the user's current difficulty range
-    const currentDifficulty = 
+    const currentDifficulty: ChallengeScenario['difficulty'] = 
       userCurrentWeek >= 13 ? 'week13-16' :
       userCurrentWeek >= 9 ? 'week9-12' :
       userCurrentWeek >= 5 ? 'week5-8' : 'week1-4';

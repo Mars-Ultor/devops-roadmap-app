@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Phase 2.8: Advanced Integration Scenarios
  * Multi-team coordination and cross-domain incident response
@@ -429,6 +430,70 @@ const INTEGRATION_SCENARIOS: IntegrationScenario[] = [
   }
 ];
 
+function getComplexityBadgeClass(complexity: string): string {
+  switch (complexity) {
+    case 'expert':
+      return 'bg-red-500/20 text-red-400';
+    case 'advanced':
+      return 'bg-orange-500/20 text-orange-400';
+    case 'intermediate':
+      return 'bg-yellow-500/20 text-yellow-400';
+    default:
+      return 'bg-yellow-500/20 text-yellow-400';
+  }
+}
+
+function getTeamStatusClass(status: string): string {
+  switch (status) {
+    case 'available':
+      return 'bg-green-500/20 text-green-400';
+    case 'busy':
+      return 'bg-yellow-500/20 text-yellow-400';
+    case 'offline':
+      return 'bg-red-500/20 text-red-400';
+    default:
+      return 'bg-red-500/20 text-red-400';
+  }
+}
+
+function getTeamStatusDotClass(status: string): string {
+  switch (status) {
+    case 'available':
+      return 'bg-green-400';
+    case 'busy':
+      return 'bg-yellow-400';
+    case 'offline':
+      return 'bg-red-400';
+    default:
+      return 'bg-red-400';
+  }
+}
+
+function getChallengeTypeClass(type: string): string {
+  switch (type) {
+    case 'coordination':
+      return 'bg-blue-500/20 text-blue-400';
+    case 'communication':
+      return 'bg-green-500/20 text-green-400';
+    case 'decision':
+      return 'bg-purple-500/20 text-purple-400';
+    case 'escalation':
+      return 'bg-orange-500/20 text-orange-400';
+    default:
+      return 'bg-orange-500/20 text-orange-400';
+  }
+}
+
+function getScoreIconClass(score: number): string {
+  if (score >= 600) {
+    return 'bg-green-500/20 text-green-400';
+  }
+  if (score >= 400) {
+    return 'bg-yellow-500/20 text-yellow-400';
+  }
+  return 'bg-red-500/20 text-red-400';
+}
+
 export default function AdvancedIntegrationScenarios() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
@@ -595,11 +660,7 @@ export default function AdvancedIntegrationScenarios() {
                 className="bg-slate-800 rounded-lg border border-slate-700 p-6 hover:border-slate-600 transition-colors"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                    scenario.complexity === 'expert' ? 'bg-red-500/20 text-red-400' :
-                    scenario.complexity === 'advanced' ? 'bg-orange-500/20 text-orange-400' :
-                    'bg-yellow-500/20 text-yellow-400'
-                  }`}>
+                  <span className={`text-sm font-medium px-3 py-1 rounded-full ${getComplexityBadgeClass(scenario.complexity)}`}>
                     {scenario.complexity}
                   </span>
                   <div className="flex items-center text-slate-400 text-sm">
@@ -620,10 +681,7 @@ export default function AdvancedIntegrationScenarios() {
                         className="flex items-center px-2 py-1 bg-slate-700 rounded text-xs"
                       >
                         <span className="text-slate-300">{team.name}</span>
-                        <span className={`ml-2 w-2 h-2 rounded-full ${
-                          team.status === 'available' ? 'bg-green-400' :
-                          team.status === 'busy' ? 'bg-yellow-400' : 'bg-red-400'
-                        }`} />
+                        <span className={`ml-2 w-2 h-2 rounded-full ${getTeamStatusDotClass(team.status)}`} />
                       </div>
                     ))}
                   </div>
@@ -656,11 +714,7 @@ export default function AdvancedIntegrationScenarios() {
             <div className="bg-slate-800 rounded-lg border border-slate-700 p-8">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-white">{selectedScenario.title}</h2>
-                <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                  selectedScenario.complexity === 'expert' ? 'bg-red-500/20 text-red-400' :
-                  selectedScenario.complexity === 'advanced' ? 'bg-orange-500/20 text-orange-400' :
-                  'bg-yellow-500/20 text-yellow-400'
-                }`}>
+                <span className={`text-sm font-medium px-3 py-1 rounded-full ${getComplexityBadgeClass(selectedScenario.complexity)}`}>
                   {selectedScenario.complexity}
                 </span>
               </div>
@@ -673,11 +727,7 @@ export default function AdvancedIntegrationScenarios() {
                     <div key={team.id} className="bg-slate-900 rounded-lg p-4 border border-slate-600">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="text-white font-medium">{team.name}</h4>
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          team.status === 'available' ? 'bg-green-500/20 text-green-400' :
-                          team.status === 'busy' ? 'bg-yellow-500/20 text-yellow-400' :
-                          'bg-red-500/20 text-red-400'
-                        }`}>
+                        <span className={`text-xs px-2 py-1 rounded ${getTeamStatusClass(team.status)}`}>
                           {team.status}
                         </span>
                       </div>
@@ -787,12 +837,7 @@ export default function AdvancedIntegrationScenarios() {
                         <div>
                           <div className="flex items-center mb-3">
                             <h3 className="text-xl font-semibold text-white mr-3">{currentChallenge.title}</h3>
-                            <span className={`text-xs px-2 py-1 rounded ${
-                              currentChallenge.type === 'coordination' ? 'bg-blue-500/20 text-blue-400' :
-                              currentChallenge.type === 'communication' ? 'bg-green-500/20 text-green-400' :
-                              currentChallenge.type === 'decision' ? 'bg-purple-500/20 text-purple-400' :
-                              'bg-orange-500/20 text-orange-400'
-                            }`}>
+                            <span className={`text-xs px-2 py-1 rounded ${getChallengeTypeClass(currentChallenge.type)}`}>
                               {currentChallenge.type}
                             </span>
                           </div>
@@ -811,10 +856,7 @@ export default function AdvancedIntegrationScenarios() {
                               return team ? (
                                 <div key={teamId} className="flex items-center px-3 py-1 bg-slate-700 rounded text-sm">
                                   <span className="text-slate-300">{team.name}</span>
-                                  <span className={`ml-2 w-2 h-2 rounded-full ${
-                                    team.status === 'available' ? 'bg-green-400' :
-                                    team.status === 'busy' ? 'bg-yellow-400' : 'bg-red-400'
-                                  }`} />
+                                  <span className={`ml-2 w-2 h-2 rounded-full ${getTeamStatusDotClass(team.status)}`} />
                                 </div>
                               ) : null;
                             })}
@@ -823,9 +865,9 @@ export default function AdvancedIntegrationScenarios() {
 
                         {currentChallenge.options && (
                           <div className="space-y-3">
-                            {currentChallenge.options.map((option, index) => (
+                            {currentChallenge.options.map((option) => (
                               <label
-                                key={index}
+                                key={option}
                                 className={`flex items-center p-4 rounded-lg border cursor-pointer transition-colors ${
                                   selectedApproach === option
                                     ? 'border-indigo-500 bg-indigo-500/10'
@@ -865,8 +907,9 @@ export default function AdvancedIntegrationScenarios() {
                             <div className="bg-slate-900 rounded-lg p-4 border border-slate-600 mb-4">
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                 <div>
-                                  <label className="block text-sm text-slate-400 mb-1">From Team</label>
+                                  <label htmlFor="communication-from-team" className="block text-sm text-slate-400 mb-1">From Team</label>
                                   <select
+                                    id="communication-from-team"
                                     value={communicationFrom}
                                     onChange={(e) => setCommunicationFrom(e.target.value)}
                                     className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded text-white"
@@ -878,8 +921,9 @@ export default function AdvancedIntegrationScenarios() {
                                   </select>
                                 </div>
                                 <div>
-                                  <label className="block text-sm text-slate-400 mb-1">To Team</label>
+                                  <label htmlFor="communication-to-team" className="block text-sm text-slate-400 mb-1">To Team</label>
                                   <select
+                                    id="communication-to-team"
                                     value={communicationTo}
                                     onChange={(e) => setCommunicationTo(e.target.value)}
                                     className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded text-white"
@@ -912,11 +956,11 @@ export default function AdvancedIntegrationScenarios() {
 
                           {communications.length > 0 && (
                             <div className="space-y-2 max-h-40 overflow-y-auto">
-                              {communications.map((comm, index) => {
+                              {communications.map((comm) => {
                                 const fromTeam = selectedScenario.teams.find(t => t.id === comm.fromTeam);
                                 const toTeam = selectedScenario.teams.find(t => t.id === comm.toTeam);
                                 return (
-                                  <div key={index} className="bg-slate-900 rounded p-3 border border-slate-600">
+                                  <div key={comm.timestamp.getTime()} className="bg-slate-900 rounded p-3 border border-slate-600">
                                     <div className="flex items-center justify-between text-sm text-slate-400 mb-1">
                                       <span>{fromTeam?.name} → {toTeam?.name}</span>
                                       <span>{comm.timestamp.toLocaleTimeString()}</span>
@@ -960,11 +1004,7 @@ export default function AdvancedIntegrationScenarios() {
                       <div key={team.id} className="bg-slate-900 rounded-lg p-3 border border-slate-600">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="text-white font-medium text-sm">{team.name}</h4>
-                          <span className={`text-xs px-2 py-1 rounded ${
-                            team.status === 'available' ? 'bg-green-500/20 text-green-400' :
-                            team.status === 'busy' ? 'bg-yellow-500/20 text-yellow-400' :
-                            'bg-red-500/20 text-red-400'
-                          }`}>
+                          <span className={`text-xs px-2 py-1 rounded ${getTeamStatusClass(team.status)}`}>
                             {team.status}
                           </span>
                         </div>
@@ -983,11 +1023,7 @@ export default function AdvancedIntegrationScenarios() {
           <div className="max-w-5xl mx-auto">
             <div className="bg-slate-800 rounded-lg border border-slate-700 p-8">
               <div className="text-center mb-8">
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
-                  currentAttempt.score >= 600 ? 'bg-green-500/20 text-green-400' :
-                  currentAttempt.score >= 400 ? 'bg-yellow-500/20 text-yellow-400' :
-                  'bg-red-500/20 text-red-400'
-                }`}>
+                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${getScoreIconClass(currentAttempt.score)}`}>
                   {currentAttempt.score >= 600 ? (
                     <CheckCircle className="w-8 h-8" />
                   ) : (
@@ -1007,10 +1043,10 @@ export default function AdvancedIntegrationScenarios() {
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-white mb-4">Decision Summary</h3>
                 <div className="space-y-3">
-                  {decisions.map((decision, index) => {
+                  {decisions.map((decision) => {
                     const challenge = selectedScenario.challenges.find(c => c.id === decision.challengeId);
                     return (
-                      <div key={index} className="flex items-center justify-between p-4 bg-slate-900 rounded-lg">
+                      <div key={decision.challengeId} className="flex items-center justify-between p-4 bg-slate-900 rounded-lg">
                         <div className="flex items-center">
                           {decision.isCorrect ? (
                             <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
@@ -1040,11 +1076,11 @@ export default function AdvancedIntegrationScenarios() {
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold text-white mb-4">Communication Log</h3>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {communications.map((comm, index) => {
+                    {communications.map((comm) => {
                       const fromTeam = selectedScenario.teams.find(t => t.id === comm.fromTeam);
                       const toTeam = selectedScenario.teams.find(t => t.id === comm.toTeam);
                       return (
-                        <div key={index} className="bg-slate-900 rounded p-3 border border-slate-600">
+                        <div key={comm.timestamp.getTime()} className="bg-slate-900 rounded p-3 border border-slate-600">
                           <div className="flex items-center justify-between text-sm text-slate-400 mb-1">
                             <span>{fromTeam?.name} → {toTeam?.name}</span>
                             <span>{comm.timestamp.toLocaleTimeString()}</span>
@@ -1065,8 +1101,8 @@ export default function AdvancedIntegrationScenarios() {
                     Key Takeaways
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.keyTakeaways.map((takeaway, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.keyTakeaways.map((takeaway) => (
+                      <li key={takeaway} className="flex items-start text-slate-300">
                         <CheckCircle className="w-4 h-4 mr-2 text-green-400 mt-0.5 flex-shrink-0" />
                         {takeaway}
                       </li>
@@ -1080,8 +1116,8 @@ export default function AdvancedIntegrationScenarios() {
                     Common Mistakes
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.commonMistakes.map((mistake, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.commonMistakes.map((mistake) => (
+                      <li key={mistake} className="flex items-start text-slate-300">
                         <XCircle className="w-4 h-4 mr-2 text-red-400 mt-0.5 flex-shrink-0" />
                         {mistake}
                       </li>
@@ -1097,8 +1133,8 @@ export default function AdvancedIntegrationScenarios() {
                     Best Practices
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.bestPractices.map((practice, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.bestPractices.map((practice) => (
+                      <li key={practice} className="flex items-start text-slate-300">
                         <Target className="w-4 h-4 mr-2 text-blue-400 mt-0.5 flex-shrink-0" />
                         {practice}
                       </li>
@@ -1112,8 +1148,8 @@ export default function AdvancedIntegrationScenarios() {
                     Next Steps
                   </h3>
                   <ul className="space-y-2">
-                    {selectedScenario.debriefing.nextSteps.map((step, index) => (
-                      <li key={index} className="flex items-start text-slate-300">
+                    {selectedScenario.debriefing.nextSteps.map((step) => (
+                      <li key={step} className="flex items-start text-slate-300">
                         <Activity className="w-4 h-4 mr-2 text-indigo-400 mt-0.5 flex-shrink-0" />
                         {step}
                       </li>

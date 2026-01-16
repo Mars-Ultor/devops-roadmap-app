@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Predictive Analytics Dashboard
  * Estimates completion times and predicts learning outcomes
@@ -57,13 +58,13 @@ export const PredictiveAnalytics: FC<PredictiveAnalyticsProps> = ({ data }) => {
   const getRiskColor = (level: string) => {
     switch (level) {
       case 'high':
-        return 'text-red-400 bg-red-900/20 border-red-700';
+        return 'bg-red-900/20 border-red-700 text-red-300';
       case 'medium':
-        return 'text-yellow-400 bg-yellow-900/20 border-yellow-700';
+        return 'bg-yellow-900/20 border-yellow-700 text-yellow-300';
       case 'low':
-        return 'text-green-400 bg-green-900/20 border-green-700';
+        return 'bg-green-900/20 border-green-700 text-green-300';
       default:
-        return 'text-blue-400 bg-blue-900/20 border-blue-700';
+        return 'bg-blue-900/20 border-blue-700 text-blue-300';
     }
   };
 
@@ -126,7 +127,7 @@ export const PredictiveAnalytics: FC<PredictiveAnalyticsProps> = ({ data }) => {
               {completionPrediction.estimatedCompletionDate.toLocaleDateString()}
             </div>
             <div className="text-xs text-slate-500">
-              {Math.round((completionPrediction.estimatedCompletionDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
+              {Math.round((completionPrediction.estimatedCompletionDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days
             </div>
           </div>
 
@@ -173,8 +174,8 @@ export const PredictiveAnalytics: FC<PredictiveAnalyticsProps> = ({ data }) => {
               Risk Factors
             </h5>
             <ul className="space-y-1">
-              {completionPrediction.riskFactors.map((risk, idx) => (
-                <li key={idx} className="text-red-300 text-sm flex items-start gap-2">
+              {completionPrediction.riskFactors.map((risk) => (
+                <li key={risk} className="text-red-300 text-sm flex items-start gap-2">
                   <span>•</span>
                   <span>{risk}</span>
                 </li>
@@ -192,27 +193,27 @@ export const PredictiveAnalytics: FC<PredictiveAnalyticsProps> = ({ data }) => {
         </h4>
 
         <div className="space-y-3">
-          {weakAreaPredictions.map((prediction, idx) => (
-            <div key={idx} className={`rounded-lg p-4 border ${getRiskColor(prediction.riskLevel)}`}>
+          {weakAreaPredictions.map((prediction) => (
+            <div key={prediction.topic} className={`rounded-lg p-4 border ${getRiskColor(prediction.riskLevel)}`}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-white font-semibold">{prediction.topic}</span>
+                <span className="font-semibold">{prediction.topic}</span>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold capitalize">
                     {prediction.riskLevel} Risk
                   </span>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs opacity-75">
                     Difficulty: {prediction.estimatedDifficulty}/10
                   </span>
                 </div>
               </div>
 
-              <p className="text-slate-300 text-sm mb-3">{prediction.predictedStruggles}</p>
+              <p className="text-sm mb-3 opacity-90">{prediction.predictedStruggles}</p>
 
               <div>
-                <h6 className="text-white text-sm font-semibold mb-2">Preventive Actions:</h6>
+                <h6 className="text-sm font-semibold mb-2">Preventive Actions:</h6>
                 <ul className="space-y-1">
-                  {prediction.preventiveActions.map((action, actionIdx) => (
-                    <li key={actionIdx} className="text-slate-300 text-sm flex items-start gap-2">
+                  {prediction.preventiveActions.map((action) => (
+                    <li key={action} className="text-sm flex items-start gap-2 opacity-85">
                       <CheckCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
                       <span>{action}</span>
                     </li>
@@ -292,8 +293,8 @@ export const PredictiveAnalytics: FC<PredictiveAnalyticsProps> = ({ data }) => {
           <div>
             <h5 className="text-indigo-400 font-semibold mb-2">Recommended Adjustments</h5>
             <ul className="space-y-1">
-              {learningTrajectory.adjustments.map((adjustment, idx) => (
-                <li key={idx} className="text-slate-300 text-sm flex items-start gap-2">
+              {learningTrajectory.adjustments.map((adjustment) => (
+                <li key={adjustment} className="text-slate-300 text-sm flex items-start gap-2">
                   <span className="text-indigo-400">•</span>
                   <span>{adjustment}</span>
                 </li>

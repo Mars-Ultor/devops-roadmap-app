@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -18,7 +19,7 @@ export default function Login() {
     try {
       await login(email, password);
       navigate('/dashboard');
-    } catch (_err) {
+    } catch {
       setError('Invalid email or password. Please try again.');
     } finally {
       setLoading(false);

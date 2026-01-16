@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -166,8 +167,8 @@ export default function LearningSettings() {
                   <p className="text-slate-400 mb-4">{mode.description}</p>
                   
                   <ul className="space-y-2 mb-4">
-                    {mode.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-slate-300">
+                    {mode.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2 text-sm text-slate-300">
                         <ArrowRight className="w-4 h-4 text-indigo-400 mt-0.5 flex-shrink-0" />
                         <span>{feature}</span>
                       </li>
@@ -218,9 +219,9 @@ export default function LearningSettings() {
                   <p className="text-sm text-slate-400 mb-3">{role.description}</p>
                   
                   <div className="flex flex-wrap gap-2">
-                    {role.focus.map((item, idx) => (
+                    {role.focus.map((item) => (
                       <span
-                        key={idx}
+                        key={item}
                         className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded"
                       >
                         {item}

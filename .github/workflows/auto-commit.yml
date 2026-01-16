@@ -1,0 +1,66 @@
+name: Auto Commit
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_message:
+        description: 'Commit message'
+        required: false
+        default: 'Auto-commit: Manual trigger'
+        type: string
+      branch:
+        description: 'Target branch'
+        required: false
+        default: 'master'
+        type: string
+
+jobs:
+  auto-commit:
+    name: Auto Commit and Push
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Check for changes
+      id: check_changes
+      run: |
+        # Check if there are any changes
+        if git diff --quiet && git diff --staged --quiet; then
+          echo "No changes to commit"
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "Changes detected"
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Add and commit changes
+      if: steps.check_changes.outputs.has_changes == 'true'
+      run: |
+        git add .
+        git commit -m "${{ inputs.commit_message }}"
+
+    - name: Push changes
+      if: steps.check_changes.outputs.has_changes == 'true'
+      run: |
+        git push origin ${{ inputs.branch }}
+
+    - name: Notify success
+      if: steps.check_changes.outputs.has_changes == 'true'
+      run: |
+        echo "✅ Changes committed and pushed successfully"
+        echo "🔗 CI/CD pipeline will be triggered automatically"
+
+    - name: Notify no changes
+      if: steps.check_changes.outputs.has_changes == 'false'
+      run: |
+        echo "ℹ️  No changes to commit"

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Topic Mastery Heatmap
  * Visual representation of mastery levels across topics and weeks

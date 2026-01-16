@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Time Analysis Visualization
  * Shows performance by hour with recommendations

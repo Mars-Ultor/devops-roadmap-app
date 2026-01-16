@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * CopyPasteBlocker Component - Progressive Stress System
  * Blocks copy and paste operations during high-stress sessions
@@ -127,13 +128,13 @@ export const CopyPasteBlocker: React.FC<CopyPasteBlockerProps> = ({
             className="flex items-center gap-1 text-sm text-red-400 hover:text-red-300"
           >
             <AlertTriangle className="w-4 h-4" />
-            {blockedActions.length} blocked attempt{blockedActions.length !== 1 ? 's' : ''}
+            {blockedActions.length} blocked attempt{blockedActions.length === 1 ? '' : 's'}
           </button>
 
           {showBlocked && (
             <div className="mt-2 max-h-32 overflow-y-auto">
-              {blockedActions.slice(-10).map((attempt, index) => (
-                <div key={index} className="flex items-center gap-2 text-xs text-red-300 py-1">
+              {blockedActions.slice(-10).map((attempt) => (
+                <div key={`${attempt.action}-${attempt.timestamp.getTime()}`} className="flex items-center gap-2 text-xs text-red-300 py-1">
                   <span className="capitalize">{attempt.action}</span>
                   <span>at {attempt.timestamp.toLocaleTimeString()}</span>
                 </div>

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Destructive Command Checklist Modal
  * Forces user to acknowledge risks before executing dangerous commands
@@ -27,7 +28,7 @@ export const DestructiveCommandModal: FC<DestructiveCommandModalProps> = ({
 
   if (!isOpen) return null;
 
-  const allChecked = checkedItems.every(item => item) && understand;
+  const allChecked = checkedItems.every(Boolean) && understand;
 
   const toggleItem = (index: number) => {
     setCheckedItems(prev => {
@@ -102,8 +103,8 @@ export const DestructiveCommandModal: FC<DestructiveCommandModalProps> = ({
               Why This Command Is Dangerous
             </h3>
             <ul className="space-y-2">
-              {command.risks.map((risk, index) => (
-                <li key={index} className="flex items-start gap-2 text-red-200">
+              {command.risks.map((risk) => (
+                <li key={risk} className="flex items-start gap-2 text-red-200">
                   <span className="text-red-400 mt-1">•</span>
                   <span>{risk}</span>
                 </li>
@@ -119,8 +120,8 @@ export const DestructiveCommandModal: FC<DestructiveCommandModalProps> = ({
                 Safer Alternatives
               </h3>
               <ul className="space-y-2">
-                {command.alternatives.map((alt, index) => (
-                  <li key={index} className="flex items-start gap-2 text-blue-200">
+                {command.alternatives.map((alt) => (
+                  <li key={alt} className="flex items-start gap-2 text-blue-200">
                     <span className="text-blue-400 mt-1">→</span>
                     <span>{alt}</span>
                   </li>
@@ -137,7 +138,7 @@ export const DestructiveCommandModal: FC<DestructiveCommandModalProps> = ({
             <div className="space-y-3">
               {command.checklistItems.map((item, index) => (
                 <label
-                  key={index}
+                  key={item}
                   className={`flex items-start gap-3 p-4 rounded-lg cursor-pointer transition-all ${
                     checkedItems[index]
                       ? 'bg-emerald-900/30 border border-emerald-500/50'

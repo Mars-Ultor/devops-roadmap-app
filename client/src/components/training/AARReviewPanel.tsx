@@ -7,7 +7,7 @@ import { Brain, HelpCircle, Lightbulb } from 'lucide-react';
 import { reviewAAR } from '../../services/aiCoach';
 
 interface AARReviewPanelProps {
-  aar: {
+  readonly aar: {
     objective: string;
     whatWorked: string[];
     whatDidntWork: string[];
@@ -16,6 +16,18 @@ interface AARReviewPanelProps {
     transferableKnowledge: string;
   };
 }
+
+const LoadingState = () => (
+  <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+    <div className="flex items-center gap-3">
+      <Brain className="w-6 h-6 text-indigo-400 animate-pulse" />
+      <div>
+        <h3 className="text-lg font-bold text-white">AI Coach Review</h3>
+        <p className="text-sm text-slate-400">Analyzing your reflection...</p>
+      </div>
+    </div>
+  </div>
+);
 
 export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
   const [review, setReview] = useState<{ questions: string[]; insights: string[] } | null>(null);
@@ -33,24 +45,11 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
         setLoading(false);
       }
     }
-
     analyze();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading) {
-    return (
-      <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
-        <div className="flex items-center gap-3">
-          <Brain className="w-6 h-6 text-indigo-400 animate-pulse" />
-          <div>
-            <h3 className="text-lg font-bold text-white">AI Coach Review</h3>
-            <p className="text-sm text-slate-400">Analyzing your reflection...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  if (loading) return <LoadingState />;
   if (!review) return null;
 
   return (
@@ -64,8 +63,6 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
           <p className="text-sm text-indigo-200">Deepening your reflection</p>
         </div>
       </div>
-
-      {/* Insights */}
       {review.insights.length > 0 && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
@@ -73,19 +70,14 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
             <h4 className="font-semibold text-white">Insights</h4>
           </div>
           <div className="space-y-2">
-            {review.insights.map((insight, idx) => (
-              <div
-                key={idx}
-                className="bg-purple-900/20 border border-purple-500/20 rounded-lg p-3"
-              >
+            {review.insights.map((insight) => (
+              <div key={insight} className="bg-purple-900/20 border border-purple-500/20 rounded-lg p-3">
                 <p className="text-purple-100 text-sm">{insight}</p>
               </div>
             ))}
           </div>
         </div>
       )}
-
-      {/* Follow-up Questions */}
       {review.questions.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -93,11 +85,8 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
             <h4 className="font-semibold text-white">Follow-up Questions</h4>
           </div>
           <div className="space-y-3">
-            {review.questions.map((question, idx) => (
-              <div
-                key={idx}
-                className="bg-indigo-900/20 border border-indigo-500/20 rounded-lg p-4"
-              >
+            {review.questions.map((question) => (
+              <div key={question} className="bg-indigo-900/20 border border-indigo-500/20 rounded-lg p-4">
                 <p className="text-indigo-100">{question}</p>
                 <textarea
                   placeholder="Reflect on this question... (optional)"
@@ -109,11 +98,8 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
           </div>
         </div>
       )}
-
       <div className="mt-6 pt-4 border-t border-indigo-700/30">
-        <p className="text-xs text-indigo-300 text-center">
-          💡 These questions help you think deeper about your learning. Consider revisiting them later.
-        </p>
+        <p className="text-xs text-indigo-300 text-center">💡 These questions help you think deeper about your learning.</p>
       </div>
     </div>
   );

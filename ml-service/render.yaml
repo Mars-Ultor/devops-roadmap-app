@@ -1,13 +1,16 @@
 services:
   - type: web
     name: devops-roadmap-ml
-    runtime: python3.12
-    buildCommand: pip install -r requirements.txt
+    runtime: python3.13
+    buildCommand: pip install --prefer-binary --only-binary=all -r requirements.txt
     startCommand: python main.py
     envVars:
       - key: PORT
         value: 10000
       - key: PYTHONUNBUFFERED
+        value: 1
+      - key: DATABASE_URL
+        fromSecret: database-url  # Reference to a secret containing your database URL
         value: "1"
       - key: OPENAI_API_KEY
         sync: false  # Set manually in dashboard

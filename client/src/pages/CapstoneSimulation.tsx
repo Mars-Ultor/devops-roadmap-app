@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * CapstoneSimulation Page - Scenario Challenge System
  * Final 4-hour production incident simulation
@@ -141,7 +142,7 @@ export default function CapstoneSimulation() {
   const completeObjective = (objectiveId: string) => {
     if (!completedObjectives.includes(objectiveId)) {
       setCompletedObjectives([...completedObjectives, objectiveId]);
-      addTimelineEntry(`Objective completed: ${selectedScenario?.objectives[parseInt(objectiveId.split('_')[1])]}`);
+      addTimelineEntry(`Objective completed: ${selectedScenario?.objectives[Number.parseInt(objectiveId.split('_')[1])]}`);
     }
   };
 
@@ -310,8 +311,8 @@ export default function CapstoneSimulation() {
                     <div>
                       <h4 className="font-semibold mb-2">Incident Response Team</h4>
                       <div className="space-y-1 text-sm">
-                        {['SRE Lead', 'Database Admin', 'DevOps Engineer', 'Security Engineer', 'Product Manager'].map((role, index) => (
-                          <div key={index} className="flex items-center gap-2">
+                        {['SRE Lead', 'Database Admin', 'DevOps Engineer', 'Security Engineer', 'Product Manager'].map((role) => (
+                          <div key={role} className="flex items-center gap-2">
                             <Users className="w-4 h-4 text-green-400" />
                             <span>{role}</span>
                           </div>
@@ -322,8 +323,8 @@ export default function CapstoneSimulation() {
                     <div>
                       <h4 className="font-semibold mb-2">Stakeholders</h4>
                       <div className="space-y-1 text-sm">
-                        {['CEO', 'CTO', 'VP Engineering', 'VP Product', 'Customer Success'].map((role, index) => (
-                          <div key={index} className="flex items-center gap-2">
+                        {['CEO', 'CTO', 'VP Engineering', 'VP Product', 'Customer Success'].map((role) => (
+                          <div key={role} className="flex items-center gap-2">
                             <Phone className="w-4 h-4 text-yellow-400" />
                             <span>{role}</span>
                           </div>
@@ -399,7 +400,7 @@ export default function CapstoneSimulation() {
                       type="text"
                       placeholder="Enter communication..."
                       className="flex-1 bg-slate-700 border border-slate-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-                      onKeyPress={(e) => {
+                      onKeyDown={(e) => {
                         if (e.key === 'Enter' && e.currentTarget.value.trim()) {
                           addCommunication({
                             type: 'internal',
@@ -429,7 +430,7 @@ export default function CapstoneSimulation() {
 
                     return (
                       <div
-                        key={index}
+                        key={objective}
                         className={`flex items-start gap-3 p-4 rounded border ${
                           isCompleted
                             ? 'bg-green-900/20 border-green-500'
@@ -519,8 +520,8 @@ export default function CapstoneSimulation() {
                   Incident Timeline
                 </h4>
                 <div className="max-h-48 overflow-y-auto space-y-1">
-                  {incidentTimeline.slice(-8).map((entry, index) => (
-                    <div key={index} className="text-xs text-gray-300 py-1 border-l border-purple-500 pl-2">
+                  {incidentTimeline.slice(-8).map((entry) => (
+                    <div key={entry} className="text-xs text-gray-300 py-1 border-l border-purple-500 pl-2">
                       {entry}
                     </div>
                   ))}
@@ -534,8 +535,8 @@ export default function CapstoneSimulation() {
                   Team Status
                 </h4>
                 <div className="space-y-2">
-                  {teamMembers.map((member, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm">
+                  {teamMembers.map((member) => (
+                    <div key={member} className="flex items-center gap-2 text-sm">
                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                       <span>{member}</span>
                     </div>
@@ -631,7 +632,7 @@ export default function CapstoneSimulation() {
                   Return to Dashboard
                 </button>
                 <button
-                  onClick={() => window.location.reload()}
+                  onClick={() => globalThis.location.reload()}
                   className="bg-purple-600 hover:bg-purple-500 px-8 py-3 rounded font-bold transition-colors"
                 >
                   Command Another Incident

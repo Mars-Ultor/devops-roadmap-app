@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity */
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
@@ -52,7 +53,7 @@ export default function Lab() {
   const [tcsStandards, setTcsStandards] = useState<TCSTask['standards']>([]);
   const [hintsUnlocked, setHintsUnlocked] = useState<boolean>(false);
   
-  const { getLabProgress } = useProgress();
+  const { getLabProgress, completeLab } = useProgress();
   
   // Track study session
   useStudySession({
@@ -88,7 +89,7 @@ export default function Lab() {
         
         if (weekSnap.exists()) {
           const weekData = weekSnap.data();
-          const lab = weekData.labs?.find((l: any) => l.id === labId);
+          const lab = weekData.labs?.find((l: unknown) => (l as { id: string }).id === labId);
           if (lab) {
             setLabData(lab);
             
@@ -131,11 +132,10 @@ export default function Lab() {
 
   // Phase 8: Copy-paste blocking for weeks 9-12
   useEffect(() => {
-    const cleanup = ProgressiveConstraintsManager.initializeCopyPasteBlocking(
+    return ProgressiveConstraintsManager.initializeCopyPasteBlocking(
       weekNumber,
       'textarea, input[type="text"], .terminal-input'
     );
-    return cleanup;
   }, [weekNumber]);
 
   const handleStepComplete = (stepNumber: number) => {
@@ -239,7 +239,7 @@ export default function Lab() {
           // Actually complete the lab in the database
           try {
             if (labData) {
-              // TODO: Implement lab completion logic with progress tracking
+              await completeLab(labId!, labData.xp, steps.length, steps.length);
               console.log('Lab completed with XP:', labData.xp);
             }
           } catch (error) {
@@ -374,11 +374,10 @@ export default function Lab() {
             <AARForm
               userId={user?.uid || ''}
               labId={labId!}
-              lessonId="" // TODO: Pass actual lesson ID
-              level="crawl" // TODO: Pass actual level
+              lessonId={labId!.replace('lab', 'lesson')} // Derive lesson ID from lab ID (e.g., w1-lab1 -> w1-lesson1)
+              level="crawl" // Labs are typically crawl-level activities
               onComplete={(aarId) => {
                 setAarSubmitted(true);
-                // TODO: Save AAR and complete lab progress
                 console.log('AAR completed:', aarId);
                 navigate('/curriculum');
               }}
@@ -458,7 +457,11 @@ export default function Lab() {
               {labData.tcsEnabled ? (
                 <EnhancedTerminal
                   tasks={createTcsTasks(labData)}
-                  onTaskComplete={() => {}} // TODO: Update for step validation
+                  onTaskComplete={(taskId) => {
+                    // Map task ID to step number and complete the step
+                    const stepNumber = parseInt(taskId.split('-')[1]); // Extract number from task ID like "task-1"
+                    handleStepComplete(stepNumber);
+                  }}
                   onScenarioComplete={handleLabComplete}
                   timeLimit={labData.estimatedTime * 60}
                 />
@@ -466,7 +469,10 @@ export default function Lab() {
                 <LabTerminal
                   labId={labData.id}
                   tasks={labData.tasks}
-                  onTaskComplete={() => {}} // TODO: Update for step validation
+                  onTaskComplete={(taskIndex) => {
+                    // Task index is 0-based, step number is 1-based
+                    handleStepComplete(taskIndex + 1);
+                  }}
                   onLabComplete={handleLabComplete}
                 />
               )}

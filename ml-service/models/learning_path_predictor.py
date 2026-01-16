@@ -41,7 +41,18 @@ class LearningPathPredictor(BaseMLModel):
         self.weights = np.random.randn(len(self.feature_names), len(self.topic_names)) * 0.1
 
     def _preprocess_features(self, features: List[float]) -> np.ndarray:
-        """Preprocess input features"""
+        """
+        Preprocess input features for model prediction
+        
+        Ensures correct feature dimensionality by padding with zeros or truncating
+        as needed to match expected feature count.
+        
+        Args:
+            features: Raw feature values from user data
+            
+        Returns:
+            Preprocessed feature array with shape (1, n_features)
+        """
         # Ensure we have the right number of features
         if len(features) < len(self.feature_names):
             # Pad with zeros
@@ -53,7 +64,16 @@ class LearningPathPredictor(BaseMLModel):
         return np.array(features).reshape(1, -1)
 
     def _train_model(self, X: np.ndarray, y: np.ndarray):
-        """Train the model using simple linear regression"""
+        """
+        Train the model using simple linear regression
+        
+        Performs basic gradient descent-like updates on model weights.
+        Uses simplified training suitable for demonstration purposes.
+        
+        Args:
+            X: Feature matrix of shape (n_samples, n_features)
+            y: Target matrix of shape (n_samples, n_topics)
+        """
         # Simple pseudo-training: adjust weights based on data patterns
         if self.weights is None:
             self.weights = np.random.randn(X.shape[1], y.shape[1]) * 0.1
@@ -80,7 +100,18 @@ class LearningPathPredictor(BaseMLModel):
         return predictions
 
     def generate_synthetic_data(self, n_samples: int = 1000) -> tuple:
-        """Generate synthetic training data for learning paths"""
+        """
+        Generate synthetic training data for learning path prediction
+        
+        Creates realistic mock data simulating user progress through DevOps topics.
+        Uses statistical distributions to create plausible learning patterns.
+        
+        Args:
+            n_samples: Number of training samples to generate
+            
+        Returns:
+            Tuple of (X, y) where X is feature matrix and y is target matrix
+        """
         np.random.seed(42)
 
         X = np.random.randn(n_samples, len(self.feature_names))

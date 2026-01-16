@@ -29,6 +29,10 @@ class BaseMLModel(ABC):
         self.models_dir = Path(__file__).parent / "saved_models"
         self.models_dir.mkdir(exist_ok=True)
 
+        # Try to load existing model, otherwise create new one
+        if not self.load_model():
+            self._create_model()
+
     @abstractmethod
     def _create_model(self):
         """Create the specific ML model"""
@@ -185,6 +189,10 @@ class BaseMLModel(ABC):
             'metrics': self.metrics,
             'type': self.__class__.__name__
         }
+
+    def is_loaded(self) -> bool:
+        """Check if model is loaded (same as is_trained for now)"""
+        return self.is_trained
 
     def generate_synthetic_data(self, n_samples: int = 1000, n_features: int = 10) -> tuple:
         """Generate synthetic training data"""

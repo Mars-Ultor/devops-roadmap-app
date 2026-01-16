@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Production Scenarios Page
  * Real-world troubleshooting simulations
@@ -221,8 +222,8 @@ export default function ProductionScenarios() {
                     <span className="text-xs font-semibold text-gray-400">You'll Learn</span>
                   </div>
                   <ul className="space-y-1">
-                    {scenario.learningObjectives.slice(0, 3).map((obj, index) => (
-                      <li key={index} className="text-xs text-gray-300 flex items-start gap-2">
+                    {scenario.learningObjectives.slice(0, 3).map((obj) => (
+                      <li key={obj} className="text-xs text-gray-300 flex items-start gap-2">
                         <span className="text-blue-400">→</span>
                         {obj}
                       </li>

@@ -1,0 +1,93 @@
+# Pre-commit Configuration for DevOps Roadmap App
+# See https://pre-commit.com for more information
+
+repos:
+  # General hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^.*\.(md|json)$
+      - id: end-of-file-fixer
+        exclude: ^.*\.(md|json)$
+      - id: check-yaml
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-toml
+
+  # Local hooks for this project
+  - repo: local
+    hooks:
+      # ESLint for JavaScript/TypeScript
+      - id: eslint
+        name: eslint
+        entry: npx eslint
+        language: system
+        files: \.(js|ts|tsx)$
+        args: [--fix, --max-warnings=0]
+        exclude: ^(node_modules|dist|build)/
+
+      # TypeScript type checking
+      - id: typescript
+        name: typescript
+        entry: npx tsc
+        language: system
+        files: \.(ts|tsx)$
+        args: [--noEmit, --skipLibCheck]
+        pass_filenames: false
+        exclude: ^(node_modules|dist|build)/
+
+      # Prettier for code formatting
+      - id: prettier
+        name: prettier
+        entry: npx prettier
+        language: system
+        files: \.(js|ts|tsx|json|md)$
+        args: [--write, --check]
+        exclude: ^(node_modules|dist|build|package-lock.json)/
+
+      # Python formatting (if ML service exists)
+      - id: black
+        name: black
+        entry: python -m black
+        language: system
+        files: \.py$
+        args: [--check, --diff]
+        exclude: ^(ml-service/.*\.py)$|^(node_modules|dist|build)/
+        require_serial: true
+
+      # Python linting (if ML service exists)
+      - id: flake8
+        name: flake8
+        entry: python -m flake8
+        language: system
+        files: \.py$
+        args: [--max-line-length=88, --extend-ignore=E203,W503]
+        exclude: ^(node_modules|dist|build)/
+
+# Configuration for different file types
+files: |
+  (?x)^(
+    client/src/.*\.(js|ts|tsx)|
+    server/src/.*\.(js|ts)|
+    ml-service/.*\.py|
+    \.(json|md|yml|yaml)
+  )$
+
+exclude: |
+  (?x)^(
+    node_modules/|
+    dist/|
+    build/|
+    coverage/|
+    .next/|
+    .nuxt/|
+    .vuepress/|
+    .cache/|
+    .pytest_cache/|
+    __pycache__/|
+    \.git/
+  )$</content>
+<parameter name="filePath">c:\Users\ayode\Desktop\devops-roadmap-app\.pre-commit-config.yaml

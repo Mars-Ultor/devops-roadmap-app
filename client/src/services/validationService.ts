@@ -38,8 +38,8 @@ export class ValidationService {
         default:
           return { success: false, message: `Unknown validation type: ${rule.type}` };
       }
-    } catch (error: any) {
-      return { success: false, message: error.message || 'Validation error' };
+    } catch (error: unknown) {
+      return { success: false, message: (error as { message?: string }).message || 'Validation error' };
     }
   }
 
@@ -57,7 +57,7 @@ export class ValidationService {
         success: data.exists,
         message: data.exists ? `✅ File found: ${filePath}` : `❌ File not found: ${filePath}`
       };
-    } catch (error) {
+    } catch {
       // Fallback: If API doesn't exist yet, return success for demo
       console.warn('File existence check API not available, using mock data');
       return {
@@ -85,7 +85,7 @@ export class ValidationService {
           ? `✅ Pattern found in ${filePath}: "${pattern}"` 
           : `❌ Pattern not found in ${filePath}: "${pattern}"`
       };
-    } catch (error) {
+    } catch {
       console.warn('File contains check API not available, using mock data');
       return {
         success: true,
@@ -112,7 +112,7 @@ export class ValidationService {
           ? `✅ Command succeeded: ${command}`
           : `❌ Command failed (exit ${data.exitCode}): ${command}\n${data.stderr || data.stdout}`
       };
-    } catch (error) {
+    } catch {
       console.warn('Command validation API not available, using mock data');
       return {
         success: true,
@@ -135,7 +135,7 @@ export class ValidationService {
           ? `✅ Image found: ${imageName}`
           : `❌ Image not found: ${imageName}. Run: docker pull ${imageName}`
       };
-    } catch (error) {
+    } catch {
       console.warn('Image existence check API not available, using mock data');
       return {
         success: true,
@@ -162,7 +162,7 @@ export class ValidationService {
           ? `✅ Syntax valid: ${filePath}`
           : `❌ Syntax error in ${filePath}: ${data.error}`
       };
-    } catch (error) {
+    } catch {
       console.warn('Syntax validation API not available, using mock data');
       return {
         success: true,

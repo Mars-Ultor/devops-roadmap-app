@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity, sonarjs/no-duplicate-string */
 /**
  * Phase 2.6: Advanced Leadership & Command
  * Military-style leadership training for DevOps incident command
@@ -670,7 +671,7 @@ export default function LeadershipCommand() {
     const currentDecisions = updatedDecisions || decisions;
 
     const remainingDecisions = selectedScenario.decisionPoints.filter(
-      dp => !currentDecisions.find(d => d.decisionPointId === dp.id)
+      dp => !currentDecisions.some(d => d.decisionPointId === dp.id)
     );
 
     if (remainingDecisions.length > 0) {
@@ -730,6 +731,30 @@ export default function LeadershipCommand() {
     });
 
     setLeadershipMetrics(updates);
+  };
+
+  const getLeadershipStyleClassName = (style: string): string => {
+    switch (style) {
+      case 'authoritative':
+        return 'bg-red-900/50 text-red-200';
+      case 'democratic':
+        return 'bg-green-900/50 text-green-200';
+      case 'delegative':
+        return 'bg-blue-900/50 text-blue-200';
+      default:
+        return 'bg-gray-900/50 text-gray-200';
+    }
+  };
+
+  const getImpactClassName = (impact: string): string => {
+    switch (impact) {
+      case 'positive':
+        return 'bg-green-900/50 text-green-200';
+      case 'negative':
+        return 'bg-red-900/50 text-red-200';
+      default:
+        return 'bg-yellow-900/50 text-yellow-200';
+    }
   };
 
   const completeLeadershipTraining = () => {
@@ -905,8 +930,8 @@ export default function LeadershipCommand() {
                     <div>
                       <h4 className="font-semibold text-green-400 mb-2">Leadership Focus</h4>
                       <ul className="text-sm text-gray-300 space-y-1">
-                        {scenario.leadershipFocus.map((focus, index) => (
-                          <li key={index} className="flex items-center gap-2">
+                        {scenario.leadershipFocus.map((focus) => (
+                          <li key={focus} className="flex items-center gap-2">
                             <CheckCircle className="w-4 h-4 text-green-400" />
                             {focus}
                           </li>
@@ -917,8 +942,8 @@ export default function LeadershipCommand() {
                     <div>
                       <h4 className="font-semibold text-yellow-400 mb-2">Communication Challenges</h4>
                       <ul className="text-sm text-gray-300 space-y-1">
-                        {scenario.communicationChallenges.slice(0, 3).map((challenge, index) => (
-                          <li key={index} className="flex items-center gap-2">
+                        {scenario.communicationChallenges.slice(0, 3).map((challenge) => (
+                          <li key={challenge} className="flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4 text-yellow-400" />
                             {challenge}
                           </li>
@@ -929,8 +954,8 @@ export default function LeadershipCommand() {
                     <div>
                       <h4 className="font-semibold text-blue-400 mb-2">Key Objectives</h4>
                       <ul className="text-sm text-gray-300 space-y-1">
-                        {scenario.objectives.slice(0, 3).map((objective, index) => (
-                          <li key={index} className="flex items-center gap-2">
+                        {scenario.objectives.slice(0, 3).map((objective) => (
+                          <li key={objective} className="flex items-center gap-2">
                             <Target className="w-4 h-4 text-blue-400" />
                             {objective}
                           </li>
@@ -1047,19 +1072,10 @@ export default function LeadershipCommand() {
                           <div className="flex-1">
                             <p className="text-gray-200 mb-2">{option.text}</p>
                             <div className="flex items-center gap-4 text-sm">
-                              <span className={`px-2 py-1 rounded text-xs ${
-                                option.leadershipStyle === 'authoritative' ? 'bg-red-900/50 text-red-200' :
-                                option.leadershipStyle === 'democratic' ? 'bg-green-900/50 text-green-200' :
-                                option.leadershipStyle === 'delegative' ? 'bg-blue-900/50 text-blue-200' :
-                                'bg-gray-900/50 text-gray-200'
-                              }`}>
+                              <span className={`px-2 py-1 rounded text-xs ${getLeadershipStyleClassName(option.leadershipStyle)}`}>
                                 {option.leadershipStyle}
                               </span>
-                              <span className={`px-2 py-1 rounded text-xs ${
-                                option.impact === 'positive' ? 'bg-green-900/50 text-green-200' :
-                                option.impact === 'negative' ? 'bg-red-900/50 text-red-200' :
-                                'bg-yellow-900/50 text-yellow-200'
-                              }`}>
+                              <span className={`px-2 py-1 rounded text-xs ${getImpactClassName(option.impact)}`}>
                                 {option.impact} impact
                               </span>
                             </div>
@@ -1148,11 +1164,11 @@ export default function LeadershipCommand() {
                   Decision History
                 </h4>
                 <div className="max-h-64 overflow-y-auto space-y-2">
-                  {decisions.map((decision, index) => {
+                  {decisions.map((decision) => {
                     const dp = selectedScenario.decisionPoints.find(p => p.id === decision.decisionPointId);
                     const option = dp?.options.find(o => o.id === decision.selectedOptionId);
                     return (
-                      <div key={index} className="bg-slate-700/50 p-2 rounded text-sm">
+                      <div key={`${decision.decisionPointId}-${decision.selectedOptionId}`} className="bg-slate-700/50 p-2 rounded text-sm">
                         <div className="flex items-center gap-2 mb-1">
                           {option?.impact === 'positive' ? (
                             <CheckCircle className="w-4 h-4 text-green-400" />

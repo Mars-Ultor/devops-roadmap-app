@@ -6,13 +6,46 @@ import { vi } from 'vitest'
 vi.mock('../lib/firebase', () => ({
   db: {},
   auth: {},
-  getDoc: vi.fn(),
-  setDoc: vi.fn(),
-  addDoc: vi.fn(),
-  updateDoc: vi.fn(),
-  collection: vi.fn(),
-  doc: vi.fn(),
-  increment: vi.fn(),
+  getDoc: vi.fn(() => Promise.resolve({ exists: () => false, data: () => ({}) })),
+  setDoc: vi.fn(() => Promise.resolve()),
+  addDoc: vi.fn(() => Promise.resolve({ id: 'mock-doc-id' })),
+  updateDoc: vi.fn(() => Promise.resolve()),
+  collection: vi.fn(() => 'mock-collection-ref'),
+  doc: vi.fn(() => 'mock-doc-ref'),
+  increment: vi.fn((value) => ({ type: 'increment', value })),
+  deleteDoc: vi.fn(() => Promise.resolve()),
+  query: vi.fn(() => 'mock-query'),
+  where: vi.fn(() => 'mock-where'),
+  orderBy: vi.fn(() => 'mock-orderby'),
+  limit: vi.fn(() => 'mock-limit'),
+  getDocs: vi.fn(() => Promise.resolve({ docs: [], empty: true })),
+  onSnapshot: vi.fn(() => vi.fn()), // returns unsubscribe function
+  Timestamp: {
+    now: vi.fn(() => ({ seconds: Date.now() / 1000, nanoseconds: 0 })),
+    fromDate: vi.fn((date) => ({ seconds: date.getTime() / 1000, nanoseconds: 0 })),
+  },
+}))
+
+// Mock firebase/firestore module
+vi.mock('firebase/firestore', () => ({
+  addDoc: vi.fn(() => Promise.resolve({ id: 'mock-doc-id' })),
+  collection: vi.fn(() => 'mock-collection-ref'),
+  doc: vi.fn(() => 'mock-doc-ref'),
+  setDoc: vi.fn(() => Promise.resolve()),
+  updateDoc: vi.fn(() => Promise.resolve()),
+  getDoc: vi.fn(() => Promise.resolve({ exists: () => false, data: () => ({}) })),
+  deleteDoc: vi.fn(() => Promise.resolve()),
+  query: vi.fn(() => 'mock-query'),
+  where: vi.fn(() => 'mock-where'),
+  orderBy: vi.fn(() => 'mock-orderby'),
+  limit: vi.fn(() => 'mock-limit'),
+  getDocs: vi.fn(() => Promise.resolve({ docs: [], empty: true })),
+  onSnapshot: vi.fn(() => vi.fn()),
+  increment: vi.fn((value) => ({ type: 'increment', value })),
+  Timestamp: {
+    now: vi.fn(() => ({ seconds: Date.now() / 1000, nanoseconds: 0 })),
+    fromDate: vi.fn((date) => ({ seconds: date.getTime() / 1000, nanoseconds: 0 })),
+  },
 }))
 
 // Mock Zustand stores
@@ -20,6 +53,7 @@ vi.mock('../store/authStore', () => ({
   useAuthStore: vi.fn(() => ({
     user: null,
     loading: false,
+    initAuth: vi.fn(),
     signIn: vi.fn(),
     signOut: vi.fn(),
   })),

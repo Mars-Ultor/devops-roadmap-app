@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Learning Pattern Analysis
  * Identifies patterns in study behavior and performance correlations
@@ -75,9 +76,25 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
     }
   };
 
+  const getInsightStyles = (type: string) => {
+    switch (type) {
+      case 'success':
+        return 'bg-green-900/20 border-green-700';
+      case 'warning':
+        return 'bg-yellow-900/20 border-yellow-700';
+      default:
+        return 'bg-blue-900/20 border-blue-700';
+    }
+  };
+
   const formatHour = (hour: number) => {
     const period = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    const getDisplayHour = () => {
+      if (hour === 0) return 12;
+      if (hour > 12) return hour - 12;
+      return hour;
+    };
+    const displayHour = getDisplayHour();
     return `${displayHour}${period}`;
   };
 
@@ -105,20 +122,22 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-lg font-semibold text-white">Study Consistency</h4>
-          <span className={`text-lg font-bold ${
-            patterns.studyConsistency.score >= 80 ? 'text-green-400' :
-            patterns.studyConsistency.score >= 60 ? 'text-yellow-400' : 'text-red-400'
-          }`}>
+          <span className={`text-lg font-bold ${(() => {
+            if (patterns.studyConsistency.score >= 80) return 'text-green-400';
+            if (patterns.studyConsistency.score >= 60) return 'text-yellow-400';
+            return 'text-red-400';
+          })()}`}>
             {patterns.studyConsistency.score}/100
           </span>
         </div>
         <p className="text-slate-300 text-sm mb-3">{patterns.studyConsistency.description}</p>
         <div className="w-full bg-slate-700 rounded-full h-2 mb-3">
           <div
-            className={`h-2 rounded-full transition-all ${
-              patterns.studyConsistency.score >= 80 ? 'bg-green-500' :
-              patterns.studyConsistency.score >= 60 ? 'bg-yellow-500' : 'bg-red-500'
-            }`}
+            className={`h-2 rounded-full transition-all ${(() => {
+              if (patterns.studyConsistency.score >= 80) return 'bg-green-500';
+              if (patterns.studyConsistency.score >= 60) return 'bg-yellow-500';
+              return 'bg-red-500';
+            })()}`}
             style={{ width: `${patterns.studyConsistency.score}%` }}
           />
         </div>
@@ -166,8 +185,8 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
       <div className="mb-6">
         <h4 className="text-lg font-semibold text-white mb-4">Performance Correlations</h4>
         <div className="space-y-3">
-          {patterns.performanceCorrelations.map((correlation, idx) => (
-            <div key={idx} className="bg-slate-900/50 rounded-lg p-4">
+          {patterns.performanceCorrelations.map((correlation) => (
+            <div key={correlation.factor} className="bg-slate-900/50 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-white font-medium">{correlation.factor}</span>
                 <div className="flex items-center gap-2">
@@ -190,8 +209,8 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
         <div className="mb-6">
           <h4 className="text-lg font-semibold text-white mb-4">Topic Struggle Patterns</h4>
           <div className="space-y-3">
-            {patterns.topicStruggles.map((struggle, idx) => (
-              <div key={idx} className="bg-orange-900/20 border border-orange-700 rounded-lg p-4">
+            {patterns.topicStruggles.map((struggle) => (
+              <div key={struggle.topic} className="bg-orange-900/20 border border-orange-700 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-white font-medium">{struggle.topic}</span>
                   <span className="text-orange-400 text-sm">
@@ -210,12 +229,8 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
       <div className="mb-6">
         <h4 className="text-lg font-semibold text-white mb-4">Key Insights</h4>
         <div className="space-y-3">
-          {insights.map((insight, idx) => (
-            <div key={idx} className={`rounded-lg p-4 border ${
-              insight.type === 'success' ? 'bg-green-900/20 border-green-700' :
-              insight.type === 'warning' ? 'bg-yellow-900/20 border-yellow-700' :
-              'bg-blue-900/20 border-blue-700'
-            }`}>
+          {insights.map((insight) => (
+            <div key={insight.title} className={`rounded-lg p-4 border ${getInsightStyles(insight.type)}`}>
               <div className="flex items-start gap-3">
                 {getInsightIcon(insight.type)}
                 <div className="flex-1">
@@ -241,8 +256,8 @@ export const LearningPatternAnalysis: FC<LearningPatternAnalysisProps> = ({ data
           Adaptive Recommendations
         </h4>
         <ul className="space-y-2">
-          {patterns.adaptiveRecommendations.map((rec, idx) => (
-            <li key={idx} className="flex items-start gap-3 text-slate-300">
+          {patterns.adaptiveRecommendations.map((rec) => (
+            <li key={rec} className="flex items-start gap-3 text-slate-300">
               <span className="text-indigo-400 mt-1">•</span>
               <span className="text-sm">{rec}</span>
             </li>

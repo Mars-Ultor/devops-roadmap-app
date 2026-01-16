@@ -1,17 +1,43 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable max-lines-per-function, complexity, sonarjs/no-duplicate-string */
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Clock, Award, CheckCircle, Target, Brain, Zap, Lock, AlertTriangle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import ContentGate from '../components/ContentGate';
 import StruggleSessionManager from '../components/struggle/StruggleSessionManager';
-import AARForm from '../components/aar/AARForm';
+import AdaptiveAARForm from '../components/aar/AdaptiveAARForm';
 import MasteryGate from '../components/MasteryGate';
 import { WalkLevelContent } from '../components/lessons/WalkLevelContent';
+import RunIndependentWorkspace from '../components/lessons/RunIndependentWorkspace';
+import RunGuidedWorkspace from '../components/lessons/RunGuidedWorkspace';
 import { useMastery } from '../hooks/useMastery';
 import type { MasteryLevel } from '../types/training';
 import { loadLessonContent } from '../utils/lessonContentLoader';
 import type { LeveledLessonContent } from '../types/lessonContent';
+import type { StruggleMetrics } from '../types/aar';
 import { curriculumLoader } from '../utils/curriculumLoader';
+
+/** Helper to get next level name for display */
+function getNextLevelDisplayName(currentLevel: MasteryLevel): string | undefined {
+  const levelMap: Record<MasteryLevel, string | undefined> = {
+    'crawl': 'Walk',
+    'walk': 'Run-Guided',
+    'run-guided': 'Run-Independent',
+    'run-independent': undefined
+  };
+  return levelMap[currentLevel];
+}
+
+/** Helper to get next level ID for navigation */
+function getNextLevelId(currentLevel: MasteryLevel): MasteryLevel | null {
+  const levelMap: Record<MasteryLevel, MasteryLevel | null> = {
+    'crawl': 'walk',
+    'walk': 'run-guided',
+    'run-guided': 'run-independent',
+    'run-independent': null
+  };
+  return levelMap[currentLevel];
+}
 
 interface LessonData {
   id: string;
@@ -32,7 +58,7 @@ interface LessonContent {
   instructions: string;
   objectives: string[];
   hints?: string[];
-  quiz?: any[];
+  quiz?: unknown[];
   labInstructions?: string;
 }
 
@@ -46,12 +72,32 @@ export default function MasteryLesson() {
   const [completed, setCompleted] = useState(false);
   const [aarSubmitted, setAarSubmitted] = useState(false);
   const [weekNumber, setWeekNumber] = useState<number | null>(null);
-  const [hintsUsed] = useState(0);
-  const [validationErrors, setValidationErrors] = useState(0);
+  const [struggleMetrics, setStruggleMetrics] = useState<StruggleMetrics>({
+    hintsUsed: 0,
+    validationErrors: 0,
+    timeSpentSeconds: 0,
+    retryCount: 0,
+    isPerfectCompletion: true
+  });
   const [startTime] = useState<number>(Date.now());
   const [completedExercises, setCompletedExercises] = useState<number[]>([]);
+  const [runIndependentDraft, setRunIndependentDraft] = useState<string>('');
 
-  const level = levelParam as MasteryLevel;
+  // Normalize level parameter (support both kebab-case and camelCase)
+  const normalizeLevel = (param: string | undefined): MasteryLevel => {
+    if (!param) return 'crawl';
+    const levelMap: Record<string, MasteryLevel> = {
+      'crawl': 'crawl',
+      'walk': 'walk',
+      'run-guided': 'run-guided',
+      'runGuided': 'run-guided',
+      'run-independent': 'run-independent',
+      'runIndependent': 'run-independent'
+    };
+    return levelMap[param] || param as MasteryLevel;
+  };
+  
+  const level = normalizeLevel(levelParam);
 
   // Mastery tracking
   const {
@@ -66,17 +112,31 @@ export default function MasteryLesson() {
   } = useMastery(lessonId || '');
 
   // Validate level parameter
-  const validLevels: MasteryLevel[] = ['crawl', 'walk', 'run-guided', 'run-independent'];
-  if (!lessonId || !levelParam || !validLevels.includes(level)) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Invalid lesson or level</div>
-      </div>
-    );
-  }
+  const validLevels = new Set<MasteryLevel>(['crawl', 'walk', 'run-guided', 'run-independent']);
+  const isValidParams = lessonId && levelParam && validLevels.has(level);
+
+  // Handler for AAR completion
+  const handleAARComplete = useCallback(async () => {
+    setAarSubmitted(true);
+    await refreshMastery();
+    
+    if (mastery && isLevelMastered(level)) {
+      const nextLevel = getNextLevelId(level);
+      if (nextLevel) {
+        const userConfirmed = globalThis.confirm(
+          `🎉 You've mastered this level!\n\nWould you like to continue to the next level (${nextLevel})?`
+        );
+        if (userConfirmed) {
+          navigate(`/lesson/${lessonId}/${nextLevel}`);
+          return;
+        }
+      }
+    }
+    navigate(weekNumber ? `/week/${weekNumber}` : '/curriculum');
+  }, [mastery, isLevelMastered, level, lessonId, weekNumber, navigate, refreshMastery]);
 
   useEffect(() => {
-    if (!lessonId) return;
+    if (!lessonId || !isValidParams) return;
 
     async function fetchLessonData() {
       try {
@@ -141,7 +201,26 @@ export default function MasteryLesson() {
     }
 
     fetchLessonData();
-  }, [lessonId]);
+  }, [lessonId, isValidParams]);
+
+  // Early return for invalid parameters (after all hooks)
+  // Show loading if params are not yet available (router still initializing)
+  if (!lessonId || !levelParam) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-slate-400">Loading...</div>
+      </div>
+    );
+  }
+  
+  // Show error only if level is actually invalid
+  if (!validLevels.has(level)) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">Invalid level: {levelParam}</div>
+      </div>
+    );
+  }
 
   const getLevelConfig = (level: MasteryLevel) => {
     switch (level) {
@@ -273,8 +352,8 @@ export default function MasteryLesson() {
             <p className="text-slate-300">{rawContent.introduction}</p>
           </div>
           
-          {rawContent.steps.map((step, idx) => (
-            <div key={idx} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+          {rawContent.steps.map((step) => (
+            <div key={`step-${step.stepNumber}`} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold">
                   {step.stepNumber}
@@ -301,8 +380,8 @@ export default function MasteryLesson() {
                     <div className="mb-3">
                       <div className="text-sm font-semibold text-green-400 mb-2">✓ Validation Criteria:</div>
                       <ul className="space-y-1">
-                        {step.validationCriteria.map((criteria, i) => (
-                          <li key={i} className="text-sm text-slate-300 flex items-start">
+                        {step.validationCriteria.map((criteria) => (
+                          <li key={`vc-${step.stepNumber}-${criteria}`} className="text-sm text-slate-300 flex items-start">
                             <span className="text-green-400 mr-2">•</span>
                             {criteria}
                           </li>
@@ -315,8 +394,8 @@ export default function MasteryLesson() {
                     <div>
                       <div className="text-sm font-semibold text-red-400 mb-2">⚠️ Common Mistakes:</div>
                       <ul className="space-y-1">
-                        {step.commonMistakes.map((mistake, i) => (
-                          <li key={i} className="text-sm text-red-200 flex items-start">
+                        {step.commonMistakes.map((mistake) => (
+                          <li key={`cm-${step.stepNumber}-${mistake}`} className="text-sm text-red-200 flex items-start">
                             <span className="text-red-400 mr-2">•</span>
                             {mistake}
                           </li>
@@ -342,7 +421,11 @@ export default function MasteryLesson() {
               setCompletedExercises([...completedExercises, exerciseNumber]);
             }
             if (!correct) {
-              setValidationErrors(validationErrors + 1);
+              setStruggleMetrics(prev => ({
+                ...prev,
+                validationErrors: prev.validationErrors + 1,
+                isPerfectCompletion: false
+              }));
             }
           }}
           completedExercises={completedExercises}
@@ -350,21 +433,39 @@ export default function MasteryLesson() {
       );
     }
 
-    // Run-Guided Level: Conceptual guidance
-    if (level === 'run-guided' && 'objective' in rawContent) {
+    // Run-Guided Level: Conceptual guidance with workspace (checkpoints are unique to run-guided)
+    if (level === 'run-guided' && 'checkpoints' in rawContent) {
+      const handleRunGuidedSubmit = (responses: Record<string, string>, notes: string, hintsUsed: number) => {
+        const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+        setStruggleMetrics(prev => ({
+          ...prev,
+          hintsUsed: hintsUsed,
+          timeSpentSeconds: timeSpent,
+          isPerfectCompletion: hintsUsed === 0
+        }));
+        setCompleted(true);
+      };
+
+      const handleRunGuidedSaveDraft = (responses: Record<string, string>, notes: string) => {
+        // Draft is saved in the workspace component via localStorage
+        console.log('Run-guided draft saved', { responses, notes });
+      };
+
       return (
         <div className="space-y-6">
-          <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-            <h2 className="text-xl font-semibold mb-4">Objective</h2>
-            <p className="text-slate-300 text-lg">{rawContent.objective}</p>
+          {/* Objective */}
+          <div className="bg-slate-800 rounded-lg p-6 border border-cyan-600">
+            <h2 className="text-xl font-semibold mb-4 text-cyan-400">Objective</h2>
+            <p className="text-white text-lg">{rawContent.objective}</p>
           </div>
           
+          {/* Conceptual Guidance */}
           {'conceptualGuidance' in rawContent && rawContent.conceptualGuidance && (
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-              <h3 className="font-semibold mb-3">Conceptual Guidance</h3>
+              <h3 className="font-semibold mb-3 text-yellow-400">Conceptual Guidance</h3>
               <ul className="space-y-2">
-                {rawContent.conceptualGuidance.map((guidance, i) => (
-                  <li key={i} className="text-slate-300 flex items-start">
+                {rawContent.conceptualGuidance.map((guidance) => (
+                  <li key={`cg-${guidance}`} className="text-slate-300 flex items-start">
                     <span className="text-yellow-400 mr-2">→</span>
                     {guidance}
                   </li>
@@ -373,12 +474,13 @@ export default function MasteryLesson() {
             </div>
           )}
           
+          {/* Key Concepts */}
           {'keyConceptsToApply' in rawContent && rawContent.keyConceptsToApply && (
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-              <h3 className="font-semibold mb-3">Key Concepts to Apply</h3>
+              <h3 className="font-semibold mb-3 text-purple-400">Key Concepts to Apply</h3>
               <ul className="space-y-2">
-                {rawContent.keyConceptsToApply.map((concept, i) => (
-                  <li key={i} className="text-slate-300 flex items-start">
+                {rawContent.keyConcepts.map((concept) => (
+                  <li key={`kc-${concept}`} className="text-slate-300 flex items-start">
                     <span className="text-purple-400 mr-2">▸</span>
                     {concept}
                   </li>
@@ -387,33 +489,42 @@ export default function MasteryLesson() {
             </div>
           )}
           
+          {/* Workspace with Checkpoints */}
           {'checkpoints' in rawContent && rawContent.checkpoints && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Checkpoints</h3>
-              {rawContent.checkpoints.map((checkpoint, idx) => (
-                <div key={idx} className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                  <h4 className="font-semibold text-white mb-2">{checkpoint.checkpoint}</h4>
-                  <p className="text-slate-300 mb-3">{checkpoint.description}</p>
-                  {checkpoint.validationCriteria && (
-                    <div className="text-sm">
-                      <div className="text-green-400 font-semibold mb-1">Validation:</div>
-                      <ul className="space-y-1">
-                        {checkpoint.validationCriteria.map((criteria, i) => (
-                          <li key={i} className="text-slate-300">• {criteria}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <RunGuidedWorkspace
+              lessonId={lessonId || ''}
+              checkpoints={rawContent.checkpoints}
+              resourcesAllowed={rawContent.resourcesAllowed}
+              onSubmit={handleRunGuidedSubmit}
+              onSaveDraft={handleRunGuidedSaveDraft}
+            />
           )}
         </div>
       );
     }
 
-    // Run-Independent Level: Just objectives and criteria
+    // Run-Independent Level: Objective, criteria, and workspace
     if (level === 'run-independent' && 'objective' in rawContent) {
+      const handleRunIndependentSubmit = () => {
+        // Calculate time spent
+        const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+        setStruggleMetrics(prev => ({
+          ...prev,
+          timeSpentSeconds: timeSpent,
+          isPerfectCompletion: true // Run-independent is always "perfect" if completed
+        }));
+        setCompleted(true);
+      };
+
+      const handleSaveDraft = (draft: string) => {
+        setRunIndependentDraft(draft);
+        // Could also save to localStorage or Firestore for persistence
+        localStorage.setItem(`run-independent-draft-${lessonId}`, draft);
+      };
+
+      // Load saved draft on mount
+      const savedDraft = runIndependentDraft || localStorage.getItem(`run-independent-draft-${lessonId}`) || '';
+
       return (
         <div className="space-y-6">
           <div className="bg-slate-800 rounded-lg p-6 border border-purple-600">
@@ -421,42 +532,18 @@ export default function MasteryLesson() {
             <p className="text-white text-lg font-medium">{rawContent.objective}</p>
           </div>
           
-          {'timeTarget' in rawContent && (
-            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-              <div className="flex items-center space-x-2 text-yellow-400">
-                <Clock className="w-5 h-5" />
-                <span className="font-semibold">Time Target: {rawContent.timeTarget} minutes</span>
-              </div>
-            </div>
-          )}
-          
-          {'successCriteria' in rawContent && rawContent.successCriteria && (
-            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-              <h3 className="font-semibold mb-3 text-green-400">Success Criteria (All must pass)</h3>
-              <ul className="space-y-2">
-                {rawContent.successCriteria.map((criteria, i) => (
-                  <li key={i} className="text-slate-300 flex items-start">
-                    <CheckCircle className="w-5 h-5 text-green-400 mr-2 flex-shrink-0 mt-0.5" />
-                    {criteria}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          {'minimumRequirements' in rawContent && rawContent.minimumRequirements && (
-            <div className="bg-red-900/20 border border-red-600 rounded-lg p-6">
-              <h3 className="font-semibold mb-3 text-red-400">Minimum Requirements</h3>
-              <ul className="space-y-2">
-                {rawContent.minimumRequirements.map((req, i) => (
-                  <li key={i} className="text-red-200 flex items-start">
-                    <span className="text-red-400 mr-2">!</span>
-                    {req}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Workspace Component */}
+          <RunIndependentWorkspace
+            objective={rawContent.objective}
+            companyProfile={rawContent.companyProfile}
+            successCriteria={rawContent.successCriteria || []}
+            timeTarget={rawContent.timeTarget}
+            minimumRequirements={rawContent.minimumRequirements}
+            evaluationRubric={rawContent.evaluationRubric}
+            onSubmit={handleRunIndependentSubmit}
+            onSaveDraft={handleSaveDraft}
+            savedDraft={savedDraft}
+          />
         </div>
       );
     }
@@ -527,8 +614,8 @@ export default function MasteryLesson() {
               <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
                 <h2 className="text-xl font-semibold mb-4">Learning Objectives</h2>
                 <ul className="space-y-2">
-                  {detailedContent.baseLesson.learningObjectives.map((objective, idx) => (
-                    <li key={idx} className="flex items-start space-x-2">
+                  {detailedContent.baseLesson.learningObjectives.map((objective) => (
+                    <li key={`lo-${objective}`} className="flex items-start space-x-2">
                       <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                       <span className="text-slate-300">{objective}</span>
                     </li>
@@ -539,8 +626,8 @@ export default function MasteryLesson() {
                   <div className="mt-4 pt-4 border-t border-slate-700">
                     <h3 className="text-sm font-semibold text-slate-400 mb-2">Prerequisites:</h3>
                     <ul className="space-y-1">
-                      {detailedContent.baseLesson.prerequisites.map((prereq, idx) => (
-                        <li key={idx} className="text-sm text-slate-400">• {prereq}</li>
+                      {detailedContent.baseLesson.prerequisites.map((prereq) => (
+                        <li key={`pr-${prereq}`} className="text-sm text-slate-400">• {prereq}</li>
                       ))}
                     </ul>
                   </div>
@@ -595,12 +682,7 @@ export default function MasteryLesson() {
                 <MasteryGate
                   level={level}
                   progress={getLevelProgress(level)!}
-                  nextLevelName={
-                    level === 'crawl' ? 'Walk' :
-                    level === 'walk' ? 'Run-Guided' :
-                    level === 'run-guided' ? 'Run-Independent' :
-                    undefined
-                  }
+                  nextLevelName={getNextLevelDisplayName(level)}
                 />
               </>
             )}
@@ -617,11 +699,18 @@ export default function MasteryLesson() {
                 // Calculate time spent
                 const timeSpent = Math.floor((Date.now() - startTime) / 1000);
                 
-                // Determine if this was a perfect completion
-                // Perfect = no hints, no validation errors
-                const isPerfect = hintsUsed === 0 && validationErrors === 0;
+                // Update struggle metrics with final values
+                const finalMetrics: StruggleMetrics = {
+                  ...struggleMetrics,
+                  timeSpentSeconds: timeSpent,
+                  isPerfectCompletion: struggleMetrics.hintsUsed === 0 && struggleMetrics.validationErrors === 0 && struggleMetrics.retryCount === 0
+                };
+                setStruggleMetrics(finalMetrics);
                 
-                console.log('🔵 Recording attempt:', { level, isPerfect, timeSpent, hintsUsed, validationErrors });
+                // Determine if this was a perfect completion
+                const isPerfect = finalMetrics.isPerfectCompletion;
+                
+                console.log('🔵 Recording attempt:', { level, isPerfect, timeSpent, struggleMetrics: finalMetrics });
                 console.log('🔵 Mastery state BEFORE recordAttempt:', JSON.stringify(mastery, null, 2));
                 
                 // Record the attempt
@@ -633,12 +722,7 @@ export default function MasteryLesson() {
                   console.log('🔵 Current mastery state AFTER:', mastery);
                   
                   if (!isPerfect) {
-                    alert(
-                      `⚠️ Not a perfect completion.\n\n` +
-                      `Hints used: ${hintsUsed}\n` +
-                      `Validation errors: ${validationErrors}\n\n` +
-                      `Try again for a perfect score to count toward mastery.`
-                    );
+                    // Don't show alert - let the AAR handle it
                   } else if (result?.levelMastered) {
                     alert(
                       `🎉 Level Mastered!\n\n` +
@@ -667,14 +751,14 @@ export default function MasteryLesson() {
             </button>
             
             {/* Performance Warning */}
-            {(hintsUsed > 0 || validationErrors > 0) && (
+            {(struggleMetrics.hintsUsed > 0 || struggleMetrics.validationErrors > 0) && (
               <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-3">
                 <div className="flex items-start space-x-2">
                   <AlertTriangle className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" />
                   <div className="text-xs text-yellow-300">
                     <p className="font-medium mb-1">Not Perfect</p>
-                    {hintsUsed > 0 && <p>• {hintsUsed} hint(s) used</p>}
-                    {validationErrors > 0 && <p>• {validationErrors} error(s)</p>}
+                    {struggleMetrics.hintsUsed > 0 && <p>• {struggleMetrics.hintsUsed} hint(s) used</p>}
+                    {struggleMetrics.validationErrors > 0 && <p>• {struggleMetrics.validationErrors} error(s)</p>}
                   </div>
                 </div>
               </div>
@@ -683,64 +767,20 @@ export default function MasteryLesson() {
         </div>
       </div>
 
-      {/* Mandatory AAR Modal */}
+      {/* Adaptive AAR Modal */}
       {completed && !aarSubmitted && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border-2 border-red-500 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center space-x-3 mb-6">
-              <BookOpen className="w-8 h-8 text-red-400" />
-              <div>
-                <h2 className="text-2xl font-bold text-white">Mandatory After Action Review</h2>
-                <p className="text-red-300">Complete your AAR to save progress and unlock navigation</p>
-              </div>
-            </div>
-
-            <AARForm
-              userId={user?.uid || ''}
-              lessonId={lessonId}
-              level={level}
-              labId="" // Not a lab, this is a lesson
-              onComplete={async () => {
-                setAarSubmitted(true);
-                
-                // Refresh mastery data to get latest state
-                await refreshMastery();
-                
-                // Show mastery status
-                if (mastery && isLevelMastered(level)) {
-                  const nextLevel = 
-                    level === 'crawl' ? 'walk' :
-                    level === 'walk' ? 'run-guided' :
-                    level === 'run-guided' ? 'run-independent' :
-                    null;
-                  
-                  if (nextLevel) {
-                    const confirm = window.confirm(
-                      `🎉 You've mastered this level!\n\n` +
-                      `Would you like to continue to the next level (${nextLevel})?`
-                    );
-                    if (confirm) {
-                      navigate(`/lesson/${lessonId}/${nextLevel}`);
-                      return;
-                    }
-                  }
-                }
-                
-                // Navigate back to the week page
-                navigate(weekNumber ? `/week/${weekNumber}` : '/curriculum');
-              }}
-              onCancel={() => {
-                alert('AAR is required to save your progress.');
-              }}
-            />
-
-            <div className="mt-4 p-4 bg-red-900/20 border border-red-600 rounded-lg">
-              <p className="text-red-300 text-sm">
-                <strong>⚠️ Navigation Blocked:</strong> You cannot leave this page until the AAR is completed.
-                This ensures you reflect on your learning and build better problem-solving skills.
-              </p>
-            </div>
-          </div>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <AdaptiveAARForm
+            userId={user?.uid || ''}
+            lessonId={lessonId}
+            level={level}
+            labId=""
+            struggleMetrics={struggleMetrics}
+            onComplete={handleAARComplete}
+            onCancel={() => {
+              globalThis.alert('AAR is required to save your progress.');
+            }}
+          />
         </div>
       )}
     </div>

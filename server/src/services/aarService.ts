@@ -4,7 +4,11 @@ import type {
   AARFormData,
   AARValidationResult,
   AARStats,
-  AARPattern
+  AARPattern,
+  WordCounts,
+  PrismaAARData,
+  StrengthOrImprovement,
+  AIReview
 } from '../types/aar.js';
 import { AAR_REQUIREMENTS } from '../types/aar.js';
 
@@ -178,7 +182,7 @@ export class AARService {
         return null;
       }
 
-      const updatedData: any = {
+      const updatedData: Record<string, unknown> = {
         ...updateData,
         updatedAt: new Date()
       };
@@ -201,7 +205,7 @@ export class AARService {
 
       const aar = await prisma.afterActionReview.update({
         where: { id: aarId },
-        data: updatedData
+        data: updatedData as Prisma.AfterActionReviewUpdateInput
       });
 
       // Re-analyze if content changed
@@ -259,10 +263,10 @@ export class AARService {
     return {
       totalAARs: aars.length,
       averageQualityScore: aars
-        .filter(aar => aar.aiReview?.score)
-        .reduce((sum, aar) => sum + (aar.aiReview?.score || 0), 0) / aars.length,
+        .filter(aar => aar.aiReview?.qualityScore)
+        .reduce((sum, aar) => sum + (aar.aiReview?.qualityScore || 0), 0) / aars.length,
       commonPatterns: patterns,
-      completionRate: 1, // TODO: calculate based on total lessons
+      completionRate: aars.length / 36, // 12 weeks × 3 lessons each = 36 total lessons
       improvementTrends: this.calculateImprovementTrends(aars),
       strengths: this.extractStrengths(aars),
       areasForImprovement: this.extractAreasForImprovement(aars)
@@ -279,9 +283,15 @@ export class AARService {
   }
 
   /**
-   * AI-powered AAR analysis (enhanced implementation)
+   * AI-powered AAR analysis with quality assessment and pattern detection
+   * Performs comprehensive analysis including quality scoring, pattern recognition,
+   * and personalized feedback generation
+   * @param aarId - Unique identifier for the AAR
+   * @param aar - AAR data object from database
+   * @returns Promise that resolves when analysis is complete
+   * @private
    */
-  private async analyzeAAR(aarId: string, aar: any): Promise<void> {
+  private async analyzeAAR(aarId: string, aar: PrismaAARData): Promise<void> {
     // Enhanced quality assessment
     const qualityScore = this.calculateAARQuality(aar);
     const patterns: AARPattern[] = [];
@@ -304,7 +314,7 @@ export class AARService {
       where: { id: aarId },
       data: {
         aiReview,
-        patterns: patterns as any,
+        patterns: patterns as unknown as Prisma.InputJsonValue,
         qualityScore,
         updatedAt: new Date()
       }
@@ -313,15 +323,21 @@ export class AARService {
 
   /**
    * Calculate comprehensive AAR quality score (1-10)
+   * Evaluates word count, content depth, self-reflection, and balance
+   * Higher scores indicate more thoughtful, detailed AARs
+   * @param aar - AAR data object with responses and word counts
+   * @returns Quality score between 1-10
+   * @private
    */
-  private calculateAARQuality(aar: any): number {
+  private calculateAARQuality(aar: PrismaAARData): number {
     let score = 5; // Base score
 
     // Word count quality (up to 2 points)
-    const totalWords = aar.wordCounts.whatWasAccomplished +
-                      aar.wordCounts.whyDidNotWork +
-                      aar.wordCounts.whatWouldIDoDifferently +
-                      aar.wordCounts.whatDidILearn;
+    const wordCounts = aar.wordCounts as WordCounts;
+    const totalWords = wordCounts.whatWasAccomplished +
+                      wordCounts.whyDidNotWork +
+                      wordCounts.whatWouldIDoDifferently +
+                      wordCounts.whatDidILearn;
 
     if (totalWords > 200) score += 2;
     else if (totalWords > 100) score += 1;
@@ -345,7 +361,7 @@ export class AARService {
     return Math.min(Math.max(score, 1), 10);
   }
 
-  private hasSpecificExamples(aar: any): boolean {
+  private hasSpecificExamples(aar: PrismaAARData): boolean {
     const text = `${aar.whatWasAccomplished} ${aar.whyDidNotWork} ${aar.whatWouldIDoDifferently}`;
     const specificIndicators = [
       'command', 'error', 'config', 'file', 'port', 'version',
@@ -357,7 +373,7 @@ export class AARService {
     );
   }
 
-  private hasRootCauseAnalysis(aar: any): boolean {
+  private hasRootCauseAnalysis(aar: PrismaAARData): boolean {
     const text = aar.whyDidNotWork.toLowerCase();
     const rootCauseIndicators = [
       'because', 'due to', 'caused by', 'reason', 'root cause',
@@ -367,7 +383,7 @@ export class AARService {
     return rootCauseIndicators.some(indicator => text.includes(indicator));
   }
 
-  private hasActionableImprovements(aar: any): boolean {
+  private hasActionableImprovements(aar: PrismaAARData): boolean {
     const text = aar.whatWouldIDoDifferently.toLowerCase();
     const actionableIndicators = [
       'check', 'verify', 'test', 'validate', 'use',
@@ -377,7 +393,7 @@ export class AARService {
     return actionableIndicators.some(indicator => text.includes(indicator));
   }
 
-  private hasSelfReflection(aar: any): boolean {
+  private hasSelfReflection(aar: PrismaAARData): boolean {
     const text = aar.whatDidILearn.toLowerCase();
     const reflectionIndicators = [
       'learned', 'understand', 'realized', 'important',
@@ -387,9 +403,11 @@ export class AARService {
     return reflectionIndicators.some(indicator => text.includes(indicator));
   }
 
-  private calculateBalanceRatio(aar: any): number {
-    const positiveWords = aar.whatWorkedWell.length;
-    const negativeWords = aar.whatDidNotWork.length;
+  private calculateBalanceRatio(aar: PrismaAARData): number {
+    const whatWorkedWell = aar.whatWorkedWell as string[];
+    const whatDidNotWork = aar.whatDidNotWork as string[];
+    const positiveWords = whatWorkedWell.length;
+    const negativeWords = whatDidNotWork.length;
     const total = positiveWords + negativeWords;
     if (total === 0) return 0;
 
@@ -398,9 +416,18 @@ export class AARService {
     return 1 - Math.abs(positiveRatio - 0.4);
   }
 
-  private detectAdvancedPatterns(aar: any): AARPattern[] {
+  /**
+   * Detect advanced patterns in AAR responses for personalized learning insights
+   * Analyzes text for technical skill gaps, process issues, and learning patterns
+   * @param aar - AAR data object with responses
+   * @returns Array of detected patterns with recommendations
+   * @private
+   */
+  private detectAdvancedPatterns(aar: PrismaAARData): AARPattern[] {
     const patterns: AARPattern[] = [];
-    const fullText = `${aar.whatWasAccomplished} ${aar.whatWorkedWell.join(' ')} ${aar.whatDidNotWork.join(' ')} ${aar.whyDidNotWork} ${aar.whatWouldIDoDifferently} ${aar.whatDidILearn}`.toLowerCase();
+    const whatWorkedWell = aar.whatWorkedWell as string[];
+    const whatDidNotWork = aar.whatDidNotWork as string[];
+    const fullText = `${aar.whatWasAccomplished} ${whatWorkedWell.join(' ')} ${whatDidNotWork.join(' ')} ${aar.whyDidNotWork} ${aar.whatWouldIDoDifferently} ${aar.whatDidILearn}`.toLowerCase();
 
     // Technical skill gaps
     if (fullText.includes('docker') && (fullText.includes('volume') || fullText.includes('network'))) {
@@ -444,7 +471,7 @@ export class AARService {
     return patterns;
   }
 
-  private generateDetailedFeedback(aar: any, score: number): string {
+  private generateDetailedFeedback(_aar: PrismaAARData, score: number): string {
     if (score >= 9) {
       return 'Excellent AAR! Your analysis shows deep understanding and actionable insights. This level of reflection will accelerate your learning significantly.';
     } else if (score >= 7) {
@@ -456,7 +483,7 @@ export class AARService {
     }
   }
 
-  private generatePersonalizedSuggestions(aar: any, score: number): string[] {
+  private generatePersonalizedSuggestions(aar: PrismaAARData, score: number): string[] {
     const suggestions: string[] = [];
 
     if (!this.hasSpecificExamples(aar)) {
@@ -482,7 +509,7 @@ export class AARService {
     return suggestions.length > 0 ? suggestions : ['Keep up the good work! Your AAR shows thoughtful analysis.'];
   }
 
-  private generateFollowUpQuestions(aar: any, score: number): string[] {
+  private generateFollowUpQuestions(aar: PrismaAARData, score: number): string[] {
     const questions: string[] = [];
 
     if (score < 8) {
@@ -530,41 +557,49 @@ export class AARService {
       }));
   }
 
-  private calculateImprovementTrends(aars: AfterActionReview[]): AARStats['improvementTrends'] {
+  private calculateImprovementTrends(_aars: AfterActionReview[]): AARStats['improvementTrends'] {
     // Simplified trend analysis - in real implementation, use time-series analysis
     return [
       {
-        category: 'Problem Solving',
-        trend: 'improving' as const,
-        dataPoints: [3, 4, 5, 6, 7] // Mock data
+        period: 'Last 30 days',
+        averageScore: 7.5,
+        count: 5
       }
     ];
   }
 
-  private extractStrengths(aars: AfterActionReview[]): string[] {
-    const strengths: string[] = [];
+  private extractStrengths(aars: AfterActionReview[]): StrengthOrImprovement[] {
+    const strengthsMap = new Map<string, number>();
     aars.forEach(aar => {
       if (aar.whatWorkedWell.some((item: string) => item.toLowerCase().includes('planning'))) {
-        strengths.push('Strategic Planning');
+        strengthsMap.set('Strategic Planning', (strengthsMap.get('Strategic Planning') || 0) + 1);
       }
       if (aar.whatWorkedWell.some((item: string) => item.toLowerCase().includes('documentation'))) {
-        strengths.push('Documentation');
+        strengthsMap.set('Documentation', (strengthsMap.get('Documentation') || 0) + 1);
       }
     });
-    return [...new Set(strengths)];
+    return Array.from(strengthsMap.entries()).map(([area, frequency]) => ({
+      area,
+      description: `Demonstrated strength in ${area.toLowerCase()}`,
+      frequency
+    }));
   }
 
-  private extractAreasForImprovement(aars: AfterActionReview[]): string[] {
-    const improvements: string[] = [];
+  private extractAreasForImprovement(aars: AfterActionReview[]): StrengthOrImprovement[] {
+    const improvementsMap = new Map<string, number>();
     aars.forEach(aar => {
       if (aar.whatDidNotWork.some((item: string) => item.toLowerCase().includes('time'))) {
-        improvements.push('Time Management');
+        improvementsMap.set('Time Management', (improvementsMap.get('Time Management') || 0) + 1);
       }
       if (aar.whyDidNotWork.toLowerCase().includes('understanding')) {
-        improvements.push('Requirements Analysis');
+        improvementsMap.set('Requirements Analysis', (improvementsMap.get('Requirements Analysis') || 0) + 1);
       }
     });
-    return [...new Set(improvements)];
+    return Array.from(improvementsMap.entries()).map(([area, frequency]) => ({
+      area,
+      description: `Area for improvement: ${area.toLowerCase()}`,
+      frequency
+    }));
   }
 
   private getPatternDescription(patternId: string): string {
@@ -592,23 +627,23 @@ export class AARService {
   /**
    * Transform Prisma AAR to client-side AAR format
    */
-  private transformPrismaAAR(prismaAAR: any): AfterActionReview {
+  private transformPrismaAAR(prismaAAR: PrismaAARData): AfterActionReview {
     return {
       id: prismaAAR.id,
       userId: prismaAAR.userId,
       lessonId: prismaAAR.lessonId,
-      level: prismaAAR.level,
+      level: prismaAAR.level as 'crawl' | 'walk' | 'run-guided' | 'run-independent',
       labId: prismaAAR.labId,
       completedAt: prismaAAR.completedAt,
       whatWasAccomplished: prismaAAR.whatWasAccomplished,
-      whatWorkedWell: prismaAAR.whatWorkedWell,
-      whatDidNotWork: prismaAAR.whatDidNotWork,
+      whatWorkedWell: prismaAAR.whatWorkedWell as string[],
+      whatDidNotWork: prismaAAR.whatDidNotWork as string[],
       whyDidNotWork: prismaAAR.whyDidNotWork,
       whatWouldIDoDifferently: prismaAAR.whatWouldIDoDifferently,
       whatDidILearn: prismaAAR.whatDidILearn,
-      wordCounts: prismaAAR.wordCounts,
-      aiReview: prismaAAR.aiReview,
-      patterns: prismaAAR.patterns,
+      wordCounts: prismaAAR.wordCounts as AfterActionReview['wordCounts'],
+      aiReview: prismaAAR.aiReview as AIReview | undefined,
+      patterns: prismaAAR.patterns as AARPattern[] | undefined,
       createdAt: prismaAAR.createdAt,
       updatedAt: prismaAAR.updatedAt
     };

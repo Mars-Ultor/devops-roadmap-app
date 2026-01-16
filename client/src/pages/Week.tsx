@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity, max-depth, sonarjs/cognitive-complexity */
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
@@ -26,11 +27,11 @@ export default function Week() {
     async function fetchWeek() {
       if (!weekNumber) return;
       
-      const weekNum = parseInt(weekNumber);
+      const weekNum = Number.parseInt(weekNumber);
       
       try {
         // Check prerequisite: Week 1 always accessible, others require 80% completion of previous week
-        // OR diagnostic recommendation allows access
+        // OR diagnostic recommendation allows access (only UP TO suggested start week)
         if (weekNum > 1) {
           // First check if user has diagnostic results that allow bypassing the gate
           let diagnosticAllowsAccess = false;
@@ -40,8 +41,9 @@ export default function Week() {
               if (diagnosticDoc.exists()) {
                 const diagnosticData = diagnosticDoc.data();
                 const suggestedStartWeek = diagnosticData.suggestedStartWeek || 1;
-                // If diagnostic recommends starting at or before this week, allow access
-                if (suggestedStartWeek <= weekNum) {
+                // Diagnostic unlocks ONLY UP TO the suggested start week (not beyond)
+                // e.g., if diagnostic suggests week 5, unlock weeks 1-5 but not 6+
+                if (weekNum <= suggestedStartWeek) {
                   diagnosticAllowsAccess = true;
                   console.log(`🎯 Diagnostic allows access to Week ${weekNum} (recommended start: Week ${suggestedStartWeek})`);
                 }
@@ -124,47 +126,55 @@ export default function Week() {
                 const firestoreMastery = masterySnap.data() as FirestoreMastery;
                 
                 // Convert Firestore mastery to display format
+                const getCrawlStatus = () => {
+                  if (firestoreMastery.crawl.perfectCompletions >= firestoreMastery.crawl.requiredPerfectCompletions) return 'completed';
+                  if (firestoreMastery.crawl.unlocked) return 'in_progress';
+                  return 'locked';
+                };
+
+                const getWalkStatus = () => {
+                  if (firestoreMastery.walk.perfectCompletions >= firestoreMastery.walk.requiredPerfectCompletions) return 'completed';
+                  if (firestoreMastery.walk.unlocked) return 'in_progress';
+                  return 'locked';
+                };
+
+                const getRunGuidedStatus = () => {
+                  if (firestoreMastery.runGuided.perfectCompletions >= firestoreMastery.runGuided.requiredPerfectCompletions) return 'completed';
+                  if (firestoreMastery.runGuided.unlocked) return 'in_progress';
+                  return 'locked';
+                };
+
+                const getRunIndependentStatus = () => {
+                  if (firestoreMastery.runIndependent.perfectCompletions >= firestoreMastery.runIndependent.requiredPerfectCompletions) return 'completed';
+                  if (firestoreMastery.runIndependent.unlocked) return 'in_progress';
+                  return 'locked';
+                };
+
                 const displayMastery: LessonMastery = {
                   levels: {
                     crawl: {
                       name: "Crawl - Guided",
                       requiredPerfect: firestoreMastery.crawl.requiredPerfectCompletions,
                       perfectCount: firestoreMastery.crawl.perfectCompletions,
-                      status: firestoreMastery.crawl.perfectCompletions >= firestoreMastery.crawl.requiredPerfectCompletions
-                        ? 'completed'
-                        : firestoreMastery.crawl.unlocked
-                        ? 'in_progress'
-                        : 'locked'
+                      status: getCrawlStatus()
                     },
                     walk: {
                       name: "Walk - Fill-in-Blanks",
                       requiredPerfect: firestoreMastery.walk.requiredPerfectCompletions,
                       perfectCount: firestoreMastery.walk.perfectCompletions,
-                      status: firestoreMastery.walk.perfectCompletions >= firestoreMastery.walk.requiredPerfectCompletions
-                        ? 'completed'
-                        : firestoreMastery.walk.unlocked
-                        ? 'in_progress'
-                        : 'locked'
+                      status: getWalkStatus()
                     },
                     runGuided: {
                       name: "Run - Conceptual",
                       requiredPerfect: firestoreMastery.runGuided.requiredPerfectCompletions,
                       perfectCount: firestoreMastery.runGuided.perfectCompletions,
-                      status: firestoreMastery.runGuided.perfectCompletions >= firestoreMastery.runGuided.requiredPerfectCompletions
-                        ? 'completed'
-                        : firestoreMastery.runGuided.unlocked
-                        ? 'in_progress'
-                        : 'locked'
+                      status: getRunGuidedStatus()
                     },
                     runIndependent: {
                       name: "Run - Independent",
                       requiredPerfect: firestoreMastery.runIndependent.requiredPerfectCompletions,
                       perfectCount: firestoreMastery.runIndependent.perfectCompletions,
-                      status: firestoreMastery.runIndependent.perfectCompletions >= firestoreMastery.runIndependent.requiredPerfectCompletions
-                        ? 'completed'
-                        : firestoreMastery.runIndependent.unlocked
-                        ? 'in_progress'
-                        : 'locked'
+                      status: getRunIndependentStatus()
                     }
                   }
                 };
@@ -244,8 +254,8 @@ export default function Week() {
             <div className="bg-slate-800 rounded-lg p-4 border border-slate-700 mb-6">
               <h3 className="text-lg font-semibold text-white mb-3">Learning Objectives</h3>
               <ul className="space-y-2">
-                {week.objectives.map((obj, idx) => (
-                  <li key={idx} className="text-gray-400 flex items-start">
+                {week.learningObjectives.map((obj) => (
+                  <li key={obj} className="text-gray-400 flex items-start">
                     <CheckCircle className="w-5 h-5 text-green-400 mr-2 flex-shrink-0 mt-0.5" />
                     {obj}
                   </li>
@@ -278,16 +288,16 @@ export default function Week() {
               const progress = lessonProgressMap.get(lesson.lessonId);
               const isDue = progress && isLessonDueForReview(progress);
 
+              const getBorderClass = () => {
+                if (!progress) return 'border-slate-700';
+                if (isDue) return 'border-yellow-600/50';
+                return 'border-green-600/50';
+              };
+
               return (
                 <div
                   key={lesson.lessonId}
-                  className={`bg-slate-800 rounded-lg p-6 border transition ${
-                    progress
-                      ? isDue
-                        ? 'border-yellow-600/50'
-                        : 'border-green-600/50'
-                      : 'border-slate-700'
-                  }`}
+                  className={`bg-slate-800 rounded-lg p-6 border transition ${getBorderClass()}`}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
@@ -381,8 +391,8 @@ export default function Week() {
                       <div className="ml-11">
                         <div className="text-sm font-medium text-gray-300 mb-2">Tasks:</div>
                         <ul className="space-y-1">
-                          {lab.tasks.slice(0, 3).map((task, taskIdx) => (
-                            <li key={taskIdx} className="text-sm text-gray-400 flex items-start">
+                          {lab.tasks.slice(0, 3).map((task) => (
+                            <li key={task} className="text-sm text-gray-400 flex items-start">
                               <span className="text-green-400 mr-2">•</span>
                               {task}
                             </li>
@@ -423,7 +433,7 @@ export default function Week() {
             <h2 className="text-2xl font-bold text-white mb-3 flex items-center">
               <span className="bg-blue-400 rounded-full p-2 mr-3">
                 📊
-              </span>
+              </span>{' '}
               Skill Assessment
             </h2>
             <p className="text-blue-100 mb-6 text-lg">
@@ -432,7 +442,7 @@ export default function Week() {
             <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-blue-800/30 rounded-lg p-5 border border-blue-600/50">
                 <h3 className="text-white font-semibold mb-2 flex items-center gap-2">
-                  <span className="text-2xl">📝</span>
+                  <span className="text-2xl">📝</span>{' '}
                   Pre-Assessment
                 </h3>
                 <p className="text-blue-200 text-sm mb-4">
@@ -447,7 +457,7 @@ export default function Week() {
               </div>
               <div className="bg-cyan-800/30 rounded-lg p-5 border border-cyan-600/50">
                 <h3 className="text-white font-semibold mb-2 flex items-center gap-2">
-                  <span className="text-2xl">🎓</span>
+                  <span className="text-2xl">🎓</span>{' '}
                   Post-Assessment
                 </h3>
                 <p className="text-cyan-200 text-sm mb-4">

@@ -76,6 +76,31 @@ export interface RunGuidedCheckpoint {
 export interface RunIndependentContent {
   introduction?: string; // Optional introduction
   objective?: string; // Optional objective
+  companyProfile?: {
+    name: string;
+    description: string;
+    currentMetrics: {
+      deploymentFrequency: string;
+      leadTimeForChanges: string;
+      changeFailureRate: string;
+      timeToRestoreService: string;
+    };
+    teamStructure: {
+      development: string;
+      operations: string;
+      qa: string;
+      management: string;
+    };
+    technologyStack: {
+      frontend: string;
+      backend: string;
+      infrastructure: string;
+      ciCd: string;
+      monitoring: string;
+    };
+    currentChallenges: string[];
+    businessContext: string;
+  }; // Optional company profile for transformation exercises
   successCriteria?: string[]; // Optional success criteria
   timeTarget?: number; // Optional time target
   minimumRequirements?: string[]; // Optional minimum requirements
@@ -137,15 +162,15 @@ export type LevelContent = CrawlContent | WalkContent | RunGuidedContent | RunIn
 
 // Type guard functions
 export function isCrawlContent(content: LevelContent): content is CrawlContent {
-  return 'steps' in content && Array.isArray((content as CrawlContent).steps);
+  return 'steps' in content && Array.isArray(content.steps);
 }
 
 export function isWalkContent(content: LevelContent): content is WalkContent {
-  return 'exercises' in content && Array.isArray((content as WalkContent).exercises);
+  return 'exercises' in content && Array.isArray(content.exercises);
 }
 
 export function isRunGuidedContent(content: LevelContent): content is RunGuidedContent {
-  return 'conceptualGuidance' in content && Array.isArray((content as RunGuidedContent).conceptualGuidance);
+  return 'conceptualGuidance' in content && Array.isArray(content.conceptualGuidance);
 }
 
 export function isRunIndependentContent(content: LevelContent): content is RunIndependentContent {
