@@ -31,9 +31,9 @@ interface TrendAnalysis {
 }
 
 interface BattleDrillPerformanceTrackerProps {
-  userId: string;
-  drillId: string;
-  onRecertificationNeeded?: () => void;
+  readonly userId: string;
+  readonly drillId: string;
+  readonly onRecertificationNeeded?: () => void;
 }
 
 // Separate component for performance analytics to prevent re-renders

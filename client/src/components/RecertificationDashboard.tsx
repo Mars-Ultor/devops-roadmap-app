@@ -19,14 +19,15 @@ export default function RecertificationDashboard() {
   const [selectedDrill, setSelectedDrill] = useState<RecertificationDrill | null>(null);
   const { certificationStatus, recentAttempts, loading, error, refreshData } = useRecertificationData(user?.uid);
 
+  const hasPrerequisite = (prereq: string) => 
+    certificationStatus.some(cert =>
+      cert.skillId === prereq ||
+      (prereq.includes('-completed') && cert.certificationLevel !== 'bronze')
+    );
+
   const getAvailableDrills = () => 
     RECERTIFICATION_DRILLS.filter(drill =>
-      drill.prerequisites.every(prereq =>
-        certificationStatus.some(cert =>
-          cert.skillId === prereq ||
-          (prereq.includes('-completed') && cert.certificationLevel !== 'bronze')
-        )
-      )
+      drill.prerequisites.every(hasPrerequisite)
     );
 
   const getUpcomingRecertifications = () =>
@@ -68,7 +69,7 @@ export default function RecertificationDashboard() {
         <div className="text-center">
           <div className="text-red-400 text-xl mb-4">Error loading certification data</div>
           <div className="text-gray-400">{error}</div>
-          <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          <button onClick={() => globalThis.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
             Retry
           </button>
         </div>

@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function, complexity, sonarjs/cognitive-complexity */
+/* eslint-disable max-lines-per-function */
 import { useAuthStore } from '../store/authStore';
 import { Link } from 'react-router-dom';
 import { BookOpen, Code, Trophy, Zap, Flame, Brain, Settings, RefreshCw, Users, Target, Award, AlertTriangle, Shield } from 'lucide-react';
@@ -17,6 +17,52 @@ import { DailyChallengeModal } from '../components/challenges/DailyChallengeModa
 import { BossBattleModal } from '../components/challenges/BossBattleModal';
 import { useRecertification } from '../hooks/useRecertification';
 import { RecertificationModal } from '../components/recertification/RecertificationModal';
+
+const getStatusClass = (status: string) => {
+  switch (status) {
+    case 'completed':
+      return 'bg-green-900/30 text-green-400';
+    case 'in-progress':
+      return 'bg-blue-900/30 text-blue-400';
+    case 'failed':
+      return 'bg-red-900/30 text-red-400';
+    default:
+      return 'bg-gray-900/30 text-gray-400';
+  }
+};
+
+const getCommitmentStatusClass = (status: string) => {
+  switch (status) {
+    case 'completed':
+      return 'bg-green-500';
+    case 'in-progress':
+      return 'bg-blue-500';
+    default:
+      return 'bg-gray-600';
+  }
+};
+
+const getLevelClass = (level: string) => {
+  switch (level) {
+    case 'soldier':
+      return 'bg-blue-900/20 border-blue-700';
+    case 'specialist':
+      return 'bg-purple-900/20 border-purple-700';
+    default:
+      return 'bg-red-900/20 border-red-700';
+  }
+};
+
+const getLevelTextClass = (level: string) => {
+  switch (level) {
+    case 'soldier':
+      return 'text-blue-400';
+    case 'specialist':
+      return 'text-purple-400';
+    default:
+      return 'text-red-400';
+  }
+};
 
 export default function Dashboard() {
   const { user } = useAuthStore();
@@ -248,12 +294,7 @@ export default function Dashboard() {
                   <span className="text-sm text-gray-400">
                     Week {currentWeekCommitment.weekNumber} • {currentWeekCommitment.weekStart.toLocaleDateString()} - {currentWeekCommitment.weekEnd.toLocaleDateString()}
                   </span>
-                  <span className={`px-3 py-1 rounded-lg text-sm font-semibold ${
-                    currentWeekCommitment.overallStatus === 'completed' ? 'bg-green-900/30 text-green-400' :
-                    currentWeekCommitment.overallStatus === 'in-progress' ? 'bg-blue-900/30 text-blue-400' :
-                    currentWeekCommitment.overallStatus === 'failed' ? 'bg-red-900/30 text-red-400' :
-                    'bg-gray-900/30 text-gray-400'
-                  }`}>
+                  <span className={`px-3 py-1 rounded-lg text-sm font-semibold ${getStatusClass(currentWeekCommitment.overallStatus)}`}>
                     {currentWeekCommitment.overallStatus.toUpperCase()}
                   </span>
                 </div>
@@ -272,11 +313,7 @@ export default function Dashboard() {
                       </div>
                       <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
                         <div
-                          className={`h-2 rounded-full transition-all ${
-                            commitment.status === 'completed' ? 'bg-green-500' :
-                            commitment.status === 'in-progress' ? 'bg-blue-500' :
-                            'bg-gray-600'
-                          }`}
+                          className={`h-2 rounded-full transition-all ${getCommitmentStatusClass(commitment.status)}`}
                           style={{ width: `${Math.min((commitment.current / commitment.target) * 100, 100)}%` }}
                         />
                       </div>
@@ -321,19 +358,9 @@ export default function Dashboard() {
               </Link>
             </div>
 
-            <div className={`border rounded-lg p-6 ${
-              currentLevel === 'recruit' ? 'bg-green-900/20 border-green-700' :
-              currentLevel === 'soldier' ? 'bg-blue-900/20 border-blue-700' :
-              currentLevel === 'specialist' ? 'bg-purple-900/20 border-purple-700' :
-              'bg-red-900/20 border-red-700'
-            }`}>
+            <div className={`border rounded-lg p-6 ${getLevelClass(currentLevel)}`}>
               <div className="flex items-center gap-4 mb-4">
-                <Award className={`w-10 h-10 ${
-                  currentLevel === 'recruit' ? 'text-green-400' :
-                  currentLevel === 'soldier' ? 'text-blue-400' :
-                  currentLevel === 'specialist' ? 'text-purple-400' :
-                  'text-red-400'
-                }`} />
+                <Award className={`w-10 h-10 ${getLevelTextClass(currentLevel)}`} />
                 <div>
                   <h3 className="text-xl font-bold text-white">
                     {DIFFICULTY_THRESHOLDS[currentLevel].name}
@@ -393,8 +420,7 @@ export default function Dashboard() {
         {/* Motivation */}
         <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 shadow-lg">
           <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
-            <span className="mr-3">🎯</span>
-            Your 3-Month Goal
+            🎯 Your 3-Month Goal
           </h3>
           <div className="w-full bg-slate-700 rounded-full h-6 mb-3 overflow-hidden">
             <div 

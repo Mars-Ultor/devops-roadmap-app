@@ -12,12 +12,11 @@ export interface QuizQuestion {
 }
 
 interface QuizProps {
-  quizId: string;
-  title: string;
-  questions: QuizQuestion[];
-  passingScore: number;
-  xpReward: number;
-  weekId?: string;
+  readonly quizId: string;
+  readonly title: string;
+  readonly questions: QuizQuestion[];
+  readonly passingScore: number;
+  readonly xpReward: number;
 }
 
 export default function Quiz({ quizId, title, questions, passingScore, xpReward }: QuizProps) {
@@ -65,7 +64,7 @@ export default function Quiz({ quizId, title, questions, passingScore, xpReward 
         xp: increment(xpReward)
       });
       alert(`🎉 Congratulations! You earned ${xpReward} XP!`);
-      setTimeout(() => window.location.reload(), 1000);
+      setTimeout(() => globalThis.location.reload(), 1000);
     } catch (error) {
       console.error('Error claiming reward:', error);
       alert('Failed to award XP. Please try again.');
@@ -105,7 +104,7 @@ export default function Quiz({ quizId, title, questions, passingScore, xpReward 
       onPrevious={() => currentQuestion > 0 && setCurrentQuestion(currentQuestion - 1)}
       onNext={() => currentQuestion < questions.length - 1 && setCurrentQuestion(currentQuestion + 1)}
       onSubmit={() => setShowResults(true)}
-      canSubmit={!selectedAnswers.some(a => a === null)}
+      canSubmit={!selectedAnswers.includes(null)}
     />
   );
 }

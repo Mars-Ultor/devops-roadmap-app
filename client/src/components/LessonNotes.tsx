@@ -10,8 +10,8 @@ import { useAuthStore } from '../store/authStore';
 import { NotesHeader, TagsSection, MarkdownPreview, NotesEditor, NotesFooter } from './lesson-notes/LessonNotesComponents';
 
 interface LessonNotesProps {
-  lessonId: string;
-  lessonTitle: string;
+  readonly lessonId: string;
+  readonly lessonTitle: string;
 }
 
 export default function LessonNotes({ lessonId, lessonTitle }: LessonNotesProps) {

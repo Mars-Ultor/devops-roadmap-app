@@ -51,7 +51,7 @@ export default function AARHistory() {
   }, [user?.uid]);
 
   const uniqueLessons = useMemo(() => 
-    [...new Set(aars.map(aar => aar.lessonId))].sort(), [aars]);
+    [...new Set(aars.map(aar => aar.lessonId))].sort((a, b) => a.localeCompare(b)), [aars]);
 
   const filteredAars = useMemo(() => {
     let filtered = aars;

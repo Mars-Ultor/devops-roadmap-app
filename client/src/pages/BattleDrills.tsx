@@ -13,11 +13,22 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { BattleDrill, BattleDrillPerformance } from '../types/training';
 
+const getDifficultyClass = (difficulty: string) => {
+  switch (difficulty) {
+    case 'basic':
+      return 'bg-green-900/30 text-green-400';
+    case 'intermediate':
+      return 'bg-yellow-900/30 text-yellow-400';
+    default:
+      return 'bg-red-900/30 text-red-400';
+  }
+};
+
 export default function BattleDrills() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'basic' | 'intermediate' | 'advanced'>('all');
-  const [selectedCategory, setSelectedCategory] = useState<'all' | string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [performanceMap, setPerformanceMap] = useState<Map<string, BattleDrillPerformance>>(new Map());
 
   const loadPerformance = useCallback(async () => {
@@ -150,8 +161,8 @@ export default function BattleDrills() {
         <div className="bg-slate-800 rounded-lg border border-slate-700 p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Difficulty Filter */}
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Difficulty</label>
+            <fieldset>
+              <legend className="block text-sm font-medium text-slate-300 mb-2">Difficulty</legend>
               <div className="flex gap-2">
                 {['all', 'basic', 'intermediate', 'advanced'].map(diff => (
                   <button
@@ -167,11 +178,11 @@ export default function BattleDrills() {
                   </button>
                 ))}
               </div>
-            </div>
+            </fieldset>
 
             {/* Category Filter */}
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Category</label>
+            <fieldset>
+              <legend className="block text-sm font-medium text-slate-300 mb-2">Category</legend>
               <div className="flex flex-wrap gap-2">
                 {['all', 'deployment', 'troubleshooting', 'security', 'scaling', 'cicd', 'recovery'].map(cat => (
                   <button
@@ -187,7 +198,7 @@ export default function BattleDrills() {
                   </button>
                 ))}
               </div>
-            </div>
+            </fieldset>
           </div>
         </div>
 
@@ -256,6 +267,9 @@ export default function BattleDrills() {
                 key={drill.id}
                 className="bg-slate-800 rounded-lg border border-slate-700 p-5 hover:border-indigo-500 transition-all cursor-pointer"
                 onClick={() => navigate(`/battle-drill/${drill.id}`)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/battle-drill/${drill.id}`); } }}
+                role="button"
+                tabIndex={0}
               >
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">
@@ -273,11 +287,7 @@ export default function BattleDrills() {
 
                 {/* Meta Info */}
                 <div className="flex items-center gap-3 mb-4 text-xs">
-                  <span className={`px-2 py-1 rounded ${
-                    drill.difficulty === 'basic' ? 'bg-green-900/30 text-green-400' :
-                    drill.difficulty === 'intermediate' ? 'bg-yellow-900/30 text-yellow-400' :
-                    'bg-red-900/30 text-red-400'
-                  }`}>
+                  <span className={`px-2 py-1 rounded ${getDifficultyClass(drill.difficulty)}`}>
                     {drill.difficulty}
                   </span>
                   <span className="px-2 py-1 rounded bg-slate-700 text-slate-300 capitalize">
