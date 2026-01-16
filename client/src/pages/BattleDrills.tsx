@@ -263,13 +263,11 @@ export default function BattleDrills() {
             const stats = getDrillStats(drill);
             
             return (
-              <div
+              <button
                 key={drill.id}
-                className="bg-slate-800 rounded-lg border border-slate-700 p-5 hover:border-indigo-500 transition-all cursor-pointer"
+                className="bg-slate-800 rounded-lg border border-slate-700 p-5 hover:border-indigo-500 transition-all cursor-pointer text-left w-full"
                 onClick={() => navigate(`/battle-drill/${drill.id}`)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/battle-drill/${drill.id}`); } }}
-                role="button"
-                tabIndex={0}
               >
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">
@@ -333,7 +331,7 @@ export default function BattleDrills() {
                     <span className="text-sm text-slate-500">Not attempted yet</span>
                   </div>
                 )}
-              </div>
+              </button>
             );
           })}
         </div>

@@ -5,11 +5,11 @@
 
 import { useState, useEffect, useCallback, type FC } from 'react';
 import { BarChart3, Activity, Target, TrendingUp, type LucideIcon } from 'lucide-react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, type QuerySnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
 import { useResetTokens } from '../hooks/useResetTokens';
-import type { AnalyticsData } from '../hooks/analytics-data/analyticsDataUtils';
+import type { AnalyticsData, getDefaultAnalytics } from '../hooks/analytics-data/analyticsDataUtils';
 import { useTimeAnalysis } from '../hooks/useTimeAnalysis';
 import { useLearningVelocity } from '../hooks/useLearningVelocity';
 import { LearningVelocityChart } from '../components/analytics/LearningVelocityChart';
@@ -45,33 +45,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('week');
   const [activeTab, setActiveTab] = useState<'overview' | 'velocity' | 'mastery' | 'predictions'>('overview');
-  const [analytics, setAnalytics] = useState<AnalyticsData>({
-    totalStudyTime: 0,
-    avgSessionDuration: 0,
-    totalSessions: 0,
-    bestStudyHour: 14,
-    longestStreak: 0,
-    currentStreak: 0,
-    battleDrillsCompleted: 0,
-    battleDrillAvgTime: 0,
-    battleDrillSuccessRate: 0,
-    stressSessionsCompleted: 0,
-    productionScenariosCompleted: 0,
-    crawlItems: 0,
-    walkItems: 0,
-    runGuidedItems: 0,
-    runIndependentItems: 0,
-    masteryRate: 0,
-    quizSuccessRate: 0,
-    labSuccessRate: 0,
-    avgQuizScore: 0,
-    avgLabScore: 0,
-    totalFailures: 0,
-    aarCompleted: 0,
-    lessonsLearned: 0,
-    resetTokensUsed: 0,
-    weakTopics: []
-  });
+  const [analytics, setAnalytics] = useState<AnalyticsData>(getDefaultAnalytics());
 
   useEffect(() => {
     loadAnalytics();
@@ -190,7 +164,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
     data.runGuidedItems = runGuided;
     data.runIndependentItems = runIndependent;
     data.masteryRate = progressSnap.size > 0 ? runIndependent / progressSnap.size : 0;
-    data.weakTopics = weakTopics.toSorted((a, b) => a.easinessFactor - b.easinessFactor).slice(0, 5);
+    data.weakTopics = [...weakTopics].sort((a, b) => a.easinessFactor - b.easinessFactor).slice(0, 5);
 
     return progressSnap;
   }, [user?.uid]);
@@ -333,13 +307,19 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
       data.currentStreak = currentStreak;
       data.longestStreak = longestStreak;
 
-      setAnalytics(data);
+      setAnalytics(prev => ({ ...prev, ...data }));
     } catch (error) {
       console.error('Error loading analytics:', error);
     } finally {
       setLoading(false);
     }
   }, [getDateFilter, loadStudySessionsData, loadBattleDrillData, loadProgressData, loadQuizData, loadLabData, loadFailureData, calculateStreaks, getUsageStats, user?.uid]);
+
+  useEffect(() => {
+    if (user?.uid) {
+      loadAnalytics();
+    }
+  }, [loadAnalytics, user?.uid]);
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);

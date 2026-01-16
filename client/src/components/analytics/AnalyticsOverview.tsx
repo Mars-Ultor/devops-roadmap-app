@@ -54,7 +54,7 @@ interface AnalyticsData {
   weakTopics: Array<{ topic: string; easinessFactor: number; attempts: number; lastAttempt: Date }>;
   weeklyProgress: Array<{ week: string; sessions: number; avgScore: number }>;
   monthlyTrends: Array<{ month: string; totalXP: number; skillsLearned: number }>;
-  skills: Record<string, { level: number; xp: number; name?: string }>;
+  skills: Array<{ name: string; category: string; proficiency: number; sessionsCompleted: number; lastPracticed: string }>;
 }
 
 interface AnalyticsOverviewProps {

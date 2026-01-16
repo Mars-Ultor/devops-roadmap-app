@@ -476,7 +476,7 @@ export default function Dashboard() {
                     Recertification {recertStatus.isOverdue ? 'Overdue' : 'Recommended'}
                   </h3>
                   <p className="text-red-100 mt-2">
-                    {recertStatus.skillsNeedingRecert.length} skill{recertStatus.skillsNeedingRecert.length !== 1 ? 's' : ''} showing decay
+                    {recertStatus.skillsNeedingRecert.length} skill{recertStatus.skillsNeedingRecert.length === 1 ? '' : 's'} showing decay
                     {recertStatus.isOverdue && ' • Content blocked until recertified'}
                   </p>
                 </div>
