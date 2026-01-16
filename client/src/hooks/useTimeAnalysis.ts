@@ -36,13 +36,13 @@ export function useTimeAnalysis() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    if (user?.uid) {
       analyzeStudyTimes();
     }
-  }, [user]);
+  }, [user?.uid]);
 
   const analyzeStudyTimes = async () => {
-    if (!user) return;
+    if (!user?.uid) return;
 
     try {
       // Get all user progress with timestamps

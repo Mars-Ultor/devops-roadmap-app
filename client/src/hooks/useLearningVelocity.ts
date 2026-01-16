@@ -30,13 +30,13 @@ export function useLearningVelocity() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    if (user?.uid) {
       analyzeLearningVelocity();
     }
-  }, [user]);
+  }, [user?.uid]);
 
   const analyzeLearningVelocity = async () => {
-    if (!user) return;
+    if (!user?.uid) return;
 
     try {
       // Get progress data over time

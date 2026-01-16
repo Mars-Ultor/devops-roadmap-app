@@ -104,7 +104,7 @@ export default function Analytics() {
 
   useEffect(() => {
     loadAnalytics();
-  }, [user, timeRange]);
+  }, [user?.uid, timeRange]);
 
   const getDateFilter = () => {
     const now = new Date();

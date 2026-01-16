@@ -50,13 +50,13 @@ export function usePredictiveAnalytics() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    if (user?.uid) {
       generatePredictions();
     }
-  }, [user]);
+  }, [user?.uid]);
 
   const generatePredictions = async () => {
-    if (!user) return;
+    if (!user?.uid) return;
 
     try {
       // Get historical data
