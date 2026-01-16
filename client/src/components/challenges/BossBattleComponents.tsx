@@ -49,7 +49,7 @@ export function BattleHeader({ week, battle, timeRemaining, currentScore, isActi
           </div>
         </div>
         {!isActive && (
-          <button onClick={onClose} className="text-slate-400 hover:text-white">
+          <button onClick={onClose} className="text-slate-400 hover:text-white" title="Close">
             <X className="w-6 h-6" />
           </button>
         )}

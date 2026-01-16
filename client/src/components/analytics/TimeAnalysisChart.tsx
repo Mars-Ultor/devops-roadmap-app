@@ -105,7 +105,7 @@ export const TimeAnalysisChart: FC<TimeAnalysisChartProps> = ({ data, formatHour
                       {Math.round(hourData.averageScore)}%
                     </span>
                     <span className="text-xs text-slate-300">
-                      {hourData.totalSessions} session{hourData.totalSessions !== 1 ? 's' : ''}
+                      {hourData.totalSessions} session{hourData.totalSessions === 1 ? '' : 's'}
                     </span>
                   </div>
                 </>

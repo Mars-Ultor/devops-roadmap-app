@@ -10,7 +10,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import type { HourlyPerformance, TimeRecommendation } from './time-analysis/timeAnalysisUtils';
 import { formatHour, calculateHourlyPerformance, generateRecommendation } from './time-analysis/timeAnalysisUtils';
 
-export type { HourlyPerformance, TimeRecommendation };
+export type { HourlyPerformance, TimeRecommendation } from './time-analysis/timeAnalysisUtils';
 
 export interface TimeAnalysisData {
   hourlyPerformance: HourlyPerformance[];

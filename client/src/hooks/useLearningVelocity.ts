@@ -10,7 +10,7 @@ import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import type { WeeklyProgress } from './learning-velocity/learningVelocityUtils';
 import { calculateVelocityTrend, getWeekKey, convertToWeeklyProgress, calculateCurrentPace, calculateOptimalPace, projectCompletionDate } from './learning-velocity/learningVelocityUtils';
 
-export type { WeeklyProgress };
+export type { WeeklyProgress } from './learning-velocity/learningVelocityUtils';
 
 export interface LearningVelocityData {
   weeklyProgress: WeeklyProgress[];

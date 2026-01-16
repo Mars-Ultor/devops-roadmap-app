@@ -14,7 +14,7 @@ import {
 } from './analytics-data/analyticsDataUtils';
 import type { AnalyticsData, TimeRange } from './analytics-data/analyticsDataUtils';
 
-export type { AnalyticsData, TimeRange };
+export type { AnalyticsData, TimeRange } from './analytics-data/analyticsDataUtils';
 
 export const useAnalyticsData = (timeRange: TimeRange) => {
   const { user } = useAuthStore();

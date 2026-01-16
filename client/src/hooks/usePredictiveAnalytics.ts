@@ -11,7 +11,7 @@ import {
 } from './predictive-analytics/predictiveAnalyticsUtils';
 import type { PredictiveData } from './predictive-analytics/predictiveAnalyticsUtils';
 
-export type { PredictiveData };
+export type { PredictiveData } from './predictive-analytics/predictiveAnalyticsUtils';
 
 export function usePredictiveAnalytics() {
   const { user } = useAuthStore();

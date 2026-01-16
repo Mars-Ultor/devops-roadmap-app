@@ -3,7 +3,7 @@
  * Comprehensive military training performance metrics
  */
 
-import { useState, type FC } from 'react';
+import { useState, useCallback, type FC } from 'react';
 import { BarChart3, Activity, Target, TrendingUp, type LucideIcon } from 'lucide-react';
 import { useTimeAnalysis } from '../hooks/useTimeAnalysis';
 import { useLearningVelocity } from '../hooks/useLearningVelocity';
@@ -12,7 +12,6 @@ import { TopicMasteryHeatmap } from '../components/analytics/TopicMasteryHeatmap
 import { PredictiveAnalytics } from '../components/analytics/PredictiveAnalytics';
 import { usePredictiveAnalytics } from '../hooks/usePredictiveAnalytics';
 import AnalyticsOverview from '../components/analytics/AnalyticsOverview';
-import { useAnalyticsData } from '../hooks/useAnalyticsData';
 
 type TimeRange = 'week' | 'month' | 'all';
 type TabId = 'overview' | 'velocity' | 'mastery' | 'predictions';
@@ -32,10 +31,10 @@ const TABS: Array<{ id: TabId; label: string; icon: LucideIcon }> = [
   { id: 'predictions', label: 'Predictions', icon: TrendingUp }
 ];
 
-export default function Analytics() {
+export default function Analytics() { // eslint-disable-line max-lines-per-function
   const { analysisData, formatHour, loading: timeAnalysisLoading } = useTimeAnalysis();
   const { predictiveData, loading: predictiveLoading } = usePredictiveAnalytics();
-  const { velocityData, loading: velocityLoading } = useLearningVelocity();
+  const { velocityData } = useLearningVelocity();
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('week');
   const [activeTab, setActiveTab] = useState<'overview' | 'velocity' | 'mastery' | 'predictions'>('overview');
@@ -69,26 +68,223 @@ export default function Analytics() {
 
   useEffect(() => {
     loadAnalytics();
-  }, [user?.uid, timeRange]);
+  }, [loadAnalytics]);
 
-  const getDateFilter = () => {
+  const getDateFilter = useCallback(() => {
     const now = new Date();
     switch (timeRange) {
-      case 'week':
+      case 'week': {
         const weekAgo = new Date(now);
         weekAgo.setDate(now.getDate() - 7);
         return weekAgo;
-      case 'month':
+      }
+      case 'month': {
         const monthAgo = new Date(now);
         monthAgo.setMonth(now.getMonth() - 1);
         return monthAgo;
+      }
       case 'all':
       default:
         return new Date(0); // Beginning of time
     }
-  };
+  }, [timeRange]);
 
-  const loadAnalytics = async () => {
+  const loadStudySessionsData = useCallback(async (dateFilter: Date, data: Partial<AnalyticsData>) => {
+    const sessionsQuery = query(
+      collection(db, 'studySessions'),
+      where('userId', '==', user?.uid),
+      where('completed', '==', true),
+      where('startTime', '>=', dateFilter)
+    );
+    const sessionsSnap = await getDocs(sessionsQuery);
+    
+    let totalTime = 0;
+    const hourCounts: Record<number, number> = {};
+    
+    sessionsSnap.forEach(doc => {
+      const sessionData = doc.data();
+      totalTime += sessionData.duration || 0;
+      const hour = sessionData.startTime?.toDate().getHours() || 14;
+      hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+    });
+
+    let bestHour = 14;
+    let maxCount = 0;
+    Object.entries(hourCounts).forEach(([hour, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        bestHour = Number.parseInt(hour);
+      }
+    });
+
+    data.totalStudyTime = totalTime;
+    data.totalSessions = sessionsSnap.size;
+    data.avgSessionDuration = sessionsSnap.size > 0 ? totalTime / sessionsSnap.size : 0;
+    data.bestStudyHour = bestHour;
+
+    return sessionsSnap;
+  }, []);
+
+  const loadBattleDrillData = useCallback(async (data: Partial<AnalyticsData>) => {
+    const drillPerfQuery = query(
+      collection(db, 'battleDrillPerformance'),
+      where('userId', '==', user?.uid)
+    );
+    const drillPerfSnap = await getDocs(drillPerfQuery);
+    
+    let drillCount = 0;
+    let totalDrillTime = 0;
+    let successfulDrills = 0;
+    
+    drillPerfSnap.forEach(doc => {
+      const perf = doc.data();
+      drillCount += perf.attempts || 0;
+      totalDrillTime += perf.bestTime || 0;
+      if (perf.bestTime && perf.bestTime <= 300) successfulDrills++;
+    });
+
+    data.battleDrillsCompleted = drillCount;
+    data.battleDrillAvgTime = drillCount > 0 ? totalDrillTime / drillCount : 0;
+    data.battleDrillSuccessRate = drillPerfSnap.size > 0 ? successfulDrills / drillPerfSnap.size : 0;
+  }, []);
+
+  const loadProgressData = useCallback(async (data: Partial<AnalyticsData>) => {
+    const progressQuery = query(
+      collection(db, 'progress'),
+      where('userId', '==', user?.uid)
+    );
+    const progressSnap = await getDocs(progressQuery);
+    
+    let crawl = 0, walk = 0, runGuided = 0, runIndependent = 0;
+    const weakTopics: Array<{ topic: string; easinessFactor: number; attempts: number; lastAttempt: Date }> = [];
+    
+    progressSnap.forEach(doc => {
+      const prog = doc.data();
+      switch (prog.masteryLevel) {
+        case 'crawl': crawl++; break;
+        case 'walk': walk++; break;
+        case 'run-guided': runGuided++; break;
+        case 'run-independent': runIndependent++; break;
+      }
+      
+      // Track weak areas (EF < 2.0)
+      if (prog.easinessFactor && prog.easinessFactor < 2) {
+        weakTopics.push({
+          topic: prog.lessonId || prog.contentId || 'Unknown',
+          easinessFactor: prog.easinessFactor,
+          attempts: prog.repetitions || 0,
+          lastAttempt: prog.lastReviewDate?.toDate() || new Date()
+        });
+      }
+    });
+
+    data.crawlItems = crawl;
+    data.walkItems = walk;
+    data.runGuidedItems = runGuided;
+    data.runIndependentItems = runIndependent;
+    data.masteryRate = progressSnap.size > 0 ? runIndependent / progressSnap.size : 0;
+    data.weakTopics = weakTopics.toSorted((a, b) => a.easinessFactor - b.easinessFactor).slice(0, 5);
+
+    return progressSnap;
+  }, []);
+
+  const loadQuizData = useCallback(async (data: Partial<AnalyticsData>) => {
+    const quizAttemptsQuery = query(
+      collection(db, 'quizAttempts'),
+      where('userId', '==', user?.uid)
+    );
+    const quizSnap = await getDocs(quizAttemptsQuery);
+    
+    let quizTotal = 0;
+    let quizPassed = 0;
+    let totalQuizScore = 0;
+    
+    quizSnap.forEach(doc => {
+      const attempt = doc.data();
+      quizTotal++;
+      totalQuizScore += attempt.score || 0;
+      if (attempt.passed) quizPassed++;
+    });
+
+    data.quizSuccessRate = quizTotal > 0 ? quizPassed / quizTotal : 0;
+    data.avgQuizScore = quizTotal > 0 ? totalQuizScore / quizTotal : 0;
+  }, []);
+
+  const loadLabData = useCallback(async (data: Partial<AnalyticsData>) => {
+    const labQuery = query(
+      collection(db, 'progress'),
+      where('userId', '==', user?.uid),
+      where('type', '==', 'lab')
+    );
+    const labSnap = await getDocs(labQuery);
+    
+    let labTotal = 0;
+    let labPassed = 0;
+    let totalLabScore = 0;
+    
+    labSnap.forEach(doc => {
+      const lab = doc.data();
+      labTotal++;
+      totalLabScore += lab.score || 0;
+      if (lab.completed) labPassed++;
+    });
+
+    data.labSuccessRate = labTotal > 0 ? labPassed / labTotal : 0;
+    data.avgLabScore = labTotal > 0 ? totalLabScore / labTotal : 0;
+  }, []);
+
+  const loadFailureData = useCallback(async (data: Partial<AnalyticsData>) => {
+    const failureQuery = query(
+      collection(db, 'failureLogs'),
+      where('userId', '==', user?.uid)
+    );
+    const failureSnap = await getDocs(failureQuery);
+    
+    let aarCount = 0;
+    let lessonsCount = 0;
+    
+    failureSnap.forEach(doc => {
+      const failure = doc.data();
+      if (failure.aarCompleted) aarCount++;
+      lessonsCount += failure.lessonsLearned?.length || 0;
+    });
+
+    data.totalFailures = failureSnap.size;
+    data.aarCompleted = aarCount;
+    data.lessonsLearned = lessonsCount;
+  }, []);
+
+  const calculateStreaks = useCallback((sessionsSnap: QuerySnapshot) => {
+    const dailySessions = new Map<string, boolean>();
+    sessionsSnap.forEach(doc => {
+      const date = doc.data().startTime?.toDate().toISOString().split('T')[0];
+      if (date) dailySessions.set(date, true);
+    });
+
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+    const today = new Date();
+    
+    for (let i = 0; i < 365; i++) {
+      const checkDate = new Date(today);
+      checkDate.setDate(today.getDate() - i);
+      const dateKey = checkDate.toISOString().split('T')[0];
+      
+      if (dailySessions.has(dateKey)) {
+        tempStreak++;
+        if (i === 0 || tempStreak > 0) currentStreak = tempStreak;
+        longestStreak = Math.max(longestStreak, tempStreak);
+      } else {
+        if (i === 0) currentStreak = 0;
+        tempStreak = 0;
+      }
+    }
+
+    return { currentStreak, longestStreak };
+  }, []);
+
+  const loadAnalytics = useCallback(async () => {
     if (!user?.uid) return;
 
     setLoading(true);
@@ -96,62 +292,15 @@ export default function Analytics() {
       const dateFilter = getDateFilter();
       const data: Partial<AnalyticsData> = {};
 
-      // Study sessions
-      const sessionsQuery = query(
-        collection(db, 'studySessions'),
-        where('userId', '==', user.uid),
-        where('completed', '==', true),
-        where('startTime', '>=', dateFilter)
-      );
-      const sessionsSnap = await getDocs(sessionsQuery);
-      
-      let totalTime = 0;
-      const hourCounts: Record<number, number> = {};
-      
-      sessionsSnap.forEach(doc => {
-        const sessionData = doc.data();
-        totalTime += sessionData.duration || 0;
-        const hour = sessionData.startTime?.toDate().getHours() || 14;
-        hourCounts[hour] = (hourCounts[hour] || 0) + 1;
-      });
+      // Load all data sections
+      const sessionsSnap = await loadStudySessionsData(dateFilter, data);
+      await loadBattleDrillData(data);
+      await loadProgressData(data);
+      await loadQuizData(data);
+      await loadLabData(data);
+      await loadFailureData(data);
 
-      let bestHour = 14;
-      let maxCount = 0;
-      Object.entries(hourCounts).forEach(([hour, count]) => {
-        if (count > maxCount) {
-          maxCount = count;
-          bestHour = parseInt(hour);
-        }
-      });
-
-      data.totalStudyTime = totalTime;
-      data.totalSessions = sessionsSnap.size;
-      data.avgSessionDuration = sessionsSnap.size > 0 ? totalTime / sessionsSnap.size : 0;
-      data.bestStudyHour = bestHour;
-
-      // Battle drill performance
-      const drillPerfQuery = query(
-        collection(db, 'battleDrillPerformance'),
-        where('userId', '==', user.uid)
-      );
-      const drillPerfSnap = await getDocs(drillPerfQuery);
-      
-      let drillCount = 0;
-      let totalDrillTime = 0;
-      let successfulDrills = 0;
-      
-      drillPerfSnap.forEach(doc => {
-        const perf = doc.data();
-        drillCount += perf.attempts || 0;
-        totalDrillTime += perf.bestTime || 0;
-        if (perf.bestTime && perf.bestTime <= 300) successfulDrills++;
-      });
-
-      data.battleDrillsCompleted = drillCount;
-      data.battleDrillAvgTime = drillCount > 0 ? totalDrillTime / drillCount : 0;
-      data.battleDrillSuccessRate = drillPerfSnap.size > 0 ? successfulDrills / drillPerfSnap.size : 0;
-
-      // Stress training
+      // Additional data
       const stressQuery = query(
         collection(db, 'stressTrainingSessions'),
         where('userId', '==', user.uid),
@@ -160,7 +309,6 @@ export default function Analytics() {
       const stressSnap = await getDocs(stressQuery);
       data.stressSessionsCompleted = stressSnap.size;
 
-      // Production scenarios
       const scenarioQuery = query(
         collection(db, 'scenarioAttempts'),
         where('userId', '==', user.uid),
@@ -169,147 +317,22 @@ export default function Analytics() {
       const scenarioSnap = await getDocs(scenarioQuery);
       data.productionScenariosCompleted = scenarioSnap.size;
 
-      // Mastery progression
-      const progressQuery = query(
-        collection(db, 'progress'),
-        where('userId', '==', user.uid)
-      );
-      const progressSnap = await getDocs(progressQuery);
-      
-      let crawl = 0, walk = 0, runGuided = 0, runIndependent = 0;
-      const weakTopics: Array<{ topic: string; easinessFactor: number; attempts: number; lastAttempt: Date }> = [];
-      
-      progressSnap.forEach(doc => {
-        const prog = doc.data();
-        switch (prog.masteryLevel) {
-          case 'crawl': crawl++; break;
-          case 'walk': walk++; break;
-          case 'run-guided': runGuided++; break;
-          case 'run-independent': runIndependent++; break;
-        }
-        
-        // Track weak areas (EF < 2.0)
-        if (prog.easinessFactor && prog.easinessFactor < 2.0) {
-          weakTopics.push({
-            topic: prog.lessonId || prog.contentId || 'Unknown',
-            easinessFactor: prog.easinessFactor,
-            attempts: prog.repetitions || 0,
-            lastAttempt: prog.lastReviewDate?.toDate() || new Date()
-          });
-        }
-      });
-
-      data.crawlItems = crawl;
-      data.walkItems = walk;
-      data.runGuidedItems = runGuided;
-      data.runIndependentItems = runIndependent;
-      data.masteryRate = progressSnap.size > 0 ? runIndependent / progressSnap.size : 0;
-      data.weakTopics = weakTopics.sort((a, b) => a.easinessFactor - b.easinessFactor).slice(0, 5);
-
-      // Quiz performance
-      const quizAttemptsQuery = query(
-        collection(db, 'quizAttempts'),
-        where('userId', '==', user.uid)
-      );
-      const quizSnap = await getDocs(quizAttemptsQuery);
-      
-      let quizTotal = 0;
-      let quizPassed = 0;
-      let totalQuizScore = 0;
-      
-      quizSnap.forEach(doc => {
-        const attempt = doc.data();
-        quizTotal++;
-        totalQuizScore += attempt.score || 0;
-        if (attempt.passed) quizPassed++;
-      });
-
-      data.quizSuccessRate = quizTotal > 0 ? quizPassed / quizTotal : 0;
-      data.avgQuizScore = quizTotal > 0 ? totalQuizScore / quizTotal : 0;
-
-      // Lab performance
-      const labQuery = query(
-        collection(db, 'progress'),
-        where('userId', '==', user.uid),
-        where('type', '==', 'lab')
-      );
-      const labSnap = await getDocs(labQuery);
-      
-      let labTotal = 0;
-      let labPassed = 0;
-      let totalLabScore = 0;
-      
-      labSnap.forEach(doc => {
-        const lab = doc.data();
-        labTotal++;
-        totalLabScore += lab.score || 0;
-        if (lab.completed) labPassed++;
-      });
-
-      data.labSuccessRate = labTotal > 0 ? labPassed / labTotal : 0;
-      data.avgLabScore = labTotal > 0 ? totalLabScore / labTotal : 0;
-
-      // Failure log
-      const failureQuery = query(
-        collection(db, 'failureLogs'),
-        where('userId', '==', user.uid)
-      );
-      const failureSnap = await getDocs(failureQuery);
-      
-      let aarCount = 0;
-      let lessonsCount = 0;
-      
-      failureSnap.forEach(doc => {
-        const failure = doc.data();
-        if (failure.aarCompleted) aarCount++;
-        lessonsCount += failure.lessonsLearned?.length || 0;
-      });
-
-      data.totalFailures = failureSnap.size;
-      data.aarCompleted = aarCount;
-      data.lessonsLearned = lessonsCount;
-
       // Reset tokens
       const tokenStats = await getUsageStats();
       data.resetTokensUsed = tokenStats.totalResetsUsed;
 
       // Calculate streaks
-      const dailySessions = new Map<string, boolean>();
-      sessionsSnap.forEach(doc => {
-        const date = doc.data().startTime?.toDate().toISOString().split('T')[0];
-        if (date) dailySessions.set(date, true);
-      });
-
-      let currentStreak = 0;
-      let longestStreak = 0;
-      let tempStreak = 0;
-      const today = new Date();
-      
-      for (let i = 0; i < 365; i++) {
-        const checkDate = new Date(today);
-        checkDate.setDate(today.getDate() - i);
-        const dateKey = checkDate.toISOString().split('T')[0];
-        
-        if (dailySessions.has(dateKey)) {
-          tempStreak++;
-          if (i === 0 || tempStreak > 0) currentStreak = tempStreak;
-          longestStreak = Math.max(longestStreak, tempStreak);
-        } else {
-          if (i === 0) currentStreak = 0;
-          tempStreak = 0;
-        }
-      }
-
+      const { currentStreak, longestStreak } = calculateStreaks(sessionsSnap);
       data.currentStreak = currentStreak;
       data.longestStreak = longestStreak;
 
-      setAnalytics(data as AnalyticsData);
+      setAnalytics(data);
     } catch (error) {
       console.error('Error loading analytics:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [getDateFilter, loadStudySessionsData, loadBattleDrillData, loadProgressData, loadQuizData, loadLabData, loadFailureData, calculateStreaks]);
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
