@@ -35,7 +35,6 @@ const TABS: Array<{ id: TabId; label: string; icon: LucideIcon }> = [
 export default function Analytics() {
   const { analysisData, formatHour, loading: timeAnalysisLoading } = useTimeAnalysis();
   const { predictiveData, loading: predictiveLoading } = usePredictiveAnalytics();
-<<<<<<< HEAD
   const { velocityData, loading: velocityLoading } = useLearningVelocity();
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('week');
@@ -310,14 +309,6 @@ export default function Analytics() {
     } finally {
       setLoading(false);
     }
-  };
-=======
-  const { velocityData } = useLearningVelocity();
-  const [timeRange, setTimeRange] = useState<TimeRange>('week');
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const { analytics, loading } = useAnalyticsData(timeRange);
->>>>>>> e090f27e1a58a785f724f638f940b11ed566504a
-
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
