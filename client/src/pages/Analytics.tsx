@@ -3,8 +3,13 @@
  * Comprehensive military training performance metrics
  */
 
-import { useState, useCallback, type FC } from 'react';
+import { useState, useEffect, useCallback, type FC } from 'react';
 import { BarChart3, Activity, Target, TrendingUp, type LucideIcon } from 'lucide-react';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { useAuthStore } from '../store/authStore';
+import { useResetTokens } from '../hooks/useResetTokens';
+import type { AnalyticsData } from '../hooks/analytics-data/analyticsDataUtils';
 import { useTimeAnalysis } from '../hooks/useTimeAnalysis';
 import { useLearningVelocity } from '../hooks/useLearningVelocity';
 import { LearningVelocityChart } from '../components/analytics/LearningVelocityChart';
@@ -32,6 +37,8 @@ const TABS: Array<{ id: TabId; label: string; icon: LucideIcon }> = [
 ];
 
 export default function Analytics() { // eslint-disable-line max-lines-per-function
+  const { user } = useAuthStore();
+  const { getUsageStats } = useResetTokens();
   const { analysisData, formatHour, loading: timeAnalysisLoading } = useTimeAnalysis();
   const { predictiveData, loading: predictiveLoading } = usePredictiveAnalytics();
   const { velocityData } = useLearningVelocity();
@@ -123,7 +130,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
     data.bestStudyHour = bestHour;
 
     return sessionsSnap;
-  }, []);
+  }, [user?.uid]);
 
   const loadBattleDrillData = useCallback(async (data: Partial<AnalyticsData>) => {
     const drillPerfQuery = query(
@@ -146,7 +153,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
     data.battleDrillsCompleted = drillCount;
     data.battleDrillAvgTime = drillCount > 0 ? totalDrillTime / drillCount : 0;
     data.battleDrillSuccessRate = drillPerfSnap.size > 0 ? successfulDrills / drillPerfSnap.size : 0;
-  }, []);
+  }, [user?.uid]);
 
   const loadProgressData = useCallback(async (data: Partial<AnalyticsData>) => {
     const progressQuery = query(
@@ -186,7 +193,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
     data.weakTopics = weakTopics.toSorted((a, b) => a.easinessFactor - b.easinessFactor).slice(0, 5);
 
     return progressSnap;
-  }, []);
+  }, [user?.uid]);
 
   const loadQuizData = useCallback(async (data: Partial<AnalyticsData>) => {
     const quizAttemptsQuery = query(
@@ -208,7 +215,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
 
     data.quizSuccessRate = quizTotal > 0 ? quizPassed / quizTotal : 0;
     data.avgQuizScore = quizTotal > 0 ? totalQuizScore / quizTotal : 0;
-  }, []);
+  }, [user?.uid]);
 
   const loadLabData = useCallback(async (data: Partial<AnalyticsData>) => {
     const labQuery = query(
@@ -231,7 +238,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
 
     data.labSuccessRate = labTotal > 0 ? labPassed / labTotal : 0;
     data.avgLabScore = labTotal > 0 ? totalLabScore / labTotal : 0;
-  }, []);
+  }, [user?.uid]);
 
   const loadFailureData = useCallback(async (data: Partial<AnalyticsData>) => {
     const failureQuery = query(
@@ -252,7 +259,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
     data.totalFailures = failureSnap.size;
     data.aarCompleted = aarCount;
     data.lessonsLearned = lessonsCount;
-  }, []);
+  }, [user?.uid]);
 
   const calculateStreaks = useCallback((sessionsSnap: QuerySnapshot) => {
     const dailySessions = new Map<string, boolean>();
@@ -332,7 +339,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
     } finally {
       setLoading(false);
     }
-  }, [getDateFilter, loadStudySessionsData, loadBattleDrillData, loadProgressData, loadQuizData, loadLabData, loadFailureData, calculateStreaks]);
+  }, [getDateFilter, loadStudySessionsData, loadBattleDrillData, loadProgressData, loadQuizData, loadLabData, loadFailureData, calculateStreaks, getUsageStats, user?.uid]);
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
