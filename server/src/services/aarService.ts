@@ -513,12 +513,16 @@ export class AARService {
     const questions: string[] = [];
 
     if (score < 8) {
-      questions.push('What specific error messages or symptoms did you encounter?');
-      questions.push('How might you test your solution before implementing it in production?');
+      questions.push(
+        'What specific error messages or symptoms did you encounter?',
+        'How might you test your solution before implementing it in production?'
+      );
     }
 
-    questions.push('How does this experience change how you\'ll approach similar tasks in the future?');
-    questions.push('What resources (documentation, tools, people) could help you avoid this issue next time?');
+    questions.push(
+      'How does this experience change how you\'ll approach similar tasks in the future?',
+      'What resources (documentation, tools, people) could help you avoid this issue next time?'
+    );
 
     return questions;
   }
