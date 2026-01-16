@@ -23,7 +23,6 @@ export function useTimeAnalysis() {
   const [analysisData, setAnalysisData] = useState<TimeAnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
 
-<<<<<<< HEAD
   useEffect(() => {
     if (user?.uid) {
       analyzeStudyTimes();
@@ -58,8 +57,6 @@ export function useTimeAnalysis() {
     } catch (error) { console.error('Error analyzing study times:', error); }
     finally { setLoading(false); }
   }, [user?.uid]);
-
-  useEffect(() => { if (user) analyzeStudyTimes(); }, [user, analyzeStudyTimes]);
 
   return { analysisData, loading, analyzeStudyTimes, formatHour };
 }
