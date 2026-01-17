@@ -119,7 +119,7 @@ function ResolutionDetails({ failure }: { readonly failure: FailureLog }) {
       <div><h4 className="text-sm font-semibold text-green-400 mb-1">Root Cause:</h4><p className="text-sm text-slate-300">{failure.rootCause}</p></div>
       <div><h4 className="text-sm font-semibold text-green-400 mb-1">Resolution:</h4><p className="text-sm text-slate-300">{failure.resolution}</p></div>
       {failure.preventionStrategy && <div><h4 className="text-sm font-semibold text-indigo-400 mb-1">Prevention:</h4><p className="text-sm text-slate-300">{failure.preventionStrategy}</p></div>}
-      {failure.lessonsLearned.length > 0 && (
+      {failure.lessonsLearned && failure.lessonsLearned.length > 0 && (
         <div><h4 className="text-sm font-semibold text-purple-400 mb-1">Lessons Learned:</h4>
           <ul className="list-disc list-inside text-sm text-slate-300 space-y-1">{failure.lessonsLearned.map((lesson) => <li key={lesson}>{lesson}</li>)}</ul>
         </div>
