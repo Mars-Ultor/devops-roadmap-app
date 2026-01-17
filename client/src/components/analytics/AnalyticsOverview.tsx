@@ -58,12 +58,12 @@ interface AnalyticsData {
 }
 
 interface AnalyticsOverviewProps {
-  analytics: AnalyticsData;
-  analysisData: TimeAnalysisData | null;
-  timeAnalysisLoading: boolean;
-  formatHour: (hour: number) => string;
-  formatDuration: (seconds: number) => string;
-  formatTime: (seconds: number) => string;
+  readonly analytics: AnalyticsData;
+  readonly analysisData: TimeAnalysisData | null;
+  readonly timeAnalysisLoading: boolean;
+  readonly formatHour: (hour: number) => string;
+  readonly formatDuration: (seconds: number) => string;
+  readonly formatTime: (seconds: number) => string;
 }
 
 export default function AnalyticsOverview({

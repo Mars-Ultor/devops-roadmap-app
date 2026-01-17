@@ -9,7 +9,8 @@ import { collection, query, where, getDocs, type QuerySnapshot } from 'firebase/
 import { db } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
 import { useResetTokens } from '../hooks/useResetTokens';
-import type { AnalyticsData, getDefaultAnalytics } from '../hooks/analytics-data/analyticsDataUtils';
+import type { AnalyticsData } from '../hooks/analytics-data/analyticsDataUtils';
+import { getDefaultAnalytics } from '../hooks/analytics-data/analyticsDataUtils';
 import { useTimeAnalysis } from '../hooks/useTimeAnalysis';
 import { useLearningVelocity } from '../hooks/useLearningVelocity';
 import { LearningVelocityChart } from '../components/analytics/LearningVelocityChart';
@@ -46,11 +47,6 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('week');
   const [activeTab, setActiveTab] = useState<'overview' | 'velocity' | 'mastery' | 'predictions'>('overview');
   const [analytics, setAnalytics] = useState<AnalyticsData>(getDefaultAnalytics());
-
-  useEffect(() => {
-    loadAnalytics();
-  }, [loadAnalytics]);
-
   const getDateFilter = useCallback(() => {
     const now = new Date();
     switch (timeRange) {
