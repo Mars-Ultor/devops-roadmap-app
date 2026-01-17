@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import ReactMarkdown, { Components } from 'react-markdown';
+import ReactMarkdown from 'react-markdown';
+import type { Components } from 'react-markdown';
 import { Clock, Save, CheckCircle, FileText, AlertTriangle, Sparkles, Send, Eye } from 'lucide-react';
 
 // Markdown components for ReactMarkdown preview

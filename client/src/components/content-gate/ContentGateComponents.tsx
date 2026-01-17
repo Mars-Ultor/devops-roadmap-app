@@ -85,7 +85,7 @@ export function SpacedRepetitionInfo() {
 
 // Gate Footer with Start Button
 interface GateFooterProps {
-  onStart: () => void;
+  readonly onStart: () => void;
 }
 
 export function GateFooter({ onStart }: GateFooterProps) {

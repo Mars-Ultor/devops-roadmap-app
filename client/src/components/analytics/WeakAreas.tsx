@@ -17,7 +17,7 @@ interface WeakAreasProps {
 }
 
 const WeakAreas: React.FC<WeakAreasProps> = ({ analytics }) => {
-  if (analytics.weakTopics.length === 0) {
+  if (!analytics?.weakTopics || analytics.weakTopics.length === 0) {
     return null;
   }
 

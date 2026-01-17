@@ -67,7 +67,7 @@ export default function AARHistory({ contentId, contentType, getAARs }: AARHisto
   }, [contentId, contentType, getAARs]);
 
   if (loading) return <div className="bg-slate-800 rounded-lg border border-slate-700 p-6"><p className="text-slate-400 text-center">Loading past AARs...</p></div>;
-  if (aars.length === 0) return null;
+  if (!aars || aars.length === 0) return null;
 
   return (
     <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">

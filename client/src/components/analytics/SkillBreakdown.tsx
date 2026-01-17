@@ -14,6 +14,14 @@ interface SkillBreakdownProps {
 }
 
 const SkillBreakdown: React.FC<SkillBreakdownProps> = ({ skills }) => {
+  if (!skills || skills.length === 0) {
+    return (
+      <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+        <div className="text-center text-gray-400">No skills data available</div>
+      </div>
+    );
+  }
+
   const getCategoryIcon = (category: string) => {
     switch (category.toLowerCase()) {
       case 'development':

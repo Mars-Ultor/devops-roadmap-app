@@ -8,11 +8,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { AlertTriangle, TrendingDown, Target, Brain } from 'lucide-react';
 import { useFailureLog } from '../hooks/useFailureLog';
 import FailureLogList from '../components/training/FailureLogList';
-import type { FailurePattern, FailureAnalytics } from '../types/training';
+import type { FailureAnalytics } from '../types/training';
 
 export default function FailureReview() {
   const { detectPatterns, getFailureLogs } = useFailureLog();
-  const [, setPatterns] = useState<FailurePattern[]>([]);
   const [analytics, setAnalytics] = useState<FailureAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -23,8 +22,6 @@ export default function FailureReview() {
         detectPatterns(),
         getFailureLogs()
       ]);
-
-      setPatterns(detectedPatterns);
 
       // Calculate analytics
       const resolvedFailures = allFailures.filter(f => f.resolvedAt);
@@ -175,7 +172,7 @@ export default function FailureReview() {
             </div>
 
             {/* Active Patterns */}
-            {analytics.activePatterns.length > 0 && (
+            {analytics.activePatterns && analytics.activePatterns.length > 0 && (
               <div className="bg-gradient-to-r from-orange-900/20 to-red-900/20 rounded-lg p-6 border-2 border-orange-500/50">
                 <div className="flex items-center gap-2 mb-4">
                   <Brain className="w-6 h-6 text-orange-400" />
