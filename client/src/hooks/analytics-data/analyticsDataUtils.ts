@@ -71,7 +71,7 @@ export function processSessionDocs(docs: Array<{ data: () => Record<string, unkn
   });
 
   let bestHour = 14, maxCount = 0;
-  Object.entries(hourCounts).forEach(([h, c]) => { if (c > maxCount) { maxCount = c; bestHour = parseInt(h); } });
+  Object.entries(hourCounts).forEach(([h, c]) => { if (c > maxCount) { maxCount = c; bestHour = Number.parseInt(h); } });
 
   return { totalTime, count: docs.length, bestHour };
 }
@@ -108,13 +108,14 @@ export function processProgressDocs(docs: Array<{ data: () => Record<string, unk
       case 'run-independent': runIndependent++; break;
     }
     const ef = data.easinessFactor as number | undefined;
-    if (ef && ef < 2.0) {
+    if (ef && ef < 2) {
       const ts = data.lastReviewDate as { toDate: () => Date } | undefined;
       weak.push({ topic: (data.lessonId || data.contentId || 'Unknown') as string, easinessFactor: ef, attempts: (data.repetitions as number) || 0, lastAttempt: ts?.toDate() || new Date() });
     }
   });
 
-  return { crawl, walk, runGuided, runIndependent, weakTopics: weak.sort((a, b) => a.easinessFactor - b.easinessFactor).slice(0, 5) };
+  const sortedWeak = weak.sort((a, b) => a.easinessFactor - b.easinessFactor);
+  return { crawl, walk, runGuided, runIndependent, weakTopics: sortedWeak.slice(0, 5) };
 }
 
 export interface QuizMetrics { total: number; passed: number; totalScore: number }
@@ -171,8 +172,14 @@ export function calculateStreaks(sessionDocs: Array<{ data: () => Record<string,
   for (let i = 0; i < 365; i++) {
     const check = new Date(today); check.setDate(today.getDate() - i);
     const key = check.toISOString().split('T')[0];
-    if (dailySessions.has(key)) { temp++; if (i === 0 || temp > 0) current = temp; longest = Math.max(longest, temp); }
-    else { if (i === 0) current = 0; temp = 0; }
+    if (dailySessions.has(key)) {
+      temp++;
+      if (i === 0 || temp > 0) current = temp;
+      longest = Math.max(longest, temp);
+    } else {
+      if (i === 0) current = 0;
+      temp = 0;
+    }
   }
   return { current, longest };
 }

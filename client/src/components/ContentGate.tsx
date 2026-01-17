@@ -41,7 +41,7 @@ export default function ContentGate({ children }: ContentGateProps) {
   if (isBlocked) {
     return (
       <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={(e) => e.preventDefault()} onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); } }}
-        tabIndex={-1} role="presentation"
+        tabIndex={-1}
       >
         <div className="bg-slate-800 border-2 border-yellow-500 rounded-lg p-8 max-w-2xl w-full shadow-2xl">
           <GateHeader />
