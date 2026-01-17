@@ -10,9 +10,10 @@ import {
   Flame, BookOpen, Zap, Code, Trophy, Target, Settings, Brain,
   Users, Award, RefreshCw, AlertTriangle, Shield
 } from 'lucide-react';
-import type { WeeklyCommitment, ResetTokenAllocation, DifficultyLevel, AdaptiveDifficultySettings } from '../types/accountability';
+import type { WeeklyCommitment, ResetTokenAllocation, AdaptiveDifficultySettings } from '../types/accountability';
 import type { RecertificationStatus } from '../types/recertification';
 import { DIFFICULTY_THRESHOLDS } from '../types/adaptiveDifficulty';
+import type { DifficultyLevel } from '../types/adaptiveDifficulty';
 
 interface DashboardStats {
   totalXP: number;
