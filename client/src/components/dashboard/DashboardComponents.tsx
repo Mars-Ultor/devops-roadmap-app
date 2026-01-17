@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import type { WeeklyCommitment, ResetTokenAllocation, DifficultyLevel, AdaptiveDifficultySettings } from '../types/accountability';
 import type { RecertificationStatus } from '../types/recertification';
+import { DIFFICULTY_THRESHOLDS } from '../types/adaptiveDifficulty';
 
 interface DashboardStats {
   totalXP: number;
@@ -210,6 +211,24 @@ export const AccountabilitySection: React.FC<{
       )}
     </div>
   );
+};
+
+const getLevelClass = (level: DifficultyLevel) => {
+  switch (level) {
+    case 'recruit': return 'bg-green-900/30 border-green-700';
+    case 'soldier': return 'bg-blue-900/30 border-blue-700';
+    case 'specialist': return 'bg-purple-900/30 border-purple-700';
+    case 'elite': return 'bg-red-900/30 border-red-700';
+  }
+};
+
+const getLevelTextClass = (level: DifficultyLevel) => {
+  switch (level) {
+    case 'recruit': return 'text-green-400';
+    case 'soldier': return 'text-blue-400';
+    case 'specialist': return 'text-purple-400';
+    case 'elite': return 'text-red-400';
+  }
 };
 
 export const AdaptiveDifficultySection: React.FC<{
