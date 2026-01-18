@@ -41,9 +41,11 @@ const TABS: Array<{ id: TabId; label: string; icon: LucideIcon }> = [
 export default function Analytics() { // eslint-disable-line max-lines-per-function
   const { user } = useAuthStore();
   const { getUsageStats } = useResetTokens();
-  const { analysisData, formatHour, loading: timeAnalysisLoading } = useTimeAnalysis();
-  const { predictiveData, loading: predictiveLoading } = usePredictiveAnalytics();
-  const { velocityData } = useLearningVelocity();
+  const [progressSnap, setProgressSnap] = useState<QuerySnapshot | null>(null);
+  const [failuresSnap, setFailuresSnap] = useState<QuerySnapshot | null>(null);
+  const { analysisData, formatHour, loading: timeAnalysisLoading } = useTimeAnalysis(progressSnap);
+  const { predictiveData, loading: predictiveLoading } = usePredictiveAnalytics(progressSnap, failuresSnap);
+  const { velocityData } = useLearningVelocity(progressSnap);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('week');
   const [activeTab, setActiveTab] = useState<'overview' | 'velocity' | 'mastery' | 'predictions'>('overview');
@@ -133,6 +135,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
       where('userId', '==', user?.uid)
     );
     const progressSnap = await getDocs(progressQuery);
+    setProgressSnap(progressSnap);
     
     let crawl = 0, walk = 0, runGuided = 0, runIndependent = 0;
     const weakTopics: Array<{ topic: string; easinessFactor: number; attempts: number; lastAttempt: Date }> = [];
@@ -218,6 +221,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
       where('userId', '==', user?.uid)
     );
     const failureSnap = await getDocs(failureQuery);
+    setFailuresSnap(failureSnap);
     
     let aarCount = 0;
     let lessonsCount = 0;

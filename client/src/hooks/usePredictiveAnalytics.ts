@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import type { QuerySnapshot } from 'firebase/firestore';
 import {
   calculateCompletionPrediction, predictWeakAreas, forecastPerformance, analyzeLearningTrajectory
 } from './predictive-analytics/predictiveAnalyticsUtils';
@@ -13,34 +14,34 @@ import type { PredictiveData } from './predictive-analytics/predictiveAnalyticsU
 
 export type { PredictiveData } from './predictive-analytics/predictiveAnalyticsUtils';
 
-export function usePredictiveAnalytics() {
+export function usePredictiveAnalytics(progressSnap?: QuerySnapshot, failuresSnap?: QuerySnapshot) {
   const { user } = useAuthStore();
   const [predictiveData, setPredictiveData] = useState<PredictiveData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const generatePredictions = useCallback(async () => {
+  const generatePredictions = useCallback(async (progSnap?: QuerySnapshot, failSnap?: QuerySnapshot) => {
     if (!user?.uid) return;
     try {
-      const [progressSnap, , failuresSnap] = await Promise.all([
-        getDocs(query(collection(db, 'progress'), where('userId', '==', user.uid))),
-        getDocs(query(collection(db, 'studySessions'), where('userId', '==', user.uid))),
-        getDocs(query(collection(db, 'failureLogs'), where('userId', '==', user.uid)))
-      ]);
+      const progressSnapToUse = progSnap || await getDocs(query(collection(db, 'progress'), where('userId', '==', user.uid)));
+      const failuresSnapToUse = failSnap || await getDocs(query(collection(db, 'failureLogs'), where('userId', '==', user.uid)));
+      
       setPredictiveData({
-        completionPrediction: calculateCompletionPrediction(progressSnap.docs),
-        weakAreaPredictions: predictWeakAreas(progressSnap.docs, failuresSnap.docs),
-        performanceForecast: forecastPerformance(progressSnap.docs),
-        learningTrajectory: analyzeLearningTrajectory(progressSnap.docs)
+        completionPrediction: calculateCompletionPrediction(progressSnapToUse.docs),
+        weakAreaPredictions: predictWeakAreas(progressSnapToUse.docs, failuresSnapToUse.docs),
+        performanceForecast: forecastPerformance(progressSnapToUse.docs),
+        learningTrajectory: analyzeLearningTrajectory(progressSnapToUse.docs)
       });
     } catch (e) { console.error('Error generating predictions:', e); }
     finally { setLoading(false); }
   }, [user?.uid]);
 
   useEffect(() => {
-    if (user?.uid) {
+    if (progressSnap && failuresSnap) {
+      generatePredictions(progressSnap, failuresSnap);
+    } else if (user?.uid) {
       generatePredictions();
     }
-  }, [user?.uid, generatePredictions]);
+  }, [generatePredictions, user?.uid, progressSnap, failuresSnap]);
 
   return { predictiveData, loading, generatePredictions };
 }

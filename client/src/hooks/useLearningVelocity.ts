@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import type { QuerySnapshot } from 'firebase/firestore';
 import type { WeeklyProgress } from './learning-velocity/learningVelocityUtils';
 import { calculateVelocityTrend, getWeekKey, convertToWeeklyProgress, calculateCurrentPace, calculateOptimalPace, projectCompletionDate } from './learning-velocity/learningVelocityUtils';
 
@@ -20,30 +21,30 @@ export interface LearningVelocityData {
   optimalPace: number;
 }
 
-export function useLearningVelocity() {
+export function useLearningVelocity(progressSnap?: QuerySnapshot) {
   const { user } = useAuthStore();
   const [velocityData, setVelocityData] = useState<LearningVelocityData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const analyzeLearningVelocity = useCallback(async () => {
+  const analyzeLearningVelocity = useCallback(async (data?: QuerySnapshot) => {
     if (!user?.uid) return;
     try {
-      const progressSnap = await getDocs(query(collection(db, 'progress'), where('userId', '==', user.uid), orderBy('completedAt', 'asc')));
+      const snapToUse = data || await getDocs(query(collection(db, 'progress'), where('userId', '==', user.uid), orderBy('completedAt', 'asc')));
       
       // Group by weeks
       const weeklyData: Record<string, { items: Array<Record<string, unknown>>; totalTime: number; masteredItems: number; weekStart: Date }> = {};
-      progressSnap.docs.forEach(doc => {
-        const data = doc.data();
-        const completedAt = data.completedAt?.toDate();
+      snapToUse.docs.forEach(doc => {
+        const docData = doc.data();
+        const completedAt = docData.completedAt?.toDate();
         if (!completedAt) return;
         const weekKey = getWeekKey(completedAt);
         const weekStart = new Date(completedAt);
         weekStart.setDate(completedAt.getDate() - completedAt.getDay());
         weekStart.setHours(0, 0, 0, 0);
         if (!weeklyData[weekKey]) weeklyData[weekKey] = { items: [], totalTime: 0, masteredItems: 0, weekStart };
-        weeklyData[weekKey].items.push(data);
-        weeklyData[weekKey].totalTime += data.timeSpentMinutes || 0;
-        if (data.masteryLevel === 'run-independent') weeklyData[weekKey].masteredItems++;
+        weeklyData[weekKey].items.push(docData);
+        weeklyData[weekKey].totalTime += docData.timeSpentMinutes || 0;
+        if (docData.masteryLevel === 'run-independent') weeklyData[weekKey].masteredItems++;
       });
 
       const weeklyProgress = convertToWeeklyProgress(weeklyData);
@@ -63,10 +64,12 @@ export function useLearningVelocity() {
   }, [user?.uid]);
 
   useEffect(() => {
-    if (user?.uid) {
+    if (progressSnap) {
+      analyzeLearningVelocity(progressSnap);
+    } else if (user?.uid) {
       analyzeLearningVelocity();
     }
-  }, [user?.uid, analyzeLearningVelocity]);
+  }, [analyzeLearningVelocity, user?.uid, progressSnap]);
 
   return { velocityData, loading, analyzeLearningVelocity };
 }
