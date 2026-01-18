@@ -11,7 +11,47 @@ import {
   Target, Brain, Zap, Shield, AlertCircle, CheckCircle
 } from 'lucide-react';
 import { useAdaptiveDifficulty } from '../hooks/useAdaptiveDifficulty';
-import { DifficultyLevel, DIFFICULTY_THRESHOLDS } from '../types/difficulty';
+// Temporary local definitions to fix build issue
+export type DifficultyLevel = 'recruit' | 'soldier' | 'specialist' | 'elite';
+
+export const DIFFICULTY_THRESHOLDS = {
+  recruit: {
+    name: 'Recruit',
+    description: 'Learning the basics with full support',
+    quizPassingScore: 70,
+    quizTimeMultiplier: 1.5,
+    labGuidanceLevel: 'full' as const,
+    drillTimeTarget: 600, // 10 min
+    stressIntensity: 1
+  },
+  soldier: {
+    name: 'Soldier',
+    description: 'Building competence with moderate support',
+    quizPassingScore: 75,
+    quizTimeMultiplier: 1.2,
+    labGuidanceLevel: 'partial' as const,
+    drillTimeTarget: 480, // 8 min
+    stressIntensity: 2
+  },
+  specialist: {
+    name: 'Specialist',
+    description: 'Demonstrating mastery with minimal support',
+    quizPassingScore: 80,
+    quizTimeMultiplier: 1.0,
+    labGuidanceLevel: 'minimal' as const,
+    drillTimeTarget: 360, // 6 min
+    stressIntensity: 3
+  },
+  elite: {
+    name: 'Elite',
+    description: 'Operating at professional level under pressure',
+    quizPassingScore: 85,
+    quizTimeMultiplier: 0.8,
+    labGuidanceLevel: 'none' as const,
+    drillTimeTarget: 300, // 5 min
+    stressIntensity: 4
+  }
+};
 
 export default function AdaptiveDifficultyDashboard() {
   const navigate = useNavigate();
