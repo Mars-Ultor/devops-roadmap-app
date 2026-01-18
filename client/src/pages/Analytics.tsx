@@ -3,7 +3,7 @@
  * Comprehensive military training performance metrics
  */
 
-import { useState, useEffect, useCallback, type FC } from 'react';
+import { useState, useEffect, useCallback, type FC, memo } from 'react';
 import { BarChart3, Activity, Target, TrendingUp, type LucideIcon } from 'lucide-react';
 import { collection, query, where, getDocs, type QuerySnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -23,11 +23,11 @@ type TimeRange = 'week' | 'month' | 'all';
 type TabId = 'overview' | 'velocity' | 'mastery' | 'predictions';
 
 interface TabButtonProps { label: string; icon: LucideIcon; isActive: boolean; onClick: () => void; }
-const TabButton: FC<TabButtonProps> = ({ label, icon: Icon, isActive, onClick }) => (
+const TabButton: FC<TabButtonProps> = memo(({ label, icon: Icon, isActive, onClick }) => (
   <button onClick={onClick} className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${isActive ? 'border-indigo-400 text-indigo-400' : 'border-transparent text-gray-400 hover:text-gray-300'}`}>
     <Icon className="w-4 h-4" />{label}
   </button>
-);
+));
 
 const TIME_LABELS: Record<TimeRange, string> = { week: 'Last 7 Days', month: 'Last 30 Days', all: 'All Time' };
 const TABS: Array<{ id: TabId; label: string; icon: LucideIcon }> = [
@@ -47,6 +47,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('week');
   const [activeTab, setActiveTab] = useState<'overview' | 'velocity' | 'mastery' | 'predictions'>('overview');
   const [analytics, setAnalytics] = useState<AnalyticsData>(getDefaultAnalytics());
+  const [dataLoaded, setDataLoaded] = useState(false);
   const getDateFilter = useCallback(() => {
     const now = new Date();
     switch (timeRange) {
@@ -264,7 +265,6 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
   const loadAnalytics = useCallback(async () => {
     if (!user?.uid) return;
 
-    setLoading(true);
     try {
       const dateFilter = getDateFilter();
       const data: Partial<AnalyticsData> = {};
@@ -306,27 +306,44 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
       setAnalytics(prev => ({ ...prev, ...data }));
     } catch (error) {
       console.error('Error loading analytics:', error);
-    } finally {
-      setLoading(false);
     }
   }, [getDateFilter, loadStudySessionsData, loadBattleDrillData, loadProgressData, loadQuizData, loadLabData, loadFailureData, calculateStreaks, getUsageStats, user?.uid]);
 
   useEffect(() => {
-    if (user?.uid) {
-      loadAnalytics();
+    if (user?.uid && !dataLoaded) {
+      loadAnalytics().then(() => {
+        setDataLoaded(true);
+        setLoading(false);
+      });
     }
-  }, [loadAnalytics, user?.uid]);
+  }, [loadAnalytics, user?.uid, dataLoaded]);
 
-  const formatDuration = (seconds: number): string => {
+  // Reload data when time range changes (after initial load)
+  useEffect(() => {
+    if (user?.uid && dataLoaded) {
+      setLoading(true);
+      loadAnalytics().then(() => setLoading(false));
+    }
+  }, [timeRange, loadAnalytics, user?.uid, dataLoaded]);
+
+  // Update loading state based on all hooks
+  useEffect(() => {
+    const allLoaded = !timeAnalysisLoading && !predictiveLoading && dataLoaded;
+    if (allLoaded && loading) {
+      setLoading(false);
+    }
+  }, [timeAnalysisLoading, predictiveLoading, dataLoaded, loading]);
+
+  const formatDuration = useCallback((seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-  };
+  }, []);
 
-  const formatTime = (seconds: number): string => {
+  const formatTime = useCallback((seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     return `${mins}:${(seconds % 60).toString().padStart(2, '0')}`;
-  };
+  }, []);
 
   if (loading) return <div className="min-h-screen bg-gray-900 flex items-center justify-center"><div className="text-white">Loading analytics...</div></div>;
 

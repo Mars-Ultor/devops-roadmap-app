@@ -9,6 +9,7 @@ import FailureAnalysis from './FailureAnalysis';
 import WeakAreas from './WeakAreas';
 import PersonalizedInsights from './PersonalizedInsights';
 import type { TimeAnalysisData } from '../../hooks/useTimeAnalysis';
+import { memo } from 'react';
 
 interface AnalyticsData {
   // Study metrics
@@ -66,7 +67,7 @@ interface AnalyticsOverviewProps {
   readonly formatTime: (seconds: number) => string;
 }
 
-export default function AnalyticsOverview({
+export default memo(function AnalyticsOverview({
   analytics,
   analysisData,
   timeAnalysisLoading,
@@ -112,4 +113,4 @@ export default function AnalyticsOverview({
       <PersonalizedInsights analytics={analytics} />
     </div>
   );
-}
+});
