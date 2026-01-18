@@ -220,6 +220,7 @@ const getLevelClass = (level: DifficultyLevel) => {
     case 'soldier': return 'bg-blue-900/30 border-blue-700';
     case 'specialist': return 'bg-purple-900/30 border-purple-700';
     case 'elite': return 'bg-red-900/30 border-red-700';
+    default: return 'bg-gray-900/30 border-gray-700';
   }
 };
 
@@ -229,6 +230,7 @@ const getLevelTextClass = (level: DifficultyLevel) => {
     case 'soldier': return 'text-blue-400';
     case 'specialist': return 'text-purple-400';
     case 'elite': return 'text-red-400';
+    default: return 'text-gray-400';
   }
 };
 
