@@ -114,7 +114,7 @@ export function processProgressDocs(docs: Array<{ data: () => Record<string, unk
     }
   });
 
-  const sortedWeak = weak.toSorted((a, b) => a.easinessFactor - b.easinessFactor);
+  const sortedWeak = weak.slice().sort((a: WeakTopic, b: WeakTopic) => a.easinessFactor - b.easinessFactor);
   return { crawl, walk, runGuided, runIndependent, weakTopics: sortedWeak.slice(0, 5) };
 }
 

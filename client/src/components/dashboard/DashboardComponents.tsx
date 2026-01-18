@@ -10,9 +10,52 @@ import {
   Flame, BookOpen, Zap, Code, Trophy, Target, Settings, Brain,
   Users, Award, RefreshCw, AlertTriangle, Shield
 } from 'lucide-react';
-import type { WeeklyCommitment, ResetTokenAllocation, AdaptiveDifficultySettings } from '../types/accountability';
+import type { WeeklyCommitment, Commitment } from '../types/accountability';
+import type { TokenAllocation } from '../types/tokens';
+import type { DifficultySettings } from '../types/adaptiveDifficulty';
 import type { RecertificationStatus } from '../hooks/useRecertification';
-import { DIFFICULTY_THRESHOLDS, type DifficultyLevel } from './constants';
+
+// Temporary local definitions to fix build issue
+type DifficultyLevel = 'recruit' | 'soldier' | 'specialist' | 'elite';
+
+const DIFFICULTY_THRESHOLDS = {
+  recruit: {
+    name: 'Recruit',
+    description: 'Learning the basics with full support',
+    quizPassingScore: 70,
+    quizTimeMultiplier: 1.5,
+    labGuidanceLevel: 'full' as const,
+    drillTimeTarget: 600, // 10 min
+    stressIntensity: 1
+  },
+  soldier: {
+    name: 'Soldier',
+    description: 'Building competence with moderate support',
+    quizPassingScore: 75,
+    quizTimeMultiplier: 1.2,
+    labGuidanceLevel: 'partial' as const,
+    drillTimeTarget: 480, // 8 min
+    stressIntensity: 2
+  },
+  specialist: {
+    name: 'Specialist',
+    description: 'Demonstrating mastery with minimal support',
+    quizPassingScore: 80,
+    quizTimeMultiplier: 1.0,
+    labGuidanceLevel: 'minimal' as const,
+    drillTimeTarget: 360, // 6 min
+    stressIntensity: 3
+  },
+  elite: {
+    name: 'Elite',
+    description: 'Operating at professional level under pressure',
+    quizPassingScore: 85,
+    quizTimeMultiplier: 0.8,
+    labGuidanceLevel: 'none' as const,
+    drillTimeTarget: 300, // 5 min
+    stressIntensity: 4
+  }
+};
 
 interface DashboardStats {
   totalXP: number;
@@ -109,7 +152,7 @@ export const ProgressOverview: React.FC<{ stats: DashboardStats; currentStreak: 
   </div>
 );
 
-export const ResetTokensSection: React.FC<{ currentAllocation: ResetTokenAllocation }> = ({ currentAllocation }) => (
+export const ResetTokensSection: React.FC<{ currentAllocation: TokenAllocation }> = ({ currentAllocation }) => (
   <div className="mb-12">
     <div className="flex items-center justify-between mb-4">
       <h2 className="text-2xl font-bold text-white">Reset Tokens</h2>
@@ -167,7 +210,7 @@ export const AccountabilitySection: React.FC<{
           </div>
 
           <div className="space-y-3">
-            {(Array.isArray(currentWeekCommitment.commitments) ? currentWeekCommitment.commitments : []).slice(0, 3).map((commitment) => (
+            {(Array.isArray(currentWeekCommitment.commitments) ? currentWeekCommitment.commitments : []).slice(0, 3).map((commitment: Commitment) => (
               <div key={commitment.id} className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
@@ -235,7 +278,7 @@ const getLevelTextClass = (level: DifficultyLevel) => {
 
 export const AdaptiveDifficultySection: React.FC<{
   currentLevel: DifficultyLevel | null;
-  settings: AdaptiveDifficultySettings | null;
+  settings: DifficultySettings | null;
   difficultyLoading: boolean;
 }> = ({ currentLevel, settings, difficultyLoading }) => {
   if (difficultyLoading || !currentLevel || !settings) return null;
