@@ -51,6 +51,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
   const [activeTab, setActiveTab] = useState<'overview' | 'velocity' | 'mastery' | 'predictions'>('overview');
   const [analytics, setAnalytics] = useState<AnalyticsData>(getDefaultAnalytics());
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
   const getDateFilter = useCallback(() => {
     const now = new Date();
     switch (timeRange) {
@@ -235,6 +236,8 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
     data.totalFailures = failureSnap.size;
     data.aarCompleted = aarCount;
     data.lessonsLearned = lessonsCount;
+
+    return failureSnap;
   }, [user?.uid]);
 
   const calculateStreaks = useCallback((sessionsSnap: QuerySnapshot) => {
@@ -267,7 +270,7 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
     return { currentStreak, longestStreak };
   }, []);
 
-  const loadAnalytics = useCallback(async () => {
+  const loadInitialData = useCallback(async () => {
     if (!user?.uid) return;
 
     try {
@@ -277,10 +280,14 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
       // Load all data sections
       const sessionsSnap = await loadStudySessionsData(dateFilter, data);
       await loadBattleDrillData(data);
-      await loadProgressData(data);
+      const progressSnap = await loadProgressData(data);
       await loadQuizData(data);
       await loadLabData(data);
-      await loadFailureData(data);
+      const failuresSnap = await loadFailureData(data);
+
+      // Set snapshots for hooks
+      setProgressSnap(progressSnap);
+      setFailuresSnap(failuresSnap);
 
       // Additional data
       const stressQuery = query(
@@ -309,27 +316,49 @@ export default function Analytics() { // eslint-disable-line max-lines-per-funct
       data.longestStreak = longestStreak;
 
       setAnalytics(prev => ({ ...prev, ...data }));
+      setInitialDataLoaded(true);
     } catch (error) {
-      console.error('Error loading analytics:', error);
+      console.error('Error loading initial analytics:', error);
     }
   }, [getDateFilter, loadStudySessionsData, loadBattleDrillData, loadProgressData, loadQuizData, loadLabData, loadFailureData, calculateStreaks, getUsageStats, user?.uid]);
 
+  const loadTimeFilteredData = useCallback(async () => {
+    if (!user?.uid || !initialDataLoaded) return;
+
+    try {
+      const dateFilter = getDateFilter();
+      const data: Partial<AnalyticsData> = {};
+
+      // Only load time-filtered study sessions data
+      const sessionsSnap = await loadStudySessionsData(dateFilter, data);
+
+      // Calculate streaks
+      const { currentStreak, longestStreak } = calculateStreaks(sessionsSnap);
+      data.currentStreak = currentStreak;
+      data.longestStreak = longestStreak;
+
+      setAnalytics(prev => ({ ...prev, ...data }));
+    } catch (error) {
+      console.error('Error loading time-filtered analytics:', error);
+    }
+  }, [getDateFilter, loadStudySessionsData, calculateStreaks, user?.uid, initialDataLoaded]);
+
   useEffect(() => {
-    if (user?.uid && !dataLoaded) {
-      loadAnalytics().then(() => {
+    if (user?.uid && !initialDataLoaded) {
+      loadInitialData().then(() => {
         setDataLoaded(true);
         setLoading(false);
       });
     }
-  }, [loadAnalytics, user?.uid, dataLoaded]);
+  }, [loadInitialData, user?.uid, initialDataLoaded]);
 
-  // Reload data when time range changes (after initial load)
+  // Reload time-filtered data when time range changes (after initial load)
   useEffect(() => {
-    if (user?.uid && dataLoaded) {
+    if (user?.uid && initialDataLoaded) {
       setLoading(true);
-      loadAnalytics().then(() => setLoading(false));
+      loadTimeFilteredData().then(() => setLoading(false));
     }
-  }, [timeRange, loadAnalytics, user?.uid, dataLoaded]);
+  }, [timeRange, loadTimeFilteredData, user?.uid, initialDataLoaded]);
 
   // Update loading state based on all hooks
   useEffect(() => {
