@@ -11,8 +11,8 @@ import {
   Target, Brain, Zap, Shield, AlertCircle, CheckCircle
 } from 'lucide-react';
 import { useAdaptiveDifficulty } from '../hooks/useAdaptiveDifficulty';
-import { DIFFICULTY_THRESHOLDS } from '../types/adaptiveDifficulty';
-import type { DifficultyLevel } from '../types/adaptiveDifficulty';
+import { DIFFICULTY_THRESHOLDS } from '../types';
+import type { DifficultyLevel } from '../types';
 
 export default function AdaptiveDifficultyDashboard() {
   const navigate = useNavigate();

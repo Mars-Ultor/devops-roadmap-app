@@ -12,8 +12,8 @@ import {
 } from 'lucide-react';
 import type { WeeklyCommitment, ResetTokenAllocation, AdaptiveDifficultySettings } from '../types/accountability';
 import type { RecertificationStatus } from '../types/recertification';
-import { DIFFICULTY_THRESHOLDS } from '../types/adaptiveDifficulty';
-import type { DifficultyLevel } from '../types/adaptiveDifficulty';
+import { DIFFICULTY_THRESHOLDS } from '../types';
+import type { DifficultyLevel } from '../types';
 
 interface DashboardStats {
   totalXP: number;
