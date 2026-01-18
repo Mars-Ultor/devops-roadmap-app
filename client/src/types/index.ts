@@ -11,3 +11,7 @@ export * from './struggle';
 export * from './tcs';
 export * from './tokens';
 export * from './training';
+
+// Direct exports for build compatibility
+export type DifficultyLevel = 'recruit' | 'soldier' | 'specialist' | 'elite';
+export { DIFFICULTY_THRESHOLDS } from './adaptiveDifficulty';

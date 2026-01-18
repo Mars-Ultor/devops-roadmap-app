@@ -27,6 +27,8 @@ interface RecertificationStatus {
   skillsNeedingRecert: SkillDecayAlert[];
 }
 
+export type { RecertificationStatus };
+
 export function useRecertification() {
   const { user } = useAuthStore();
   const [status, setStatus] = useState<RecertificationStatus | null>(null);
