@@ -3,6 +3,8 @@
  * This is separated to allow lazy loading of lesson content
  */
 
+import type { LeveledLessonContent } from '../types/lessonContent';
+
 export interface Lab {
   id: string;
   title: string;
@@ -21,7 +23,7 @@ export interface Week {
   title: string;
   description: string;
   objectives: string[];
-  lessons: unknown[]; // Will be populated by lazy loader
+  lessons: LeveledLessonContent[]; // Will be populated by lazy loader
   labs: Lab[];
   project?: {
     id: string;
