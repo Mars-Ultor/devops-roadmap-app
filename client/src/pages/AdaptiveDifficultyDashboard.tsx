@@ -12,9 +12,9 @@ import {
 } from 'lucide-react';
 import { useAdaptiveDifficulty } from '../hooks/useAdaptiveDifficulty';
 // Temporary local definitions to fix build issue
-export type DifficultyLevel = 'recruit' | 'soldier' | 'specialist' | 'elite';
+type DifficultyLevel = 'recruit' | 'soldier' | 'specialist' | 'elite';
 
-export const DIFFICULTY_THRESHOLDS = {
+const DIFFICULTY_THRESHOLDS = {
   recruit: {
     name: 'Recruit',
     description: 'Learning the basics with full support',
