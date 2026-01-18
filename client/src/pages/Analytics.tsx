@@ -28,6 +28,7 @@ const TabButton: FC<TabButtonProps> = memo(({ label, icon: Icon, isActive, onCli
     <Icon className="w-4 h-4" />{label}
   </button>
 ));
+TabButton.displayName = 'TabButton';
 
 const TIME_LABELS: Record<TimeRange, string> = { week: 'Last 7 Days', month: 'Last 30 Days', all: 'All Time' };
 const TABS: Array<{ id: TabId; label: string; icon: LucideIcon }> = [
