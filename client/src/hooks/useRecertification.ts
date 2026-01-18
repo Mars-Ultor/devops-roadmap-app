@@ -53,7 +53,7 @@ export function useRecertification() {
         const decayPercentage = calculateDecay(historicalPerformance, recentPerformance);
         if (decayPercentage > DECAY_ALERT_THRESHOLD || recentScores.length === 0) {
           const lastPracticedDocs = await getDocs(query(collection(db, 'progress'), where('userId', '==', user.uid), where('category', '==', category)));
-          const lastPracticed = lastPracticedDocs.docs.length > 0 ? lastPracticedDocs.docs.map(d => d.data().completedAt?.toDate()).filter(d => d).sort((a, b) => b!.getTime() - a!.getTime())[0]! : new Date(0);
+          const lastPracticed = lastPracticedDocs.docs.length > 0 ? lastPracticedDocs.docs.map(d => d.data().completedAt?.toDate()).filter(Boolean).sort((a, b) => b!.getTime() - a!.getTime())[0]! : new Date(0);
           alerts.push({ skill: capitalizeFirst(category), category, recentPerformance: Math.round(recentPerformance), historicalPerformance: Math.round(historicalPerformance), decayPercentage: Math.round(decayPercentage), lastPracticed, requiresRecertification: decayPercentage > RECERT_DECAY_THRESHOLD || recentScores.length === 0 });
         }
       }
@@ -79,7 +79,7 @@ export function useRecertification() {
 
   const completeRecertification = async (drillResults: Record<string, boolean>) => {
     if (!user) return;
-    const allPassed = Object.values(drillResults).every(r => r);
+    const allPassed = Object.values(drillResults).every(Boolean);
     await setDoc(doc(db, 'recertifications', user.uid), { lastRecertDate: new Date(), drillResults, passed: allPassed, skillsRecertified: Object.keys(drillResults) }, { merge: true });
     await checkRecertificationStatus();
   };
