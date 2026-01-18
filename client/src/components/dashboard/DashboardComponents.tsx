@@ -208,7 +208,7 @@ export const AccountabilitySection: React.FC<{
           </div>
 
           <div className="space-y-3">
-            {(currentWeekCommitment.commitments || []).slice(0, 3).map((commitment) => (
+            {(Array.isArray(currentWeekCommitment.commitments) ? currentWeekCommitment.commitments : []).slice(0, 3).map((commitment) => (
               <div key={commitment.id} className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export const AccountabilitySection: React.FC<{
             ))}
           </div>
 
-          {currentWeekCommitment.commitments && currentWeekCommitment.commitments.length > 3 && (
+          {Array.isArray(currentWeekCommitment.commitments) && currentWeekCommitment.commitments.length > 3 && (
             <p className="mt-4 text-center text-sm text-gray-400">
               +{currentWeekCommitment.commitments.length - 3} more commitments
             </p>

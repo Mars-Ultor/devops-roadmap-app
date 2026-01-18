@@ -211,7 +211,7 @@ export default function AdaptiveDifficultyDashboard() {
                 </p>
                 
                 <ul className="space-y-1 mb-4">
-                  {recommendation.reasoning.map((reason) => (
+                  {(recommendation.reasoning || []).map((reason) => (
                     <li key={reason} className="text-sm flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-green-400" />
                       <span>{reason}</span>
@@ -303,7 +303,7 @@ export default function AdaptiveDifficultyDashboard() {
             <h2 className="text-xl font-semibold mb-4">Recent Adjustments</h2>
             
             <div className="space-y-3">
-              {recentAdjustments.map((adjustment) => (
+              {(recentAdjustments || []).map((adjustment) => (
                 <div key={adjustment.id} className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-3">
