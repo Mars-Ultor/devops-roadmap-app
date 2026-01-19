@@ -467,7 +467,7 @@ export const week2Lesson1GitBasics: LeveledLessonContent = {
     ]
   },
 
-  videoUrl: 'https://placeholder.com/git-basics',
+  videoUrl: 'https://www.youtube.com/watch?v=8JJ101D3knE',
   documentation: [
     'https://git-scm.com/book/en/v2',
     'https://www.atlassian.com/git/tutorials',

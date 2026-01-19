@@ -479,7 +479,7 @@ export const week4Lesson2DockerBasics: LeveledLessonContent = {
     ]
   },
 
-  videoUrl: 'https://placeholder.com/docker-basics',
+  videoUrl: 'https://www.youtube.com/watch?v=fqMOX6JJhGo',
   documentation: [
     'https://docs.docker.com/get-started/',
     'https://docs.docker.com/engine/reference/run/',
