@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface BattleDrillActionsProps {
   sessionStarted: boolean;
@@ -13,7 +13,7 @@ export const BattleDrillActions: React.FC<BattleDrillActionsProps> = ({
   sessionComplete,
   onComplete,
   onLogFailure,
-  onCancel
+  onCancel,
 }) => {
   if (!sessionStarted || sessionComplete) return null;
 

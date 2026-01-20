@@ -3,22 +3,27 @@
  * AI-powered adaptive difficulty and personalized learning paths
  */
 
-import { useNavigate } from 'react-router-dom';
-import { Brain } from 'lucide-react';
-import { useMasterTraining } from '../hooks/useMasterTraining';
-import PathSelection from '../components/master-training/PathSelection';
-import PathOverview from '../components/master-training/PathOverview';
-import TrainingPhase from '../components/master-training/TrainingPhase';
-import ProgressPhase from '../components/master-training/ProgressPhase';
-import { ADAPTIVE_SCENARIOS } from '../data/masterTrainingScenarios';
-import { PATH_SCENARIO_MAP } from '../data/masterTrainingScenarioMap';
+import { useNavigate } from "react-router-dom";
+import { Brain } from "lucide-react";
+import { useMasterTraining } from "../hooks/useMasterTraining";
+import PathSelection from "../components/master-training/PathSelection";
+import PathOverview from "../components/master-training/PathOverview";
+import TrainingPhase from "../components/master-training/TrainingPhase";
+import ProgressPhase from "../components/master-training/ProgressPhase";
+import { ADAPTIVE_SCENARIOS } from "../data/masterTrainingScenarios";
+import { PATH_SCENARIO_MAP } from "../data/masterTrainingScenarioMap";
 
 interface AdaptiveScenario {
   id: string;
   title: string;
-  baseDifficulty: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  baseDifficulty: "beginner" | "intermediate" | "advanced" | "expert";
   currentDifficulty: number; // 1-10 scale
-  category: 'stress' | 'leadership' | 'specialized' | 'integration' | 'technical';
+  category:
+    | "stress"
+    | "leadership"
+    | "specialized"
+    | "integration"
+    | "technical";
   estimatedTime: number;
   skills: string[];
   prerequisites: string[];
@@ -55,7 +60,7 @@ interface AdaptiveChallenge {
 interface AdaptiveOption {
   id: string;
   text: string;
-  outcome: 'optimal' | 'suboptimal' | 'poor';
+  outcome: "optimal" | "suboptimal" | "poor";
   explanation: string;
   skillsAssessed: string[];
 }
@@ -64,7 +69,7 @@ interface LearningPath {
   id: string;
   title: string;
   description: string;
-  careerFocus: 'generalist' | 'specialist' | 'leadership' | 'technical';
+  careerFocus: "generalist" | "specialist" | "leadership" | "technical";
   currentLevel: number;
   totalLevels: number;
   progress: number;
@@ -73,7 +78,7 @@ interface LearningPath {
   completedScenarios: string[];
   strengths: string[];
   areasForImprovement: string[];
-  recommendedPace: 'accelerated' | 'standard' | 'intensive';
+  recommendedPace: "accelerated" | "standard" | "intensive";
 }
 
 interface MasterTrainingSession {
@@ -100,7 +105,10 @@ interface MasterTrainingSession {
 // Removed old MasterTraining component - using refactored version below
 export default function MasterTraining() {
   const navigate = useNavigate();
-  const { state, actions } = useMasterTraining(ADAPTIVE_SCENARIOS, PATH_SCENARIO_MAP);
+  const { state, actions } = useMasterTraining(
+    ADAPTIVE_SCENARIOS,
+    PATH_SCENARIO_MAP,
+  );
 
   // Loading state
   if (state.loading) {
@@ -126,11 +134,12 @@ export default function MasterTraining() {
                 Master Training
               </h1>
               <p className="text-slate-400 mt-2">
-                Phase 3.0: AI-powered adaptive difficulty and personalized learning paths
+                Phase 3.0: AI-powered adaptive difficulty and personalized
+                learning paths
               </p>
             </div>
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate("/dashboard")}
               className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
             >
               Back to Dashboard
@@ -138,28 +147,28 @@ export default function MasterTraining() {
           </div>
         </div>
 
-        {state.phase === 'selection' && (
+        {state.phase === "selection" && (
           <PathSelection
             learningPaths={state.learningPaths}
             onPathSelect={actions.startLearningPath}
           />
         )}
 
-        {state.phase === 'path-overview' && state.selectedPath && (
+        {state.phase === "path-overview" && state.selectedPath && (
           <PathOverview
             selectedPath={state.selectedPath}
             adaptiveScenarios={ADAPTIVE_SCENARIOS}
             pathScenarioMap={PATH_SCENARIO_MAP}
-            onBack={() => actions.goToPhase('selection')}
+            onBack={() => actions.goToPhase("selection")}
             onBeginTraining={actions.beginTrainingSession}
           />
         )}
 
-        {state.phase === 'training' && state.currentSession && (
+        {state.phase === "training" && state.currentSession && (
           <TrainingPhase state={state} actions={actions} />
         )}
 
-        {(state.phase === 'insights' || state.phase === 'progress') && (
+        {(state.phase === "insights" || state.phase === "progress") && (
           <ProgressPhase state={state} actions={actions} />
         )}
       </div>
@@ -168,4 +177,10 @@ export default function MasterTraining() {
 }
 
 // Export types for sub-components
-export type { AdaptiveScenario, AdaptiveChallenge, AdaptiveOption, LearningPath, MasterTrainingSession };
+export type {
+  AdaptiveScenario,
+  AdaptiveChallenge,
+  AdaptiveOption,
+  LearningPath,
+  MasterTrainingSession,
+};

@@ -3,8 +3,8 @@
  * Real-time validation for battle drill steps
  */
 
-import type { BattleDrillStep } from '../types/training';
-import { validateCriterionWithHelpers } from './validationHelpers';
+import type { BattleDrillStep } from "../types/training";
+import { validateCriterionWithHelpers } from "./validationHelpers";
 
 export interface ValidationResult {
   passed: boolean;
@@ -19,20 +19,20 @@ export interface ValidationResult {
  */
 export async function validateStep(
   step: BattleDrillStep,
-  userInput: string
+  userInput: string,
 ): Promise<ValidationResult> {
   const result: ValidationResult = {
     passed: false,
     passedCriteria: [],
     failedCriteria: [],
     specificErrors: [],
-    suggestions: []
+    suggestions: [],
   };
 
   // Run validators for each criterion
   for (const criterion of step.validationCriteria) {
     const validation = validateCriterionWithHelpers(criterion, userInput);
-    
+
     if (validation.passed) {
       result.passedCriteria.push(criterion);
     } else {
@@ -58,12 +58,12 @@ export async function validateStep(
 export async function validateSteps(
   steps: BattleDrillStep[],
   userInputs: Record<string, string>,
-  context?: Record<string, unknown>
+  context?: Record<string, unknown>,
 ): Promise<Record<string, ValidationResult>> {
   const results: Record<string, ValidationResult> = {};
 
   for (const step of steps) {
-    const input = userInputs[step.id] || '';
+    const input = userInputs[step.id] || "";
     results[step.id] = await validateStep(step, input, context);
   }
 
@@ -73,18 +73,22 @@ export async function validateSteps(
 /**
  * Check if all steps have passed
  */
-export function allStepsPassed(results: Record<string, ValidationResult>): boolean {
-  return Object.values(results).every(r => r.passed);
+export function allStepsPassed(
+  results: Record<string, ValidationResult>,
+): boolean {
+  return Object.values(results).every((r) => r.passed);
 }
 
 /**
  * Get overall completion percentage
  */
-export function getCompletionPercentage(results: Record<string, ValidationResult>): number {
+export function getCompletionPercentage(
+  results: Record<string, ValidationResult>,
+): number {
   const values = Object.values(results);
   if (values.length === 0) return 0;
-  
-  const passed = values.filter(r => r.passed).length;
+
+  const passed = values.filter((r) => r.passed).length;
   return Math.round((passed / values.length) * 100);
 }
 
@@ -93,7 +97,7 @@ export function getCompletionPercentage(results: Record<string, ValidationResult
  */
 export function getNextFailedStep(
   steps: BattleDrillStep[],
-  results: Record<string, ValidationResult>
+  results: Record<string, ValidationResult>,
 ): BattleDrillStep | null {
   for (const step of steps) {
     const result = results[step.id];

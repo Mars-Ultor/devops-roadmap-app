@@ -3,15 +3,15 @@
  * Shows mastery progression across all levels
  */
 
-import type { LeveledLessonContent } from '../types/lessonContent';
-import { LevelRow } from './LessonMasteryComponents';
-import { DEFAULT_MASTERY } from './lesson-mastery/lessonMasteryUtils';
+import type { LeveledLessonContent } from "../types/lessonContent";
+import { LevelRow } from "./LessonMasteryComponents";
+import { DEFAULT_MASTERY } from "./lesson-mastery/lessonMasteryUtils";
 
 export interface LessonMasteryLevel {
   name: string;
   requiredPerfect: number;
   perfectCount: number;
-  status: 'locked' | 'in_progress' | 'completed';
+  status: "locked" | "in_progress" | "completed";
 }
 
 export interface LessonMastery {
@@ -24,18 +24,36 @@ export interface LessonMastery {
 }
 
 interface LessonMasteryDisplayProps {
-  lesson: LeveledLessonContent | { id: string; title: string; mastery?: LessonMastery };
+  lesson:
+    | LeveledLessonContent
+    | { id: string; title: string; mastery?: LessonMastery };
   isLocked?: boolean;
-  onLevelClick?: (level: keyof LessonMastery['levels']) => void;
+  onLevelClick?: (level: keyof LessonMastery["levels"]) => void;
 }
 
-export default function LessonMasteryDisplay({ lesson, isLocked = false, onLevelClick }: LessonMasteryDisplayProps) {
+export default function LessonMasteryDisplay({
+  lesson,
+  isLocked = false,
+  onLevelClick,
+}: LessonMasteryDisplayProps) {
   const mastery = lesson.mastery || DEFAULT_MASTERY;
 
   return (
     <div className="space-y-2">
-      {(Object.entries(mastery.levels) as [keyof LessonMastery['levels'], LessonMasteryLevel][]).map(([levelKey, level]) => (
-        <LevelRow key={levelKey} levelKey={levelKey} level={level} mastery={mastery} isLocked={isLocked} onClick={onLevelClick} />
+      {(
+        Object.entries(mastery.levels) as [
+          keyof LessonMastery["levels"],
+          LessonMasteryLevel,
+        ][]
+      ).map(([levelKey, level]) => (
+        <LevelRow
+          key={levelKey}
+          levelKey={levelKey}
+          level={level}
+          mastery={mastery}
+          isLocked={isLocked}
+          onClick={onLevelClick}
+        />
       ))}
     </div>
   );

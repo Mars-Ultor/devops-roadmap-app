@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { doc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import { useAuthStore } from '../store/authStore';
-import { QuizResults, QuizQuestionView } from './quiz/QuizComponents';
+import { useState } from "react";
+import { doc, updateDoc, arrayUnion, increment } from "firebase/firestore";
+import { db } from "../lib/firebase";
+import { useAuthStore } from "../store/authStore";
+import { QuizResults, QuizQuestionView } from "./quiz/QuizComponents";
 
 export interface QuizQuestion {
   question: string;
@@ -19,11 +19,17 @@ interface QuizProps {
   readonly xpReward: number;
 }
 
-export default function Quiz({ quizId, title, questions, passingScore, xpReward }: QuizProps) {
+export default function Quiz({
+  quizId,
+  title,
+  questions,
+  passingScore,
+  xpReward,
+}: QuizProps) {
   const { user } = useAuthStore();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<(number | null)[]>(
-    new Array(questions.length).fill(null)
+    new Array(questions.length).fill(null),
   );
   const [showResults, setShowResults] = useState(false);
   const [awarding, setAwarding] = useState(false);
@@ -52,22 +58,24 @@ export default function Quiz({ quizId, title, questions, passingScore, xpReward 
     if (!user || awarding) return;
     const score = calculateScore();
     if (score < passingScore) {
-      alert(`You need ${passingScore}% to pass. You scored ${score}%. Try again!`);
+      alert(
+        `You need ${passingScore}% to pass. You scored ${score}%. Try again!`,
+      );
       return;
     }
 
     setAwarding(true);
     try {
-      const userRef = doc(db, 'users', user.uid);
+      const userRef = doc(db, "users", user.uid);
       await updateDoc(userRef, {
         completedQuizzes: arrayUnion(quizId),
-        xp: increment(xpReward)
+        xp: increment(xpReward),
       });
       alert(`🎉 Congratulations! You earned ${xpReward} XP!`);
       setTimeout(() => globalThis.location.reload(), 1000);
     } catch (error) {
-      console.error('Error claiming reward:', error);
-      alert('Failed to award XP. Please try again.');
+      console.error("Error claiming reward:", error);
+      alert("Failed to award XP. Please try again.");
     } finally {
       setAwarding(false);
     }
@@ -99,10 +107,15 @@ export default function Quiz({ quizId, title, questions, passingScore, xpReward 
       totalQuestions={questions.length}
       question={questions[currentQuestion]}
       userAnswer={selectedAnswers[currentQuestion]}
-      answeredCount={selectedAnswers.filter(a => a !== null).length}
+      answeredCount={selectedAnswers.filter((a) => a !== null).length}
       onSelectAnswer={handleSelectAnswer}
-      onPrevious={() => currentQuestion > 0 && setCurrentQuestion(currentQuestion - 1)}
-      onNext={() => currentQuestion < questions.length - 1 && setCurrentQuestion(currentQuestion + 1)}
+      onPrevious={() =>
+        currentQuestion > 0 && setCurrentQuestion(currentQuestion - 1)
+      }
+      onNext={() =>
+        currentQuestion < questions.length - 1 &&
+        setCurrentQuestion(currentQuestion + 1)
+      }
       onSubmit={() => setShowResults(true)}
       canSubmit={!selectedAnswers.includes(null)}
     />

@@ -2,11 +2,11 @@
  * Custom hook for managing lesson data fetching and state
  */
 
-import { useState, useEffect } from 'react';
-import { loadLessonContent } from '../utils/lessonContentLoader';
-import { curriculumLoader } from '../utils/curriculumLoader';
-import type { LeveledLessonContent } from '../types/lessonContent';
-import type { LessonData } from './masteryLevelConfig';
+import { useState, useEffect } from "react";
+import { loadLessonContent } from "../utils/lessonContentLoader";
+import { curriculumLoader } from "../utils/curriculumLoader";
+import type { LeveledLessonContent } from "../types/lessonContent";
+import type { LessonData } from "./masteryLevelConfig";
 
 export interface UseLessonDataResult {
   lessonData: LessonData | null;
@@ -19,9 +19,13 @@ export interface UseLessonDataResult {
 /**
  * Custom hook to fetch and manage lesson data
  */
-export function useLessonData(lessonId: string | undefined, isValidParams: boolean): UseLessonDataResult {
+export function useLessonData(
+  lessonId: string | undefined,
+  isValidParams: boolean,
+): UseLessonDataResult {
   const [lessonData, setLessonData] = useState<LessonData | null>(null);
-  const [detailedContent, setDetailedContent] = useState<LeveledLessonContent | null>(null);
+  const [detailedContent, setDetailedContent] =
+    useState<LeveledLessonContent | null>(null);
   const [weekNumber, setWeekNumber] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +47,9 @@ export function useLessonData(lessonId: string | undefined, isValidParams: boole
         let lessonInfo = null;
         let foundWeek = null;
         for (const week of allWeeks) {
-          const foundLesson = week.lessons.find(l => l.id === lessonId || l.lessonId === lessonId);
+          const foundLesson = week.lessons.find(
+            (l) => l.id === lessonId || l.lessonId === lessonId,
+          );
           if (foundLesson) {
             lessonInfo = foundLesson;
             foundWeek = week.weekNumber;
@@ -58,26 +64,27 @@ export function useLessonData(lessonId: string | undefined, isValidParams: boole
             id: lessonInfo.id || lessonInfo.lessonId,
             title: lessonInfo.baseLesson.title,
             description: lessonInfo.baseLesson.description,
-            duration: lessonInfo.baseLesson.estimatedTimePerLevel.crawl.toString(),
+            duration:
+              lessonInfo.baseLesson.estimatedTimePerLevel.crawl.toString(),
             xp: 100, // Default XP, could be calculated based on completion
             content: {
               crawl: {
-                instructions: '',
-                objectives: lessonInfo.baseLesson.learningObjectives
+                instructions: "",
+                objectives: lessonInfo.baseLesson.learningObjectives,
               },
               walk: {
-                instructions: '',
-                objectives: lessonInfo.baseLesson.learningObjectives
+                instructions: "",
+                objectives: lessonInfo.baseLesson.learningObjectives,
               },
               runGuided: {
-                instructions: '',
-                objectives: lessonInfo.baseLesson.learningObjectives
+                instructions: "",
+                objectives: lessonInfo.baseLesson.learningObjectives,
               },
               runIndependent: {
-                instructions: '',
-                objectives: lessonInfo.baseLesson.learningObjectives
-              }
-            }
+                instructions: "",
+                objectives: lessonInfo.baseLesson.learningObjectives,
+              },
+            },
           };
           setLessonData(data);
         }
@@ -86,7 +93,9 @@ export function useLessonData(lessonId: string | undefined, isValidParams: boole
         const content = await loadLessonContent(lessonId);
         setDetailedContent(content);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load lesson data');
+        setError(
+          err instanceof Error ? err.message : "Failed to load lesson data",
+        );
       } finally {
         setLoading(false);
       }
@@ -100,6 +109,6 @@ export function useLessonData(lessonId: string | undefined, isValidParams: boole
     detailedContent,
     weekNumber,
     loading,
-    error
+    error,
   };
 }

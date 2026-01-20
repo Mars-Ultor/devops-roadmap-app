@@ -4,22 +4,22 @@
  * Phase 4: Mandatory AAR
  */
 
-import { useState } from 'react';
-import { addDoc, collection } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import { 
-  AAR_QUESTIONS, 
-  countWords, 
-  validateResponse, 
-  checkAllComplete, 
-  countCompletedQuestions 
-} from './aar/aarData';
-import { 
-  AARModalHeader, 
-  AARWarningBanner, 
-  AARQuestionField, 
-  AARModalFooter 
-} from './aar/AARComponents';
+import { useState } from "react";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../lib/firebase";
+import {
+  AAR_QUESTIONS,
+  countWords,
+  validateResponse,
+  checkAllComplete,
+  countCompletedQuestions,
+} from "./aar/aarData";
+import {
+  AARModalHeader,
+  AARWarningBanner,
+  AARQuestionField,
+  AARModalFooter,
+} from "./aar/AARComponents";
 
 interface MandatoryAARModalProps {
   labId: string;
@@ -34,7 +34,7 @@ export default function MandatoryAARModal({
   userId,
   labTitle,
   passed,
-  onComplete
+  onComplete,
 }: MandatoryAARModalProps) {
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -42,12 +42,12 @@ export default function MandatoryAARModal({
   const [aiValidation, setAiValidation] = useState<Record<string, string>>({});
 
   const handleResponseChange = (questionId: string, value: string) => {
-    setResponses(prev => ({ ...prev, [questionId]: value }));
+    setResponses((prev) => ({ ...prev, [questionId]: value }));
     if (errors[questionId]) {
-      setErrors(prev => ({ ...prev, [questionId]: '' }));
+      setErrors((prev) => ({ ...prev, [questionId]: "" }));
     }
     if (aiValidation[questionId]) {
-      setAiValidation(prev => ({ ...prev, [questionId]: '' }));
+      setAiValidation((prev) => ({ ...prev, [questionId]: "" }));
     }
   };
 
@@ -55,8 +55,8 @@ export default function MandatoryAARModal({
     const newErrors: Record<string, string> = {};
     let hasErrors = false;
 
-    AAR_QUESTIONS.forEach(q => {
-      const answer = responses[q.id] || '';
+    AAR_QUESTIONS.forEach((q) => {
+      const answer = responses[q.id] || "";
       const error = validateResponse(answer, q.minWords);
       if (error) {
         newErrors[q.id] = error;
@@ -72,23 +72,26 @@ export default function MandatoryAARModal({
     setSubmitting(true);
 
     try {
-      await addDoc(collection(db, 'aars'), {
+      await addDoc(collection(db, "aars"), {
         userId,
         labId,
         labTitle,
         passed,
         responses,
         submittedAt: new Date(),
-        wordCounts: AAR_QUESTIONS.reduce((acc, q) => {
-          acc[q.id] = countWords(responses[q.id] || '');
-          return acc;
-        }, {} as Record<string, number>)
+        wordCounts: AAR_QUESTIONS.reduce(
+          (acc, q) => {
+            acc[q.id] = countWords(responses[q.id] || "");
+            return acc;
+          },
+          {} as Record<string, number>,
+        ),
       });
 
       onComplete();
     } catch (error) {
-      console.error('Error submitting AAR:', error);
-      alert('Error submitting AAR. Please try again.');
+      console.error("Error submitting AAR:", error);
+      alert("Error submitting AAR. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -108,7 +111,7 @@ export default function MandatoryAARModal({
               key={q.id}
               question={q}
               index={index}
-              answer={responses[q.id] || ''}
+              answer={responses[q.id] || ""}
               error={errors[q.id]}
               aiValidation={aiValidation[q.id]}
               onChange={handleResponseChange}

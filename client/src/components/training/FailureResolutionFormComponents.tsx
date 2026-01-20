@@ -2,9 +2,9 @@
  * FailureResolutionForm - UI Components
  */
 
-import { CheckCircle, X, Search, Shield, BookOpen } from 'lucide-react';
-import type { FailureLog } from '../../types/training';
-import { countWords, MIN_LESSONS } from './FailureResolutionFormUtils';
+import { CheckCircle, X, Search, Shield, BookOpen } from "lucide-react";
+import type { FailureLog } from "../../types/training";
+import { countWords, MIN_LESSONS } from "./FailureResolutionFormUtils";
 
 // Header Component
 interface FormHeaderProps {
@@ -62,9 +62,13 @@ interface RootCauseInputProps {
 export function RootCauseInput({ value, onChange }: RootCauseInputProps) {
   return (
     <div>
-      <label htmlFor="root-cause-textarea" className="block text-sm font-semibold text-slate-300 mb-2">
+      <label
+        htmlFor="root-cause-textarea"
+        className="block text-sm font-semibold text-slate-300 mb-2"
+      >
         <Search className="w-4 h-4 inline mr-1" />
-        Root Cause Analysis * <span className="text-slate-500">(Why did this happen?)</span>
+        Root Cause Analysis *{" "}
+        <span className="text-slate-500">(Why did this happen?)</span>
       </label>
       <textarea
         id="root-cause-textarea"
@@ -90,9 +94,13 @@ interface ResolutionInputProps {
 export function ResolutionInput({ value, onChange }: ResolutionInputProps) {
   return (
     <div>
-      <label htmlFor="resolution-textarea" className="block text-sm font-semibold text-slate-300 mb-2">
+      <label
+        htmlFor="resolution-textarea"
+        className="block text-sm font-semibold text-slate-300 mb-2"
+      >
         <CheckCircle className="w-4 h-4 inline mr-1" />
-        Resolution * <span className="text-slate-500">(How did you fix it?)</span>
+        Resolution *{" "}
+        <span className="text-slate-500">(How did you fix it?)</span>
       </label>
       <textarea
         id="resolution-textarea"
@@ -102,9 +110,7 @@ export function ResolutionInput({ value, onChange }: ResolutionInputProps) {
         rows={4}
         className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-green-500 resize-none"
       />
-      <p className="text-xs text-slate-500 mt-1">
-        {countWords(value)} words
-      </p>
+      <p className="text-xs text-slate-500 mt-1">{countWords(value)} words</p>
     </div>
   );
 }
@@ -118,9 +124,13 @@ interface PreventionInputProps {
 export function PreventionInput({ value, onChange }: PreventionInputProps) {
   return (
     <div>
-      <label htmlFor="prevention-textarea" className="block text-sm font-semibold text-slate-300 mb-2">
+      <label
+        htmlFor="prevention-textarea"
+        className="block text-sm font-semibold text-slate-300 mb-2"
+      >
         <Shield className="w-4 h-4 inline mr-1" />
-        Prevention Strategy <span className="text-slate-500">(How to avoid this in future?)</span>
+        Prevention Strategy{" "}
+        <span className="text-slate-500">(How to avoid this in future?)</span>
       </label>
       <textarea
         id="prevention-textarea"
@@ -142,12 +152,18 @@ interface LessonsLearnedSectionProps {
   readonly onRemove: (index: number) => void;
 }
 
-export function LessonsLearnedSection({ lessons, onUpdate, onAdd, onRemove }: LessonsLearnedSectionProps) {
+export function LessonsLearnedSection({
+  lessons,
+  onUpdate,
+  onAdd,
+  onRemove,
+}: LessonsLearnedSectionProps) {
   return (
     <div>
       <div className="block text-sm font-semibold text-slate-300 mb-2">
         <BookOpen className="w-4 h-4 inline mr-1" />
-        Lessons Learned * <span className="text-slate-500">(At least {MIN_LESSONS})</span>
+        Lessons Learned *{" "}
+        <span className="text-slate-500">(At least {MIN_LESSONS})</span>
       </div>
       <div className="space-y-2">
         {lessons.map((lesson, index) => (
@@ -187,7 +203,9 @@ export function InfoBox() {
   return (
     <div className="bg-green-900/20 border border-green-600/30 rounded-lg p-4">
       <p className="text-sm text-green-200">
-        <strong>Remember:</strong> The goal isn&apos;t just to fix the problem, but to learn from it. Future you will thank you for documenting this well!
+        <strong>Remember:</strong> The goal isn&apos;t just to fix the problem,
+        but to learn from it. Future you will thank you for documenting this
+        well!
       </p>
     </div>
   );
@@ -200,7 +218,11 @@ interface ActionButtonsProps {
   readonly canSubmit: boolean;
 }
 
-export function ActionButtons({ onCancel, submitting, canSubmit }: ActionButtonsProps) {
+export function ActionButtons({
+  onCancel,
+  submitting,
+  canSubmit,
+}: ActionButtonsProps) {
   return (
     <div className="flex gap-3">
       <button
@@ -216,7 +238,7 @@ export function ActionButtons({ onCancel, submitting, canSubmit }: ActionButtons
         disabled={submitting || !canSubmit}
         className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-slate-700 disabled:text-slate-500 text-white font-semibold rounded-lg transition-colors"
       >
-        {submitting ? 'Saving...' : 'Mark Resolved'}
+        {submitting ? "Saving..." : "Mark Resolved"}
       </button>
     </div>
   );

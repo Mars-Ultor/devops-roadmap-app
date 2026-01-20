@@ -3,17 +3,17 @@
  * Refactored to use extracted components and custom hook
  */
 
-import type { CoachContext } from '../../types/aiCoach';
-import { getMilitaryStyling, getIcon } from './EnhancedAICoachPanelUtils';
+import type { CoachContext } from "../../types/aiCoach";
+import { getMilitaryStyling, getIcon } from "./EnhancedAICoachPanelUtils";
 import {
   LoadingState,
   DisciplineAlerts,
   FeedbackHeader,
   FeedbackContent,
   CodeAnalysisDisplay,
-  FeedbackFooter
-} from './EnhancedAICoachPanelComponents';
-import { useEnhancedAICoach } from './useEnhancedAICoach';
+  FeedbackFooter,
+} from "./EnhancedAICoachPanelComponents";
+import { useEnhancedAICoach } from "./useEnhancedAICoach";
 
 interface EnhancedAICoachPanelProps {
   context: CoachContext;
@@ -32,11 +32,17 @@ export default function EnhancedAICoachPanel({
   showCodeAnalysis = false,
   codeSnippet,
   onDisciplineAction,
-  militaryMode = true
+  militaryMode = true,
 }: EnhancedAICoachPanelProps) {
-  const { feedback, loading, codeAnalysis, disciplineAlerts, fetchFeedback } = useEnhancedAICoach({
-    context, autoUpdate, updateInterval, showCodeAnalysis, codeSnippet, onDisciplineAction
-  });
+  const { feedback, loading, codeAnalysis, disciplineAlerts, fetchFeedback } =
+    useEnhancedAICoach({
+      context,
+      autoUpdate,
+      updateInterval,
+      showCodeAnalysis,
+      codeSnippet,
+      onDisciplineAction,
+    });
 
   if (loading && !feedback) return <LoadingState />;
 
@@ -44,7 +50,9 @@ export default function EnhancedAICoachPanel({
   const IconComponent = getIcon(feedback);
 
   return (
-    <div className={`border-2 rounded-lg p-4 transition-all ${militaryStyle.border} ${militaryStyle.background}`}>
+    <div
+      className={`border-2 rounded-lg p-4 transition-all ${militaryStyle.border} ${militaryStyle.background}`}
+    >
       <DisciplineAlerts alerts={disciplineAlerts} />
 
       <div className="flex items-start gap-3">
@@ -55,8 +63,14 @@ export default function EnhancedAICoachPanel({
         <div className="flex-1 min-w-0">
           <FeedbackHeader feedback={feedback} />
           {feedback && <FeedbackContent feedback={feedback} />}
-          {codeAnalysis && showCodeAnalysis && <CodeAnalysisDisplay analysis={codeAnalysis} />}
-          <FeedbackFooter feedback={feedback} loading={loading} onFetch={fetchFeedback} />
+          {codeAnalysis && showCodeAnalysis && (
+            <CodeAnalysisDisplay analysis={codeAnalysis} />
+          )}
+          <FeedbackFooter
+            feedback={feedback}
+            loading={loading}
+            onFetch={fetchFeedback}
+          />
         </div>
       </div>
     </div>

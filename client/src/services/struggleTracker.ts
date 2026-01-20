@@ -3,9 +3,15 @@
  * Persists struggle documentation and hint usage to Firestore
  */
 
-import { doc, setDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import type { StruggleLog } from '../components/StruggleTimer';
+import {
+  doc,
+  setDoc,
+  collection,
+  addDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { db } from "../lib/firebase";
+import type { StruggleLog } from "../components/StruggleTimer";
 
 export class StruggleTracker {
   /**
@@ -15,23 +21,27 @@ export class StruggleTracker {
     userId: string,
     labId: string,
     labTitle: string,
-    struggles: StruggleLog
+    struggles: StruggleLog,
   ): Promise<void> {
     try {
-      const sessionRef = doc(db, 'users', userId, 'struggleSessions', labId);
-      await setDoc(sessionRef, {
-        labId,
-        labTitle,
-        struggles: {
-          attemptedSolutions: struggles.attemptedSolutions,
-          stuckPoint: struggles.stuckPoint,
-          hypothesis: struggles.hypothesis,
-          submittedAt: serverTimestamp()
+      const sessionRef = doc(db, "users", userId, "struggleSessions", labId);
+      await setDoc(
+        sessionRef,
+        {
+          labId,
+          labTitle,
+          struggles: {
+            attemptedSolutions: struggles.attemptedSolutions,
+            stuckPoint: struggles.stuckPoint,
+            hypothesis: struggles.hypothesis,
+            submittedAt: serverTimestamp(),
+          },
+          lastUpdated: serverTimestamp(),
         },
-        lastUpdated: serverTimestamp()
-      }, { merge: true });
+        { merge: true },
+      );
     } catch (error) {
-      console.error('Error saving struggle log:', error);
+      console.error("Error saving struggle log:", error);
     }
   }
 
@@ -42,24 +52,35 @@ export class StruggleTracker {
     userId: string,
     labId: string,
     hintId: number,
-    timestamp: Date
+    timestamp: Date,
   ): Promise<void> {
     try {
-      const hintRef = collection(db, 'users', userId, 'struggleSessions', labId, 'hints');
+      const hintRef = collection(
+        db,
+        "users",
+        userId,
+        "struggleSessions",
+        labId,
+        "hints",
+      );
       await addDoc(hintRef, {
         hintId,
         viewedAt: serverTimestamp(),
-        timestamp: timestamp.toISOString()
+        timestamp: timestamp.toISOString(),
       });
 
       // Update main session
-      const sessionRef = doc(db, 'users', userId, 'struggleSessions', labId);
-      await setDoc(sessionRef, {
-        lastHintViewedAt: serverTimestamp(),
-        totalHintsViewed: hintId // This is a simplification - in production, increment properly
-      }, { merge: true });
+      const sessionRef = doc(db, "users", userId, "struggleSessions", labId);
+      await setDoc(
+        sessionRef,
+        {
+          lastHintViewedAt: serverTimestamp(),
+          totalHintsViewed: hintId, // This is a simplification - in production, increment properly
+        },
+        { merge: true },
+      );
     } catch (error) {
-      console.error('Error tracking hint view:', error);
+      console.error("Error tracking hint view:", error);
     }
   }
 
@@ -69,16 +90,20 @@ export class StruggleTracker {
   static async trackSolutionView(
     userId: string,
     labId: string,
-    timestamp: Date
+    timestamp: Date,
   ): Promise<void> {
     try {
-      const sessionRef = doc(db, 'users', userId, 'struggleSessions', labId);
-      await setDoc(sessionRef, {
-        solutionViewedAt: serverTimestamp(),
-        solutionTimestamp: timestamp.toISOString()
-      }, { merge: true });
+      const sessionRef = doc(db, "users", userId, "struggleSessions", labId);
+      await setDoc(
+        sessionRef,
+        {
+          solutionViewedAt: serverTimestamp(),
+          solutionTimestamp: timestamp.toISOString(),
+        },
+        { merge: true },
+      );
     } catch (error) {
-      console.error('Error tracking solution view:', error);
+      console.error("Error tracking solution view:", error);
     }
   }
 
@@ -88,17 +113,21 @@ export class StruggleTracker {
   static async completeSession(
     userId: string,
     labId: string,
-    totalTimeSpent: number
+    totalTimeSpent: number,
   ): Promise<void> {
     try {
-      const sessionRef = doc(db, 'users', userId, 'struggleSessions', labId);
-      await setDoc(sessionRef, {
-        completedAt: serverTimestamp(),
-        totalTimeSpent,
-        status: 'completed'
-      }, { merge: true });
+      const sessionRef = doc(db, "users", userId, "struggleSessions", labId);
+      await setDoc(
+        sessionRef,
+        {
+          completedAt: serverTimestamp(),
+          totalTimeSpent,
+          status: "completed",
+        },
+        { merge: true },
+      );
     } catch (error) {
-      console.error('Error completing struggle session:', error);
+      console.error("Error completing struggle session:", error);
     }
   }
 }

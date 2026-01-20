@@ -1,20 +1,20 @@
 /**
  * TCS (Task, Conditions, Standards) Display Component
  * Phase 11: Military-style task definition for every lab
- * 
+ *
  * Displays:
  * - TASK: What you will accomplish
  * - CONDITIONS: Resources, time limits, restrictions
  * - STANDARDS: Pass/fail criteria checklist
  */
 
-import { type TCSTask } from './TCSDisplayUtils';
+import { type TCSTask } from "./TCSDisplayUtils";
 import {
   TCSHeader,
   TaskSection,
   ConditionsSection,
-  StandardsSection
-} from './TCSDisplayComponents';
+  StandardsSection,
+} from "./TCSDisplayComponents";
 
 interface TCSDisplayProps {
   tcs: TCSTask;
@@ -22,10 +22,14 @@ interface TCSDisplayProps {
   readOnly?: boolean;
 }
 
-export default function TCSDisplay({ tcs, onStandardCheck, readOnly = false }: TCSDisplayProps) {
+export default function TCSDisplay({
+  tcs,
+  onStandardCheck,
+  readOnly = false,
+}: TCSDisplayProps) {
   const allRequiredMet = tcs.standards
-    .filter(s => s.required)
-    .every(s => s.met === true);
+    .filter((s) => s.required)
+    .every((s) => s.met === true);
 
   return (
     <div className="bg-slate-800 rounded-lg border-2 border-indigo-500 overflow-hidden">
@@ -46,4 +50,4 @@ export default function TCSDisplay({ tcs, onStandardCheck, readOnly = false }: T
 }
 
 // Re-export types for consumers
-export type { TCSTask, TCSStandard } from './TCSDisplayUtils';
+export type { TCSTask, TCSStandard } from "./TCSDisplayUtils";

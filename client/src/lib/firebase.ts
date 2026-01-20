@@ -1,6 +1,6 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // Firebase configuration
 // Replace with your Firebase project credentials from Firebase Console
@@ -13,8 +13,8 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-console.log('Firebase config:', {
-  apiKey: firebaseConfig.apiKey ? '✓' : '✗',
+console.log("Firebase config:", {
+  apiKey: firebaseConfig.apiKey ? "✓" : "✗",
   authDomain: firebaseConfig.authDomain,
   projectId: firebaseConfig.projectId,
 });

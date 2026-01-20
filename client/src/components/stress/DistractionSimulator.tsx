@@ -4,10 +4,18 @@
  * Simulates real-world distractions during training sessions
  */
 
-import React, { useState, useEffect } from 'react';
-import { Bell, X, AlertCircle, MessageSquare, Phone, Calendar, Users } from 'lucide-react';
-import { ProgressiveStressService } from '../../services/progressiveStress';
-import { STRESS_CONFIG } from '../../types/stress';
+import React, { useState, useEffect } from "react";
+import {
+  Bell,
+  X,
+  AlertCircle,
+  MessageSquare,
+  Phone,
+  Calendar,
+  Users,
+} from "lucide-react";
+import { ProgressiveStressService } from "../../services/progressiveStress";
+import { STRESS_CONFIG } from "../../types/stress";
 
 interface DistractionSimulatorProps {
   sessionId: string;
@@ -20,11 +28,17 @@ export const DistractionSimulator: React.FC<DistractionSimulatorProps> = ({
   sessionId,
   onDistractionShown,
   onDistractionDismissed,
-  className = ''
+  className = "",
 }) => {
-  const [currentDistraction, setCurrentDistraction] = useState<string | null>(null);
-  const [distractionStartTime, setDistractionStartTime] = useState<Date | null>(null);
-  const [distractionsHistory, setDistractionsHistory] = useState<Array<{message: string, dismissedAt: Date, timeToDismiss: number}>>([]);
+  const [currentDistraction, setCurrentDistraction] = useState<string | null>(
+    null,
+  );
+  const [distractionStartTime, setDistractionStartTime] = useState<Date | null>(
+    null,
+  );
+  const [distractionsHistory, setDistractionsHistory] = useState<
+    Array<{ message: string; dismissedAt: Date; timeToDismiss: number }>
+  >([]);
   const [isEnabled, setIsEnabled] = useState(false);
 
   const stressService = ProgressiveStressService.getInstance();
@@ -40,36 +54,47 @@ export const DistractionSimulator: React.FC<DistractionSimulatorProps> = ({
     const interval = setInterval(() => {
       if (currentDistraction) return; // Don't show new distraction if one is active
 
-      const distraction = STRESS_CONFIG.distractionTypes[
-        Math.floor(Math.random() * STRESS_CONFIG.distractionTypes.length)
-      ];
+      const distraction =
+        STRESS_CONFIG.distractionTypes[
+          Math.floor(Math.random() * STRESS_CONFIG.distractionTypes.length)
+        ];
 
       setCurrentDistraction(distraction);
       setDistractionStartTime(new Date());
       onDistractionShown?.(distraction);
 
       stressService.recordStressEvent(sessionId, {
-        type: 'distraction',
+        type: "distraction",
         message: distraction,
-        severity: 'medium',
-        resolved: false
+        severity: "medium",
+        resolved: false,
       });
     }, STRESS_CONFIG.distractionInterval);
 
     return () => clearInterval(interval);
-  }, [isEnabled, currentDistraction, sessionId, onDistractionShown, stressService]);
+  }, [
+    isEnabled,
+    currentDistraction,
+    sessionId,
+    onDistractionShown,
+    stressService,
+  ]);
 
   const dismissDistraction = () => {
     if (!currentDistraction || !distractionStartTime) return;
 
     const dismissedAt = new Date();
-    const timeToDismiss = dismissedAt.getTime() - distractionStartTime.getTime();
+    const timeToDismiss =
+      dismissedAt.getTime() - distractionStartTime.getTime();
 
-    setDistractionsHistory(prev => [...prev, {
-      message: currentDistraction,
-      dismissedAt,
-      timeToDismiss
-    }]);
+    setDistractionsHistory((prev) => [
+      ...prev,
+      {
+        message: currentDistraction,
+        dismissedAt,
+        timeToDismiss,
+      },
+    ]);
 
     onDistractionDismissed?.(currentDistraction, timeToDismiss);
     setCurrentDistraction(null);
@@ -77,11 +102,15 @@ export const DistractionSimulator: React.FC<DistractionSimulatorProps> = ({
   };
 
   const getDistractionIcon = (message: string) => {
-    if (message.includes('Email')) return <Bell className="w-5 h-5" />;
-    if (message.includes('Slack') || message.includes('message')) return <MessageSquare className="w-5 h-5" />;
-    if (message.includes('Phone') || message.includes('call')) return <Phone className="w-5 h-5" />;
-    if (message.includes('Calendar') || message.includes('meeting')) return <Calendar className="w-5 h-5" />;
-    if (message.includes('Colleague') || message.includes('question')) return <Users className="w-5 h-5" />;
+    if (message.includes("Email")) return <Bell className="w-5 h-5" />;
+    if (message.includes("Slack") || message.includes("message"))
+      return <MessageSquare className="w-5 h-5" />;
+    if (message.includes("Phone") || message.includes("call"))
+      return <Phone className="w-5 h-5" />;
+    if (message.includes("Calendar") || message.includes("meeting"))
+      return <Calendar className="w-5 h-5" />;
+    if (message.includes("Colleague") || message.includes("question"))
+      return <Users className="w-5 h-5" />;
     return <AlertCircle className="w-5 h-5" />;
   };
 
@@ -100,13 +129,19 @@ export const DistractionSimulator: React.FC<DistractionSimulatorProps> = ({
                 {getDistractionIcon(currentDistraction)}
               </div>
               <div>
-                <h3 className="text-lg font-bold text-yellow-400">INCOMING DISTRACTION</h3>
-                <p className="text-sm text-gray-400">Real-world interruption simulation</p>
+                <h3 className="text-lg font-bold text-yellow-400">
+                  INCOMING DISTRACTION
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Real-world interruption simulation
+                </p>
               </div>
             </div>
 
             <div className="bg-yellow-900/20 border border-yellow-500/50 rounded p-4 mb-4">
-              <p className="text-yellow-100 font-medium">{currentDistraction}</p>
+              <p className="text-yellow-100 font-medium">
+                {currentDistraction}
+              </p>
             </div>
 
             <div className="flex gap-3">
@@ -141,7 +176,10 @@ export const DistractionSimulator: React.FC<DistractionSimulatorProps> = ({
 
           <div className="max-h-32 overflow-y-auto space-y-1">
             {distractionsHistory.slice(-5).map((distraction) => (
-              <div key={`${distraction.message}-${distraction.timeToDismiss}`} className="flex items-center justify-between text-xs text-gray-400 py-1">
+              <div
+                key={`${distraction.message}-${distraction.timeToDismiss}`}
+                className="flex items-center justify-between text-xs text-gray-400 py-1"
+              >
                 <span className="truncate flex-1">{distraction.message}</span>
                 <span>{Math.round(distraction.timeToDismiss / 1000)}s</span>
               </div>
@@ -149,10 +187,13 @@ export const DistractionSimulator: React.FC<DistractionSimulatorProps> = ({
           </div>
 
           <div className="text-xs text-gray-500 mt-2">
-            Average response time: {Math.round(
+            Average response time:{" "}
+            {Math.round(
               distractionsHistory.reduce((sum, d) => sum + d.timeToDismiss, 0) /
-              distractionsHistory.length / 1000
-            )}s
+                distractionsHistory.length /
+                1000,
+            )}
+            s
           </div>
         </div>
       )}

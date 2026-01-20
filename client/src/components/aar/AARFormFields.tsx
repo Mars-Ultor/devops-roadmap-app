@@ -1,16 +1,19 @@
-import React from 'react';
-import { X, CheckCircle, AlertCircle } from 'lucide-react';
-import type { AARValidationResult } from '../../types/aar';
+import React from "react";
+import { X, CheckCircle, AlertCircle } from "lucide-react";
+import type { AARValidationResult } from "../../types/aar";
 
 /** Counts non-empty words in a string */
 const getWordCount = (text: string): number =>
-  text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  text
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word.length > 0).length;
 
 /** Determines border color class based on validation state */
 const getBorderClass = (hasError: boolean, isValid: boolean): string => {
-  if (hasError) return 'border-red-500';
-  if (isValid) return 'border-green-500';
-  return 'border-slate-600';
+  if (hasError) return "border-red-500";
+  if (isValid) return "border-green-500";
+  return "border-slate-600";
 };
 
 interface TextFieldProps {
@@ -36,7 +39,7 @@ export const AARTextField: React.FC<TextFieldProps> = ({
   showValidation,
   validation,
   required = true,
-  rows = 3
+  rows = 3,
 }) => {
   const wordCount = getWordCount(value);
   const hasError = Boolean(showValidation && validation?.errors[field]);
@@ -61,7 +64,11 @@ export const AARTextField: React.FC<TextFieldProps> = ({
         className={`w-full px-3 py-2 bg-slate-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${borderClass}`}
       />
       {hasError && (
-        <p id={`${field}-error`} className="text-sm text-red-400 flex items-center" role="alert">
+        <p
+          id={`${field}-error`}
+          className="text-sm text-red-400 flex items-center"
+          role="alert"
+        >
           <AlertCircle className="w-4 h-4 mr-1" aria-hidden="true" />
           {validation?.errors[field]}
         </p>
@@ -90,7 +97,8 @@ interface ListFieldProps {
 }
 
 /** Generates a stable key for list items using field name and index */
-const getItemKey = (field: string, index: number): string => `${field}-item-${index}`;
+const getItemKey = (field: string, index: number): string =>
+  `${field}-item-${index}`;
 
 export const AARListField: React.FC<ListFieldProps> = ({
   field,
@@ -102,10 +110,11 @@ export const AARListField: React.FC<ListFieldProps> = ({
   onAddItem,
   onRemoveItem,
   showValidation,
-  validation
+  validation,
 }) => {
   const hasError = Boolean(showValidation && validation?.errors[field]);
-  const isValid = items.length >= minItems && items.every(item => item.trim().length > 0);
+  const isValid =
+    items.length >= minItems && items.every((item) => item.trim().length > 0);
 
   return (
     <div className="space-y-2">
@@ -116,7 +125,10 @@ export const AARListField: React.FC<ListFieldProps> = ({
         </span>
       </label>
       {items.map((item, index) => (
-        <div key={getItemKey(field, index)} className="flex items-center space-x-2">
+        <div
+          key={getItemKey(field, index)}
+          className="flex items-center space-x-2"
+        >
           <input
             type="text"
             value={item}
@@ -124,7 +136,7 @@ export const AARListField: React.FC<ListFieldProps> = ({
             placeholder={`${placeholder} ${index + 1}`}
             aria-label={`${label} item ${index + 1}`}
             className={`flex-1 px-3 py-2 bg-slate-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              hasError && !item.trim() ? 'border-red-500' : 'border-slate-600'
+              hasError && !item.trim() ? "border-red-500" : "border-slate-600"
             }`}
           />
           {items.length > 1 && (
@@ -147,7 +159,11 @@ export const AARListField: React.FC<ListFieldProps> = ({
         + Add another item
       </button>
       {hasError && (
-        <p id={`${field}-error`} className="text-sm text-red-400 flex items-center" role="alert">
+        <p
+          id={`${field}-error`}
+          className="text-sm text-red-400 flex items-center"
+          role="alert"
+        >
           <AlertCircle className="w-4 h-4 mr-1" aria-hidden="true" />
           {validation?.errors[field]}
         </p>

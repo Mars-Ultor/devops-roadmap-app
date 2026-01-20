@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 interface AccordionProps {
   children: React.ReactNode;
-  type?: 'single' | 'multiple';
+  type?: "single" | "multiple";
   collapsible?: boolean;
   className?: string;
 }
 
-export function Accordion({ children, type = 'single', collapsible = true, className }: AccordionProps) {
+export function Accordion({
+  children,
+  type = "single",
+  collapsible = true,
+  className,
+}: AccordionProps) {
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
 
   const toggleItem = (value: string) => {
-    setOpenItems(prev => {
+    setOpenItems((prev) => {
       const newSet = new Set(prev);
-      if (type === 'single') {
+      if (type === "single") {
         // Close all others
         newSet.clear();
       }
@@ -31,9 +36,7 @@ export function Accordion({ children, type = 'single', collapsible = true, class
 
   return (
     <AccordionContext.Provider value={{ openItems, toggleItem }}>
-      <div className={className}>
-        {children}
-      </div>
+      <div className={className}>{children}</div>
     </AccordionContext.Provider>
   );
 }
@@ -46,9 +49,7 @@ interface AccordionItemProps {
 export function AccordionItem({ value, children }: AccordionItemProps) {
   return (
     <AccordionItemContext.Provider value={value}>
-      <div className="border-b border-slate-700">
-        {children}
-      </div>
+      <div className="border-b border-slate-700">{children}</div>
     </AccordionItemContext.Provider>
   );
 }
@@ -58,19 +59,22 @@ interface AccordionTriggerProps {
   className?: string;
 }
 
-export function AccordionTrigger({ children, className }: AccordionTriggerProps) {
+export function AccordionTrigger({
+  children,
+  className,
+}: AccordionTriggerProps) {
   const context = useAccordionContext();
   const itemValue = React.useContext(AccordionItemContext);
-  const isOpen = context?.openItems.has(itemValue || '');
+  const isOpen = context?.openItems.has(itemValue || "");
 
   return (
     <button
       className={`flex items-center justify-between w-full p-4 text-left hover:bg-slate-800 transition-colors ${className}`}
-      onClick={() => context?.toggleItem(itemValue || '')}
+      onClick={() => context?.toggleItem(itemValue || "")}
     >
       {children}
       <ChevronDown
-        className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+        className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
       />
     </button>
   );
@@ -81,18 +85,17 @@ interface AccordionContentProps {
   className?: string;
 }
 
-export function AccordionContent({ children, className }: AccordionContentProps) {
+export function AccordionContent({
+  children,
+  className,
+}: AccordionContentProps) {
   const context = useAccordionContext();
   const itemValue = React.useContext(AccordionItemContext);
-  const isOpen = context?.openItems.has(itemValue || '');
+  const isOpen = context?.openItems.has(itemValue || "");
 
   if (!isOpen) return null;
 
-  return (
-    <div className={`px-4 pb-4 ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`px-4 pb-4 ${className}`}>{children}</div>;
 }
 
 // Context for accordion
@@ -108,4 +111,4 @@ function useAccordionContext() {
 }
 
 // Context for accordion item
-const AccordionItemContext = React.createContext<string>('');
+const AccordionItemContext = React.createContext<string>("");

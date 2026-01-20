@@ -4,15 +4,15 @@
  * Weeks 1-4: Comfort, Weeks 5-8: Moderate Pressure, Weeks 9-12: Realistic Conditions
  */
 
-import { type FC, useState, useEffect } from 'react';
-import { Clock, Copy, AlertTriangle, Bell } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
+import { type FC, useState, useEffect } from "react";
+import { Clock, Copy, AlertTriangle, Bell } from "lucide-react";
+import { useAuthStore } from "../../store/authStore";
 
 interface StressConstraints {
   week: number;
   timeLimit?: number; // minutes, undefined = unlimited
   copyPasteDisabled: boolean;
-  documentationLevel: 'full' | 'core' | 'minimal';
+  documentationLevel: "full" | "core" | "minimal";
   distractionsEnabled: boolean;
   externalResourcesAllowed: boolean;
   maxExternalResearchMinutes?: number;
@@ -20,7 +20,7 @@ interface StressConstraints {
 
 interface ProgressiveStressWrapperProps {
   children: React.ReactNode;
-  contentType: 'lesson' | 'lab' | 'quiz';
+  contentType: "lesson" | "lab" | "quiz";
   estimatedTime: number; // base time in minutes
   onTimeExpired?: () => void;
 }
@@ -29,19 +29,24 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
   children,
   contentType,
   estimatedTime,
-  onTimeExpired
+  onTimeExpired,
 }) => {
   const { user } = useAuthStore();
-  const [constraints, setConstraints] = useState<StressConstraints | null>(null);
+  const [constraints, setConstraints] = useState<StressConstraints | null>(
+    null,
+  );
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [showDistraction, setShowDistraction] = useState(false);
   const [copyAttempts, setCopyAttempts] = useState(0);
 
   useEffect(() => {
     if (user) {
-      const weekConstraints = getConstraintsForWeek(user.currentWeek, estimatedTime);
+      const weekConstraints = getConstraintsForWeek(
+        user.currentWeek,
+        estimatedTime,
+      );
       setConstraints(weekConstraints);
-      
+
       if (weekConstraints.timeLimit) {
         setTimeRemaining(weekConstraints.timeLimit * 60); // convert to seconds
       }
@@ -53,7 +58,7 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
     if (timeRemaining === null || timeRemaining <= 0) return;
 
     const timer = setInterval(() => {
-      setTimeRemaining(prev => {
+      setTimeRemaining((prev) => {
         if (prev === null || prev <= 1) {
           onTimeExpired?.();
           return 0;
@@ -63,7 +68,7 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRemaining]);
 
   // Random distractions for weeks 9-12
@@ -88,20 +93,20 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
 
     const preventCopy = (e: ClipboardEvent) => {
       e.preventDefault();
-      setCopyAttempts(prev => prev + 1);
+      setCopyAttempts((prev) => prev + 1);
     };
 
     const preventPaste = (e: ClipboardEvent) => {
       e.preventDefault();
-      setCopyAttempts(prev => prev + 1);
+      setCopyAttempts((prev) => prev + 1);
     };
 
-    document.addEventListener('copy', preventCopy);
-    document.addEventListener('paste', preventPaste);
+    document.addEventListener("copy", preventCopy);
+    document.addEventListener("paste", preventPaste);
 
     return () => {
-      document.removeEventListener('copy', preventCopy);
-      document.removeEventListener('paste', preventPaste);
+      document.removeEventListener("copy", preventCopy);
+      document.removeEventListener("paste", preventPaste);
     };
   }, [constraints]);
 
@@ -110,15 +115,15 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const getTimerColor = () => {
-    if (!timeRemaining) return 'text-slate-400';
+    if (!timeRemaining) return "text-slate-400";
     const percentRemaining = timeRemaining / (constraints.timeLimit! * 60);
-    if (percentRemaining > 0.5) return 'text-emerald-400';
-    if (percentRemaining > 0.2) return 'text-amber-400';
-    return 'text-red-400';
+    if (percentRemaining > 0.5) return "text-emerald-400";
+    if (percentRemaining > 0.2) return "text-amber-400";
+    return "text-red-400";
   };
 
   return (
@@ -144,11 +149,18 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
                 </p>
               )}
               <p>
-                Documentation: <span className="text-amber-300">{constraints.documentationLevel}</span>
+                Documentation:{" "}
+                <span className="text-amber-300">
+                  {constraints.documentationLevel}
+                </span>
               </p>
-              {constraints.externalResourcesAllowed && constraints.maxExternalResearchMinutes && (
-                <p>External research limited to {constraints.maxExternalResearchMinutes} minutes</p>
-              )}
+              {constraints.externalResourcesAllowed &&
+                constraints.maxExternalResearchMinutes && (
+                  <p>
+                    External research limited to{" "}
+                    {constraints.maxExternalResearchMinutes} minutes
+                  </p>
+                )}
               {constraints.distractionsEnabled && (
                 <p className="flex items-center gap-2 text-amber-300">
                   <AlertTriangle className="w-4 h-4" />
@@ -161,11 +173,13 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
           {/* Timer Display */}
           {timeRemaining !== null && (
             <div className="text-right">
-              <div className={`text-3xl font-mono font-bold ${getTimerColor()}`}>
+              <div
+                className={`text-3xl font-mono font-bold ${getTimerColor()}`}
+              >
                 {formatTime(timeRemaining)}
               </div>
               <div className="text-xs text-slate-400 mt-1">
-                {timeRemaining === 0 ? 'Time Expired' : 'Remaining'}
+                {timeRemaining === 0 ? "Time Expired" : "Remaining"}
               </div>
             </div>
           )}
@@ -176,8 +190,9 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
       {copyAttempts > 0 && constraints.copyPasteDisabled && (
         <div className="bg-red-900/20 border border-red-500/50 rounded-lg p-3 mb-4">
           <p className="text-sm text-red-300">
-            <strong>Copy/Paste Disabled.</strong> You've attempted {copyAttempts} times. 
-            Type all commands manually to build muscle memory.
+            <strong>Copy/Paste Disabled.</strong> You've attempted{" "}
+            {copyAttempts} times. Type all commands manually to build muscle
+            memory.
           </p>
         </div>
       )}
@@ -189,9 +204,7 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
             <Bell className="w-5 h-5 text-amber-300" />
             <div>
               <p className="text-white font-semibold">Production Alert</p>
-              <p className="text-sm text-amber-200">
-                {getRandomDistraction()}
-              </p>
+              <p className="text-sm text-amber-200">{getRandomDistraction()}</p>
             </div>
           </div>
         </div>
@@ -204,8 +217,9 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
             <AlertTriangle className="w-16 h-16 text-red-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white mb-2">Time Expired</h2>
             <p className="text-slate-300 mb-6">
-              You've reached the {constraints.timeLimit}-minute time limit for this {contentType}. 
-              In production, deadlines matter. Work on improving your speed.
+              You've reached the {constraints.timeLimit}-minute time limit for
+              this {contentType}. In production, deadlines matter. Work on
+              improving your speed.
             </p>
             <button
               onClick={() => setTimeRemaining(null)}
@@ -226,41 +240,44 @@ export const ProgressiveStressWrapper: FC<ProgressiveStressWrapperProps> = ({
 /**
  * Get stress constraints based on current week
  */
-function getConstraintsForWeek(week: number, baseTime: number): StressConstraints {
+function getConstraintsForWeek(
+  week: number,
+  baseTime: number,
+): StressConstraints {
   // Weeks 1-4: Comfort Zone
   if (week <= 4) {
     return {
       week,
       timeLimit: undefined, // unlimited
       copyPasteDisabled: false,
-      documentationLevel: 'full',
+      documentationLevel: "full",
       distractionsEnabled: false,
       externalResourcesAllowed: true,
-      maxExternalResearchMinutes: undefined
+      maxExternalResearchMinutes: undefined,
     };
   }
-  
+
   // Weeks 5-8: Moderate Pressure
   if (week <= 8) {
     return {
       week,
       timeLimit: Math.ceil(baseTime * 1.5), // 50% extra time
       copyPasteDisabled: false,
-      documentationLevel: 'core',
+      documentationLevel: "core",
       distractionsEnabled: false,
       externalResourcesAllowed: true,
-      maxExternalResearchMinutes: 10
+      maxExternalResearchMinutes: 10,
     };
   }
-  
+
   // Weeks 9-12: Realistic Conditions
   return {
     week,
     timeLimit: baseTime, // strict time limit
     copyPasteDisabled: true,
-    documentationLevel: 'minimal',
+    documentationLevel: "minimal",
     distractionsEnabled: true,
-    externalResourcesAllowed: false
+    externalResourcesAllowed: false,
   };
 }
 
@@ -269,15 +286,15 @@ function getConstraintsForWeek(week: number, baseTime: number): StressConstraint
  */
 function getRandomDistraction(): string {
   const distractions = [
-    'Database connection spike detected',
-    'API response time degrading',
-    'Disk space warning: 85% full',
-    'SSL certificate expires in 7 days',
-    'Unusual traffic pattern from IP range',
-    'Memory usage increasing on prod-server-03',
-    'Backup job failed - requires attention',
-    'Security scan found 3 medium vulnerabilities'
+    "Database connection spike detected",
+    "API response time degrading",
+    "Disk space warning: 85% full",
+    "SSL certificate expires in 7 days",
+    "Unusual traffic pattern from IP range",
+    "Memory usage increasing on prod-server-03",
+    "Backup job failed - requires attention",
+    "Security scan found 3 medium vulnerabilities",
   ];
-  
+
   return distractions[Math.floor(Math.random() * distractions.length)];
 }

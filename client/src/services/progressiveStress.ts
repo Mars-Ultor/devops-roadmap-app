@@ -3,8 +3,13 @@
  * Manages graduated difficulty escalation and stress application
  */
 
-import type { StressLevel, StressSession, StressEvent, StressMetrics } from '../types/stress';
-import { STRESS_LEVELS, STRESS_CONFIG } from '../types/stress';
+import type {
+  StressLevel,
+  StressSession,
+  StressEvent,
+  StressMetrics,
+} from "../types/stress";
+import { STRESS_LEVELS, STRESS_CONFIG } from "../types/stress";
 
 export class ProgressiveStressService {
   private static instance: ProgressiveStressService;
@@ -24,9 +29,11 @@ export class ProgressiveStressService {
    * Get stress level configuration for current week
    */
   getStressLevelForWeek(week: number): StressLevel {
-    return STRESS_LEVELS.find(level =>
-      week >= level.weekRange[0] && week <= level.weekRange[1]
-    ) || STRESS_LEVELS[0]; // Default to first level if not found
+    return (
+      STRESS_LEVELS.find(
+        (level) => week >= level.weekRange[0] && week <= level.weekRange[1],
+      ) || STRESS_LEVELS[0]
+    ); // Default to first level if not found
   }
 
   /**
@@ -36,7 +43,7 @@ export class ProgressiveStressService {
     userId: string,
     week: number,
     lessonId: string,
-    level: 'crawl' | 'walk' | 'runGuided' | 'runIndependent'
+    level: "crawl" | "walk" | "runGuided" | "runIndependent",
   ): StressSession {
     const stressLevel = this.getStressLevelForWeek(week);
     const sessionId = `${userId}_${lessonId}_${level}_${Date.now()}`;
@@ -59,7 +66,7 @@ export class ProgressiveStressService {
       resetsUsed: 0,
       completed: false,
       passed: false,
-      stressEvents: []
+      stressEvents: [],
     };
 
     this.activeSessions.set(sessionId, session);
@@ -92,14 +99,17 @@ export class ProgressiveStressService {
   /**
    * Record a stress event
    */
-  recordStressEvent(sessionId: string, event: Omit<StressEvent, 'eventId' | 'timestamp'>): void {
+  recordStressEvent(
+    sessionId: string,
+    event: Omit<StressEvent, "eventId" | "timestamp">,
+  ): void {
     const session = this.activeSessions.get(sessionId);
     if (!session) return;
 
     const stressEvent: StressEvent = {
       eventId: `${sessionId}_event_${Date.now()}`,
       timestamp: new Date(),
-      ...event
+      ...event,
     };
 
     session.stressEvents.push(stressEvent);
@@ -108,18 +118,21 @@ export class ProgressiveStressService {
   /**
    * Check if action is allowed under current stress
    */
-  isActionAllowed(sessionId: string, action: 'copy' | 'paste' | 'external_resource' | 'documentation'): boolean {
+  isActionAllowed(
+    sessionId: string,
+    action: "copy" | "paste" | "external_resource" | "documentation",
+  ): boolean {
     const session = this.activeSessions.get(sessionId);
     if (!session) return true; // No active stress session
 
     switch (action) {
-      case 'copy':
-      case 'paste':
+      case "copy":
+      case "paste":
         return session.copyPasteAllowed;
-      case 'external_resource':
+      case "external_resource":
         return session.externalResourcesAllowed;
-      case 'documentation':
-        return session.documentationLevel !== 'none';
+      case "documentation":
+        return session.documentationLevel !== "none";
       default:
         return true;
     }
@@ -132,7 +145,11 @@ export class ProgressiveStressService {
     const session = this.activeSessions.get(sessionId);
     if (!session) return STRESS_CONFIG.documentationUrls.full;
 
-    return STRESS_CONFIG.documentationUrls[session.documentationLevel as keyof typeof STRESS_CONFIG.documentationUrls] || [];
+    return (
+      STRESS_CONFIG.documentationUrls[
+        session.documentationLevel as keyof typeof STRESS_CONFIG.documentationUrls
+      ] || []
+    );
   }
 
   /**
@@ -175,19 +192,24 @@ export class ProgressiveStressService {
       }
 
       const elapsed = Date.now() - session.startedAt.getTime();
-      const remaining = Math.max(0, (session.timeLimit! * 1000) - elapsed);
+      const remaining = Math.max(0, session.timeLimit! * 1000 - elapsed);
 
       session.timeRemaining = Math.round(remaining / 1000);
 
       // Time warnings
       const timeRatio = remaining / (session.timeLimit! * 1000);
-      STRESS_CONFIG.timeWarningThresholds.forEach(threshold => {
-        if (timeRatio <= threshold && timeRatio > (threshold - 0.01)) {
+      STRESS_CONFIG.timeWarningThresholds.forEach((threshold) => {
+        if (timeRatio <= threshold && timeRatio > threshold - 0.01) {
           this.recordStressEvent(session.sessionId, {
-            type: 'time_warning',
+            type: "time_warning",
             message: `Time warning: ${Math.round(timeRatio * 100)}% remaining`,
-            severity: threshold <= 0.25 ? 'critical' : threshold <= 0.5 ? 'high' : 'medium',
-            resolved: false
+            severity:
+              threshold <= 0.25
+                ? "critical"
+                : threshold <= 0.5
+                  ? "high"
+                  : "medium",
+            resolved: false,
           });
         }
       });
@@ -207,15 +229,16 @@ export class ProgressiveStressService {
           return;
         }
 
-        const distraction = STRESS_CONFIG.distractionTypes[
-          Math.floor(Math.random() * STRESS_CONFIG.distractionTypes.length)
-        ];
+        const distraction =
+          STRESS_CONFIG.distractionTypes[
+            Math.floor(Math.random() * STRESS_CONFIG.distractionTypes.length)
+          ];
 
         this.recordStressEvent(session.sessionId, {
-          type: 'distraction',
+          type: "distraction",
           message: distraction,
-          severity: 'medium',
-          resolved: false
+          severity: "medium",
+          resolved: false,
         });
       }, STRESS_CONFIG.distractionInterval);
     }
@@ -232,7 +255,7 @@ export class ProgressiveStressService {
       // Update averages
       const totalSessions = existing.averageCompletionTime ? 2 : 1;
       existing.averageCompletionTime = Math.round(
-        (existing.averageCompletionTime + completionTime) / totalSessions
+        (existing.averageCompletionTime + completionTime) / totalSessions,
       );
       existing.stressEventCount += stressEventCount;
       existing.hintUsageUnderStress += session.hintsUsed;
@@ -246,7 +269,7 @@ export class ProgressiveStressService {
         hintUsageUnderStress: session.hintsUsed,
         resetTokenUsage: session.resetsUsed,
         performanceDegradation: 0, // Calculate based on baseline performance
-        adaptationRate: 0 // Calculate based on improvement over time
+        adaptationRate: 0, // Calculate based on improvement over time
       });
     }
   }

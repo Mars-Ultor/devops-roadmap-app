@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface TabsProps {
   value: string;
@@ -10,9 +10,7 @@ interface TabsProps {
 export function Tabs({ value, onValueChange, children, className }: TabsProps) {
   return (
     <TabsContext.Provider value={{ value, onValueChange }}>
-      <div className={className}>
-        {children}
-      </div>
+      <div className={className}>{children}</div>
     </TabsContext.Provider>
   );
 }
@@ -23,11 +21,7 @@ interface TabsListProps {
 }
 
 export function TabsList({ children, className }: TabsListProps) {
-  return (
-    <div className={`flex space-x-1 ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`flex space-x-1 ${className}`}>{children}</div>;
 }
 
 interface TabsTriggerProps {
@@ -37,7 +31,12 @@ interface TabsTriggerProps {
   className?: string;
 }
 
-export function TabsTrigger({ value, children, disabled, className }: TabsTriggerProps) {
+export function TabsTrigger({
+  value,
+  children,
+  disabled,
+  className,
+}: TabsTriggerProps) {
   const context = useTabsContext();
   const isActive = context?.value === value;
 
@@ -45,9 +44,9 @@ export function TabsTrigger({ value, children, disabled, className }: TabsTrigge
     <button
       className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
         isActive
-          ? 'bg-slate-700 text-white'
-          : 'text-slate-400 hover:text-white hover:bg-slate-600'
-      } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+          ? "bg-slate-700 text-white"
+          : "text-slate-400 hover:text-white hover:bg-slate-600"
+      } ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
       onClick={() => !disabled && context?.onValueChange(value)}
       disabled={disabled}
     >
@@ -68,11 +67,7 @@ export function TabsContent({ value, children, className }: TabsContentProps) {
 
   if (!isActive) return null;
 
-  return (
-    <div className={className}>
-      {children}
-    </div>
-  );
+  return <div className={className}>{children}</div>;
 }
 
 // Context for tabs

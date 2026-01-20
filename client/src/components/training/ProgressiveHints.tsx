@@ -2,15 +2,15 @@
  * ProgressiveHints - Gradual hint disclosure system
  */
 
-import { useState } from 'react';
-import { canRequestLevel } from './ProgressiveHintsUtils';
+import { useState } from "react";
+import { canRequestLevel } from "./ProgressiveHintsUtils";
 import {
   LockedState,
   WaitingForLogState,
   HintsHeader,
   HintCard,
-  AllHintsComplete
-} from './ProgressiveHintsComponents';
+  AllHintsComplete,
+} from "./ProgressiveHintsComponents";
 
 interface ProgressiveHintsProps {
   hints: string[];
@@ -25,13 +25,13 @@ export default function ProgressiveHints({
   hintsUnlocked,
   struggleLogSubmitted,
   onRequestHint,
-  requestedHints
+  requestedHints,
 }: ProgressiveHintsProps) {
   const [requesting, setRequesting] = useState<number | null>(null);
 
   const handleRequestHint = async (level: number) => {
     if (!hintsUnlocked || !struggleLogSubmitted || requesting !== null) return;
-    
+
     const hint = hints[level - 1];
     if (!hint) return;
 

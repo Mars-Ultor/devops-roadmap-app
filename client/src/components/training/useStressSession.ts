@@ -2,8 +2,8 @@
  * useStressSession - Custom hook for stress session timer
  */
 
-import { useEffect, useState } from 'react';
-import type { StressTrainingSession } from '../../types/training';
+import { useEffect, useState } from "react";
+import type { StressTrainingSession } from "../../types/training";
 
 interface StressSessionState {
   elapsedSeconds: number;
@@ -13,13 +13,17 @@ interface StressSessionState {
   isTimeCritical: boolean;
 }
 
-export function useStressSession(session: StressTrainingSession): StressSessionState {
+export function useStressSession(
+  session: StressTrainingSession,
+): StressSessionState {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
-      const elapsed = Math.floor((now.getTime() - session.startedAt.getTime()) / 1000);
+      const elapsed = Math.floor(
+        (now.getTime() - session.startedAt.getTime()) / 1000,
+      );
       setElapsedSeconds(elapsed);
     }, 1000);
 
@@ -36,6 +40,6 @@ export function useStressSession(session: StressTrainingSession): StressSessionS
     remainingSeconds,
     timeProgress,
     isTimeWarning,
-    isTimeCritical
+    isTimeCritical,
   };
 }

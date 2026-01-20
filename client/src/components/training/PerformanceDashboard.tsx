@@ -3,23 +3,29 @@
  * Refactored to use extracted components
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { aiCoachService } from '../../services/aiCoachEnhanced';
-import type { PerformanceAnalytics, LearningPath, CoachContext } from '../../types/aiCoach';
-import { generateLearningPath } from './PerformanceDashboardUtils';
+import { useState, useEffect, useCallback } from "react";
+import { aiCoachService } from "../../services/aiCoachEnhanced";
+import type {
+  PerformanceAnalytics,
+  LearningPath,
+  CoachContext,
+} from "../../types/aiCoach";
+import { generateLearningPath } from "./PerformanceDashboardUtils";
 import {
   LoadingState,
   HeaderSection,
   TrendsSection,
   LearningPathSection,
-  RecommendationsSection
-} from './PerformanceDashboardComponents';
+  RecommendationsSection,
+} from "./PerformanceDashboardComponents";
 
 interface PerformanceDashboardProps {
   context: CoachContext;
 }
 
-export default function PerformanceDashboard({ context }: PerformanceDashboardProps) {
+export default function PerformanceDashboard({
+  context,
+}: PerformanceDashboardProps) {
   const [analytics, setAnalytics] = useState<PerformanceAnalytics | null>(null);
   const [learningPath, setLearningPath] = useState<LearningPath | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,18 +33,21 @@ export default function PerformanceDashboard({ context }: PerformanceDashboardPr
   const loadPerformanceData = useCallback(async () => {
     setLoading(true);
     try {
-      const performanceData = await aiCoachService['analyzePerformance'](context);
+      const performanceData =
+        await aiCoachService["analyzePerformance"](context);
       setAnalytics(performanceData);
       const pathData = await generateLearningPath(context, performanceData);
       setLearningPath(pathData);
     } catch (error) {
-      console.error('Error loading performance data:', error);
+      console.error("Error loading performance data:", error);
     } finally {
       setLoading(false);
     }
   }, [context]);
 
-  useEffect(() => { loadPerformanceData(); }, [loadPerformanceData]);
+  useEffect(() => {
+    loadPerformanceData();
+  }, [loadPerformanceData]);
 
   if (loading) return <LoadingState />;
   if (!analytics) return null;

@@ -4,8 +4,8 @@
  * Shows progress speed and learning acceleration over time
  */
 
-import type { FC } from 'react';
-import { TrendingUp, TrendingDown, Activity, Target } from 'lucide-react';
+import type { FC } from "react";
+import { TrendingUp, TrendingDown, Activity, Target } from "lucide-react";
 
 interface LearningVelocityData {
   weeklyProgress: Array<{
@@ -15,7 +15,7 @@ interface LearningVelocityData {
     masteryRate: number;
     date: Date;
   }>;
-  velocityTrend: 'accelerating' | 'steady' | 'decelerating';
+  velocityTrend: "accelerating" | "steady" | "decelerating";
   projectedCompletion: Date | null;
   currentPace: number; // items per week
   optimalPace: number; // recommended items per week
@@ -25,27 +25,37 @@ interface LearningVelocityChartProps {
   data?: LearningVelocityData;
 }
 
-export const LearningVelocityChart: FC<LearningVelocityChartProps> = ({ data }) => {
+export const LearningVelocityChart: FC<LearningVelocityChartProps> = ({
+  data,
+}) => {
   // Handle undefined data gracefully
   if (!data?.weeklyProgress) {
     return (
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-8">
         <div className="text-center">
           <div className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-400 mb-2">Learning Velocity</h3>
+          <h3 className="text-lg font-semibold text-gray-400 mb-2">
+            Learning Velocity
+          </h3>
           <p className="text-gray-500">Velocity data is being calculated...</p>
         </div>
       </div>
     );
   }
 
-  const { weeklyProgress, velocityTrend, projectedCompletion, currentPace, optimalPace } = data;
+  const {
+    weeklyProgress,
+    velocityTrend,
+    projectedCompletion,
+    currentPace,
+    optimalPace,
+  } = data;
 
   const getTrendIcon = () => {
     switch (velocityTrend) {
-      case 'accelerating':
+      case "accelerating":
         return <TrendingUp className="w-5 h-5 text-green-400" />;
-      case 'decelerating':
+      case "decelerating":
         return <TrendingDown className="w-5 h-5 text-red-400" />;
       default:
         return <Activity className="w-5 h-5 text-blue-400" />;
@@ -54,16 +64,16 @@ export const LearningVelocityChart: FC<LearningVelocityChartProps> = ({ data }) 
 
   const getTrendColor = () => {
     switch (velocityTrend) {
-      case 'accelerating':
-        return 'text-green-400';
-      case 'decelerating':
-        return 'text-red-400';
+      case "accelerating":
+        return "text-green-400";
+      case "decelerating":
+        return "text-red-400";
       default:
-        return 'text-blue-400';
+        return "text-blue-400";
     }
   };
 
-  const maxItems = Math.max(...weeklyProgress.map(w => w.itemsCompleted), 1);
+  const maxItems = Math.max(...weeklyProgress.map((w) => w.itemsCompleted), 1);
 
   return (
     <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
@@ -80,7 +90,9 @@ export const LearningVelocityChart: FC<LearningVelocityChartProps> = ({ data }) 
         </div>
         <div className="flex items-center gap-2">
           {getTrendIcon()}
-          <span className={`text-sm font-semibold capitalize ${getTrendColor()}`}>
+          <span
+            className={`text-sm font-semibold capitalize ${getTrendColor()}`}
+          >
             {velocityTrend}
           </span>
         </div>
@@ -95,13 +107,19 @@ export const LearningVelocityChart: FC<LearningVelocityChartProps> = ({ data }) 
         </div>
         <div className="bg-slate-900/50 rounded-lg p-4">
           <div className="text-sm text-slate-400 mb-1">Optimal Pace</div>
-          <div className="text-2xl font-bold text-indigo-400">{optimalPace}</div>
+          <div className="text-2xl font-bold text-indigo-400">
+            {optimalPace}
+          </div>
           <div className="text-xs text-slate-500">items/week</div>
         </div>
         <div className="bg-slate-900/50 rounded-lg p-4">
-          <div className="text-sm text-slate-400 mb-1">Projected Completion</div>
+          <div className="text-sm text-slate-400 mb-1">
+            Projected Completion
+          </div>
           <div className="text-lg font-bold text-white">
-            {projectedCompletion ? projectedCompletion.toLocaleDateString() : 'N/A'}
+            {projectedCompletion
+              ? projectedCompletion.toLocaleDateString()
+              : "N/A"}
           </div>
           <div className="text-xs text-slate-500">estimated</div>
         </div>
@@ -157,20 +175,36 @@ export const LearningVelocityChart: FC<LearningVelocityChartProps> = ({ data }) 
       <div className="mt-6 bg-slate-900/50 rounded-lg p-4">
         <h4 className="text-white font-semibold mb-2">Velocity Insights</h4>
         <div className="space-y-2 text-sm text-slate-300">
-          {velocityTrend === 'accelerating' && (
-            <p>🚀 <strong>Accelerating:</strong> Your learning speed is increasing. Keep up the momentum!</p>
+          {velocityTrend === "accelerating" && (
+            <p>
+              🚀 <strong>Accelerating:</strong> Your learning speed is
+              increasing. Keep up the momentum!
+            </p>
           )}
-          {velocityTrend === 'decelerating' && (
-            <p>⚠️ <strong>Decelerating:</strong> Learning pace is slowing. Consider reviewing study habits or taking breaks.</p>
+          {velocityTrend === "decelerating" && (
+            <p>
+              ⚠️ <strong>Decelerating:</strong> Learning pace is slowing.
+              Consider reviewing study habits or taking breaks.
+            </p>
           )}
-          {velocityTrend === 'steady' && (
-            <p>📊 <strong>Steady Pace:</strong> Consistent learning velocity. Good balance of quality and quantity.</p>
+          {velocityTrend === "steady" && (
+            <p>
+              📊 <strong>Steady Pace:</strong> Consistent learning velocity.
+              Good balance of quality and quantity.
+            </p>
           )}
           {currentPace < optimalPace * 0.7 && (
-            <p>🎯 <strong>Pace Check:</strong> Current pace is {Math.round((currentPace / optimalPace) * 100)}% of optimal. Consider increasing study frequency.</p>
+            <p>
+              🎯 <strong>Pace Check:</strong> Current pace is{" "}
+              {Math.round((currentPace / optimalPace) * 100)}% of optimal.
+              Consider increasing study frequency.
+            </p>
           )}
           {currentPace > optimalPace * 1.3 && (
-            <p>⚖️ <strong>Quality Focus:</strong> High pace detected. Ensure retention by focusing on understanding over speed.</p>
+            <p>
+              ⚖️ <strong>Quality Focus:</strong> High pace detected. Ensure
+              retention by focusing on understanding over speed.
+            </p>
           )}
         </div>
       </div>

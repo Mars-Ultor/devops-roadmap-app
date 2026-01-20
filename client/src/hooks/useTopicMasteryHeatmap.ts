@@ -3,17 +3,17 @@
  * Provides data for visualizing mastery levels across topics and weeks
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAuthStore } from '../../store/authStore';
-import { db } from '../../lib/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { useState, useEffect, useCallback } from "react";
+import { useAuthStore } from "../../store/authStore";
+import { db } from "../../lib/firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 export interface TopicMasteryData {
   topics: Array<{
     id: string;
     name: string;
     week: number;
-    masteryLevel: 'crawl' | 'walk' | 'run-guided' | 'run-independent';
+    masteryLevel: "crawl" | "walk" | "run-guided" | "run-independent";
     score: number;
     attempts: number;
     lastAttempt: Date;
@@ -38,25 +38,31 @@ export function useTopicMasteryHeatmap() {
     try {
       // Get all progress data
       const progressQuery = query(
-        collection(db, 'progress'),
-        where('userId', '==', user.uid)
+        collection(db, "progress"),
+        where("userId", "==", user.uid),
       );
       const progressSnap = await getDocs(progressQuery);
 
-      const topics: TopicMasteryData['topics'] = [];
-      const weekMap: Record<number, { total: number; mastered: number; levels: number[] }> = {};
+      const topics: TopicMasteryData["topics"] = [];
+      const weekMap: Record<
+        number,
+        { total: number; mastered: number; levels: number[] }
+      > = {};
 
-      progressSnap.docs.forEach(doc => {
+      progressSnap.docs.forEach((doc) => {
         const data = doc.data();
         const topic = {
           id: data.contentId || data.lessonId || doc.id,
-          name: data.contentId || data.lessonId || 'Unknown Topic',
+          name: data.contentId || data.lessonId || "Unknown Topic",
           week: data.weekNumber || 1,
-          masteryLevel: data.masteryLevel || 'crawl',
+          masteryLevel: data.masteryLevel || "crawl",
           score: data.score || 0,
           attempts: data.repetitions || 1,
-          lastAttempt: data.lastReviewDate?.toDate() || data.completedAt?.toDate() || new Date(),
-          timeSpent: data.timeSpentMinutes || 0
+          lastAttempt:
+            data.lastReviewDate?.toDate() ||
+            data.completedAt?.toDate() ||
+            new Date(),
+          timeSpent: data.timeSpentMinutes || 0,
         };
 
         topics.push(topic);
@@ -66,27 +72,30 @@ export function useTopicMasteryHeatmap() {
           weekMap[topic.week] = { total: 0, mastered: 0, levels: [] };
         }
         weekMap[topic.week].total++;
-        if (topic.masteryLevel === 'run-independent') {
+        if (topic.masteryLevel === "run-independent") {
           weekMap[topic.week].mastered++;
         }
 
         // Convert mastery level to number for averaging
-        const levelValue = {
-          'crawl': 1,
-          'walk': 2,
-          'run-guided': 3,
-          'run-independent': 4
-        }[topic.masteryLevel] || 1;
+        const levelValue =
+          {
+            crawl: 1,
+            walk: 2,
+            "run-guided": 3,
+            "run-independent": 4,
+          }[topic.masteryLevel] || 1;
         weekMap[topic.week].levels.push(levelValue);
       });
 
       // Calculate week stats
-      const weekStats: TopicMasteryData['weekStats'] = Object.entries(weekMap)
+      const weekStats: TopicMasteryData["weekStats"] = Object.entries(weekMap)
         .map(([week, data]) => ({
           week: parseInt(week),
           totalTopics: data.total,
           masteredTopics: data.mastered,
-          avgMasteryLevel: data.levels.reduce((sum, level) => sum + level, 0) / data.levels.length
+          avgMasteryLevel:
+            data.levels.reduce((sum, level) => sum + level, 0) /
+            data.levels.length,
         }))
         .sort((a, b) => a.week - b.week);
 
@@ -98,10 +107,10 @@ export function useTopicMasteryHeatmap() {
 
       setHeatmapData({
         topics,
-        weekStats
+        weekStats,
       });
     } catch (error) {
-      console.error('Error loading topic mastery data:', error);
+      console.error("Error loading topic mastery data:", error);
     } finally {
       setLoading(false);
     }
@@ -116,6 +125,6 @@ export function useTopicMasteryHeatmap() {
   return {
     heatmapData,
     loading,
-    loadTopicMasteryData
+    loadTopicMasteryData,
   };
 }

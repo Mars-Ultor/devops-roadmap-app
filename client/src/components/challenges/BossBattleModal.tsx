@@ -3,16 +3,16 @@
  * Refactored to use extracted components and custom hook
  */
 
-import { X } from 'lucide-react';
-import { formatTime, getTimerColor, isPhaseComplete } from './BossBattleUtils';
+import { X } from "lucide-react";
+import { formatTime, getTimerColor, isPhaseComplete } from "./BossBattleUtils";
 import {
   BattleHeader,
   WarningBanner,
   ScenarioSection,
   PhaseSection,
-  BattleFooter
-} from './BossBattleComponents';
-import { useBossBattle } from './useBossBattle';
+  BattleFooter,
+} from "./BossBattleComponents";
+import { useBossBattle } from "./useBossBattle";
 
 interface BossBattleModalProps {
   readonly isOpen: boolean;
@@ -22,11 +22,21 @@ interface BossBattleModalProps {
 }
 
 export default function BossBattleModal({
-  isOpen, onClose, week, onComplete
+  isOpen,
+  onClose,
+  week,
+  onComplete,
 }: BossBattleModalProps) {
   const {
-    battle, timeRemaining, isActive, phaseCompletion,
-    hasStarted, currentScore, handleStart, handleSubmit, toggleTask
+    battle,
+    timeRemaining,
+    isActive,
+    phaseCompletion,
+    hasStarted,
+    currentScore,
+    handleStart,
+    handleSubmit,
+    toggleTask,
   } = useBossBattle({ isOpen, week, onComplete });
 
   if (!isOpen || !battle) return null;
@@ -44,7 +54,10 @@ export default function BossBattleModal({
               minimumPassScore={battle.minimumPassScore}
               isActive={isActive}
             />
-            <button onClick={onClose} className="text-gray-400 hover:text-white">
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white"
+            >
               <X className="w-6 h-6" />
             </button>
           </div>

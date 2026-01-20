@@ -1,6 +1,6 @@
-import React from 'react';
-import { Target } from 'lucide-react';
-import type { Drill } from '../types';
+import React from "react";
+import { Target } from "lucide-react";
+import type { Drill } from "../types";
 
 interface BattleDrillHeaderProps {
   drill: Drill;
@@ -22,7 +22,7 @@ export const BattleDrillHeader: React.FC<BattleDrillHeaderProps> = ({
   elapsedSeconds,
   formatTime,
   getTimeColor,
-  performance
+  performance,
 }) => {
   return (
     <div className="bg-slate-800 rounded-lg border border-slate-700 p-6 mb-6">
@@ -31,11 +31,15 @@ export const BattleDrillHeader: React.FC<BattleDrillHeaderProps> = ({
           <h1 className="text-2xl font-bold text-white mb-2">{drill.title}</h1>
           <p className="text-slate-300 mb-3">{drill.description}</p>
           <div className="flex items-center gap-4 text-sm">
-            <span className={`px-3 py-1 rounded ${
-              drill.difficulty === 'basic' ? 'bg-green-900/30 text-green-400' :
-              drill.difficulty === 'intermediate' ? 'bg-yellow-900/30 text-yellow-400' :
-              'bg-red-900/30 text-red-400'
-            }`}>
+            <span
+              className={`px-3 py-1 rounded ${
+                drill.difficulty === "basic"
+                  ? "bg-green-900/30 text-green-400"
+                  : drill.difficulty === "intermediate"
+                    ? "bg-yellow-900/30 text-yellow-400"
+                    : "bg-red-900/30 text-red-400"
+              }`}
+            >
               {drill.difficulty}
             </span>
             <span className="text-slate-400 capitalize">{drill.category}</span>
@@ -55,7 +59,8 @@ export const BattleDrillHeader: React.FC<BattleDrillHeaderProps> = ({
             </div>
             {elapsedSeconds > drill.targetTimeSeconds && (
               <div className="text-xs text-red-400 mt-1">
-                +{formatTime(elapsedSeconds - drill.targetTimeSeconds)} over target
+                +{formatTime(elapsedSeconds - drill.targetTimeSeconds)} over
+                target
               </div>
             )}
           </div>
@@ -68,19 +73,27 @@ export const BattleDrillHeader: React.FC<BattleDrillHeaderProps> = ({
           <div className="grid grid-cols-4 gap-4 text-sm">
             <div>
               <div className="text-slate-500">Attempts</div>
-              <div className="text-white font-semibold">{performance.attempts}</div>
+              <div className="text-white font-semibold">
+                {performance.attempts}
+              </div>
             </div>
             <div>
               <div className="text-slate-500">Best Time</div>
-              <div className="text-green-400 font-semibold">{formatTime(performance.bestTime)}</div>
+              <div className="text-green-400 font-semibold">
+                {formatTime(performance.bestTime)}
+              </div>
             </div>
             <div>
               <div className="text-slate-500">Success Rate</div>
-              <div className="text-blue-400 font-semibold">{Math.round(performance.successRate * 100)}%</div>
+              <div className="text-blue-400 font-semibold">
+                {Math.round(performance.successRate * 100)}%
+              </div>
             </div>
             <div>
               <div className="text-slate-500">Mastery</div>
-              <div className="text-purple-400 font-semibold capitalize">{performance.masteryLevel}</div>
+              <div className="text-purple-400 font-semibold capitalize">
+                {performance.masteryLevel}
+              </div>
             </div>
           </div>
         </div>

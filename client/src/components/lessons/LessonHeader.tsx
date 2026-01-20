@@ -2,8 +2,8 @@
  * Component for rendering the lesson header with navigation and level info
  */
 
-import { ArrowLeft, Clock, Award } from 'lucide-react';
-import type { LevelConfig } from '../utils/masteryLevelConfig';
+import { ArrowLeft, Clock, Award } from "lucide-react";
+import type { LevelConfig } from "../utils/masteryLevelConfig";
 
 interface LessonHeaderProps {
   lessonTitle: string;
@@ -20,7 +20,7 @@ export function LessonHeader({
   lessonXp,
   levelConfig,
   weekNumber,
-  onNavigateBack
+  onNavigateBack,
 }: LessonHeaderProps) {
   return (
     <div className="bg-slate-800 border-b border-slate-700 p-6">
@@ -31,10 +31,14 @@ export function LessonHeader({
             className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to {weekNumber ? `Week ${weekNumber}` : 'Curriculum'}</span>
+            <span>
+              Back to {weekNumber ? `Week ${weekNumber}` : "Curriculum"}
+            </span>
           </button>
 
-          <div className={`flex items-center space-x-2 px-3 py-1 rounded-full ${levelConfig.bgColor}`}>
+          <div
+            className={`flex items-center space-x-2 px-3 py-1 rounded-full ${levelConfig.bgColor}`}
+          >
             {levelConfig.icon()}
             <span className={`text-sm font-medium ${levelConfig.color}`}>
               {levelConfig.name}

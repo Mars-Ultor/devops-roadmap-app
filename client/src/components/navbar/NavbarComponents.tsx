@@ -3,8 +3,8 @@
  * Extracted from Navbar.tsx for ESLint compliance
  */
 
-import { Link } from 'react-router-dom';
-import { NAV_LINKS, type NavLink } from './navbarData';
+import { Link } from "react-router-dom";
+import { NAV_LINKS, type NavLink } from "./navbarData";
 
 // Desktop Nav Link Component
 interface DesktopNavLinkProps {
@@ -14,8 +14,10 @@ interface DesktopNavLinkProps {
 export function DesktopNavLink({ link }: DesktopNavLinkProps) {
   const Icon = link.icon;
   return (
-    <Link to={link.to}
-      className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-slate-700 hover:text-white">
+    <Link
+      to={link.to}
+      className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-slate-700 hover:text-white"
+    >
       <Icon className="w-4 h-4 mr-2" />
       {link.label}
     </Link>
@@ -31,9 +33,11 @@ interface MobileNavLinkProps {
 export function MobileNavLink({ link, onClick }: MobileNavLinkProps) {
   const Icon = link.icon;
   return (
-    <Link to={link.to}
+    <Link
+      to={link.to}
       className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-slate-700 hover:text-white"
-      onClick={onClick}>
+      onClick={onClick}
+    >
       <Icon className="w-5 h-5 mr-3" />
       {link.label}
     </Link>
@@ -47,7 +51,11 @@ interface UserStatsProps {
   className?: string;
 }
 
-export function UserStats({ currentWeek, totalXP, className = '' }: UserStatsProps) {
+export function UserStats({
+  currentWeek,
+  totalXP,
+  className = "",
+}: UserStatsProps) {
   return (
     <div className={`text-sm ${className}`}>
       <span className="text-gray-400">Week {currentWeek}/12</span>
@@ -64,9 +72,14 @@ interface MobileMenuProps {
   totalXP?: number;
 }
 
-export function MobileNavMenu({ isOpen, onClose, currentWeek, totalXP }: MobileMenuProps) {
+export function MobileNavMenu({
+  isOpen,
+  onClose,
+  currentWeek,
+  totalXP,
+}: MobileMenuProps) {
   if (!isOpen) return null;
-  
+
   return (
     <div className="md:hidden border-t border-slate-700">
       <div className="px-2 pt-2 pb-3 space-y-1">

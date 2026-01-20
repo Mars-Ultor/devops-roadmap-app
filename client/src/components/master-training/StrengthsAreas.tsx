@@ -1,11 +1,11 @@
-import React from 'react';
-import { CheckCircle, TrendingUp } from 'lucide-react';
+import React from "react";
+import { CheckCircle, TrendingUp } from "lucide-react";
 
 interface LearningPath {
   id: string;
   title: string;
   description: string;
-  careerFocus: 'generalist' | 'specialist' | 'leadership' | 'technical';
+  careerFocus: "generalist" | "specialist" | "leadership" | "technical";
   currentLevel: number;
   totalLevels: number;
   progress: number;
@@ -13,7 +13,7 @@ interface LearningPath {
   completedScenarios: string[];
   strengths: string[];
   areasForImprovement: string[];
-  recommendedPace: 'accelerated' | 'standard' | 'intensive';
+  recommendedPace: "accelerated" | "standard" | "intensive";
 }
 
 interface StrengthsAreasProps {
@@ -21,7 +21,10 @@ interface StrengthsAreasProps {
 }
 
 const StrengthsAreas: React.FC<StrengthsAreasProps> = ({ selectedPath }) => {
-  if (selectedPath.strengths.length === 0 && selectedPath.areasForImprovement.length === 0) {
+  if (
+    selectedPath.strengths.length === 0 &&
+    selectedPath.areasForImprovement.length === 0
+  ) {
     return null;
   }
 
@@ -35,7 +38,10 @@ const StrengthsAreas: React.FC<StrengthsAreasProps> = ({ selectedPath }) => {
           </h4>
           <div className="space-y-2">
             {selectedPath.strengths.map((strength) => (
-              <div key={strength} className="flex items-center justify-between bg-slate-900 rounded p-3">
+              <div
+                key={strength}
+                className="flex items-center justify-between bg-slate-900 rounded p-3"
+              >
                 <span className="text-slate-300">{strength}</span>
                 <div className="flex items-center">
                   <div className="w-16 bg-slate-700 rounded-full h-2 mr-2">
@@ -57,7 +63,10 @@ const StrengthsAreas: React.FC<StrengthsAreasProps> = ({ selectedPath }) => {
           </h4>
           <div className="space-y-2">
             {selectedPath.areasForImprovement.map((area) => (
-              <div key={area} className="flex items-center justify-between bg-slate-900 rounded p-3">
+              <div
+                key={area}
+                className="flex items-center justify-between bg-slate-900 rounded p-3"
+              >
                 <span className="text-slate-300">{area}</span>
                 <div className="flex items-center">
                   <div className="w-16 bg-slate-700 rounded-full h-2 mr-2">

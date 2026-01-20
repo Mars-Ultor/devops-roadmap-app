@@ -3,8 +3,8 @@
  * Displays 30-minute hint lockout with progressive hint unlocking
  */
 
-import { useState, useEffect } from 'react';
-import type { StruggleTimerState } from '../../types/struggle';
+import { useState, useEffect } from "react";
+import type { StruggleTimerState } from "../../types/struggle";
 
 // Import extracted components and utilities
 import {
@@ -12,9 +12,9 @@ import {
   TimerDisplaySection,
   StruggleLogPrompt,
   HintRequestSection,
-  HintUnlockingInfo
-} from './struggle-timer/StruggleTimerComponents';
-import { formatTime } from './struggle-timer/StruggleTimerUtils';
+  HintUnlockingInfo,
+} from "./struggle-timer/StruggleTimerComponents";
+import { formatTime } from "./struggle-timer/StruggleTimerUtils";
 
 interface StruggleTimerProps {
   session: StruggleTimerState;
@@ -27,7 +27,7 @@ export default function StruggleTimer({
   session,
   onHintRequested,
   onStruggleLogSubmitted,
-  showStruggleLogPrompt
+  showStruggleLogPrompt,
 }: StruggleTimerProps) {
   const [timeRemaining, setTimeRemaining] = useState(session.timeRemaining);
 
@@ -52,7 +52,9 @@ export default function StruggleTimer({
     <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
       <TimerHeader isLocked={display.isLocked} hintsUsed={session.hintsUsed} />
       <TimerDisplaySection display={display} />
-      {showStruggleLogPrompt && <StruggleLogPrompt onSubmit={onStruggleLogSubmitted} />}
+      {showStruggleLogPrompt && (
+        <StruggleLogPrompt onSubmit={onStruggleLogSubmitted} />
+      )}
       {!display.isLocked && !showStruggleLogPrompt && (
         <HintRequestSection
           canRequestHints={session.canRequestHints}

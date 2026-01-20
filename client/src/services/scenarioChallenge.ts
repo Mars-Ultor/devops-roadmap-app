@@ -8,9 +8,13 @@ import type {
   ChallengeAttempt,
   ChallengeProgress,
   ChallengeCommand,
-  ChallengeError
-} from '../types/scenarios';
-import { SCENARIO_CHALLENGES, getScenarioById, getRecommendedScenarios } from '../data/scenarios';
+  ChallengeError,
+} from "../types/scenarios";
+import {
+  SCENARIO_CHALLENGES,
+  getScenarioById,
+  getRecommendedScenarios,
+} from "../data/scenarios";
 
 export class ScenarioChallengeService {
   private static instance: ScenarioChallengeService;
@@ -31,7 +35,7 @@ export class ScenarioChallengeService {
    */
   startScenarioAttempt(
     userId: string,
-    scenarioId: string
+    scenarioId: string,
   ): ChallengeAttempt | null {
     const scenario = getScenarioById(scenarioId);
     if (!scenario) return null;
@@ -49,7 +53,7 @@ export class ScenarioChallengeService {
       commandsExecuted: [],
       errors: [],
       score: 0,
-      feedback: ''
+      feedback: "",
     };
 
     this.activeAttempts.set(attempt.attemptId, attempt);
@@ -62,14 +66,14 @@ export class ScenarioChallengeService {
   completeScenarioAttempt(
     attemptId: string,
     objectivesCompleted: string[],
-    passed: boolean
+    passed: boolean,
   ): ChallengeAttempt | null {
     const attempt = this.activeAttempts.get(attemptId);
     if (!attempt) return null;
 
     attempt.completedAt = new Date();
     attempt.timeSpentSeconds = Math.round(
-      (attempt.completedAt.getTime() - attempt.startedAt.getTime()) / 1000
+      (attempt.completedAt.getTime() - attempt.startedAt.getTime()) / 1000,
     );
     attempt.objectivesCompleted = objectivesCompleted;
     attempt.completed = true;
@@ -99,7 +103,7 @@ export class ScenarioChallengeService {
     success: boolean,
     output?: string,
     error?: string,
-    context: 'terminal' | 'editor' | 'browser' = 'terminal'
+    context: "terminal" | "editor" | "browser" = "terminal",
   ): void {
     const attempt = this.activeAttempts.get(attemptId);
     if (!attempt) return;
@@ -111,7 +115,7 @@ export class ScenarioChallengeService {
       success,
       output,
       error,
-      context
+      context,
     };
 
     attempt.commandsExecuted.push(commandRecord);
@@ -130,7 +134,7 @@ export class ScenarioChallengeService {
     error: string,
     context: string,
     resolved: boolean = false,
-    resolution?: string
+    resolution?: string,
   ): void {
     const attempt = this.activeAttempts.get(attemptId);
     if (!attempt) return;
@@ -141,7 +145,7 @@ export class ScenarioChallengeService {
       occurredAt: new Date(),
       context,
       resolved,
-      resolution
+      resolution,
     };
 
     attempt.errors.push(errorRecord);
@@ -157,7 +161,7 @@ export class ScenarioChallengeService {
     const scenario = getScenarioById(attempt.scenarioId);
     if (!scenario) return 0;
 
-    const hint = scenario.hints.find(h => h.id === hintId);
+    const hint = scenario.hints.find((h) => h.id === hintId);
     if (!hint) return 0;
 
     attempt.hintsUsed.push(hintId);
@@ -175,32 +179,34 @@ export class ScenarioChallengeService {
     if (!scenario) return [];
 
     const elapsedSeconds = Math.round(
-      (Date.now() - attempt.startedAt.getTime()) / 1000
+      (Date.now() - attempt.startedAt.getTime()) / 1000,
     );
 
     return scenario.hints
-      .filter(hint => {
+      .filter((hint) => {
         if (attempt.hintsUsed.includes(hint.id)) return false;
 
         switch (hint.trigger) {
-          case 'time':
+          case "time":
             return elapsedSeconds >= (hint.triggerValue || 0);
-          case 'stuck': {
+          case "stuck": {
             // Consider stuck if no commands executed in last 5 minutes
-            const lastCommand = attempt.commandsExecuted[attempt.commandsExecuted.length - 1];
-            if (!lastCommand) return elapsedSeconds >= (hint.triggerValue || 300);
+            const lastCommand =
+              attempt.commandsExecuted[attempt.commandsExecuted.length - 1];
+            if (!lastCommand)
+              return elapsedSeconds >= (hint.triggerValue || 300);
             const timeSinceLastCommand = Math.round(
-              (Date.now() - lastCommand.executedAt.getTime()) / 1000
+              (Date.now() - lastCommand.executedAt.getTime()) / 1000,
             );
             return timeSinceLastCommand >= (hint.triggerValue || 300);
           }
-          case 'request':
+          case "request":
             return true; // Always available on request
           default:
             return false;
         }
       })
-      .map(hint => hint.id);
+      .map((hint) => hint.id);
   }
 
   /**
@@ -221,7 +227,7 @@ export class ScenarioChallengeService {
         averageTime: 0,
         strengths: [],
         weaknesses: [],
-        recommendedScenarios: []
+        recommendedScenarios: [],
       };
       this.userProgress.set(key, progress);
     }
@@ -233,27 +239,35 @@ export class ScenarioChallengeService {
    * Get daily challenge for user based on their unlocked week
    * Only shows challenges from weeks the user has access to
    */
-  getDailyChallenge(userId: string, userCurrentWeek: number): ChallengeScenario | null {
+  getDailyChallenge(
+    userId: string,
+    userCurrentWeek: number,
+  ): ChallengeScenario | null {
     const progress = this.getUserProgress(userId, userCurrentWeek);
     const completedScenarios = new Set(progress.recommendedScenarios);
 
     // Get the user's current difficulty range
-    const currentDifficulty: ChallengeScenario['difficulty'] = 
-      userCurrentWeek >= 13 ? 'week13-16' :
-      userCurrentWeek >= 9 ? 'week9-12' :
-      userCurrentWeek >= 5 ? 'week5-8' : 'week1-4';
+    const currentDifficulty: ChallengeScenario["difficulty"] =
+      userCurrentWeek >= 13
+        ? "week13-16"
+        : userCurrentWeek >= 9
+          ? "week9-12"
+          : userCurrentWeek >= 5
+            ? "week5-8"
+            : "week1-4";
 
     // Get available daily challenges for current difficulty level (not completed)
     const availableChallenges = SCENARIO_CHALLENGES.filter(
-      s => s.type === 'daily' && 
-           s.difficulty === currentDifficulty && 
-           !completedScenarios.has(s.id)
+      (s) =>
+        s.type === "daily" &&
+        s.difficulty === currentDifficulty &&
+        !completedScenarios.has(s.id),
     );
 
     if (availableChallenges.length === 0) {
       // All challenges in current difficulty completed, return random one for practice
       const practiceChallenge = SCENARIO_CHALLENGES.find(
-        s => s.type === 'daily' && s.difficulty === currentDifficulty
+        (s) => s.type === "daily" && s.difficulty === currentDifficulty,
       );
       return practiceChallenge || null;
     }
@@ -278,7 +292,8 @@ export class ScenarioChallengeService {
     else if (timeRatio < 1.0) score += 10;
 
     // Objective completion bonus
-    const objectiveRatio = attempt.objectivesCompleted.length / scenario.objectives.length;
+    const objectiveRatio =
+      attempt.objectivesCompleted.length / scenario.objectives.length;
     score += Math.round(objectiveRatio * 20);
 
     // Hint penalty
@@ -286,7 +301,7 @@ export class ScenarioChallengeService {
     score = Math.max(0, score - hintPenalty);
 
     // Error penalty
-    const errorPenalty = attempt.errors.filter(e => !e.resolved).length * 10;
+    const errorPenalty = attempt.errors.filter((e) => !e.resolved).length * 10;
     score = Math.max(0, score - errorPenalty);
 
     return Math.min(100, score);
@@ -294,74 +309,100 @@ export class ScenarioChallengeService {
 
   private generateFeedback(attempt: ChallengeAttempt): string {
     const scenario = getScenarioById(attempt.scenarioId);
-    if (!scenario) return 'Scenario completed.';
+    if (!scenario) return "Scenario completed.";
 
     const feedback: string[] = [];
 
     if (attempt.passed) {
-      feedback.push('✅ Scenario completed successfully!');
+      feedback.push("✅ Scenario completed successfully!");
 
       if (attempt.score >= 90) {
-        feedback.push('🏆 Outstanding performance! You handled this scenario like a seasoned professional.');
+        feedback.push(
+          "🏆 Outstanding performance! You handled this scenario like a seasoned professional.",
+        );
       } else if (attempt.score >= 75) {
-        feedback.push('💪 Solid work! You demonstrated good problem-solving skills.');
+        feedback.push(
+          "💪 Solid work! You demonstrated good problem-solving skills.",
+        );
       } else {
-        feedback.push('👍 Good job completing the scenario. There\'s room for improvement in efficiency.');
+        feedback.push(
+          "👍 Good job completing the scenario. There's room for improvement in efficiency.",
+        );
       }
     } else {
-      feedback.push('❌ Scenario not completed. Don\'t worry - this is how we learn.');
-      feedback.push('💡 Review the objectives and try again. Each attempt builds your skills.');
+      feedback.push(
+        "❌ Scenario not completed. Don't worry - this is how we learn.",
+      );
+      feedback.push(
+        "💡 Review the objectives and try again. Each attempt builds your skills.",
+      );
     }
 
     // Specific feedback based on performance
     if (attempt.hintsUsed.length > 2) {
-      feedback.push('💭 Consider relying less on hints in future attempts to build independent problem-solving.');
+      feedback.push(
+        "💭 Consider relying less on hints in future attempts to build independent problem-solving.",
+      );
     }
 
     if (attempt.errors.length > 3) {
-      feedback.push('🔧 Focus on careful execution to minimize errors during troubleshooting.');
+      feedback.push(
+        "🔧 Focus on careful execution to minimize errors during troubleshooting.",
+      );
     }
 
     if (attempt.timeSpentSeconds > scenario.timeLimitSeconds * 1.2) {
-      feedback.push('⏱️ Work on improving speed while maintaining accuracy.');
+      feedback.push("⏱️ Work on improving speed while maintaining accuracy.");
     }
 
-    return feedback.join(' ');
+    return feedback.join(" ");
   }
 
   private updateUserProgress(attempt: ChallengeAttempt): void {
     const scenario = getScenarioById(attempt.scenarioId);
     if (!scenario) return;
 
-    const progress = this.getUserProgress(attempt.userId, Math.ceil(Date.now() / (7 * 24 * 60 * 60 * 1000))); // Current week
+    const progress = this.getUserProgress(
+      attempt.userId,
+      Math.ceil(Date.now() / (7 * 24 * 60 * 60 * 1000)),
+    ); // Current week
 
     // Update completion counts
     switch (scenario.type) {
-      case 'daily':
+      case "daily":
         progress.dailyChallengesCompleted++;
         break;
-      case 'weekly':
+      case "weekly":
         progress.weeklyBossBattlesCompleted++;
         break;
-      case 'capstone':
+      case "capstone":
         progress.capstoneSimulationsCompleted++;
         break;
     }
 
     // Update scores and timing
-    const totalAttempts = progress.dailyChallengesCompleted + progress.weeklyBossBattlesCompleted + progress.capstoneSimulationsCompleted;
-    progress.totalScore = Math.round((progress.totalScore * (totalAttempts - 1) + attempt.score) / totalAttempts);
-    progress.averageTime = Math.round((progress.averageTime * (totalAttempts - 1) + attempt.timeSpentSeconds) / totalAttempts);
+    const totalAttempts =
+      progress.dailyChallengesCompleted +
+      progress.weeklyBossBattlesCompleted +
+      progress.capstoneSimulationsCompleted;
+    progress.totalScore = Math.round(
+      (progress.totalScore * (totalAttempts - 1) + attempt.score) /
+        totalAttempts,
+    );
+    progress.averageTime = Math.round(
+      (progress.averageTime * (totalAttempts - 1) + attempt.timeSpentSeconds) /
+        totalAttempts,
+    );
 
     // Update strengths and weaknesses based on performance
     if (attempt.score >= 80) {
-      scenario.tags.forEach(tag => {
+      scenario.tags.forEach((tag) => {
         if (!progress.strengths.includes(tag)) {
           progress.strengths.push(tag);
         }
       });
     } else if (attempt.score < 60) {
-      scenario.tags.forEach(tag => {
+      scenario.tags.forEach((tag) => {
         if (!progress.weaknesses.includes(tag)) {
           progress.weaknesses.push(tag);
         }
@@ -369,6 +410,8 @@ export class ScenarioChallengeService {
     }
 
     // Update recommendations
-    progress.recommendedScenarios = getRecommendedScenarios(progress).map(s => s.id);
+    progress.recommendedScenarios = getRecommendedScenarios(progress).map(
+      (s) => s.id,
+    );
   }
 }

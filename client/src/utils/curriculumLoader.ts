@@ -3,10 +3,12 @@
  * Uses eager loading via Vite's import.meta.glob to avoid circular dependency issues
  */
 
-import { baseWeeks } from '../data/baseWeeks';
+import { baseWeeks } from "../data/baseWeeks";
 
 // Eagerly load all lesson modules at build time to avoid runtime circular dependency issues
-const lessonModules = import.meta.glob('../data/week*Lessons.ts', { eager: true });
+const lessonModules = import.meta.glob("../data/week*Lessons.ts", {
+  eager: true,
+});
 
 class CurriculumLoader {
   private readonly cache = new Map<number, Week>();
@@ -14,7 +16,10 @@ class CurriculumLoader {
 
   constructor() {
     // Pre-populate cache on initialization
-    console.log('CurriculumLoader: Initialized with modules:', Object.keys(lessonModules));
+    console.log(
+      "CurriculumLoader: Initialized with modules:",
+      Object.keys(lessonModules),
+    );
   }
 
   /**
@@ -57,7 +62,7 @@ class CurriculumLoader {
    * Preload critical weeks (current + adjacent)
    */
   async preloadWeeks(weekNumbers: number[]): Promise<void> {
-    weekNumbers.forEach(weekNum => {
+    weekNumbers.forEach((weekNum) => {
       if (!this.cache.has(weekNum)) {
         this.cache.set(weekNum, this.getWeekData(weekNum));
       }
@@ -79,31 +84,41 @@ class CurriculumLoader {
 
   private getWeekData(weekNumber: number): Week {
     const modulePath = `../data/week${weekNumber}Lessons.ts`;
-    const weekData = baseWeeks.find(w => w.weekNumber === weekNumber);
+    const weekData = baseWeeks.find((w) => w.weekNumber === weekNumber);
 
     if (!weekData) {
-      console.error(`CurriculumLoader: Week ${weekNumber} not found in base weeks`);
+      console.error(
+        `CurriculumLoader: Week ${weekNumber} not found in base weeks`,
+      );
       throw new Error(`Week ${weekNumber} not found in base weeks data`);
     }
 
     try {
       const module = lessonModules[modulePath];
       if (module) {
-        const lessons = module[`WEEK_${weekNumber}_LESSONS`] as Week['lessons'] || [];
-        console.log(`CurriculumLoader: Loaded week ${weekNumber} with ${lessons.length} lessons`);
+        const lessons =
+          (module[`WEEK_${weekNumber}_LESSONS`] as Week["lessons"]) || [];
+        console.log(
+          `CurriculumLoader: Loaded week ${weekNumber} with ${lessons.length} lessons`,
+        );
         return { ...weekData, lessons };
       } else {
-        console.warn(`CurriculumLoader: Module ${modulePath} not found, using empty lessons`);
+        console.warn(
+          `CurriculumLoader: Module ${modulePath} not found, using empty lessons`,
+        );
         return { ...weekData, lessons: [] };
       }
     } catch (error) {
-      console.error(`CurriculumLoader: Error loading week ${weekNumber}:`, error);
+      console.error(
+        `CurriculumLoader: Error loading week ${weekNumber}:`,
+        error,
+      );
       return { ...weekData, lessons: [] };
     }
   }
 
   private getAllWeeksData(): Week[] {
-    console.log('CurriculumLoader: Loading all weeks data');
+    console.log("CurriculumLoader: Loading all weeks data");
     const results: Week[] = [];
 
     for (let i = 1; i <= 12; i++) {
@@ -111,7 +126,7 @@ class CurriculumLoader {
         results.push(this.getWeekData(i));
       } catch (error) {
         console.error(`CurriculumLoader: Error loading week ${i}:`, error);
-        const weekData = baseWeeks.find(w => w.weekNumber === i);
+        const weekData = baseWeeks.find((w) => w.weekNumber === i);
         if (weekData) {
           results.push({ ...weekData, lessons: [] });
         }
@@ -127,4 +142,4 @@ class CurriculumLoader {
 export const curriculumLoader = new CurriculumLoader();
 
 // Export types
-export { type Week } from '../data/baseWeeks';
+export { type Week } from "../data/baseWeeks";

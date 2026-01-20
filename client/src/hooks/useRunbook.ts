@@ -4,8 +4,8 @@
  * manages its own local state
  */
 
-import { useMemo } from 'react';
-import { generatePersonalRunbook } from '../services/runbookGenerator';
+import { useMemo } from "react";
+import { generatePersonalRunbook } from "../services/runbookGenerator";
 
 interface FailureEntry {
   id: string;
@@ -28,17 +28,17 @@ export function useRunbook(entries: FailureEntry[]) {
     if (!entries || entries.length === 0) {
       return null;
     }
-    
+
     try {
       return generatePersonalRunbook(entries);
     } catch (error) {
-      console.error('Error generating runbook:', error);
+      console.error("Error generating runbook:", error);
       return null;
     }
   }, [entries]);
 
   return {
     runbook,
-    loading: false
+    loading: false,
   };
 }

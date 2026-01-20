@@ -3,12 +3,12 @@
  * Manages hint timing, availability, and state for spaced practice
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface Hint {
   id: number;
   text: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: "easy" | "medium" | "hard";
 }
 
 interface UseHintSystemProps {
@@ -27,7 +27,7 @@ export function useHintSystem({
   hintsUnlocked,
   labStartTime,
   onHintViewed,
-  currentTime
+  currentTime,
 }: UseHintSystemProps) {
   const [viewedHints, setViewedHints] = useState<number[]>([]);
   const [lastHintTime, setLastHintTime] = useState<number | null>(null);
@@ -76,14 +76,14 @@ export function useHintSystem({
   };
 
   const getNextUnviewedHint = (): Hint | null => {
-    const nextHint = hints.find(h => !viewedHints.includes(h.id));
+    const nextHint = hints.find((h) => !viewedHints.includes(h.id));
     return nextHint || null;
   };
 
   const formatTime = (ms: number): string => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   const getTimeUntilSolution = (): number => {
@@ -101,6 +101,6 @@ export function useHintSystem({
     formatTime,
     getTimeUntilSolution,
     HINT_DELAY,
-    SOLUTION_UNLOCK_TIME
+    SOLUTION_UNLOCK_TIME,
   };
 }

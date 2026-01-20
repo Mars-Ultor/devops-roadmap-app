@@ -3,15 +3,15 @@
  * Integrates SM-2 spaced repetition with mastery levels
  */
 
-import { useNavigate } from 'react-router-dom';
-import { useReviewSchedule } from './useReviewSchedule';
+import { useNavigate } from "react-router-dom";
+import { useReviewSchedule } from "./useReviewSchedule";
 import {
   LoadingState,
   DailyLoadSummary,
   ReviewsDueToday,
   UpcomingWeek,
-  AllCaughtUp
-} from './ReviewSchedulePanelComponents';
+  AllCaughtUp,
+} from "./ReviewSchedulePanelComponents";
 
 export default function ReviewSchedulePanel() {
   const navigate = useNavigate();

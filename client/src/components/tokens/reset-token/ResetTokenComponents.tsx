@@ -3,7 +3,13 @@
  * NOTE: Utility functions (getTokenInfo, getDaysUntilRefresh) moved to ResetTokenUtils.ts
  */
 
-import { AlertTriangle, RefreshCw, Calendar, TrendingDown, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  RefreshCw,
+  Calendar,
+  TrendingDown,
+  X,
+} from "lucide-react";
 
 // ============================================================================
 // Modal Header Component
@@ -23,7 +29,9 @@ export function ModalHeader({ onClose }: ModalHeaderProps) {
           </div>
           <div>
             <h2 className="text-2xl font-bold text-white">Use Reset Token?</h2>
-            <p className="text-yellow-300 text-sm">Think carefully before proceeding</p>
+            <p className="text-yellow-300 text-sm">
+              Think carefully before proceeding
+            </p>
           </div>
         </div>
         <button
@@ -47,7 +55,11 @@ interface TokenStatusDisplayProps {
   daysUntilRefresh: number;
 }
 
-export function TokenStatusDisplay({ info, remaining, daysUntilRefresh }: TokenStatusDisplayProps) {
+export function TokenStatusDisplay({
+  info,
+  remaining,
+  daysUntilRefresh,
+}: TokenStatusDisplayProps) {
   return (
     <div className="bg-yellow-900/20 border-2 border-yellow-600 rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
@@ -61,7 +73,9 @@ export function TokenStatusDisplay({ info, remaining, daysUntilRefresh }: TokenS
         </div>
       </div>
       <div className="flex items-center justify-between text-sm">
-        <span className="text-gray-300">{info.used} / {info.total} used this week</span>
+        <span className="text-gray-300">
+          {info.used} / {info.total} used this week
+        </span>
         <span className="text-gray-400 flex items-center gap-1">
           <Calendar className="w-4 h-4" />
           Refreshes in {daysUntilRefresh} days
@@ -98,12 +112,26 @@ export function ResetLimitWarning() {
       <div className="flex items-start gap-3">
         <TrendingDown className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
         <div className="flex-1">
-          <h3 className="text-red-300 font-semibold mb-2">⚠️ Why Resets Are Limited</h3>
+          <h3 className="text-red-300 font-semibold mb-2">
+            ⚠️ Why Resets Are Limited
+          </h3>
           <ul className="text-red-200 text-sm space-y-1 list-disc list-inside">
-            <li><strong>Prevents trial-and-error learning:</strong> Random guessing doesn't build real skills</li>
-            <li><strong>Forces problem-solving:</strong> You must think through failures instead of restarting</li>
-            <li><strong>Builds resilience:</strong> Real-world production doesn't have "reset" buttons</li>
-            <li><strong>Encourages preparation:</strong> Study before attempting, not after failing</li>
+            <li>
+              <strong>Prevents trial-and-error learning:</strong> Random
+              guessing doesn't build real skills
+            </li>
+            <li>
+              <strong>Forces problem-solving:</strong> You must think through
+              failures instead of restarting
+            </li>
+            <li>
+              <strong>Builds resilience:</strong> Real-world production doesn't
+              have "reset" buttons
+            </li>
+            <li>
+              <strong>Encourages preparation:</strong> Study before attempting,
+              not after failing
+            </li>
           </ul>
         </div>
       </div>
@@ -116,7 +144,10 @@ interface LowTokensWarningProps {
   daysUntilRefresh: number;
 }
 
-export function LowTokensWarning({ remaining, daysUntilRefresh }: LowTokensWarningProps) {
+export function LowTokensWarning({
+  remaining,
+  daysUntilRefresh,
+}: LowTokensWarningProps) {
   if (remaining > 2) return null;
 
   return (
@@ -124,10 +155,13 @@ export function LowTokensWarning({ remaining, daysUntilRefresh }: LowTokensWarni
       <div className="flex items-start gap-3">
         <AlertTriangle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-1" />
         <div className="flex-1">
-          <p className="text-orange-300 font-medium mb-1">Running Low on Tokens!</p>
+          <p className="text-orange-300 font-medium mb-1">
+            Running Low on Tokens!
+          </p>
           <p className="text-orange-200 text-sm">
-            You have {remaining} reset(s) left. Consider reviewing material before using your last tokens.
-            Next refresh: <strong>{daysUntilRefresh} days</strong>.
+            You have {remaining} reset(s) left. Consider reviewing material
+            before using your last tokens. Next refresh:{" "}
+            <strong>{daysUntilRefresh} days</strong>.
           </p>
         </div>
       </div>
@@ -143,8 +177,9 @@ export function LastTokenWarning() {
         <div className="flex-1">
           <p className="text-red-300 font-bold mb-1">🚨 LAST RESET TOKEN!</p>
           <p className="text-red-200 text-sm">
-            This is your final reset for the week. After this, you must complete content without restarting.
-            Are you absolutely sure you need to reset?
+            This is your final reset for the week. After this, you must complete
+            content without restarting. Are you absolutely sure you need to
+            reset?
           </p>
         </div>
       </div>
@@ -159,7 +194,9 @@ export function LastTokenWarning() {
 export function AlternativesSection() {
   return (
     <div className="bg-indigo-900/20 border border-indigo-600 rounded-lg p-4">
-      <h3 className="text-indigo-300 font-semibold mb-2">💡 Alternatives to Consider:</h3>
+      <h3 className="text-indigo-300 font-semibold mb-2">
+        💡 Alternatives to Consider:
+      </h3>
       <ul className="text-indigo-200 text-sm space-y-1 list-disc list-inside">
         <li>Review lesson notes and documentation</li>
         <li>Use remaining hints (doesn't consume reset tokens)</li>
@@ -181,7 +218,11 @@ interface ConfirmationCheckboxProps {
   totalTokens: number;
 }
 
-export function ConfirmationCheckbox({ checked, onChange, totalTokens }: ConfirmationCheckboxProps) {
+export function ConfirmationCheckbox({
+  checked,
+  onChange,
+  totalTokens,
+}: ConfirmationCheckboxProps) {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4 border-2 border-slate-600">
       <label className="flex items-start gap-3 cursor-pointer">
@@ -196,8 +237,9 @@ export function ConfirmationCheckbox({ checked, onChange, totalTokens }: Confirm
             I understand the consequences
           </p>
           <p className="text-slate-400 text-sm">
-            I have reviewed alternatives and still need to reset. I understand this will consume
-            one of my {totalTokens} weekly reset tokens and cannot be undone.
+            I have reviewed alternatives and still need to reset. I understand
+            this will consume one of my {totalTokens} weekly reset tokens and
+            cannot be undone.
           </p>
         </div>
       </label>
@@ -217,7 +259,13 @@ interface ActionButtonsProps {
   remainingAfter: number;
 }
 
-export function ActionButtons({ onCancel, onConfirm, canConfirm, confirming, remainingAfter }: ActionButtonsProps) {
+export function ActionButtons({
+  onCancel,
+  onConfirm,
+  canConfirm,
+  confirming,
+  remainingAfter,
+}: ActionButtonsProps) {
   return (
     <div className="flex gap-3 pt-4 border-t border-slate-700">
       <button

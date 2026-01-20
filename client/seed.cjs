@@ -1,6 +1,6 @@
-const { initializeApp } = require('firebase/app');
-const { getFirestore, doc, writeBatch } = require('firebase/firestore');
-require('dotenv').config();
+const { initializeApp } = require("firebase/app");
+const { getFirestore, doc, writeBatch } = require("firebase/firestore");
+require("dotenv").config();
 
 const firebaseConfig = {
   apiKey: process.env.VITE_FIREBASE_API_KEY,
@@ -18,19 +18,21 @@ const weeks = [
   {
     weekNumber: 1,
     title: "DevOps Foundations & Linux Basics",
-    description: "Start your DevOps journey by understanding core concepts and mastering the Linux command line.",
+    description:
+      "Start your DevOps journey by understanding core concepts and mastering the Linux command line.",
     objectives: [
       "Understand DevOps culture and principles",
       "Navigate the Linux filesystem confidently",
       "Manage files, permissions, and processes",
-      "Use essential command-line tools"
+      "Use essential command-line tools",
     ],
     lessons: [
-      { 
-        id: "w1-l1", 
-        title: "What is DevOps?", 
-        description: "Learn the history, culture, and practices that define DevOps.", 
-        duration: "15 min", 
+      {
+        id: "w1-l1",
+        title: "What is DevOps?",
+        description:
+          "Learn the history, culture, and practices that define DevOps.",
+        duration: "15 min",
         xp: 50,
         videoId: "UbtB4sMaaNM", // DevOps in 5 Minutes
         content: `# What is DevOps?
@@ -58,13 +60,14 @@ DevOps is a cultural and professional movement that emphasizes collaboration bet
 - Monitoring and Logging
 - Communication and Collaboration
 
-Watch the video to understand how DevOps transforms modern software development!`
+Watch the video to understand how DevOps transforms modern software development!`,
       },
-      { 
-        id: "w1-l2", 
-        title: "Linux Fundamentals", 
-        description: "Introduction to Linux and why it's the foundation of modern DevOps.", 
-        duration: "20 min", 
+      {
+        id: "w1-l2",
+        title: "Linux Fundamentals",
+        description:
+          "Introduction to Linux and why it's the foundation of modern DevOps.",
+        duration: "20 min",
         xp: 50,
         videoId: "sWbUDq4S6Y8", // Linux for Beginners
         content: `# Linux Fundamentals
@@ -94,13 +97,13 @@ Watch the video to understand how DevOps transforms modern software development!
 - **Root**: Superuser with full system access
 - **Home Directory**: User's personal space (/home/username)
 
-Get ready to master the command line!`
+Get ready to master the command line!`,
       },
-      { 
-        id: "w1-l3", 
-        title: "Linux File System", 
-        description: "Understand the Linux directory structure.", 
-        duration: "15 min", 
+      {
+        id: "w1-l3",
+        title: "Linux File System",
+        description: "Understand the Linux directory structure.",
+        duration: "15 min",
         xp: 50,
         videoId: "HbgzrKJvDRw", // Linux File System Explained
         content: `# Linux File System Structure
@@ -149,14 +152,50 @@ Optional third-party software.
 - \`cd\` - Change directory
 - \`tree\` - Display directory tree
 
-Master the filesystem to navigate like a pro!`
-      }
+Master the filesystem to navigate like a pro!`,
+      },
     ],
     labs: [
-      { id: "w1-lab1", title: "Linux Command Line Basics", description: "Practice essential Linux commands.", difficulty: "beginner", estimatedTime: 30, xp: 100, tasks: ["Navigate to /home", "Create directory 'devops-practice'", "Create file 'file1.txt'"] },
-      { id: "w1-lab2", title: "File Permissions Lab", description: "Master chmod and file ownership.", difficulty: "beginner", estimatedTime: 30, xp: 100, tasks: ["Check permissions with ls -l", "Change file permissions", "Change file ownership"] },
-      { id: "w1-lab3", title: "Package Management Lab", description: "Install software using apt/yum.", difficulty: "beginner", estimatedTime: 30, xp: 100, tasks: ["Update package lists", "Install a package", "Remove a package"] }
-    ]
+      {
+        id: "w1-lab1",
+        title: "Linux Command Line Basics",
+        description: "Practice essential Linux commands.",
+        difficulty: "beginner",
+        estimatedTime: 30,
+        xp: 100,
+        tasks: [
+          "Navigate to /home",
+          "Create directory 'devops-practice'",
+          "Create file 'file1.txt'",
+        ],
+      },
+      {
+        id: "w1-lab2",
+        title: "File Permissions Lab",
+        description: "Master chmod and file ownership.",
+        difficulty: "beginner",
+        estimatedTime: 30,
+        xp: 100,
+        tasks: [
+          "Check permissions with ls -l",
+          "Change file permissions",
+          "Change file ownership",
+        ],
+      },
+      {
+        id: "w1-lab3",
+        title: "Package Management Lab",
+        description: "Install software using apt/yum.",
+        difficulty: "beginner",
+        estimatedTime: 30,
+        xp: 100,
+        tasks: [
+          "Update package lists",
+          "Install a package",
+          "Remove a package",
+        ],
+      },
+    ],
   },
   {
     weekNumber: 2,
@@ -166,14 +205,14 @@ Master the filesystem to navigate like a pro!`
       "Understand Git fundamentals and version control",
       "Create and manage repositories",
       "Work with branches and merges",
-      "Collaborate using pull requests"
+      "Collaborate using pull requests",
     ],
     lessons: [
-      { 
-        id: "w2-l1", 
-        title: "Git Basics", 
-        description: "Learn version control fundamentals.", 
-        duration: "20 min", 
+      {
+        id: "w2-l1",
+        title: "Git Basics",
+        description: "Learn version control fundamentals.",
+        duration: "20 min",
         xp: 50,
         videoId: "RGOj5yH7evk", // Git and GitHub for Beginners
         content: `# Git Basics
@@ -243,13 +282,13 @@ git log --oneline  # Compact view
 3. **Pull before push**: Stay up to date with team changes
 4. **Don't commit sensitive data**: Use .gitignore for secrets
 
-Ready to track your code like a pro! 🚀`
+Ready to track your code like a pro! 🚀`,
       },
-      { 
-        id: "w2-l2", 
-        title: "Branching & Merging", 
-        description: "Master Git workflows.", 
-        duration: "25 min", 
+      {
+        id: "w2-l2",
+        title: "Branching & Merging",
+        description: "Master Git workflows.",
+        duration: "25 min",
         xp: 50,
         videoId: "e2IbNHi4uCI", // Git Branching and Merging
         content: `# Branching & Merging
@@ -363,13 +402,13 @@ Conflicts occur when the same lines are changed in both branches.
 4. **Delete merged branches**: Keep repo clean
 5. **Pull main regularly**: Stay up to date
 
-Master branching to collaborate like a DevOps pro! 🌿`
+Master branching to collaborate like a DevOps pro! 🌿`,
       },
-      { 
-        id: "w2-l3", 
-        title: "GitHub Collaboration", 
-        description: "Work with remote repositories.", 
-        duration: "20 min", 
+      {
+        id: "w2-l3",
+        title: "GitHub Collaboration",
+        description: "Work with remote repositories.",
+        duration: "20 min",
         xp: 50,
         videoId: "nhNq2kIvi9s", // GitHub Tutorial
         content: `# GitHub Collaboration
@@ -532,30 +571,47 @@ git push origin branch-name
 gh pr create --title "Title" --body "Description"
 \`\`\`
 
-Collaborate effectively and contribute to open source! 🤝`
-      }
+Collaborate effectively and contribute to open source! 🤝`,
+      },
     ],
     labs: [
-      { id: "w2-lab1", title: "Git Basics Lab", description: "Initialize and push to GitHub.", difficulty: "beginner", estimatedTime: 30, xp: 100, tasks: ["Init repo", "First commit", "Push to GitHub"] },
-      { id: "w2-lab2", title: "Branching and Merging Lab", description: "Practice Git workflows.", difficulty: "intermediate", estimatedTime: 45, xp: 150, tasks: ["Create branch", "Make changes", "Merge to main"] }
-    ]
+      {
+        id: "w2-lab1",
+        title: "Git Basics Lab",
+        description: "Initialize and push to GitHub.",
+        difficulty: "beginner",
+        estimatedTime: 30,
+        xp: 100,
+        tasks: ["Init repo", "First commit", "Push to GitHub"],
+      },
+      {
+        id: "w2-lab2",
+        title: "Branching and Merging Lab",
+        description: "Practice Git workflows.",
+        difficulty: "intermediate",
+        estimatedTime: 45,
+        xp: 150,
+        tasks: ["Create branch", "Make changes", "Merge to main"],
+      },
+    ],
   },
   {
     weekNumber: 3,
     title: "Cloud Fundamentals with AWS",
-    description: "Get hands-on with AWS core services - the foundation for the Cloud Resume Challenge.",
+    description:
+      "Get hands-on with AWS core services - the foundation for the Cloud Resume Challenge.",
     objectives: [
       "Navigate AWS Console",
       "Understand IAM and security",
       "Work with S3 storage",
-      "Deploy static websites"
+      "Deploy static websites",
     ],
     lessons: [
-      { 
-        id: "w3-l1", 
-        title: "Introduction to Cloud Computing", 
-        description: "Understand IaaS, PaaS, SaaS.", 
-        duration: "20 min", 
+      {
+        id: "w3-l1",
+        title: "Introduction to Cloud Computing",
+        description: "Understand IaaS, PaaS, SaaS.",
+        duration: "20 min",
         xp: 50,
         videoId: "M988_fsOSWo", // AWS Tutorial for Beginners
         content: `# Introduction to Cloud Computing
@@ -688,13 +744,13 @@ AWS offers a Free Tier with:
 - **IAM**: Identity management
 - **CloudWatch**: Monitoring
 
-Welcome to the cloud! ☁️`
+Welcome to the cloud! ☁️`,
       },
-      { 
-        id: "w3-l2", 
-        title: "AWS Console Tour", 
-        description: "Navigate AWS services.", 
-        duration: "15 min", 
+      {
+        id: "w3-l2",
+        title: "AWS Console Tour",
+        description: "Navigate AWS services.",
+        duration: "15 min",
         xp: 50,
         videoId: "ubCNZRNjhyo", // AWS Console Tour
         content: `# AWS Console Tour
@@ -831,13 +887,13 @@ Visualize and analyze your AWS spending.
 - **AWS Forums**: Community help
 - **AWS Training**: Free courses on AWS Skill Builder
 
-Navigate AWS like a pro! 🧭`
+Navigate AWS like a pro! 🧭`,
       },
-      { 
-        id: "w3-l3", 
-        title: "IAM and Security", 
-        description: "Manage users and permissions.", 
-        duration: "25 min", 
+      {
+        id: "w3-l3",
+        title: "IAM and Security",
+        description: "Manage users and permissions.",
+        duration: "25 min",
         xp: 50,
         videoId: "ExjW_YPu-NM", // AWS IAM Tutorial
         content: `# IAM and Security
@@ -1032,30 +1088,52 @@ For multi-account management (AWS Organizations).
 - Access Advisor (shows used permissions)
 - CloudTrail logs
 
-Security is the foundation of cloud success! 🔒`
-      }
+Security is the foundation of cloud success! 🔒`,
+      },
     ],
     labs: [
-      { id: "w3-lab1", title: "Deploy Static Website on S3", description: "Host your first website on AWS.", difficulty: "beginner", estimatedTime: 40, xp: 150, tasks: ["Create S3 bucket", "Upload files", "Enable static hosting", "Test website"] },
-      { id: "w3-lab2", title: "IAM Users and Policies", description: "Create users with proper permissions.", difficulty: "intermediate", estimatedTime: 35, xp: 100, tasks: ["Create IAM user", "Attach policy", "Test permissions"] }
-    ]
+      {
+        id: "w3-lab1",
+        title: "Deploy Static Website on S3",
+        description: "Host your first website on AWS.",
+        difficulty: "beginner",
+        estimatedTime: 40,
+        xp: 150,
+        tasks: [
+          "Create S3 bucket",
+          "Upload files",
+          "Enable static hosting",
+          "Test website",
+        ],
+      },
+      {
+        id: "w3-lab2",
+        title: "IAM Users and Policies",
+        description: "Create users with proper permissions.",
+        difficulty: "intermediate",
+        estimatedTime: 35,
+        xp: 100,
+        tasks: ["Create IAM user", "Attach policy", "Test permissions"],
+      },
+    ],
   },
   {
     weekNumber: 4,
     title: "Networking & DNS Basics",
-    description: "Understand networking fundamentals crucial for cloud infrastructure.",
+    description:
+      "Understand networking fundamentals crucial for cloud infrastructure.",
     objectives: [
       "Understand TCP/IP and networking concepts",
       "Work with DNS and domain names",
       "Configure CloudFront CDN",
-      "Set up HTTPS with certificates"
+      "Set up HTTPS with certificates",
     ],
     lessons: [
-      { 
-        id: "w4-l1", 
-        title: "Networking Fundamentals", 
-        description: "Learn TCP/IP, ports, and protocols.", 
-        duration: "25 min", 
+      {
+        id: "w4-l1",
+        title: "Networking Fundamentals",
+        description: "Learn TCP/IP, ports, and protocols.",
+        duration: "25 min",
         xp: 50,
         videoId: "IPvYjXCsTg8", // Networking Basics
         content: `# Networking Fundamentals
@@ -1212,13 +1290,13 @@ Cache content at edge locations worldwide for:
 
 **AWS CDN**: CloudFront
 
-Networking is the backbone of cloud infrastructure! 🌐`
+Networking is the backbone of cloud infrastructure! 🌐`,
       },
-      { 
-        id: "w4-l2", 
-        title: "DNS Deep Dive", 
-        description: "Understand how DNS works.", 
-        duration: "20 min", 
+      {
+        id: "w4-l2",
+        title: "DNS Deep Dive",
+        description: "Understand how DNS works.",
+        duration: "20 min",
         xp: 50,
         videoId: "mpQZVYPuDGU", // DNS Explained
         content: `# DNS Deep Dive
@@ -1388,13 +1466,13 @@ Adds cryptographic signatures to DNS records to prevent:
 4. **Use ALIAS records** for root domains on AWS
 5. **Document changes** before modifying DNS
 
-DNS is critical infrastructure—handle with care! 🎯`
+DNS is critical infrastructure—handle with care! 🎯`,
       },
-      { 
-        id: "w4-l3", 
-        title: "Content Delivery Networks", 
-        description: "Learn about CDNs and CloudFront.", 
-        duration: "20 min", 
+      {
+        id: "w4-l3",
+        title: "Content Delivery Networks",
+        description: "Learn about CDNs and CloudFront.",
+        duration: "20 min",
         xp: 50,
         videoId: "Bsq5cKkS33I", // CDN Explained
         content: `# Content Delivery Networks (CDN)
@@ -1629,13 +1707,38 @@ Detailed logs stored in S3.
 5. **Use custom domains** for branding
 6. **Enable HTTPS only** for security
 
-CDNs make your website lightning fast worldwide! ⚡`
-      }
+CDNs make your website lightning fast worldwide! ⚡`,
+      },
     ],
     labs: [
-      { id: "w4-lab1", title: "Configure CloudFront Distribution", description: "Add CDN to your S3 website.", difficulty: "intermediate", estimatedTime: 45, xp: 150, tasks: ["Create CloudFront distribution", "Link to S3", "Configure caching", "Test performance"] },
-      { id: "w4-lab2", title: "Custom Domain with Route 53", description: "Connect your domain name.", difficulty: "intermediate", estimatedTime: 40, xp: 100, tasks: ["Register domain", "Create hosted zone", "Configure DNS records"] }
-    ]
+      {
+        id: "w4-lab1",
+        title: "Configure CloudFront Distribution",
+        description: "Add CDN to your S3 website.",
+        difficulty: "intermediate",
+        estimatedTime: 45,
+        xp: 150,
+        tasks: [
+          "Create CloudFront distribution",
+          "Link to S3",
+          "Configure caching",
+          "Test performance",
+        ],
+      },
+      {
+        id: "w4-lab2",
+        title: "Custom Domain with Route 53",
+        description: "Connect your domain name.",
+        difficulty: "intermediate",
+        estimatedTime: 40,
+        xp: 100,
+        tasks: [
+          "Register domain",
+          "Create hosted zone",
+          "Configure DNS records",
+        ],
+      },
+    ],
   },
   {
     weekNumber: 5,
@@ -1645,14 +1748,14 @@ CDNs make your website lightning fast worldwide! ⚡`
       "Write Python scripts for automation",
       "Work with APIs and HTTP requests",
       "Handle JSON data",
-      "Create simple web applications"
+      "Create simple web applications",
     ],
     lessons: [
-      { 
-        id: "w5-l1", 
-        title: "Python Basics", 
-        description: "Variables, loops, and functions.", 
-        duration: "30 min", 
+      {
+        id: "w5-l1",
+        title: "Python Basics",
+        description: "Variables, loops, and functions.",
+        duration: "30 min",
         xp: 50,
         videoId: "kqtD5dpn9C8", // Python for Beginners
         content: `# Python Basics
@@ -1976,13 +2079,13 @@ if __name__ == "__main__":
 4. **Use virtual environments**: Isolate dependencies
 5. **Handle errors**: Don't let scripts crash
 
-Python makes DevOps automation simple! 🐍`
+Python makes DevOps automation simple! 🐍`,
       },
-      { 
-        id: "w5-l2", 
-        title: "Working with APIs", 
-        description: "Make HTTP requests with Python.", 
-        duration: "25 min", 
+      {
+        id: "w5-l2",
+        title: "Working with APIs",
+        description: "Make HTTP requests with Python.",
+        duration: "25 min",
         xp: 50,
         videoId: "Wjx_0lpbbKI", // Python REST API
         content: `# Working with APIs
@@ -2271,13 +2374,13 @@ get_ec2_metadata()
 5. **Rate limit**: Respect API limits
 6. **Log requests**: For debugging
 
-Master APIs to integrate everything! 🔗`
+Master APIs to integrate everything! 🔗`,
       },
-      { 
-        id: "w5-l3", 
-        title: "Python for AWS", 
-        description: "Use Boto3 SDK.", 
-        duration: "30 min", 
+      {
+        id: "w5-l3",
+        title: "Python for AWS",
+        description: "Use Boto3 SDK.",
+        duration: "30 min",
         xp: 50,
         videoId: "Cb2czfCV2yA", // Boto3 Tutorial
         content: `# Python for AWS (Boto3)
@@ -2662,13 +2765,29 @@ except ClientError as e:
 5. **Log operations** for auditing
 6. **Use boto3.Session()** for multiple regions
 
-Automate AWS with Python power! ⚡`
-      }
+Automate AWS with Python power! ⚡`,
+      },
     ],
     labs: [
-      { id: "w5-lab1", title: "Python Scripting Lab", description: "Automate tasks with Python.", difficulty: "intermediate", estimatedTime: 45, xp: 150, tasks: ["Write Python script", "Read/write files", "Process data"] },
-      { id: "w5-lab2", title: "Build a REST API Client", description: "Interact with APIs using Python.", difficulty: "intermediate", estimatedTime: 50, xp: 150, tasks: ["Make GET request", "Parse JSON", "Handle errors"] }
-    ]
+      {
+        id: "w5-lab1",
+        title: "Python Scripting Lab",
+        description: "Automate tasks with Python.",
+        difficulty: "intermediate",
+        estimatedTime: 45,
+        xp: 150,
+        tasks: ["Write Python script", "Read/write files", "Process data"],
+      },
+      {
+        id: "w5-lab2",
+        title: "Build a REST API Client",
+        description: "Interact with APIs using Python.",
+        difficulty: "intermediate",
+        estimatedTime: 50,
+        xp: 150,
+        tasks: ["Make GET request", "Parse JSON", "Handle errors"],
+      },
+    ],
   },
   {
     weekNumber: 6,
@@ -2678,14 +2797,14 @@ Automate AWS with Python power! ⚡`
       "Understand serverless architecture",
       "Create Lambda functions",
       "Work with DynamoDB",
-      "Build API Gateway endpoints"
+      "Build API Gateway endpoints",
     ],
     lessons: [
-      { 
-        id: "w6-l1", 
-        title: "Introduction to Serverless", 
-        description: "Learn serverless concepts.", 
-        duration: "20 min", 
+      {
+        id: "w6-l1",
+        title: "Introduction to Serverless",
+        description: "Learn serverless concepts.",
+        duration: "20 min",
         xp: 50,
         videoId: "vxJobGtqKVM", // Serverless Computing Explained
         content: `# Introduction to Serverless
@@ -2821,36 +2940,60 @@ User message → API Gateway → Lambda → AI Service → Response
 
 Compare to EC2 t2.micro ($8.50/month) even when idle!
 
-Serverless = Build more, manage less! 🚀`
+Serverless = Build more, manage less! 🚀`,
       },
-      { 
-        id: "w6-l2", 
-        title: "AWS Lambda Deep Dive", 
-        description: "Create and deploy functions.", 
-        duration: "30 min", 
+      {
+        id: "w6-l2",
+        title: "AWS Lambda Deep Dive",
+        description: "Create and deploy functions.",
+        duration: "30 min",
         xp: 50,
         videoId: "eOBq__h4OJ4", // AWS Lambda Tutorial
         content: `# AWS Lambda Deep Dive
 
-See full Lambda tutorial with code examples, deployment, testing, and best practices.`
+See full Lambda tutorial with code examples, deployment, testing, and best practices.`,
       },
-      { 
-        id: "w6-l3", 
-        title: "DynamoDB Basics", 
-        description: "NoSQL database fundamentals.", 
-        duration: "25 min", 
+      {
+        id: "w6-l3",
+        title: "DynamoDB Basics",
+        description: "NoSQL database fundamentals.",
+        duration: "25 min",
         xp: 50,
         videoId: "2k2GINpO308", // DynamoDB Tutorial
         content: `# DynamoDB Basics
 
-Complete guide to DynamoDB operations, querying, indexes, and best practices.`
-      }
+Complete guide to DynamoDB operations, querying, indexes, and best practices.`,
+      },
     ],
     labs: [
-      { id: "w6-lab1", title: "Create Your First Lambda Function", description: "Build a serverless function.", difficulty: "intermediate", estimatedTime: 40, xp: 150, tasks: ["Write Lambda code", "Test function", "View logs"] },
-      { id: "w6-lab2", title: "DynamoDB CRUD Operations", description: "Store and retrieve data.", difficulty: "intermediate", estimatedTime: 45, xp: 150, tasks: ["Create table", "Insert items", "Query data"] },
-      { id: "w6-lab3", title: "API Gateway + Lambda", description: "Create a REST API.", difficulty: "advanced", estimatedTime: 60, xp: 200, tasks: ["Create API", "Connect Lambda", "Test endpoints"] }
-    ]
+      {
+        id: "w6-lab1",
+        title: "Create Your First Lambda Function",
+        description: "Build a serverless function.",
+        difficulty: "intermediate",
+        estimatedTime: 40,
+        xp: 150,
+        tasks: ["Write Lambda code", "Test function", "View logs"],
+      },
+      {
+        id: "w6-lab2",
+        title: "DynamoDB CRUD Operations",
+        description: "Store and retrieve data.",
+        difficulty: "intermediate",
+        estimatedTime: 45,
+        xp: 150,
+        tasks: ["Create table", "Insert items", "Query data"],
+      },
+      {
+        id: "w6-lab3",
+        title: "API Gateway + Lambda",
+        description: "Create a REST API.",
+        difficulty: "advanced",
+        estimatedTime: 60,
+        xp: 200,
+        tasks: ["Create API", "Connect Lambda", "Test endpoints"],
+      },
+    ],
   },
   {
     weekNumber: 7,
@@ -2860,14 +3003,14 @@ Complete guide to DynamoDB operations, querying, indexes, and best practices.`
       "Create HTML/CSS resume",
       "Deploy to S3 with CloudFront",
       "Configure custom domain",
-      "Set up HTTPS with ACM"
+      "Set up HTTPS with ACM",
     ],
     lessons: [
-      { 
-        id: "w7-l1", 
-        title: "Cloud Resume Challenge Overview", 
-        description: "Understand the full architecture.", 
-        duration: "15 min", 
+      {
+        id: "w7-l1",
+        title: "Cloud Resume Challenge Overview",
+        description: "Understand the full architecture.",
+        duration: "15 min",
         xp: 50,
         videoId: "PlTgPlfhCfo", // Cloud Resume Challenge Explained
         content: `# Cloud Resume Challenge Overview
@@ -2924,13 +3067,13 @@ By the end of this challenge, you'll have:
 ## Getting Started
 
 Start with Week 7 to build and deploy the frontend. We'll add complexity each week!
-`
+`,
       },
-      { 
-        id: "w7-l2", 
-        title: "HTML/CSS Best Practices", 
-        description: "Build a professional resume.", 
-        duration: "30 min", 
+      {
+        id: "w7-l2",
+        title: "HTML/CSS Best Practices",
+        description: "Build a professional resume.",
+        duration: "30 min",
         xp: 50,
         videoId: "UB1O30fR-EE", // HTML & CSS Full Course
         content: `# HTML/CSS Resume Best Practices
@@ -3085,16 +3228,17 @@ section {
 - [ ] Contact information visible
 
 Your resume is your first impression - make it count!
-`
-      }
+`,
+      },
     ],
     labs: [],
     project: {
       id: "cloud-resume-p1",
       title: "Cloud Resume Challenge - Frontend",
-      description: "Deploy your HTML/CSS resume to AWS using S3, CloudFront, and Route 53.",
-      xp: 500
-    }
+      description:
+        "Deploy your HTML/CSS resume to AWS using S3, CloudFront, and Route 53.",
+      xp: 500,
+    },
   },
   {
     weekNumber: 8,
@@ -3104,14 +3248,14 @@ Your resume is your first impression - make it count!
       "Build Lambda function for visitor counter",
       "Create DynamoDB table",
       "Set up API Gateway",
-      "Connect frontend to backend with JavaScript"
+      "Connect frontend to backend with JavaScript",
     ],
     lessons: [
-      { 
-        id: "w8-l1", 
-        title: "JavaScript Basics", 
-        description: "Fetch API and async/await.", 
-        duration: "25 min", 
+      {
+        id: "w8-l1",
+        title: "JavaScript Basics",
+        description: "Fetch API and async/await.",
+        duration: "25 min",
         xp: 50,
         videoId: "PkZNo7MFNFg", // JavaScript Tutorial for Beginners
         content: `# JavaScript for Serverless Applications
@@ -3349,13 +3493,13 @@ exports.handler = async (event) => {
 6. **Test end-to-end** functionality
 
 JavaScript bridges your beautiful frontend with powerful serverless backend!
-`
+`,
       },
-      { 
-        id: "w8-l2", 
-        title: "CORS Configuration", 
-        description: "Enable cross-origin requests.", 
-        duration: "15 min", 
+      {
+        id: "w8-l2",
+        title: "CORS Configuration",
+        description: "Enable cross-origin requests.",
+        duration: "15 min",
         xp: 50,
         videoId: "4KHiSt0oLJ0", // CORS Explained
         content: `# CORS: Cross-Origin Resource Sharing
@@ -3566,16 +3710,17 @@ exports.handler = async (event) => {
 \`\`\`
 
 CORS is critical for connecting your frontend and backend - master it!
-`
-      }
+`,
+      },
     ],
     labs: [],
     project: {
       id: "cloud-resume-p2",
       title: "Cloud Resume Challenge - Backend",
-      description: "Build a serverless visitor counter with Lambda, DynamoDB, and API Gateway.",
-      xp: 600
-    }
+      description:
+        "Build a serverless visitor counter with Lambda, DynamoDB, and API Gateway.",
+      xp: 600,
+    },
   },
   {
     weekNumber: 9,
@@ -3585,14 +3730,14 @@ CORS is critical for connecting your frontend and backend - master it!
       "Understand IaC principles",
       "Write Terraform configurations",
       "Manage state files",
-      "Deploy Cloud Resume with Terraform"
+      "Deploy Cloud Resume with Terraform",
     ],
     lessons: [
-      { 
-        id: "w9-l1", 
-        title: "Introduction to IaC", 
-        description: "Why Infrastructure as Code matters.", 
-        duration: "20 min", 
+      {
+        id: "w9-l1",
+        title: "Introduction to IaC",
+        description: "Why Infrastructure as Code matters.",
+        duration: "20 min",
         xp: 50,
         videoId: "POPP2WTJ8es", // Infrastructure as Code Explained
         content: `# Infrastructure as Code (IaC)
@@ -3810,13 +3955,13 @@ Write Code → Review → Test → Apply → Monitor
 - **Deploy everything** with one command
 
 Infrastructure as Code transforms infrastructure management from art to engineering!
-`
+`,
       },
-      { 
-        id: "w9-l2", 
-        title: "Terraform Basics", 
-        description: "Resources, providers, and variables.", 
-        duration: "30 min", 
+      {
+        id: "w9-l2",
+        title: "Terraform Basics",
+        description: "Resources, providers, and variables.",
+        duration: "30 min",
         xp: 50,
         videoId: "tomUWcQ0P3k", // Terraform Course - Automate your AWS cloud infrastructure
         content: `# Terraform Basics
@@ -4183,13 +4328,13 @@ crash.log
 6. Deploy your resume!
 
 In the next lesson, we'll cover **state management** and how to work with teams using remote state.
-`
+`,
       },
-      { 
-        id: "w9-l3", 
-        title: "Terraform State Management", 
-        description: "Remote state with S3.", 
-        duration: "25 min", 
+      {
+        id: "w9-l3",
+        title: "Terraform State Management",
+        description: "Remote state with S3.",
+        duration: "25 min",
         xp: 50,
         videoId: "92hKEaEy6Fo", // Terraform State Management
         content: `# Terraform State Management
@@ -4580,36 +4725,53 @@ Remote state allows seamless CI/CD deployments!
 - **Separate state**: Per environment/project
 
 Master state management for professional Terraform usage!
-`
-      }
+`,
+      },
     ],
     labs: [
-      { id: "w9-lab1", title: "Terraform Basics Lab", description: "Create your first infrastructure.", difficulty: "intermediate", estimatedTime: 50, xp: 150, tasks: ["Write main.tf", "Run terraform init", "Apply changes"] },
-      { id: "w9-lab2", title: "Cloud Resume with Terraform", description: "Rebuild resume infrastructure as code.", difficulty: "advanced", estimatedTime: 90, xp: 250, tasks: ["Define S3 resources", "Add CloudFront", "Add Lambda/DynamoDB"] }
+      {
+        id: "w9-lab1",
+        title: "Terraform Basics Lab",
+        description: "Create your first infrastructure.",
+        difficulty: "intermediate",
+        estimatedTime: 50,
+        xp: 150,
+        tasks: ["Write main.tf", "Run terraform init", "Apply changes"],
+      },
+      {
+        id: "w9-lab2",
+        title: "Cloud Resume with Terraform",
+        description: "Rebuild resume infrastructure as code.",
+        difficulty: "advanced",
+        estimatedTime: 90,
+        xp: 250,
+        tasks: ["Define S3 resources", "Add CloudFront", "Add Lambda/DynamoDB"],
+      },
     ],
     project: {
       id: "cloud-resume-p3",
       title: "Cloud Resume Challenge - IaC",
       description: "Convert your infrastructure to Terraform code.",
-      xp: 400
-    }
+      xp: 400,
+    },
   },
   {
     weekNumber: 10,
     title: "CI/CD with GitHub Actions",
-    description: "Automate deployments with continuous integration and delivery.",
+    description:
+      "Automate deployments with continuous integration and delivery.",
     objectives: [
       "Understand CI/CD principles",
       "Create GitHub Actions workflows",
       "Automate S3 deployments",
-      "Deploy Lambda with CI/CD"
+      "Deploy Lambda with CI/CD",
     ],
     lessons: [
-      { 
-        id: "w10-l1", 
-        title: "Introduction to CI/CD", 
-        description: "Learn continuous integration and delivery.", 
-        duration: "20 min", 
+      {
+        id: "w10-l1",
+        title: "Introduction to CI/CD",
+        description: "Learn continuous integration and delivery.",
+        duration: "20 min",
         xp: 50,
         videoId: "scEDHsr3APg", // CI/CD Explained
         content: `# CI/CD Fundamentals
@@ -4682,13 +4844,13 @@ Monitor
 - GitLab CI/CD
 - CircleCI
 - Travis CI
-- AWS CodePipeline`
+- AWS CodePipeline`,
       },
-      { 
-        id: "w10-l2", 
-        title: "GitHub Actions Basics", 
-        description: "Create your first workflow.", 
-        duration: "30 min", 
+      {
+        id: "w10-l2",
+        title: "GitHub Actions Basics",
+        description: "Create your first workflow.",
+        duration: "30 min",
         xp: 50,
         videoId: "R8_veQiYBjI", // GitHub Actions Tutorial
         content: `# GitHub Actions
@@ -4782,13 +4944,13 @@ Store sensitive data securely:
 3. Add \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\`
 4. Reference in workflow: \`\${{ secrets.SECRET_NAME }}\`
 
-Automate everything! 🚀`
+Automate everything! 🚀`,
       },
-      { 
-        id: "w10-l3", 
-        title: "Deploying to AWS with Actions", 
-        description: "Automate AWS deployments.", 
-        duration: "25 min", 
+      {
+        id: "w10-l3",
+        title: "Deploying to AWS with Actions",
+        description: "Automate AWS deployments.",
+        duration: "25 min",
         xp: 50,
         videoId: "mFFXuXjVgkU", // AWS Deployment with GitHub Actions
         content: `# AWS Deployments with GitHub Actions
@@ -4881,36 +5043,57 @@ jobs:
 4. **Use caching** (faster builds)
 5. **Add status badges** to README
 
-Complete automation! ⚡`
-      }
+Complete automation! ⚡`,
+      },
     ],
     labs: [
-      { id: "w10-lab1", title: "GitHub Actions Workflow", description: "Create a CI/CD pipeline.", difficulty: "intermediate", estimatedTime: 60, xp: 200, tasks: ["Create workflow file", "Add AWS credentials", "Test deployment"] },
-      { id: "w10-lab2", title: "Automated Resume Deployment", description: "Auto-deploy on push.", difficulty: "advanced", estimatedTime: 70, xp: 200, tasks: ["Sync S3 on push", "Deploy Lambda", "Run tests"] }
+      {
+        id: "w10-lab1",
+        title: "GitHub Actions Workflow",
+        description: "Create a CI/CD pipeline.",
+        difficulty: "intermediate",
+        estimatedTime: 60,
+        xp: 200,
+        tasks: [
+          "Create workflow file",
+          "Add AWS credentials",
+          "Test deployment",
+        ],
+      },
+      {
+        id: "w10-lab2",
+        title: "Automated Resume Deployment",
+        description: "Auto-deploy on push.",
+        difficulty: "advanced",
+        estimatedTime: 70,
+        xp: 200,
+        tasks: ["Sync S3 on push", "Deploy Lambda", "Run tests"],
+      },
     ],
     project: {
       id: "cloud-resume-p4",
       title: "Cloud Resume Challenge - CI/CD",
       description: "Add automated deployments to your resume.",
-      xp: 300
-    }
+      xp: 300,
+    },
   },
   {
     weekNumber: 11,
     title: "Containers with Docker",
-    description: "Package applications with Docker and understand containerization.",
+    description:
+      "Package applications with Docker and understand containerization.",
     objectives: [
       "Understand containers vs VMs",
       "Write Dockerfiles",
       "Build and run containers",
-      "Push images to Docker Hub"
+      "Push images to Docker Hub",
     ],
     lessons: [
-      { 
-        id: "w11-l1", 
-        title: "Introduction to Containers", 
-        description: "Understand containerization.", 
-        duration: "20 min", 
+      {
+        id: "w11-l1",
+        title: "Introduction to Containers",
+        description: "Understand containerization.",
+        duration: "20 min",
         xp: 50,
         videoId: "Gjnup-PuquQ", // Containers Explained
         content: `# Introduction to Containers
@@ -4971,13 +5154,13 @@ docker stop <container-id>
 docker rm <container-id>
 \`\`\`
 
-Containers = Consistent deployments! 📦`
+Containers = Consistent deployments! 📦`,
       },
-      { 
-        id: "w11-l2", 
-        title: "Docker Fundamentals", 
-        description: "Images, containers, and registries.", 
-        duration: "30 min", 
+      {
+        id: "w11-l2",
+        title: "Docker Fundamentals",
+        description: "Images, containers, and registries.",
+        duration: "30 min",
         xp: 50,
         videoId: "fqMOX6JJhGo", // Docker Tutorial
         content: `# Docker Fundamentals
@@ -5076,13 +5259,13 @@ docker run --network my-network --name app my-app
 # App can now access DB at hostname "db"
 \`\`\`
 
-Master Docker basics! 🐳`
+Master Docker basics! 🐳`,
       },
-      { 
-        id: "w11-l3", 
-        title: "Writing Dockerfiles", 
-        description: "Create custom images.", 
-        duration: "25 min", 
+      {
+        id: "w11-l3",
+        title: "Writing Dockerfiles",
+        description: "Create custom images.",
+        duration: "25 min",
         xp: 50,
         videoId: "LQjaJINkQXY", // Dockerfile Tutorial
         content: `# Writing Dockerfiles
@@ -5285,13 +5468,34 @@ docker tag my-app username/my-app:v1
 docker push username/my-app:v1
 \`\`\`
 
-Build custom containers! 🚀`
-      }
+Build custom containers! 🚀`,
+      },
     ],
     labs: [
-      { id: "w11-lab1", title: "Run Your First Container", description: "Pull and run Docker images.", difficulty: "beginner", estimatedTime: 30, xp: 100, tasks: ["Install Docker", "Pull image", "Run container"] },
-      { id: "w11-lab2", title: "Build Custom Docker Image", description: "Create and containerize an app.", difficulty: "intermediate", estimatedTime: 60, xp: 200, tasks: ["Write Dockerfile", "Build image", "Run container", "Push to registry"] }
-    ]
+      {
+        id: "w11-lab1",
+        title: "Run Your First Container",
+        description: "Pull and run Docker images.",
+        difficulty: "beginner",
+        estimatedTime: 30,
+        xp: 100,
+        tasks: ["Install Docker", "Pull image", "Run container"],
+      },
+      {
+        id: "w11-lab2",
+        title: "Build Custom Docker Image",
+        description: "Create and containerize an app.",
+        difficulty: "intermediate",
+        estimatedTime: 60,
+        xp: 200,
+        tasks: [
+          "Write Dockerfile",
+          "Build image",
+          "Run container",
+          "Push to registry",
+        ],
+      },
+    ],
   },
   {
     weekNumber: 12,
@@ -5301,14 +5505,14 @@ Build custom containers! 🚀`
       "Set up CloudWatch monitoring",
       "Create dashboards and alarms",
       "Polish your Cloud Resume",
-      "Prepare for DevOps interviews"
+      "Prepare for DevOps interviews",
     ],
     lessons: [
-      { 
-        id: "w12-l1", 
-        title: "Monitoring and Observability", 
-        description: "Learn CloudWatch basics.", 
-        duration: "25 min", 
+      {
+        id: "w12-l1",
+        title: "Monitoring and Observability",
+        description: "Learn CloudWatch basics.",
+        duration: "25 min",
         xp: 50,
         videoId: "a4N_iMCFAMY", // AWS CloudWatch Tutorial
         content: `# Monitoring and Observability
@@ -5443,13 +5647,13 @@ cloudwatch.put_metric_data(
 4. **Set retention**: Auto-delete old logs
 5. **Use metric filters**: Extract metrics from logs
 
-Monitor everything! 📊`
+Monitor everything! 📊`,
       },
-      { 
-        id: "w12-l2", 
-        title: "Creating Dashboards", 
-        description: "Visualize metrics.", 
-        duration: "20 min", 
+      {
+        id: "w12-l2",
+        title: "Creating Dashboards",
+        description: "Visualize metrics.",
+        duration: "20 min",
         xp: 50,
         videoId: "IWTFfHHH4Bs", // CloudWatch Dashboards
         content: `# CloudWatch Dashboards
@@ -5486,13 +5690,13 @@ Monitor everything! 📊`
 - Click **Actions** → **Share dashboard**
 - Generate public link or email
 
-Visualize everything! 📈`
+Visualize everything! 📈`,
       },
-      { 
-        id: "w12-l3", 
-        title: "DevOps Interview Prep", 
-        description: "Common questions and answers.", 
-        duration: "30 min", 
+      {
+        id: "w12-l3",
+        title: "DevOps Interview Prep",
+        description: "Common questions and answers.",
+        duration: "30 min",
         xp: 50,
         videoId: "FSs_JYwnADI", // DevOps Interview Questions
         content: `# DevOps Interview Preparation
@@ -5588,20 +5792,46 @@ docker exec -it <id> bash        # Enter container
 5. ✅ Network on LinkedIn
 6. ✅ Apply to entry-level DevOps roles
 
-You're ready for DevOps! 🚀`
-      }
+You're ready for DevOps! 🚀`,
+      },
     ],
     labs: [
-      { id: "w12-lab1", title: "CloudWatch Monitoring", description: "Monitor your resume website.", difficulty: "intermediate", estimatedTime: 45, xp: 150, tasks: ["Create CloudWatch alarm", "Set up dashboard", "Configure notifications"] },
-      { id: "w12-lab2", title: "Final Resume Polish", description: "Optimize and document your project.", difficulty: "advanced", estimatedTime: 90, xp: 250, tasks: ["Add tests", "Write README", "Create architecture diagram", "Record demo video"] }
-    ]
-  }
+      {
+        id: "w12-lab1",
+        title: "CloudWatch Monitoring",
+        description: "Monitor your resume website.",
+        difficulty: "intermediate",
+        estimatedTime: 45,
+        xp: 150,
+        tasks: [
+          "Create CloudWatch alarm",
+          "Set up dashboard",
+          "Configure notifications",
+        ],
+      },
+      {
+        id: "w12-lab2",
+        title: "Final Resume Polish",
+        description: "Optimize and document your project.",
+        difficulty: "advanced",
+        estimatedTime: 90,
+        xp: 250,
+        tasks: [
+          "Add tests",
+          "Write README",
+          "Create architecture diagram",
+          "Record demo video",
+        ],
+      },
+    ],
+  },
 ];
 
 const cloudResumeChallenge = {
   id: "cloud-resume-challenge",
   title: "Cloud Resume Challenge",
-  description: "Build a cloud-native resume that demonstrates your DevOps skills and gets you hired.",
+  description:
+    "Build a cloud-native resume that demonstrates your DevOps skills and gets you hired.",
   difficulty: "advanced",
   totalXP: 1800,
   phases: [
@@ -5610,61 +5840,93 @@ const cloudResumeChallenge = {
       title: "Frontend - HTML/CSS Resume",
       week: 7,
       xp: 500,
-      tasks: ["Write resume in HTML", "Style with CSS", "Deploy to S3", "Configure CloudFront", "Add custom domain"]
+      tasks: [
+        "Write resume in HTML",
+        "Style with CSS",
+        "Deploy to S3",
+        "Configure CloudFront",
+        "Add custom domain",
+      ],
     },
     {
       phase: 2,
       title: "Backend - Serverless Visitor Counter",
       week: 8,
       xp: 600,
-      tasks: ["Create DynamoDB table", "Write Lambda function", "Create API Gateway", "Connect frontend to backend"]
+      tasks: [
+        "Create DynamoDB table",
+        "Write Lambda function",
+        "Create API Gateway",
+        "Connect frontend to backend",
+      ],
     },
     {
       phase: 3,
       title: "Infrastructure as Code",
       week: 9,
       xp: 400,
-      tasks: ["Write Terraform for S3", "Add CloudFront to Terraform", "Add Lambda/DynamoDB to Terraform"]
+      tasks: [
+        "Write Terraform for S3",
+        "Add CloudFront to Terraform",
+        "Add Lambda/DynamoDB to Terraform",
+      ],
     },
     {
       phase: 4,
       title: "CI/CD Pipeline",
       week: 9,
       xp: 300,
-      tasks: ["Create GitHub Actions workflow", "Auto-sync S3", "Deploy Lambda on push"]
-    }
+      tasks: [
+        "Create GitHub Actions workflow",
+        "Auto-sync S3",
+        "Deploy Lambda on push",
+      ],
+    },
   ],
-  skills: ["AWS", "HTML/CSS/JavaScript", "Python", "Terraform", "GitHub Actions"],
+  skills: [
+    "AWS",
+    "HTML/CSS/JavaScript",
+    "Python",
+    "Terraform",
+    "GitHub Actions",
+  ],
   resources: [
-    { title: "Official Cloud Resume Challenge", url: "https://cloudresumechallenge.dev/docs/the-challenge/aws/" }
-  ]
+    {
+      title: "Official Cloud Resume Challenge",
+      url: "https://cloudresumechallenge.dev/docs/the-challenge/aws/",
+    },
+  ],
 };
 
 async function seedCurriculum() {
-  console.log('🌱 Starting curriculum seed...\n');
-  
+  console.log("🌱 Starting curriculum seed...\n");
+
   try {
     const batch = writeBatch(db);
-    
+
     for (const week of weeks) {
-      const weekRef = doc(db, 'curriculum', `week-${week.weekNumber}`);
+      const weekRef = doc(db, "curriculum", `week-${week.weekNumber}`);
       batch.set(weekRef, { ...week, createdAt: new Date() });
       console.log(`✅ Added Week ${week.weekNumber}: ${week.title}`);
     }
-    
-    const projectRef = doc(db, 'curriculum', 'cloud-resume-challenge');
-    batch.set(projectRef, { ...cloudResumeChallenge, type: 'capstone-project', createdAt: new Date() });
-    console.log('✅ Added Cloud Resume Challenge');
-    
+
+    const projectRef = doc(db, "curriculum", "cloud-resume-challenge");
+    batch.set(projectRef, {
+      ...cloudResumeChallenge,
+      type: "capstone-project",
+      createdAt: new Date(),
+    });
+    console.log("✅ Added Cloud Resume Challenge");
+
     await batch.commit();
-    
-    console.log('\n🎉 Curriculum seeded successfully!');
+
+    console.log("\n🎉 Curriculum seeded successfully!");
     console.log(`📚 Total weeks: ${weeks.length}`);
-    console.log('\nNext: Navigate to /curriculum in your app');
-    
+    console.log("\nNext: Navigate to /curriculum in your app");
+
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error("❌ Error:", error);
     process.exit(1);
   }
 }

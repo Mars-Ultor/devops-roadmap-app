@@ -2,7 +2,10 @@
  * ProgressiveHints - Utility functions
  */
 
-export const canRequestLevel = (level: number, requestedHints: number[]): boolean => {
+export const canRequestLevel = (
+  level: number,
+  requestedHints: number[],
+): boolean => {
   // Must have requested all previous levels first
   if (level > 1) {
     for (let i = 1; i < level; i++) {

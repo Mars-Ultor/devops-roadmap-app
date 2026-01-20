@@ -1,6 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
-import { CertificationService } from '../services/certificationService';
-import type { CertificationStatus, RecertificationAttempt } from '../types/training';
+import { useState, useEffect, useCallback } from "react";
+import { CertificationService } from "../services/certificationService";
+import type {
+  CertificationStatus,
+  RecertificationAttempt,
+} from "../types/training";
 
 interface UseRecertificationDataReturn {
   certificationStatus: CertificationStatus[];
@@ -10,9 +13,15 @@ interface UseRecertificationDataReturn {
   refreshData: () => Promise<void>;
 }
 
-export const useRecertificationData = (userId: string | undefined): UseRecertificationDataReturn => {
-  const [certificationStatus, setCertificationStatus] = useState<CertificationStatus[]>([]);
-  const [recentAttempts, setRecentAttempts] = useState<RecertificationAttempt[]>([]);
+export const useRecertificationData = (
+  userId: string | undefined,
+): UseRecertificationDataReturn => {
+  const [certificationStatus, setCertificationStatus] = useState<
+    CertificationStatus[]
+  >([]);
+  const [recentAttempts, setRecentAttempts] = useState<
+    RecertificationAttempt[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,8 +43,8 @@ export const useRecertificationData = (userId: string | undefined): UseRecertifi
       setCertificationStatus(certifications);
       setRecentAttempts(attempts);
     } catch (err) {
-      console.error('Error loading certification data:', err);
-      setError('Failed to load certification data');
+      console.error("Error loading certification data:", err);
+      setError("Failed to load certification data");
     } finally {
       setLoading(false);
     }
@@ -50,6 +59,6 @@ export const useRecertificationData = (userId: string | undefined): UseRecertifi
     recentAttempts,
     loading,
     error,
-    refreshData: loadData
+    refreshData: loadData,
   };
 };

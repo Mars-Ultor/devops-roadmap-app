@@ -3,11 +3,14 @@
  * Spaced repetition flash card study interface
  */
 
-import { useState } from 'react';
-import { 
-  FlashCardEmptyState, FlashCardSessionComplete, FlashCardProgressBar,
-  FlashCardQuestion, FlashCardAnswerRating 
-} from './flashcard/FlashCardComponents';
+import { useState } from "react";
+import {
+  FlashCardEmptyState,
+  FlashCardSessionComplete,
+  FlashCardProgressBar,
+  FlashCardQuestion,
+  FlashCardAnswerRating,
+} from "./flashcard/FlashCardComponents";
 
 export interface FlashCardData {
   id: string;
@@ -26,7 +29,9 @@ interface FlashCardProps {
 export default function FlashCard({ cards, onComplete }: FlashCardProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [results, setResults] = useState<{ cardId: string; quality: number }[]>([]);
+  const [results, setResults] = useState<{ cardId: string; quality: number }[]>(
+    [],
+  );
   const [sessionComplete, setSessionComplete] = useState(false);
 
   const currentCard = cards[currentIndex];
@@ -53,15 +58,30 @@ export default function FlashCard({ cards, onComplete }: FlashCardProps) {
   if (!cards.length) return <FlashCardEmptyState />;
 
   if (sessionComplete) {
-    return <FlashCardSessionComplete results={results} onReset={resetSession} />;
+    return (
+      <FlashCardSessionComplete results={results} onReset={resetSession} />
+    );
   }
 
   return (
     <div className="bg-slate-800 rounded-lg border border-slate-700">
-      <FlashCardProgressBar currentIndex={currentIndex} total={cards.length} category={currentCard.category} />
+      <FlashCardProgressBar
+        currentIndex={currentIndex}
+        total={cards.length}
+        category={currentCard.category}
+      />
       <div className="p-8">
-        <FlashCardQuestion card={currentCard} showAnswer={showAnswer} onReveal={() => setShowAnswer(true)} />
-        {showAnswer && <FlashCardAnswerRating answer={currentCard.answer} onRate={handleQualityRating} />}
+        <FlashCardQuestion
+          card={currentCard}
+          showAnswer={showAnswer}
+          onReveal={() => setShowAnswer(true)}
+        />
+        {showAnswer && (
+          <FlashCardAnswerRating
+            answer={currentCard.answer}
+            onRate={handleQualityRating}
+          />
+        )}
       </div>
     </div>
   );

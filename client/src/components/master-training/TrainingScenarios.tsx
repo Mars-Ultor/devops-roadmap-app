@@ -1,12 +1,17 @@
-import React from 'react';
-import { Activity, CheckCircle } from 'lucide-react';
+import React from "react";
+import { Activity, CheckCircle } from "lucide-react";
 
 interface AdaptiveScenario {
   id: string;
   title: string;
-  baseDifficulty: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  baseDifficulty: "beginner" | "intermediate" | "advanced" | "expert";
   currentDifficulty: number;
-  category: 'stress' | 'leadership' | 'specialized' | 'integration' | 'technical';
+  category:
+    | "stress"
+    | "leadership"
+    | "specialized"
+    | "integration"
+    | "technical";
   estimatedTime: number;
   skills: string[];
   prerequisites: string[];
@@ -43,7 +48,7 @@ interface AdaptiveChallenge {
 interface AdaptiveOption {
   id: string;
   text: string;
-  outcome: 'optimal' | 'suboptimal' | 'poor';
+  outcome: "optimal" | "suboptimal" | "poor";
   explanation: string;
   skillsAssessed: string[];
 }
@@ -52,7 +57,7 @@ interface LearningPath {
   id: string;
   title: string;
   description: string;
-  careerFocus: 'generalist' | 'specialist' | 'leadership' | 'technical';
+  careerFocus: "generalist" | "specialist" | "leadership" | "technical";
   currentLevel: number;
   totalLevels: number;
   progress: number;
@@ -60,7 +65,7 @@ interface LearningPath {
   completedScenarios: string[];
   strengths: string[];
   areasForImprovement: string[];
-  recommendedPace: 'accelerated' | 'standard' | 'intensive';
+  recommendedPace: "accelerated" | "standard" | "intensive";
 }
 
 interface TrainingScenariosProps {
@@ -70,16 +75,16 @@ interface TrainingScenariosProps {
 }
 
 const getDifficultyColor = (level: number) => {
-  if (level <= 3) return 'text-green-400';
-  if (level <= 6) return 'text-yellow-400';
-  if (level <= 8) return 'text-orange-400';
-  return 'text-red-400';
+  if (level <= 3) return "text-green-400";
+  if (level <= 6) return "text-yellow-400";
+  if (level <= 8) return "text-orange-400";
+  return "text-red-400";
 };
 
 const TrainingScenarios: React.FC<TrainingScenariosProps> = ({
   selectedPath,
   adaptiveScenarios,
-  pathScenarioMap
+  pathScenarioMap,
 }) => {
   return (
     <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-lg border border-indigo-500/20 p-6 mb-8">
@@ -89,26 +94,41 @@ const TrainingScenarios: React.FC<TrainingScenariosProps> = ({
       </h3>
       <div className="space-y-3">
         {(pathScenarioMap[selectedPath.id] || []).map((scenarioId) => {
-          const scenario = adaptiveScenarios.find(s => s.id === scenarioId);
+          const scenario = adaptiveScenarios.find((s) => s.id === scenarioId);
           if (!scenario) return null;
 
-          const isCompleted = selectedPath.completedScenarios.includes(scenarioId);
+          const isCompleted =
+            selectedPath.completedScenarios.includes(scenarioId);
 
           return (
-            <div key={scenario.id} className={`bg-slate-900 rounded-lg p-4 ${isCompleted ? 'opacity-60' : ''}`}>
+            <div
+              key={scenario.id}
+              className={`bg-slate-900 rounded-lg p-4 ${isCompleted ? "opacity-60" : ""}`}
+            >
               <div className="flex items-center justify-between mb-2">
                 <h4 className="text-white font-medium flex items-center">
-                  {isCompleted && <CheckCircle className="w-4 h-4 mr-2 text-green-400" />}
+                  {isCompleted && (
+                    <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+                  )}
                   {scenario.title}
-                  {isCompleted && <span className="ml-2 text-xs text-green-400">(Completed)</span>}
+                  {isCompleted && (
+                    <span className="ml-2 text-xs text-green-400">
+                      (Completed)
+                    </span>
+                  )}
                 </h4>
-                <span className={`text-xs px-2 py-1 rounded ${getDifficultyColor(scenario.currentDifficulty)}`}>
+                <span
+                  className={`text-xs px-2 py-1 rounded ${getDifficultyColor(scenario.currentDifficulty)}`}
+                >
                   Level {scenario.currentDifficulty}/10
                 </span>
               </div>
               <div className="flex flex-wrap gap-2 mb-2">
                 {scenario.skills.map((skill) => (
-                  <span key={skill} className="text-xs px-2 py-1 bg-slate-800 text-slate-300 rounded">
+                  <span
+                    key={skill}
+                    className="text-xs px-2 py-1 bg-slate-800 text-slate-300 rounded"
+                  >
                     {skill}
                   </span>
                 ))}

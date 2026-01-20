@@ -3,9 +3,15 @@
  * Extracted from AARForm.tsx for ESLint compliance
  */
 
-import { Save, CheckCircle, AlertTriangle, BookOpen, Target } from 'lucide-react';
-import type { AARValidationResult } from '../../types/aar';
-import type { AARLevel } from './AARForm';
+import {
+  Save,
+  CheckCircle,
+  AlertTriangle,
+  BookOpen,
+  Target,
+} from "lucide-react";
+import type { AARValidationResult } from "../../types/aar";
+import type { AARLevel } from "./AARForm";
 
 interface AARFormHeaderProps {
   readonly lessonId: string;
@@ -34,12 +40,15 @@ export function AARFormHeader({ lessonId, level }: AARFormHeaderProps) {
             After Action Review (AAR)
           </h2>
           <p className="text-gray-400 mt-1">
-            Complete this mandatory reflection to finish your lab and unlock the next lesson.
+            Complete this mandatory reflection to finish your lab and unlock the
+            next lesson.
           </p>
         </div>
         <div className="text-right">
           <div className="text-sm text-gray-400">Lesson {lessonId}</div>
-          <div className="text-sm text-indigo-400 capitalize">{level} Level</div>
+          <div className="text-sm text-indigo-400 capitalize">
+            {level} Level
+          </div>
         </div>
       </div>
     </div>
@@ -47,23 +56,29 @@ export function AARFormHeader({ lessonId, level }: AARFormHeaderProps) {
 }
 
 // Validation Summary Component
-export function AARValidationSummary({ validation, show }: AARValidationSummaryProps) {
+export function AARValidationSummary({
+  validation,
+  show,
+}: AARValidationSummaryProps) {
   if (!show) return null;
-  
-  const bgClass = validation.isValid 
-    ? 'bg-green-900/50 border border-green-700' 
-    : 'bg-red-900/50 border border-red-700';
-  const textClass = validation.isValid ? 'text-green-400' : 'text-red-400';
-  
+
+  const bgClass = validation.isValid
+    ? "bg-green-900/50 border border-green-700"
+    : "bg-red-900/50 border border-red-700";
+  const textClass = validation.isValid ? "text-green-400" : "text-red-400";
+
   return (
     <div className={`p-4 rounded-md ${bgClass}`}>
       <div className="flex items-center">
-        {validation.isValid 
-          ? <CheckCircle className="w-5 h-5 text-green-400 mr-2" /> 
-          : <AlertTriangle className="w-5 h-5 text-red-400 mr-2" />
-        }
+        {validation.isValid ? (
+          <CheckCircle className="w-5 h-5 text-green-400 mr-2" />
+        ) : (
+          <AlertTriangle className="w-5 h-5 text-red-400 mr-2" />
+        )}
         <span className={`font-medium ${textClass}`}>
-          {validation.isValid ? 'Ready to submit!' : 'Please complete all required fields'}
+          {validation.isValid
+            ? "Ready to submit!"
+            : "Please complete all required fields"}
         </span>
       </div>
     </div>
@@ -71,7 +86,11 @@ export function AARValidationSummary({ validation, show }: AARValidationSummaryP
 }
 
 // Form Actions Footer Component
-export function AARFormActions({ onCancel, isSubmitting, isValid }: AARFormActionsProps) {
+export function AARFormActions({
+  onCancel,
+  isSubmitting,
+  isValid,
+}: AARFormActionsProps) {
   return (
     <div className="flex justify-between pt-6 border-t border-slate-700">
       <div className="flex items-center text-sm text-gray-400">
@@ -80,9 +99,9 @@ export function AARFormActions({ onCancel, isSubmitting, isValid }: AARFormActio
       </div>
       <div className="flex space-x-3">
         {onCancel && (
-          <button 
-            type="button" 
-            onClick={onCancel} 
+          <button
+            type="button"
+            onClick={onCancel}
             className="px-4 py-2 text-gray-400 hover:text-white border border-slate-600 rounded-md hover:border-slate-500"
           >
             Cancel

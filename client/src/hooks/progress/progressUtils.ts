@@ -4,7 +4,7 @@
  * For ESLint compliance (max-lines-per-function)
  */
 
-import type { Badge, LessonProgress } from './useProgress';
+import type { Badge, LessonProgress } from "./useProgress";
 
 // ============================================================================
 // Badge Constants
@@ -12,45 +12,45 @@ import type { Badge, LessonProgress } from './useProgress';
 
 export const BADGES: Badge[] = [
   {
-    id: 'first-lab',
-    title: 'First Steps',
-    description: 'Complete your first lab',
-    icon: '🎯',
+    id: "first-lab",
+    title: "First Steps",
+    description: "Complete your first lab",
+    icon: "🎯",
     xp: 50,
-    requirement: { id: 'first-lab', type: 'labs_completed', value: 1 }
+    requirement: { id: "first-lab", type: "labs_completed", value: 1 },
   },
   {
-    id: 'lab-novice',
-    title: 'Lab Novice',
-    description: 'Complete 5 labs',
-    icon: '⚡',
+    id: "lab-novice",
+    title: "Lab Novice",
+    description: "Complete 5 labs",
+    icon: "⚡",
     xp: 100,
-    requirement: { id: 'lab-novice', type: 'labs_completed', value: 5 }
+    requirement: { id: "lab-novice", type: "labs_completed", value: 5 },
   },
   {
-    id: 'xp-hunter',
-    title: 'XP Hunter',
-    description: 'Earn 500 XP',
-    icon: '💎',
+    id: "xp-hunter",
+    title: "XP Hunter",
+    description: "Earn 500 XP",
+    icon: "💎",
     xp: 100,
-    requirement: { id: 'xp-hunter', type: 'xp_earned', value: 500 }
+    requirement: { id: "xp-hunter", type: "xp_earned", value: 500 },
   },
   {
-    id: 'week-one-warrior',
-    title: 'Week One Warrior',
-    description: 'Complete all Week 1 labs',
-    icon: '🏆',
+    id: "week-one-warrior",
+    title: "Week One Warrior",
+    description: "Complete all Week 1 labs",
+    icon: "🏆",
     xp: 200,
-    requirement: { id: 'week-one-warrior', type: 'week_completed', value: 1 }
+    requirement: { id: "week-one-warrior", type: "week_completed", value: 1 },
   },
   {
-    id: 'dedicated-learner',
-    title: 'Dedicated Learner',
-    description: 'Maintain a 7-day streak',
-    icon: '🔥',
+    id: "dedicated-learner",
+    title: "Dedicated Learner",
+    description: "Maintain a 7-day streak",
+    icon: "🔥",
     xp: 150,
-    requirement: { id: 'dedicated-learner', type: 'streak_days', value: 7 }
-  }
+    requirement: { id: "dedicated-learner", type: "streak_days", value: 7 },
+  },
 ];
 
 // ============================================================================
@@ -72,18 +72,19 @@ export function calculateSM2(
   quality: number,
   easinessFactor: number,
   repetitions: number,
-  interval: number
+  interval: number,
 ): SM2Result {
   let newEasinessFactor = easinessFactor;
   let newRepetitions = repetitions;
   let newInterval = interval;
 
   // Update easiness factor
-  newEasinessFactor = easinessFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-  
+  newEasinessFactor =
+    easinessFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+
   // Ensure easiness factor stays within bounds
   if (newEasinessFactor < 1.3) newEasinessFactor = 1.3;
-  
+
   // If quality < 3, reset repetitions (failed recall)
   if (quality < 3) {
     newRepetitions = 0;
@@ -104,7 +105,7 @@ export function calculateSM2(
     easinessFactor: newEasinessFactor,
     repetitions: newRepetitions,
     interval: newInterval,
-    nextReviewDate: new Date(Date.now() + newInterval * 24 * 60 * 60 * 1000)
+    nextReviewDate: new Date(Date.now() + newInterval * 24 * 60 * 60 * 1000),
   };
 }
 
@@ -116,7 +117,7 @@ export function initializeSM2Data(): SM2Result {
     easinessFactor: 2.5,
     repetitions: 1,
     interval: 1,
-    nextReviewDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000)
+    nextReviewDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
   };
 }
 
@@ -127,7 +128,9 @@ export function initializeSM2Data(): SM2Result {
 /**
  * Check if a lesson is due for review based on SM-2 algorithm
  */
-export function isLessonDueForReview(lessonProgress: LessonProgress | null): boolean {
+export function isLessonDueForReview(
+  lessonProgress: LessonProgress | null,
+): boolean {
   if (!lessonProgress) return false;
   return new Date() >= lessonProgress.nextReviewDate;
 }
@@ -135,7 +138,9 @@ export function isLessonDueForReview(lessonProgress: LessonProgress | null): boo
 /**
  * Parse lab ID to extract week and lab numbers
  */
-export function parseLabId(labId: string): { weekNum: string; labNum: string } | null {
+export function parseLabId(
+  labId: string,
+): { weekNum: string; labNum: string } | null {
   const match = labId.match(/w(\d+)-lab(\d+)/);
   if (!match) return null;
   return { weekNum: match[1], labNum: match[2] };
@@ -144,7 +149,9 @@ export function parseLabId(labId: string): { weekNum: string; labNum: string } |
 /**
  * Convert Firestore document data to LessonProgress
  */
-export function docToLessonProgress(data: Record<string, unknown>): LessonProgress {
+export function docToLessonProgress(
+  data: Record<string, unknown>,
+): LessonProgress {
   return {
     lessonId: data.lessonId as string,
     completedAt: (data.completedAt as { toDate: () => Date })?.toDate(),
@@ -153,7 +160,7 @@ export function docToLessonProgress(data: Record<string, unknown>): LessonProgre
     repetitions: data.repetitions as number,
     interval: data.interval as number,
     nextReviewDate: (data.nextReviewDate as { toDate: () => Date })?.toDate(),
-    lastReviewQuality: data.lastReviewQuality as number
+    lastReviewQuality: data.lastReviewQuality as number,
   };
 }
 
@@ -168,29 +175,54 @@ export function showBadgeNotification(badge: Badge): void {
 // Badge Requirement Checker
 // ============================================================================
 
-import { curriculumData } from '../../data/curriculumData';
-import { doc, getDoc, getDocs, query, collection, where } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
+import { curriculumData } from "../../data/curriculumData";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  collection,
+  where,
+} from "firebase/firestore";
+import { db } from "../../lib/firebase";
 
 export async function checkBadgeRequirementHelper(
   badge: Badge,
   labsCompleted: number,
   userData: Record<string, unknown> | undefined,
-  userId: string
+  userId: string,
 ): Promise<boolean> {
   switch (badge.requirement.type) {
-    case 'labs_completed': return labsCompleted >= badge.requirement.value;
-    case 'xp_earned': return (userData?.totalXP as number || 0) >= badge.requirement.value;
-    case 'week_completed': {
-      const weekData = curriculumData.find(w => w.weekNumber === badge.requirement.value);
+    case "labs_completed":
+      return labsCompleted >= badge.requirement.value;
+    case "xp_earned":
+      return ((userData?.totalXP as number) || 0) >= badge.requirement.value;
+    case "week_completed": {
+      const weekData = curriculumData.find(
+        (w) => w.weekNumber === badge.requirement.value,
+      );
       if (!weekData) return false;
-      const weekLabsSnap = await getDocs(query(collection(db, 'progress'), where('userId', '==', userId), where('type', '==', 'lab'), where('itemId', 'in', weekData.labs.map(l => l.id))));
+      const weekLabsSnap = await getDocs(
+        query(
+          collection(db, "progress"),
+          where("userId", "==", userId),
+          where("type", "==", "lab"),
+          where(
+            "itemId",
+            "in",
+            weekData.labs.map((l) => l.id),
+          ),
+        ),
+      );
       return weekLabsSnap.size === weekData.labs.length;
     }
-    case 'streak_days': {
-      const streakData = (await getDoc(doc(db, 'progressStreaks', userId))).data();
+    case "streak_days": {
+      const streakData = (
+        await getDoc(doc(db, "progressStreaks", userId))
+      ).data();
       return (streakData?.currentStreak || 0) >= badge.requirement.value;
     }
-    default: return false;
+    default:
+      return false;
   }
 }

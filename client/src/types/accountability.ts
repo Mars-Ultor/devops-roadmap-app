@@ -3,7 +3,12 @@
  * Weekly commitments and peer accountability tracking
  */
 
-export type CommitmentStatus = 'pending' | 'in-progress' | 'completed' | 'failed' | 'extended';
+export type CommitmentStatus =
+  | "pending"
+  | "in-progress"
+  | "completed"
+  | "failed"
+  | "extended";
 
 export interface WeeklyCommitment {
   id: string;
@@ -19,13 +24,19 @@ export interface WeeklyCommitment {
 
 export interface Commitment {
   id: string;
-  type: 'study-hours' | 'battle-drills' | 'lessons' | 'labs' | 'quizzes' | 'custom';
+  type:
+    | "study-hours"
+    | "battle-drills"
+    | "lessons"
+    | "labs"
+    | "quizzes"
+    | "custom";
   description: string;
   target: number; // e.g., 10 hours, 5 drills, etc.
   current: number;
   status: CommitmentStatus;
   public: boolean; // Make this commitment visible to accountability partner
-  importance: 'low' | 'medium' | 'high' | 'critical';
+  importance: "low" | "medium" | "high" | "critical";
 }
 
 export interface AccountabilityPartner {
@@ -34,7 +45,7 @@ export interface AccountabilityPartner {
   partnerId: string; // The partner's user ID
   partnerEmail: string;
   partnerName: string;
-  status: 'pending' | 'active' | 'paused' | 'ended';
+  status: "pending" | "active" | "paused" | "ended";
   startedAt: Date;
   lastCheckIn?: Date;
   sharedGoals: boolean; // Can see each other's goals

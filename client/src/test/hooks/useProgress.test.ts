@@ -1,23 +1,33 @@
 /* eslint-disable max-lines-per-function */
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook } from '@testing-library/react'
-import { useProgress } from '../../hooks/useProgress'
-import { doc, setDoc, getDoc, updateDoc, increment, collection, query, where, getDocs } from 'firebase/firestore'
-import { useAuthStore } from '../../store/authStore'
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { renderHook } from "@testing-library/react";
+import { useProgress } from "../../hooks/useProgress";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  increment,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { useAuthStore } from "../../store/authStore";
 
 // Test constants
-const TEST_USER_ID = 'test-user-123'
-const MOCK_DOC_REF = 'mock-doc-ref'
-const TEST_LESSON_ID = 'test-lesson-1'
+const TEST_USER_ID = "test-user-123";
+const MOCK_DOC_REF = "mock-doc-ref";
+const TEST_LESSON_ID = "test-lesson-1";
 
-vi.mock('../../store/authStore', () => ({
+vi.mock("../../store/authStore", () => ({
   useAuthStore: vi.fn(() => ({
     user: { uid: TEST_USER_ID },
   })),
-}))
+}));
 
 // Mock Firebase functions
-vi.mock('firebase/firestore', () => ({
+vi.mock("firebase/firestore", () => ({
   doc: vi.fn(() => ({ id: MOCK_DOC_REF })),
   setDoc: vi.fn(),
   getDoc: vi.fn(),
@@ -27,51 +37,57 @@ vi.mock('firebase/firestore', () => ({
   query: vi.fn(),
   where: vi.fn(),
   getDocs: vi.fn(),
-}))
+}));
 
-describe('useProgress', () => {
+describe("useProgress", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
-  describe('completeLesson', () => {
-    it('completes a lesson successfully', async () => {
-      const mockSetDoc = vi.fn().mockResolvedValue(undefined)
+  describe("completeLesson", () => {
+    it("completes a lesson successfully", async () => {
+      const mockSetDoc = vi.fn().mockResolvedValue(undefined);
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => false,
-      })
-      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
+      });
+      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined);
 
-      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF })
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
-      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
+      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF });
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
+      vi.mocked(getDoc).mockImplementation(mockGetDoc);
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      const sm2Result = await result.current.completeLesson(TEST_LESSON_ID, 100)
+      const sm2Result = await result.current.completeLesson(
+        TEST_LESSON_ID,
+        100,
+      );
 
-      expect(mockSetDoc).toHaveBeenCalledWith({ id: MOCK_DOC_REF }, expect.objectContaining({
-        userId: TEST_USER_ID,
-        lessonId: TEST_LESSON_ID,
-        type: 'lesson',
-        xpEarned: 100,
-        easinessFactor: 2.5,
-        repetitions: 1,
-        interval: 1,
-        lastReviewQuality: 5,
-      }))
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        { id: MOCK_DOC_REF },
+        expect.objectContaining({
+          userId: TEST_USER_ID,
+          lessonId: TEST_LESSON_ID,
+          type: "lesson",
+          xpEarned: 100,
+          easinessFactor: 2.5,
+          repetitions: 1,
+          interval: 1,
+          lastReviewQuality: 5,
+        }),
+      );
 
       expect(sm2Result).toEqual({
         easinessFactor: 2.5,
         repetitions: 1,
         interval: 1,
         nextReviewDate: expect.any(Date),
-      })
-    })
+      });
+    });
 
-    it('handles lesson review (existing progress)', async () => {
-      const mockSetDoc = vi.fn().mockResolvedValue(undefined)
+    it("handles lesson review (existing progress)", async () => {
+      const mockSetDoc = vi.fn().mockResolvedValue(undefined);
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => true,
         data: () => ({
@@ -79,349 +95,402 @@ describe('useProgress', () => {
           repetitions: 2,
           interval: 6,
         }),
-      })
+      });
 
-      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF })
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF });
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
+      vi.mocked(getDoc).mockImplementation(mockGetDoc);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      await result.current.completeLesson(TEST_LESSON_ID, 100, 4)
+      await result.current.completeLesson(TEST_LESSON_ID, 100, 4);
 
-      expect(mockSetDoc).toHaveBeenCalledWith({ id: MOCK_DOC_REF }, expect.objectContaining({
-        xpEarned: 0, // No XP for reviews
-        lastReviewQuality: 4,
-      }))
-    })
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        { id: MOCK_DOC_REF },
+        expect.objectContaining({
+          xpEarned: 0, // No XP for reviews
+          lastReviewQuality: 4,
+        }),
+      );
+    });
 
-    it('updates user XP on first completion', async () => {
-      const mockSetDoc = vi.fn().mockResolvedValue(undefined)
+    it("updates user XP on first completion", async () => {
+      const mockSetDoc = vi.fn().mockResolvedValue(undefined);
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => false,
-      })
-      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
-      const mockIncrement = vi.fn()
+      });
+      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined);
+      const mockIncrement = vi.fn();
 
-      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF })
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
-      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
-      vi.mocked(increment).mockImplementation(mockIncrement)
+      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF });
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
+      vi.mocked(getDoc).mockImplementation(mockGetDoc);
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc);
+      vi.mocked(increment).mockImplementation(mockIncrement);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      await result.current.completeLesson(TEST_LESSON_ID, 100)
+      await result.current.completeLesson(TEST_LESSON_ID, 100);
 
-      expect(mockUpdateDoc).toHaveBeenCalledWith({ id: MOCK_DOC_REF }, {
-        totalXP: mockIncrement(100),
-      })
-    })
+      expect(mockUpdateDoc).toHaveBeenCalledWith(
+        { id: MOCK_DOC_REF },
+        {
+          totalXP: mockIncrement(100),
+        },
+      );
+    });
 
-    it('handles errors gracefully', async () => {
-      const mockSetDoc = vi.fn().mockRejectedValue(new Error('Firebase error'))
+    it("handles errors gracefully", async () => {
+      const mockSetDoc = vi.fn().mockRejectedValue(new Error("Firebase error"));
 
-      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF })
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
+      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF });
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      await expect(result.current.completeLesson(TEST_LESSON_ID, 100)).rejects.toThrow('Firebase error')
-    })
+      await expect(
+        result.current.completeLesson(TEST_LESSON_ID, 100),
+      ).rejects.toThrow("Firebase error");
+    });
 
-    it('skips operations when no user is logged in', async () => {
+    it("skips operations when no user is logged in", async () => {
       vi.mocked(useAuthStore).mockReturnValue({
         user: null,
-      })
+      });
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      await result.current.completeLesson(TEST_LESSON_ID, 100)
+      await result.current.completeLesson(TEST_LESSON_ID, 100);
 
-      expect(vi.mocked(setDoc)).not.toHaveBeenCalled()
-    })
-  })
+      expect(vi.mocked(setDoc)).not.toHaveBeenCalled();
+    });
+  });
 
-  describe('completeLab', () => {
-    it('completes a lab successfully', async () => {
+  describe("completeLab", () => {
+    it("completes a lab successfully", async () => {
       // Mock auth store
       vi.mocked(useAuthStore).mockReturnValue({
         user: { uid: TEST_USER_ID },
-      })
+      });
 
       // Mock Firebase functions
-      const mockSetDoc = vi.fn().mockResolvedValue(undefined)
-      const mockGetDoc = vi.fn()
+      const mockSetDoc = vi.fn().mockResolvedValue(undefined);
+      const mockGetDoc = vi
+        .fn()
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lab progress check
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lesson progress check
-        .mockResolvedValueOnce({ exists: () => true, data: () => ({ totalXP: 0 }) }) // User stats
-        .mockResolvedValue({ exists: () => false, data: () => ({}) }) // Badge checks (return false for all)
-      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
-      const mockIncrement = vi.fn()
+        .mockResolvedValueOnce({
+          exists: () => true,
+          data: () => ({ totalXP: 0 }),
+        }) // User stats
+        .mockResolvedValue({ exists: () => false, data: () => ({}) }); // Badge checks (return false for all)
+      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined);
+      const mockIncrement = vi.fn();
       const mockGetDocs = vi.fn().mockResolvedValue({
         docs: [],
         empty: true,
-        size: 0
-      })
+        size: 0,
+      });
 
-      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF })
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
-      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
-      vi.mocked(increment).mockImplementation(mockIncrement)
-      vi.mocked(getDocs).mockImplementation(mockGetDocs)
+      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF });
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
+      vi.mocked(getDoc).mockImplementation(mockGetDoc);
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc);
+      vi.mocked(increment).mockImplementation(mockIncrement);
+      vi.mocked(getDocs).mockImplementation(mockGetDocs);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      const resultValue = await result.current.completeLab('w1-lab1', 150, 5, 10)
+      const resultValue = await result.current.completeLab(
+        "w1-lab1",
+        150,
+        5,
+        10,
+      );
 
-      expect(resultValue).toBe(true)
-      expect(mockSetDoc).toHaveBeenCalledWith({ id: MOCK_DOC_REF }, expect.objectContaining({
-        userId: TEST_USER_ID,
-        labId: 'w1-lab1',
-        type: 'lab',
-        xpEarned: 150,
-        tasksCompleted: 5,
-        totalTasks: 10,
-      }))
-    })
+      expect(resultValue).toBe(true);
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        { id: MOCK_DOC_REF },
+        expect.objectContaining({
+          userId: TEST_USER_ID,
+          labId: "w1-lab1",
+          type: "lab",
+          xpEarned: 150,
+          tasksCompleted: 5,
+          totalTasks: 10,
+        }),
+      );
+    });
 
-    it('awards XP only on first completion', async () => {
+    it("awards XP only on first completion", async () => {
       // Mock auth store
       vi.mocked(useAuthStore).mockReturnValue({
         user: { uid: TEST_USER_ID },
-      })
+      });
 
       // Mock Firebase functions for already completed lab
-      const mockSetDoc = vi.fn().mockResolvedValue(undefined)
-      const mockGetDoc = vi.fn()
+      const mockSetDoc = vi.fn().mockResolvedValue(undefined);
+      const mockGetDoc = vi
+        .fn()
         .mockResolvedValueOnce({ exists: () => true, data: () => ({}) }) // Lab already exists
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lesson progress check
-        .mockResolvedValueOnce({ exists: () => true, data: () => ({ totalXP: 150 }) }) // User stats
-        .mockResolvedValue({ exists: () => false, data: () => ({}) }) // Badge checks
-      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
-      const mockCollection = vi.fn()
-      const mockQuery = vi.fn()
-      const mockWhere = vi.fn()
+        .mockResolvedValueOnce({
+          exists: () => true,
+          data: () => ({ totalXP: 150 }),
+        }) // User stats
+        .mockResolvedValue({ exists: () => false, data: () => ({}) }); // Badge checks
+      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined);
+      const mockCollection = vi.fn();
+      const mockQuery = vi.fn();
+      const mockWhere = vi.fn();
       const mockGetDocs = vi.fn().mockResolvedValue({
         docs: [],
         empty: true,
-        size: 0
-      })
+        size: 0,
+      });
 
-      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF })
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
-      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
-      vi.mocked(collection).mockImplementation(mockCollection)
-      vi.mocked(query).mockImplementation(mockQuery)
-      vi.mocked(where).mockImplementation(mockWhere)
-      vi.mocked(getDocs).mockImplementation(mockGetDocs)
+      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF });
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
+      vi.mocked(getDoc).mockImplementation(mockGetDoc);
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc);
+      vi.mocked(collection).mockImplementation(mockCollection);
+      vi.mocked(query).mockImplementation(mockQuery);
+      vi.mocked(where).mockImplementation(mockWhere);
+      vi.mocked(getDocs).mockImplementation(mockGetDocs);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      await result.current.completeLab('w1-lab1', 150, 5, 10)
+      await result.current.completeLab("w1-lab1", 150, 5, 10);
 
-      expect(mockSetDoc).toHaveBeenCalledWith({ id: MOCK_DOC_REF }, expect.objectContaining({
-        xpEarned: 150, // Still records XP earned, but doesn't increment user total
-      }))
-      expect(mockUpdateDoc).not.toHaveBeenCalled() // No XP increment for re-completion
-    })
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        { id: MOCK_DOC_REF },
+        expect.objectContaining({
+          xpEarned: 150, // Still records XP earned, but doesn't increment user total
+        }),
+      );
+      expect(mockUpdateDoc).not.toHaveBeenCalled(); // No XP increment for re-completion
+    });
 
-    it('marks related lesson as completed', async () => {
+    it("marks related lesson as completed", async () => {
       // Mock auth store
       vi.mocked(useAuthStore).mockReturnValue({
         user: { uid: TEST_USER_ID },
-      })
+      });
 
       // Mock Firebase functions
-      const mockSetDoc = vi.fn().mockResolvedValue(undefined)
-      const mockGetDoc = vi.fn()
+      const mockSetDoc = vi.fn().mockResolvedValue(undefined);
+      const mockGetDoc = vi
+        .fn()
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lab progress check
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lesson progress check
-        .mockResolvedValueOnce({ exists: () => true, data: () => ({ totalXP: 0 }) }) // User stats
-        .mockResolvedValue({ exists: () => false, data: () => ({}) }) // Badge checks
-      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
-      const mockCollection = vi.fn()
-      const mockQuery = vi.fn()
-      const mockWhere = vi.fn()
+        .mockResolvedValueOnce({
+          exists: () => true,
+          data: () => ({ totalXP: 0 }),
+        }) // User stats
+        .mockResolvedValue({ exists: () => false, data: () => ({}) }); // Badge checks
+      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined);
+      const mockCollection = vi.fn();
+      const mockQuery = vi.fn();
+      const mockWhere = vi.fn();
       const mockGetDocs = vi.fn().mockResolvedValue({
         docs: [],
         empty: true,
-        size: 0
-      })
+        size: 0,
+      });
 
-      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF })
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
-      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
-      vi.mocked(collection).mockImplementation(mockCollection)
-      vi.mocked(query).mockImplementation(mockQuery)
-      vi.mocked(where).mockImplementation(mockWhere)
-      vi.mocked(getDocs).mockImplementation(mockGetDocs)
+      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF });
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
+      vi.mocked(getDoc).mockImplementation(mockGetDoc);
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc);
+      vi.mocked(collection).mockImplementation(mockCollection);
+      vi.mocked(query).mockImplementation(mockQuery);
+      vi.mocked(where).mockImplementation(mockWhere);
+      vi.mocked(getDocs).mockImplementation(mockGetDocs);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      await result.current.completeLab('w1-lab1', 150, 5, 10)
+      await result.current.completeLab("w1-lab1", 150, 5, 10);
 
       // Should create lesson progress
-      expect(mockSetDoc).toHaveBeenCalledWith({ id: MOCK_DOC_REF }, expect.objectContaining({
-        lessonId: 'w1-lesson1',
-        type: 'lesson',
-        completedViaLab: true,
-      }))
-    })
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        { id: MOCK_DOC_REF },
+        expect.objectContaining({
+          lessonId: "w1-lesson1",
+          type: "lesson",
+          completedViaLab: true,
+        }),
+      );
+    });
 
-    it('handles lab completion errors', async () => {
+    it("handles lab completion errors", async () => {
       // Mock auth store
       vi.mocked(useAuthStore).mockReturnValue({
         user: { uid: TEST_USER_ID },
-      })
+      });
 
       // Mock Firebase functions to throw error
-      const mockSetDoc = vi.fn().mockRejectedValue(new Error('Firebase error'))
+      const mockSetDoc = vi.fn().mockRejectedValue(new Error("Firebase error"));
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => false,
-        data: () => ({})
-      })
+        data: () => ({}),
+      });
 
-      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF })
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF });
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
+      vi.mocked(getDoc).mockImplementation(mockGetDoc);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      await expect(result.current.completeLab('w1-lab1', 150, 5, 10)).rejects.toThrow('Firebase error')
-    })
+      await expect(
+        result.current.completeLab("w1-lab1", 150, 5, 10),
+      ).rejects.toThrow("Firebase error");
+    });
 
-    it('skips operations when no user is logged in', async () => {
+    it("skips operations when no user is logged in", async () => {
       // Mock auth store to return no user
       vi.mocked(useAuthStore).mockReturnValue({
         user: null,
-      })
+      });
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      const resultValue = await result.current.completeLab('w1-lab1', 150, 5, 10)
+      const resultValue = await result.current.completeLab(
+        "w1-lab1",
+        150,
+        5,
+        10,
+      );
 
-      expect(resultValue).toBeUndefined()
-      expect(vi.mocked(setDoc)).not.toHaveBeenCalled()
-    })
-  })
+      expect(resultValue).toBeUndefined();
+      expect(vi.mocked(setDoc)).not.toHaveBeenCalled();
+    });
+  });
 
-  describe('SM-2 Algorithm', () => {
-    it('calculates correct intervals for first review', () => {
-      const { result } = renderHook(() => useProgress())
+  describe("SM-2 Algorithm", () => {
+    it("calculates correct intervals for first review", () => {
+      const { result } = renderHook(() => useProgress());
 
       // Access the private calculateSM2 method (this would normally be tested through completeLesson)
       // For this test, we'll verify the algorithm works through the completeLesson function
 
-      expect(result.current).toHaveProperty('completeLesson')
-    })
+      expect(result.current).toHaveProperty("completeLesson");
+    });
 
-    it('increases intervals for successful reviews', async () => {
+    it("increases intervals for successful reviews", async () => {
       // Mock auth store
       vi.mocked(useAuthStore).mockReturnValue({
         user: { uid: TEST_USER_ID },
-      })
+      });
 
       // Mock Firebase functions for existing lesson with SM-2 data
-      const mockSetDoc = vi.fn().mockResolvedValue(undefined)
+      const mockSetDoc = vi.fn().mockResolvedValue(undefined);
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => true,
         data: () => ({
           easinessFactor: 2.5,
           repetitions: 1,
           interval: 1,
-          lastReviewQuality: 5
-        })
-      })
+          lastReviewQuality: 5,
+        }),
+      });
 
-      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF })
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF });
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
+      vi.mocked(getDoc).mockImplementation(mockGetDoc);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      const sm2Result = await result.current.completeLesson(TEST_LESSON_ID, 100, 5)
+      const sm2Result = await result.current.completeLesson(
+        TEST_LESSON_ID,
+        100,
+        5,
+      );
 
-      expect(sm2Result.interval).toBe(6) // Second review should be 6 days
-      expect(sm2Result.repetitions).toBe(2)
-    })
+      expect(sm2Result.interval).toBe(6); // Second review should be 6 days
+      expect(sm2Result.repetitions).toBe(2);
+    });
 
-    it('resets repetitions for failed reviews', async () => {
+    it("resets repetitions for failed reviews", async () => {
       // Mock auth store
       vi.mocked(useAuthStore).mockReturnValue({
         user: { uid: TEST_USER_ID },
-      })
+      });
 
       // Mock Firebase functions for failed review (quality < 3)
-      const mockSetDoc = vi.fn().mockResolvedValue(undefined)
+      const mockSetDoc = vi.fn().mockResolvedValue(undefined);
       const mockGetDoc = vi.fn().mockResolvedValue({
         exists: () => true,
         data: () => ({
           easinessFactor: 2.5,
           repetitions: 2,
           interval: 6,
-          lastReviewQuality: 5
-        })
-      })
+          lastReviewQuality: 5,
+        }),
+      });
 
-      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF })
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
+      vi.mocked(doc).mockReturnValue({ id: MOCK_DOC_REF });
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
+      vi.mocked(getDoc).mockImplementation(mockGetDoc);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      const sm2Result = await result.current.completeLesson(TEST_LESSON_ID, 100, 2) // Quality < 3
+      const sm2Result = await result.current.completeLesson(
+        TEST_LESSON_ID,
+        100,
+        2,
+      ); // Quality < 3
 
-      expect(sm2Result.repetitions).toBe(0)
-      expect(sm2Result.interval).toBe(1) // Reset to 1 day
-    })
-  })
+      expect(sm2Result.repetitions).toBe(0);
+      expect(sm2Result.interval).toBe(1); // Reset to 1 day
+    });
+  });
 
-  describe('Badge System', () => {
-    it('checks and awards badges after lab completion', async () => {
+  describe("Badge System", () => {
+    it("checks and awards badges after lab completion", async () => {
       // Mock auth store
       vi.mocked(useAuthStore).mockReturnValue({
         user: { uid: TEST_USER_ID },
-      })
+      });
 
       // Mock Firebase functions for badge checking
-      const mockDoc = vi.fn()
-      const mockSetDoc = vi.fn().mockResolvedValue(undefined)
-      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined)
+      const mockDoc = vi.fn();
+      const mockSetDoc = vi.fn().mockResolvedValue(undefined);
+      const mockUpdateDoc = vi.fn().mockResolvedValue(undefined);
       // getDoc returns DocumentSnapshot with exists() method
-      const mockGetDoc = vi.fn()
+      const mockGetDoc = vi
+        .fn()
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lab progress check
         .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // Lesson progress check
-        .mockResolvedValueOnce({ exists: () => true, data: () => ({ totalXP: 0, badges: [] }) }) // User stats for checkAndAwardBadges
-        .mockResolvedValue({ exists: () => false, data: () => ({}) }) // All badge existence checks
-      const mockCollection = vi.fn()
-      const mockQuery = vi.fn()
-      const mockWhere = vi.fn()
+        .mockResolvedValueOnce({
+          exists: () => true,
+          data: () => ({ totalXP: 0, badges: [] }),
+        }) // User stats for checkAndAwardBadges
+        .mockResolvedValue({ exists: () => false, data: () => ({}) }); // All badge existence checks
+      const mockCollection = vi.fn();
+      const mockQuery = vi.fn();
+      const mockWhere = vi.fn();
       // getDocs returns QuerySnapshot with size property
       const mockGetDocs = vi.fn().mockResolvedValue({
         docs: [],
         empty: true,
-        size: 0
-      })
+        size: 0,
+      });
 
-      vi.mocked(doc).mockImplementation(mockDoc)
-      vi.mocked(setDoc).mockImplementation(mockSetDoc)
-      vi.mocked(getDoc).mockImplementation(mockGetDoc)
-      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc)
-      vi.mocked(collection).mockImplementation(mockCollection)
-      vi.mocked(query).mockImplementation(mockQuery)
-      vi.mocked(where).mockImplementation(mockWhere)
-      vi.mocked(getDocs).mockImplementation(mockGetDocs)
+      vi.mocked(doc).mockImplementation(mockDoc);
+      vi.mocked(setDoc).mockImplementation(mockSetDoc);
+      vi.mocked(getDoc).mockImplementation(mockGetDoc);
+      vi.mocked(updateDoc).mockImplementation(mockUpdateDoc);
+      vi.mocked(collection).mockImplementation(mockCollection);
+      vi.mocked(query).mockImplementation(mockQuery);
+      vi.mocked(where).mockImplementation(mockWhere);
+      vi.mocked(getDocs).mockImplementation(mockGetDocs);
 
-      const { result } = renderHook(() => useProgress())
+      const { result } = renderHook(() => useProgress());
 
-      await result.current.completeLab('w1-lab1', 150, 5, 10)
+      await result.current.completeLab("w1-lab1", 150, 5, 10);
 
       // Should check for badge awards - actual calls may vary based on implementation
       expect(mockGetDoc).toHaveBeenCalled();
-    })
-  })
-})
+    });
+  });
+});

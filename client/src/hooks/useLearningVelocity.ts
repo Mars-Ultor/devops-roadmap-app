@@ -3,19 +3,26 @@
  * Tracks progress speed and learning acceleration over time
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAuthStore } from '../store/authStore';
-import { db } from '../lib/firebase';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-import type { QuerySnapshot } from 'firebase/firestore';
-import type { WeeklyProgress } from './learning-velocity/learningVelocityUtils';
-import { calculateVelocityTrend, getWeekKey, convertToWeeklyProgress, calculateCurrentPace, calculateOptimalPace, projectCompletionDate } from './learning-velocity/learningVelocityUtils';
+import { useState, useEffect, useCallback } from "react";
+import { useAuthStore } from "../store/authStore";
+import { db } from "../lib/firebase";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import type { QuerySnapshot } from "firebase/firestore";
+import type { WeeklyProgress } from "./learning-velocity/learningVelocityUtils";
+import {
+  calculateVelocityTrend,
+  getWeekKey,
+  convertToWeeklyProgress,
+  calculateCurrentPace,
+  calculateOptimalPace,
+  projectCompletionDate,
+} from "./learning-velocity/learningVelocityUtils";
 
-export type { WeeklyProgress } from './learning-velocity/learningVelocityUtils';
+export type { WeeklyProgress } from "./learning-velocity/learningVelocityUtils";
 
 export interface LearningVelocityData {
   weeklyProgress: WeeklyProgress[];
-  velocityTrend: 'accelerating' | 'steady' | 'decelerating';
+  velocityTrend: "accelerating" | "steady" | "decelerating";
   projectedCompletion: Date | null;
   currentPace: number;
   optimalPace: number;
@@ -23,45 +30,79 @@ export interface LearningVelocityData {
 
 export function useLearningVelocity(progressSnap?: QuerySnapshot) {
   const { user } = useAuthStore();
-  const [velocityData, setVelocityData] = useState<LearningVelocityData | null>(null);
+  const [velocityData, setVelocityData] = useState<LearningVelocityData | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
-  const analyzeLearningVelocity = useCallback(async (data?: QuerySnapshot) => {
-    if (!user?.uid) return;
-    try {
-      const snapToUse = data || await getDocs(query(collection(db, 'progress'), where('userId', '==', user.uid), orderBy('completedAt', 'asc')));
-      
-      // Group by weeks
-      const weeklyData: Record<string, { items: Array<Record<string, unknown>>; totalTime: number; masteredItems: number; weekStart: Date }> = {};
-      snapToUse.docs.forEach(doc => {
-        const docData = doc.data();
-        const completedAt = docData.completedAt?.toDate();
-        if (!completedAt) return;
-        const weekKey = getWeekKey(completedAt);
-        const weekStart = new Date(completedAt);
-        weekStart.setDate(completedAt.getDate() - completedAt.getDay());
-        weekStart.setHours(0, 0, 0, 0);
-        if (!weeklyData[weekKey]) weeklyData[weekKey] = { items: [], totalTime: 0, masteredItems: 0, weekStart };
-        weeklyData[weekKey].items.push(docData);
-        weeklyData[weekKey].totalTime += docData.timeSpentMinutes || 0;
-        if (docData.masteryLevel === 'run-independent') weeklyData[weekKey].masteredItems++;
-      });
+  const analyzeLearningVelocity = useCallback(
+    async (data?: QuerySnapshot) => {
+      if (!user?.uid) return;
+      try {
+        const snapToUse =
+          data ||
+          (await getDocs(
+            query(
+              collection(db, "progress"),
+              where("userId", "==", user.uid),
+              orderBy("completedAt", "asc"),
+            ),
+          ));
 
-      const weeklyProgress = convertToWeeklyProgress(weeklyData);
-      const currentPace = calculateCurrentPace(weeklyProgress);
-      const optimalPace = calculateOptimalPace(weeklyProgress);
-      const remainingItems = 100;
+        // Group by weeks
+        const weeklyData: Record<
+          string,
+          {
+            items: Array<Record<string, unknown>>;
+            totalTime: number;
+            masteredItems: number;
+            weekStart: Date;
+          }
+        > = {};
+        snapToUse.docs.forEach((doc) => {
+          const docData = doc.data();
+          const completedAt = docData.completedAt?.toDate();
+          if (!completedAt) return;
+          const weekKey = getWeekKey(completedAt);
+          const weekStart = new Date(completedAt);
+          weekStart.setDate(completedAt.getDate() - completedAt.getDay());
+          weekStart.setHours(0, 0, 0, 0);
+          if (!weeklyData[weekKey])
+            weeklyData[weekKey] = {
+              items: [],
+              totalTime: 0,
+              masteredItems: 0,
+              weekStart,
+            };
+          weeklyData[weekKey].items.push(docData);
+          weeklyData[weekKey].totalTime += docData.timeSpentMinutes || 0;
+          if (docData.masteryLevel === "run-independent")
+            weeklyData[weekKey].masteredItems++;
+        });
 
-      setVelocityData({
-        weeklyProgress,
-        velocityTrend: calculateVelocityTrend(weeklyProgress),
-        projectedCompletion: projectCompletionDate(currentPace, remainingItems),
-        currentPace: Math.round(currentPace * 10) / 10,
-        optimalPace: Math.round(optimalPace * 10) / 10
-      });
-    } catch (error) { console.error('Error analyzing learning velocity:', error); }
-    finally { setLoading(false); }
-  }, [user?.uid]);
+        const weeklyProgress = convertToWeeklyProgress(weeklyData);
+        const currentPace = calculateCurrentPace(weeklyProgress);
+        const optimalPace = calculateOptimalPace(weeklyProgress);
+        const remainingItems = 100;
+
+        setVelocityData({
+          weeklyProgress,
+          velocityTrend: calculateVelocityTrend(weeklyProgress),
+          projectedCompletion: projectCompletionDate(
+            currentPace,
+            remainingItems,
+          ),
+          currentPace: Math.round(currentPace * 10) / 10,
+          optimalPace: Math.round(optimalPace * 10) / 10,
+        });
+      } catch (error) {
+        console.error("Error analyzing learning velocity:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user?.uid],
+  );
 
   useEffect(() => {
     if (progressSnap) {

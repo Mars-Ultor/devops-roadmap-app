@@ -3,10 +3,18 @@
  * Blocks access to lessons/labs until daily drill is completed
  */
 
-import { useState, useEffect } from 'react';
-import { useAuthStore } from '../store/authStore';
-import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { useState, useEffect } from "react";
+import { useAuthStore } from "../store/authStore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 interface DailyDrillState {
   dailyDrillRequired: boolean;
@@ -28,7 +36,7 @@ export function useDailyDrill(): DailyDrillState {
     } else {
       setLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const checkDailyDrill = async (): Promise<boolean> => {
@@ -39,16 +47,16 @@ export function useDailyDrill(): DailyDrillState {
 
     try {
       setLoading(true);
-      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-      
+      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+
       // Check if user has completed ANY content (if not, don't require drill yet)
       const progressQuery = query(
-        collection(db, 'progress'),
-        where('userId', '==', user.uid),
-        where('completed', '==', true)
+        collection(db, "progress"),
+        where("userId", "==", user.uid),
+        where("completed", "==", true),
       );
       const progressSnap = await getDocs(progressQuery);
-      
+
       // Only require daily drill if user has completed at least one lesson/lab
       if (progressSnap.empty) {
         setDailyDrillRequired(false);
@@ -58,9 +66,9 @@ export function useDailyDrill(): DailyDrillState {
       }
 
       // Check if drill was completed today
-      const drillDocRef = doc(db, 'dailyDrills', `${user.uid}_${today}`);
+      const drillDocRef = doc(db, "dailyDrills", `${user.uid}_${today}`);
       const drillDoc = await getDoc(drillDocRef);
-      
+
       if (drillDoc.exists() && drillDoc.data()?.completed) {
         setDailyDrillRequired(false);
         setDailyDrillCompleted(true);
@@ -73,7 +81,7 @@ export function useDailyDrill(): DailyDrillState {
         return false;
       }
     } catch (error) {
-      console.error('Error checking daily drill:', error);
+      console.error("Error checking daily drill:", error);
       setLoading(false);
       return false;
     }
@@ -83,21 +91,21 @@ export function useDailyDrill(): DailyDrillState {
     if (!user?.uid) return;
 
     try {
-      const today = new Date().toISOString().split('T')[0];
-      const drillDocRef = doc(db, 'dailyDrills', `${user.uid}_${today}`);
-      
+      const today = new Date().toISOString().split("T")[0];
+      const drillDocRef = doc(db, "dailyDrills", `${user.uid}_${today}`);
+
       await setDoc(drillDocRef, {
         userId: user.uid,
         date: today,
         completed: true,
         completedAt: new Date(),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       setDailyDrillRequired(false);
       setDailyDrillCompleted(true);
     } catch (error) {
-      console.error('Error completing daily drill:', error);
+      console.error("Error completing daily drill:", error);
       throw error;
     }
   };
@@ -107,6 +115,6 @@ export function useDailyDrill(): DailyDrillState {
     dailyDrillCompleted,
     loading,
     completeDailyDrill,
-    checkDailyDrill
+    checkDailyDrill,
   };
 }

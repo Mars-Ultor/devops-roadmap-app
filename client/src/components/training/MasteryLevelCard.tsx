@@ -3,8 +3,8 @@
  * Shows locked/unlocked status, perfect completions, and requirements
  */
 
-import { Lock, CheckCircle } from 'lucide-react';
-import type { MasteryLevel, MasteryProgress } from '../../types/training';
+import { Lock, CheckCircle } from "lucide-react";
+import type { MasteryLevel, MasteryProgress } from "../../types/training";
 
 interface MasteryLevelCardProps {
   level: MasteryLevel;
@@ -15,44 +15,45 @@ interface MasteryLevelCardProps {
 
 const LEVEL_CONFIG = {
   crawl: {
-    title: 'Crawl',
-    description: 'Step-by-step guided execution',
-    color: 'emerald',
-    icon: '🐾'
+    title: "Crawl",
+    description: "Step-by-step guided execution",
+    color: "emerald",
+    icon: "🐾",
   },
   walk: {
-    title: 'Walk',
-    description: 'Fill-in-the-blank templates',
-    color: 'blue',
-    icon: '🚶'
+    title: "Walk",
+    description: "Fill-in-the-blank templates",
+    color: "blue",
+    icon: "🚶",
   },
-  'run-guided': {
-    title: 'Run (Guided)',
-    description: 'Conceptual guidance only',
-    color: 'purple',
-    icon: '🏃'
+  "run-guided": {
+    title: "Run (Guided)",
+    description: "Conceptual guidance only",
+    color: "purple",
+    icon: "🏃",
   },
-  'run-independent': {
-    title: 'Run (Independent)',
-    description: 'Solo execution, objective only',
-    color: 'amber',
-    icon: '🎯'
-  }
+  "run-independent": {
+    title: "Run (Independent)",
+    description: "Solo execution, objective only",
+    color: "amber",
+    icon: "🎯",
+  },
 } as const;
 
 export default function MasteryLevelCard({
   level,
   progress,
   isActive,
-  onSelect
+  onSelect,
 }: MasteryLevelCardProps) {
   const config = LEVEL_CONFIG[level];
-  const isMastered = progress.perfectCompletions >= progress.requiredPerfectCompletions;
+  const isMastered =
+    progress.perfectCompletions >= progress.requiredPerfectCompletions;
   const isLocked = !progress.unlocked;
 
   const getColorClasses = () => {
     if (isLocked) {
-      return 'bg-slate-800 border-slate-700 opacity-50 cursor-not-allowed';
+      return "bg-slate-800 border-slate-700 opacity-50 cursor-not-allowed";
     }
     if (isActive) {
       return `bg-${config.color}-900/30 border-${config.color}-500 ring-2 ring-${config.color}-500`;
@@ -87,10 +88,14 @@ export default function MasteryLevelCard({
       <div className="flex items-center gap-2 mb-2">
         <span className="text-2xl">{config.icon}</span>
         <div className="text-left">
-          <h3 className={`text-lg font-bold ${isLocked ? 'text-slate-500' : 'text-white'}`}>
+          <h3
+            className={`text-lg font-bold ${isLocked ? "text-slate-500" : "text-white"}`}
+          >
             {config.title}
           </h3>
-          <p className={`text-xs ${isLocked ? 'text-slate-600' : 'text-slate-400'}`}>
+          <p
+            className={`text-xs ${isLocked ? "text-slate-600" : "text-slate-400"}`}
+          >
             {config.description}
           </p>
         </div>
@@ -101,17 +106,20 @@ export default function MasteryLevelCard({
         <div className="mt-3">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-slate-400">Perfect Completions</span>
-            <span className={`text-sm font-semibold ${isMastered ? 'text-' + config.color + '-400' : 'text-white'}`}>
-              {progress.perfectCompletions}/{progress.requiredPerfectCompletions}
+            <span
+              className={`text-sm font-semibold ${isMastered ? "text-" + config.color + "-400" : "text-white"}`}
+            >
+              {progress.perfectCompletions}/
+              {progress.requiredPerfectCompletions}
             </span>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
             <div
               className={`h-full bg-${config.color}-500 transition-all duration-500`}
               style={{
-                width: `${Math.min((progress.perfectCompletions / progress.requiredPerfectCompletions) * 100, 100)}%`
+                width: `${Math.min((progress.perfectCompletions / progress.requiredPerfectCompletions) * 100, 100)}%`,
               }}
             />
           </div>

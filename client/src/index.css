@@ -22,7 +22,11 @@
 }
 
 /* Ensure proper touch targets */
-button, a, input, select, textarea {
+button,
+a,
+input,
+select,
+textarea {
   min-height: 44px; /* iOS Human Interface Guidelines minimum */
 }
 
@@ -63,5 +67,7 @@ body {
 
 #root {
   min-height: 100vh;
-  min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  min-height: calc(
+    100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+  );
 }

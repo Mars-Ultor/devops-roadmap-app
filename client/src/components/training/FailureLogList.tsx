@@ -3,26 +3,40 @@
  * Refactored to use extracted components
  */
 
-import { useState, useEffect } from 'react';
-import { useFailureLog } from '../../hooks/useFailureLog';
-import FailureResolutionForm from './FailureResolutionForm';
-import type { FailureLog, FailureCategory } from '../../types/training';
-import { calculateStats } from './FailureLogListUtils';
-import { StatsDisplay, Filters, FailureItem, EmptyState } from './FailureLogListComponents';
+import { useState, useEffect } from "react";
+import { useFailureLog } from "../../hooks/useFailureLog";
+import FailureResolutionForm from "./FailureResolutionForm";
+import type { FailureLog, FailureCategory } from "../../types/training";
+import { calculateStats } from "./FailureLogListUtils";
+import {
+  StatsDisplay,
+  Filters,
+  FailureItem,
+  EmptyState,
+} from "./FailureLogListComponents";
 
 interface FailureLogListProps {
   contentId?: string;
   showFilters?: boolean;
 }
 
-export default function FailureLogList({ contentId, showFilters = true }: FailureLogListProps) {
+export default function FailureLogList({
+  contentId,
+  showFilters = true,
+}: FailureLogListProps) {
   const { getFailureLogs, updateFailure, loading } = useFailureLog();
   const [failures, setFailures] = useState<FailureLog[]>([]);
   const [filteredFailures, setFilteredFailures] = useState<FailureLog[]>([]);
-  const [selectedFailure, setSelectedFailure] = useState<FailureLog | null>(null);
+  const [selectedFailure, setSelectedFailure] = useState<FailureLog | null>(
+    null,
+  );
   const [showResolutionForm, setShowResolutionForm] = useState(false);
-  const [categoryFilter, setCategoryFilter] = useState<FailureCategory | 'all'>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'resolved' | 'unresolved'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<FailureCategory | "all">(
+    "all",
+  );
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "resolved" | "unresolved"
+  >("all");
 
   const loadFailures = async () => {
     const logs = await getFailureLogs(contentId);
@@ -31,18 +45,39 @@ export default function FailureLogList({ contentId, showFilters = true }: Failur
 
   const applyFilters = () => {
     let filtered = [...failures];
-    if (categoryFilter !== 'all') filtered = filtered.filter(f => f.category === categoryFilter);
-    if (statusFilter === 'resolved') filtered = filtered.filter(f => f.resolvedAt !== undefined);
-    else if (statusFilter === 'unresolved') filtered = filtered.filter(f => f.resolvedAt === undefined);
+    if (categoryFilter !== "all")
+      filtered = filtered.filter((f) => f.category === categoryFilter);
+    if (statusFilter === "resolved")
+      filtered = filtered.filter((f) => f.resolvedAt !== undefined);
+    else if (statusFilter === "unresolved")
+      filtered = filtered.filter((f) => f.resolvedAt === undefined);
     setFilteredFailures(filtered);
   };
 
-  useEffect(() => { loadFailures(); }, [contentId]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { applyFilters(); }, [failures, categoryFilter, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    loadFailures();
+  }, [contentId]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    applyFilters();
+  }, [failures, categoryFilter, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleResolve = (failure: FailureLog) => { setSelectedFailure(failure); setShowResolutionForm(true); };
+  const handleResolve = (failure: FailureLog) => {
+    setSelectedFailure(failure);
+    setShowResolutionForm(true);
+  };
 
-  const handleResolutionSubmit = async (updates: Partial<Pick<FailureLog, 'rootCause' | 'resolution' | 'preventionStrategy' | 'lessonsLearned' | 'resolvedAt'>>) => {
+  const handleResolutionSubmit = async (
+    updates: Partial<
+      Pick<
+        FailureLog,
+        | "rootCause"
+        | "resolution"
+        | "preventionStrategy"
+        | "lessonsLearned"
+        | "resolvedAt"
+      >
+    >,
+  ) => {
     if (!selectedFailure) return;
     await updateFailure(selectedFailure.id, updates);
     await loadFailures();
@@ -51,7 +86,11 @@ export default function FailureLogList({ contentId, showFilters = true }: Failur
   };
 
   if (loading && failures.length === 0) {
-    return <div className="text-center py-12 text-slate-400">Loading failure logs...</div>;
+    return (
+      <div className="text-center py-12 text-slate-400">
+        Loading failure logs...
+      </div>
+    );
   }
 
   const stats = calculateStats(failures);
@@ -72,7 +111,11 @@ export default function FailureLogList({ contentId, showFilters = true }: Failur
           <EmptyState hasFailures={failures.length > 0} />
         ) : (
           filteredFailures.map((failure) => (
-            <FailureItem key={failure.id} failure={failure} onResolve={handleResolve} />
+            <FailureItem
+              key={failure.id}
+              failure={failure}
+              onResolve={handleResolve}
+            />
           ))
         )}
       </div>
@@ -80,7 +123,10 @@ export default function FailureLogList({ contentId, showFilters = true }: Failur
         <FailureResolutionForm
           failure={selectedFailure}
           onSubmit={handleResolutionSubmit}
-          onCancel={() => { setShowResolutionForm(false); setSelectedFailure(null); }}
+          onCancel={() => {
+            setShowResolutionForm(false);
+            setSelectedFailure(null);
+          }}
         />
       )}
     </div>

@@ -1,12 +1,12 @@
 /* eslint-disable max-lines-per-function, sonarjs/no-duplicate-string */
-import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { render, screen } from "@testing-library/react";
+import { vi } from "vitest";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 
 // Mock console.error to avoid noise in test output
-const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-describe('ErrorBoundary', () => {
+describe("ErrorBoundary", () => {
   beforeEach(() => {
     consoleErrorSpy.mockClear();
   });
@@ -15,111 +15,123 @@ describe('ErrorBoundary', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  test('renders children when no error occurs', () => {
+  test("renders children when no error occurs", () => {
     render(
       <ErrorBoundary>
         <div>Test content</div>
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    expect(screen.getByText('Test content')).toBeInTheDocument();
+    expect(screen.getByText("Test content")).toBeInTheDocument();
   });
 
-  test('renders error UI when an error occurs in child component', () => {
+  test("renders error UI when an error occurs in child component", () => {
     const ThrowError = () => {
-      throw new Error('Test error');
+      throw new Error("Test error");
     };
 
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
-    expect(screen.getByText('We encountered an unexpected error. Don\'t worry, your progress is saved.')).toBeInTheDocument();
-    expect(screen.getByText('Test error')).toBeInTheDocument();
+    expect(screen.getByText("Oops! Something went wrong")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "We encountered an unexpected error. Don't worry, your progress is saved.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Test error")).toBeInTheDocument();
   });
 
-  test('logs error to console when error occurs', () => {
+  test("logs error to console when error occurs", () => {
     const ThrowError = () => {
-      throw new Error('Test error');
+      throw new Error("Test error");
     };
 
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'ErrorBoundary caught an error:',
+      "ErrorBoundary caught an error:",
       expect.any(Error),
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
-  test('shows error icon', () => {
+  test("shows error icon", () => {
     const ThrowError = () => {
-      throw new Error('Test error');
+      throw new Error("Test error");
     };
 
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     // Check that error UI is rendered
-    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(screen.getByText("Oops! Something went wrong")).toBeInTheDocument();
   });
 
-  test('error message is displayed in monospace font', () => {
+  test("error message is displayed in monospace font", () => {
     const ThrowError = () => {
-      throw new Error('Custom error message');
+      throw new Error("Custom error message");
     };
 
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    const errorMessage = screen.getByText('Custom error message');
-    expect(errorMessage).toHaveClass('font-mono');
+    const errorMessage = screen.getByText("Custom error message");
+    expect(errorMessage).toHaveClass("font-mono");
   });
 
-  test('error boundary has proper styling', () => {
+  test("error boundary has proper styling", () => {
     const ThrowError = () => {
-      throw new Error('Test error');
+      throw new Error("Test error");
     };
 
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     // Check main container styling
-    const errorContainer = screen.getByText('Oops! Something went wrong').closest('.min-h-screen');
-    expect(errorContainer).toHaveClass('min-h-screen', 'bg-slate-900', 'flex', 'items-center', 'justify-center');
+    const errorContainer = screen
+      .getByText("Oops! Something went wrong")
+      .closest(".min-h-screen");
+    expect(errorContainer).toHaveClass(
+      "min-h-screen",
+      "bg-slate-900",
+      "flex",
+      "items-center",
+      "justify-center",
+    );
   });
 
-  test('handles different types of errors', () => {
+  test("handles different types of errors", () => {
     const ThrowStringError = () => {
-      throw 'String error';
+      throw "String error";
     };
 
     render(
       <ErrorBoundary>
         <ThrowStringError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(screen.getByText("Oops! Something went wrong")).toBeInTheDocument();
   });
 
-  test('handles null or undefined errors gracefully', () => {
+  test("handles null or undefined errors gracefully", () => {
     const ThrowNullError = () => {
       throw null;
     };
@@ -127,39 +139,39 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowNullError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(screen.getByText("Oops! Something went wrong")).toBeInTheDocument();
   });
 
-  test('multiple children work normally', () => {
+  test("multiple children work normally", () => {
     render(
       <ErrorBoundary>
         <div>First child</div>
         <div>Second child</div>
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    expect(screen.getByText('First child')).toBeInTheDocument();
-    expect(screen.getByText('Second child')).toBeInTheDocument();
+    expect(screen.getByText("First child")).toBeInTheDocument();
+    expect(screen.getByText("Second child")).toBeInTheDocument();
   });
 
-  test('error in one child does not affect error boundary rendering', () => {
+  test("error in one child does not affect error boundary rendering", () => {
     const GoodChild = () => <div>Good child</div>;
     const BadChild = () => {
-      throw new Error('Bad child error');
+      throw new Error("Bad child error");
     };
 
     render(
       <ErrorBoundary>
         <GoodChild />
         <BadChild />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     // Should show error UI, not the good child
-    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
-    expect(screen.queryByText('Good child')).not.toBeInTheDocument();
+    expect(screen.getByText("Oops! Something went wrong")).toBeInTheDocument();
+    expect(screen.queryByText("Good child")).not.toBeInTheDocument();
   });
 });

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Brain, CheckCircle } from 'lucide-react';
+import React from "react";
+import { Brain, CheckCircle } from "lucide-react";
 
 interface AnalyticsData {
   quizSuccessRate: number;
@@ -12,7 +12,9 @@ interface QuizLabPerformanceProps {
   analytics: AnalyticsData;
 }
 
-const QuizLabPerformance: React.FC<QuizLabPerformanceProps> = ({ analytics }) => {
+const QuizLabPerformance: React.FC<QuizLabPerformanceProps> = ({
+  analytics,
+}) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
@@ -24,13 +26,17 @@ const QuizLabPerformance: React.FC<QuizLabPerformanceProps> = ({ analytics }) =>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Success Rate</span>
-            <span className={`font-semibold ${analytics.quizSuccessRate >= 0.7 ? 'text-green-400' : 'text-yellow-400'}`}>
+            <span
+              className={`font-semibold ${analytics.quizSuccessRate >= 0.7 ? "text-green-400" : "text-yellow-400"}`}
+            >
               {Math.round(analytics.quizSuccessRate * 100)}%
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Average Score</span>
-            <span className="text-white font-semibold">{Math.round(analytics.avgQuizScore)}%</span>
+            <span className="text-white font-semibold">
+              {Math.round(analytics.avgQuizScore)}%
+            </span>
           </div>
 
           <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
@@ -51,13 +57,17 @@ const QuizLabPerformance: React.FC<QuizLabPerformanceProps> = ({ analytics }) =>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Completion Rate</span>
-            <span className={`font-semibold ${analytics.labSuccessRate >= 0.7 ? 'text-green-400' : 'text-yellow-400'}`}>
+            <span
+              className={`font-semibold ${analytics.labSuccessRate >= 0.7 ? "text-green-400" : "text-yellow-400"}`}
+            >
               {Math.round(analytics.labSuccessRate * 100)}%
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Average Score</span>
-            <span className="text-white font-semibold">{Math.round(analytics.avgLabScore)}%</span>
+            <span className="text-white font-semibold">
+              {Math.round(analytics.avgLabScore)}%
+            </span>
           </div>
 
           <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">

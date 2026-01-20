@@ -3,9 +3,9 @@
  * Captures root cause analysis and prevention strategies
  */
 
-import { useState } from 'react';
-import type { FailureLog } from '../../types/training';
-import { MIN_LESSONS } from './FailureResolutionFormUtils';
+import { useState } from "react";
+import type { FailureLog } from "../../types/training";
+import { MIN_LESSONS } from "./FailureResolutionFormUtils";
 import {
   FormHeader,
   OriginalFailure,
@@ -14,8 +14,8 @@ import {
   PreventionInput,
   LessonsLearnedSection,
   InfoBox,
-  ActionButtons
-} from './FailureResolutionFormComponents';
+  ActionButtons,
+} from "./FailureResolutionFormComponents";
 
 interface FailureResolutionFormProps {
   failure: FailureLog;
@@ -32,12 +32,16 @@ interface FailureResolutionFormProps {
 export default function FailureResolutionForm({
   failure,
   onSubmit,
-  onCancel
+  onCancel,
 }: FailureResolutionFormProps) {
-  const [rootCause, setRootCause] = useState(failure.rootCause || '');
-  const [resolution, setResolution] = useState(failure.resolution || '');
-  const [preventionStrategy, setPreventionStrategy] = useState(failure.preventionStrategy || '');
-  const [lessons, setLessons] = useState<string[]>(failure.lessonsLearned.length > 0 ? failure.lessonsLearned : ['', '']);
+  const [rootCause, setRootCause] = useState(failure.rootCause || "");
+  const [resolution, setResolution] = useState(failure.resolution || "");
+  const [preventionStrategy, setPreventionStrategy] = useState(
+    failure.preventionStrategy || "",
+  );
+  const [lessons, setLessons] = useState<string[]>(
+    failure.lessonsLearned.length > 0 ? failure.lessonsLearned : ["", ""],
+  );
   const [submitting, setSubmitting] = useState(false);
 
   const updateLesson = (index: number, value: string) => {
@@ -47,7 +51,7 @@ export default function FailureResolutionForm({
   };
 
   const addLesson = () => {
-    setLessons([...lessons, '']);
+    setLessons([...lessons, ""]);
   };
 
   const removeLesson = (index: number) => {
@@ -56,14 +60,17 @@ export default function FailureResolutionForm({
     }
   };
 
-  const validLessons = lessons.filter(l => l.trim().length > 0);
-  const canSubmit = rootCause.trim() && resolution.trim() && validLessons.length >= MIN_LESSONS;
+  const validLessons = lessons.filter((l) => l.trim().length > 0);
+  const canSubmit =
+    rootCause.trim() && resolution.trim() && validLessons.length >= MIN_LESSONS;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!canSubmit) {
-      alert('Please fill in root cause, resolution, and at least 2 lessons learned');
+      alert(
+        "Please fill in root cause, resolution, and at least 2 lessons learned",
+      );
       return;
     }
 
@@ -74,11 +81,11 @@ export default function FailureResolutionForm({
         resolution: resolution.trim(),
         preventionStrategy: preventionStrategy.trim() || undefined,
         lessonsLearned: validLessons,
-        resolvedAt: new Date()
+        resolvedAt: new Date(),
       });
     } catch (error) {
-      console.error('Error submitting resolution:', error);
-      alert('Failed to submit resolution. Please try again.');
+      console.error("Error submitting resolution:", error);
+      alert("Failed to submit resolution. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -93,7 +100,10 @@ export default function FailureResolutionForm({
           <OriginalFailure failure={failure} />
           <RootCauseInput value={rootCause} onChange={setRootCause} />
           <ResolutionInput value={resolution} onChange={setResolution} />
-          <PreventionInput value={preventionStrategy} onChange={setPreventionStrategy} />
+          <PreventionInput
+            value={preventionStrategy}
+            onChange={setPreventionStrategy}
+          />
           <LessonsLearnedSection
             lessons={lessons}
             onUpdate={updateLesson}

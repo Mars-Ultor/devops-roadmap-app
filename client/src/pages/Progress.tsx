@@ -1,10 +1,10 @@
 /* eslint-disable max-lines-per-function */
-import { Trophy } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useProgress } from '../hooks/useProgress';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import { useAuthStore } from '../store/authStore';
+import { Trophy } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useProgress } from "../hooks/useProgress";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { db } from "../lib/firebase";
+import { useAuthStore } from "../store/authStore";
 
 interface Badge {
   id: string;
@@ -26,7 +26,12 @@ interface LabProgress {
 export default function Progress() {
   const user = useAuthStore((state) => state.user);
   const { getUserStats } = useProgress();
-  const [stats, setStats] = useState({ totalXP: 0, currentWeek: 1, labsCompleted: 0, badgesEarned: 0 });
+  const [stats, setStats] = useState({
+    totalXP: 0,
+    currentWeek: 1,
+    labsCompleted: 0,
+    badgesEarned: 0,
+  });
   const [badges, setBadges] = useState<Badge[]>([]);
   const [labProgress, setLabProgress] = useState<LabProgress[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,40 +39,40 @@ export default function Progress() {
   useEffect(() => {
     const loadProgressData = async () => {
       if (!user) return;
-      
+
       try {
         // Get user stats
         const userStats = await getUserStats();
-        
+
         // Get badges
         const badgesQuery = query(
-          collection(db, 'badges'),
-          where('userId', '==', user.uid),
-          orderBy('earnedAt', 'desc')
+          collection(db, "badges"),
+          where("userId", "==", user.uid),
+          orderBy("earnedAt", "desc"),
         );
         const badgesSnapshot = await getDocs(badgesQuery);
-        const earnedBadges = badgesSnapshot.docs.map(doc => ({
+        const earnedBadges = badgesSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
           earnedAt: doc.data().earnedAt?.toDate(),
         })) as Badge[];
-        
+
         // Get completed labs
         const labsQuery = query(
-          collection(db, 'progress'),
-          where('userId', '==', user.uid),
-          where('type', '==', 'lab'),
-          orderBy('completedAt', 'desc')
+          collection(db, "progress"),
+          where("userId", "==", user.uid),
+          where("type", "==", "lab"),
+          orderBy("completedAt", "desc"),
         );
         const labsSnapshot = await getDocs(labsQuery);
-        const completedLabs = labsSnapshot.docs.map(doc => ({
+        const completedLabs = labsSnapshot.docs.map((doc) => ({
           labId: doc.data().labId,
           completedAt: doc.data().completedAt?.toDate(),
           xpEarned: doc.data().xpEarned,
           tasksCompleted: doc.data().tasksCompleted,
           totalTasks: doc.data().totalTasks,
         })) as LabProgress[];
-        
+
         setStats({
           totalXP: userStats?.totalXP || 0,
           currentWeek: userStats?.currentWeek || 1,
@@ -77,7 +82,7 @@ export default function Progress() {
         setBadges(earnedBadges);
         setLabProgress(completedLabs);
       } catch (error) {
-        console.error('Error loading progress data:', error);
+        console.error("Error loading progress data:", error);
       } finally {
         setLoading(false);
       }
@@ -91,8 +96,12 @@ export default function Progress() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Your Progress 📊</h1>
-          <p className="text-xl text-gray-300">Track your DevOps learning journey and celebrate your achievements</p>
+          <h1 className="text-4xl font-bold text-white mb-4">
+            Your Progress 📊
+          </h1>
+          <p className="text-xl text-gray-300">
+            Track your DevOps learning journey and celebrate your achievements
+          </p>
         </div>
 
         {loading ? (
@@ -113,42 +122,63 @@ export default function Progress() {
               <div className="space-y-6">
                 <div>
                   <div className="flex justify-between mb-3">
-                    <span className="text-gray-300 font-medium">Current Week</span>
-                    <span className="text-white font-bold text-lg">Week {stats.currentWeek} of 12</span>
+                    <span className="text-gray-300 font-medium">
+                      Current Week
+                    </span>
+                    <span className="text-white font-bold text-lg">
+                      Week {stats.currentWeek} of 12
+                    </span>
                   </div>
                   <div className="w-full bg-slate-700 rounded-full h-4 overflow-hidden">
-                    <div 
+                    <div
                       className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-4 rounded-full transition-all duration-1000"
                       style={{ width: `${(stats.currentWeek / 12) * 100}%` }}
                     ></div>
                   </div>
-                  <p className="text-sm text-gray-400 mt-2">{Math.round((stats.currentWeek / 12) * 100)}% complete</p>
+                  <p className="text-sm text-gray-400 mt-2">
+                    {Math.round((stats.currentWeek / 12) * 100)}% complete
+                  </p>
                 </div>
                 <div>
                   <div className="flex justify-between mb-3">
-                    <span className="text-gray-300 font-medium">Labs Completed</span>
-                    <span className="text-white font-bold text-lg">{stats.labsCompleted}/33</span>
+                    <span className="text-gray-300 font-medium">
+                      Labs Completed
+                    </span>
+                    <span className="text-white font-bold text-lg">
+                      {stats.labsCompleted}/33
+                    </span>
                   </div>
                   <div className="w-full bg-slate-700 rounded-full h-4 overflow-hidden">
-                    <div 
+                    <div
                       className="bg-gradient-to-r from-green-500 to-green-600 h-4 rounded-full transition-all duration-1000"
                       style={{ width: `${(stats.labsCompleted / 33) * 100}%` }}
                     ></div>
                   </div>
-                  <p className="text-sm text-gray-400 mt-2">{Math.round((stats.labsCompleted / 33) * 100)}% complete</p>
+                  <p className="text-sm text-gray-400 mt-2">
+                    {Math.round((stats.labsCompleted / 33) * 100)}% complete
+                  </p>
                 </div>
                 <div>
                   <div className="flex justify-between mb-3">
-                    <span className="text-gray-300 font-medium">Total XP Earned</span>
-                    <span className="text-white font-bold text-lg">{stats.totalXP.toLocaleString()} XP</span>
+                    <span className="text-gray-300 font-medium">
+                      Total XP Earned
+                    </span>
+                    <span className="text-white font-bold text-lg">
+                      {stats.totalXP.toLocaleString()} XP
+                    </span>
                   </div>
                   <div className="w-full bg-slate-700 rounded-full h-4 overflow-hidden">
-                    <div 
+                    <div
                       className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 h-4 rounded-full transition-all duration-1000"
-                      style={{ width: `${Math.min((stats.totalXP / 6000) * 100, 100)}%` }}
+                      style={{
+                        width: `${Math.min((stats.totalXP / 6000) * 100, 100)}%`,
+                      }}
                     ></div>
                   </div>
-                  <p className="text-sm text-gray-400 mt-2">{Math.round((stats.totalXP / 6000) * 100)}% of 6000 XP target</p>
+                  <p className="text-sm text-gray-400 mt-2">
+                    {Math.round((stats.totalXP / 6000) * 100)}% of 6000 XP
+                    target
+                  </p>
                 </div>
               </div>
             </div>
@@ -181,10 +211,19 @@ export default function Progress() {
                       </div>
                       <span className="text-5xl mr-5">{badge.icon}</span>
                       <div className="flex-1">
-                        <h4 className="font-bold text-white text-lg mb-1">{badge.name}</h4>
-                        <p className="text-sm text-gray-300 mb-2">{badge.description}</p>
+                        <h4 className="font-bold text-white text-lg mb-1">
+                          {badge.name}
+                        </h4>
+                        <p className="text-sm text-gray-300 mb-2">
+                          {badge.description}
+                        </p>
                         <p className="text-xs text-indigo-300 font-medium">
-                          Earned {badge.earnedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          Earned{" "}
+                          {badge.earnedAt.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
                         </p>
                       </div>
                     </div>
@@ -205,7 +244,8 @@ export default function Progress() {
                 <div className="text-center py-12 bg-slate-900 rounded-lg border-2 border-dashed border-slate-700">
                   <div className="text-6xl mb-4">🧪</div>
                   <p className="text-gray-400 text-lg mb-2">
-                    No labs completed yet. Start your first lab to begin earning XP!
+                    No labs completed yet. Start your first lab to begin earning
+                    XP!
                   </p>
                   <p className="text-gray-500 text-sm">
                     Head to the Curriculum page to get started
@@ -223,16 +263,24 @@ export default function Progress() {
                           ✓
                         </div>
                         <div>
-                          <h4 className="font-semibold text-white mb-1">{lab.labId}</h4>
+                          <h4 className="font-semibold text-white mb-1">
+                            {lab.labId}
+                          </h4>
                           <p className="text-sm text-gray-400">
-                            {lab.tasksCompleted}/{lab.totalTasks} tasks completed
+                            {lab.tasksCompleted}/{lab.totalTasks} tasks
+                            completed
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-green-400 font-bold text-lg">+{lab.xpEarned} XP</p>
+                        <p className="text-green-400 font-bold text-lg">
+                          +{lab.xpEarned} XP
+                        </p>
                         <p className="text-xs text-gray-500">
-                          {lab.completedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          {lab.completedAt.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })}
                         </p>
                       </div>
                     </div>

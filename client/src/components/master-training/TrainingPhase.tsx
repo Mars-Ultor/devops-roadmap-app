@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Target,
   TrendingUp,
@@ -6,9 +6,12 @@ import {
   XCircle,
   BarChart3,
   Play,
-  Pause
-} from 'lucide-react';
-import type { MasterTrainingState, MasterTrainingActions } from '../../hooks/useMasterTraining';
+  Pause,
+} from "lucide-react";
+import type {
+  MasterTrainingState,
+  MasterTrainingActions,
+} from "../../hooks/useMasterTraining";
 
 interface TrainingPhaseProps {
   state: MasterTrainingState;
@@ -16,13 +19,23 @@ interface TrainingPhaseProps {
 }
 
 const TrainingPhase: React.FC<TrainingPhaseProps> = ({ state, actions }) => {
-  const { currentSession, challengeResults, currentChallengeIndex, selectedAnswer } = state;
-  
+  const {
+    currentSession,
+    challengeResults,
+    currentChallengeIndex,
+    selectedAnswer,
+  } = state;
+
   if (!currentSession) return null;
 
-  const currentChallenge = currentSession.currentScenario.challenges[currentChallengeIndex];
-  const hasAnswered = currentChallenge ? challengeResults.some(r => r.challengeId === currentChallenge.id) : false;
-  const userResult = currentChallenge ? challengeResults.find(r => r.challengeId === currentChallenge.id) : null;
+  const currentChallenge =
+    currentSession.currentScenario.challenges[currentChallengeIndex];
+  const hasAnswered = currentChallenge
+    ? challengeResults.some((r) => r.challengeId === currentChallenge.id)
+    : false;
+  const userResult = currentChallenge
+    ? challengeResults.find((r) => r.challengeId === currentChallenge.id)
+    : null;
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -60,21 +73,28 @@ const TrainingPhase: React.FC<TrainingPhaseProps> = ({ state, actions }) => {
 interface MetricCardProps {
   value: string;
   label: string;
-  color: 'indigo' | 'green' | 'blue' | 'red';
+  color: "indigo" | "green" | "blue" | "red";
   showPlaceholder: boolean;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({ value, label, color, showPlaceholder }) => {
+const MetricCard: React.FC<MetricCardProps> = ({
+  value,
+  label,
+  color,
+  showPlaceholder,
+}) => {
   const colorClasses = {
-    indigo: 'text-indigo-400',
-    green: 'text-green-400',
-    blue: 'text-blue-400',
-    red: 'text-red-400'
+    indigo: "text-indigo-400",
+    green: "text-green-400",
+    blue: "text-blue-400",
+    red: "text-red-400",
   };
 
   return (
     <div className="bg-slate-900 rounded-lg p-4 text-center">
-      <div className={`text-2xl font-bold ${showPlaceholder ? 'text-slate-600' : colorClasses[color]}`}>
+      <div
+        className={`text-2xl font-bold ${showPlaceholder ? "text-slate-600" : colorClasses[color]}`}
+      >
         {value}
       </div>
       <div className="text-xs text-slate-400">{label}</div>
@@ -86,16 +106,25 @@ const MetricCard: React.FC<MetricCardProps> = ({ value, label, color, showPlaceh
 };
 
 // Session Header Component
-const SessionHeader: React.FC<{ state: MasterTrainingState; actions: MasterTrainingActions }> = ({ state, actions }) => {
-  const { currentSession, trainingActive, adaptiveMetrics, challengeResults } = state;
+const SessionHeader: React.FC<{
+  state: MasterTrainingState;
+  actions: MasterTrainingActions;
+}> = ({ state, actions }) => {
+  const { currentSession, trainingActive, adaptiveMetrics, challengeResults } =
+    state;
   if (!currentSession) return null;
 
   return (
     <>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold text-white">{currentSession.currentScenario.title}</h2>
-          <p className="text-slate-400">Adaptive Difficulty: Level {currentSession.currentScenario.currentDifficulty}/10</p>
+          <h2 className="text-2xl font-bold text-white">
+            {currentSession.currentScenario.title}
+          </h2>
+          <p className="text-slate-400">
+            Adaptive Difficulty: Level{" "}
+            {currentSession.currentScenario.currentDifficulty}/10
+          </p>
         </div>
         <div className="flex items-center space-x-3">
           {trainingActive ? (
@@ -125,29 +154,43 @@ const SessionHeader: React.FC<{ state: MasterTrainingState; actions: MasterTrain
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <MetricCard
-          value={challengeResults.length > 0 ? `${adaptiveMetrics.performanceScore}%` : '—'}
+          value={
+            challengeResults.length > 0
+              ? `${adaptiveMetrics.performanceScore}%`
+              : "—"
+          }
           label="Performance"
           color="indigo"
           showPlaceholder={challengeResults.length === 0}
         />
         <MetricCard
-          value={challengeResults.length > 0 ? `${adaptiveMetrics.timeEfficiency}%` : '—'}
+          value={
+            challengeResults.length > 0
+              ? `${adaptiveMetrics.timeEfficiency}%`
+              : "—"
+          }
           label="Efficiency"
           color="green"
           showPlaceholder={challengeResults.length === 0}
         />
         <MetricCard
-          value={challengeResults.length > 0 ? adaptiveMetrics.learningVelocity.toFixed(1) : '—'}
+          value={
+            challengeResults.length > 0
+              ? adaptiveMetrics.learningVelocity.toFixed(1)
+              : "—"
+          }
           label="Learning Rate"
           color="blue"
           showPlaceholder={challengeResults.length === 0}
         />
         <MetricCard
-          value={challengeResults.length > 0 
-            ? `${adaptiveMetrics.difficultyAdjustment > 0 ? '+' : ''}${adaptiveMetrics.difficultyAdjustment}` 
-            : '—'}
+          value={
+            challengeResults.length > 0
+              ? `${adaptiveMetrics.difficultyAdjustment > 0 ? "+" : ""}${adaptiveMetrics.difficultyAdjustment}`
+              : "—"
+          }
           label="Difficulty Adj."
-          color={adaptiveMetrics.difficultyAdjustment > 0 ? 'green' : 'red'}
+          color={adaptiveMetrics.difficultyAdjustment > 0 ? "green" : "red"}
           showPlaceholder={challengeResults.length === 0}
         />
       </div>
@@ -155,11 +198,15 @@ const SessionHeader: React.FC<{ state: MasterTrainingState; actions: MasterTrain
   );
 };
 
-// Scenario Content Component  
+// Scenario Content Component
 interface ScenarioContentProps {
-  currentSession: MasterTrainingState['currentSession'];
+  currentSession: MasterTrainingState["currentSession"];
   currentChallengeIndex: number;
-  currentChallenge: MasterTrainingState['currentSession'] extends { currentScenario: { challenges: (infer T)[] } } ? T : never;
+  currentChallenge: MasterTrainingState["currentSession"] extends {
+    currentScenario: { challenges: (infer T)[] };
+  }
+    ? T
+    : never;
   hasAnswered: boolean;
   userResult: { selectedOptionId: string } | null | undefined;
   selectedAnswer: string | null;
@@ -173,20 +220,23 @@ const ScenarioContent: React.FC<ScenarioContentProps> = ({
   hasAnswered,
   userResult,
   selectedAnswer,
-  actions
+  actions,
 }) => {
   if (!currentSession) return null;
-  
+
   return (
     <div className="bg-slate-900 rounded-lg p-6 mb-6">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-white">Scenario Context</h3>
           <span className="text-xs px-3 py-1 bg-indigo-500/20 text-indigo-400 rounded-full">
-            Challenge {currentChallengeIndex + 1} of {currentSession.currentScenario.challenges.length}
+            Challenge {currentChallengeIndex + 1} of{" "}
+            {currentSession.currentScenario.challenges.length}
           </span>
         </div>
-        <p className="text-slate-300 mb-4">{currentSession.currentScenario.scenario}</p>
+        <p className="text-slate-300 mb-4">
+          {currentSession.currentScenario.scenario}
+        </p>
       </div>
 
       {currentChallenge && (
@@ -198,7 +248,10 @@ const ScenarioContent: React.FC<ScenarioContentProps> = ({
           onSelectAnswer={actions.selectAnswer}
           onSubmitAnswer={actions.submitAnswer}
           onNextChallenge={actions.nextChallenge}
-          isLastChallenge={currentChallengeIndex >= currentSession.currentScenario.challenges.length - 1}
+          isLastChallenge={
+            currentChallengeIndex >=
+            currentSession.currentScenario.challenges.length - 1
+          }
         />
       )}
     </div>
@@ -235,7 +288,7 @@ const ChallengeDisplay: React.FC<ChallengeDisplayProps> = ({
   onSelectAnswer,
   onSubmitAnswer,
   onNextChallenge,
-  isLastChallenge
+  isLastChallenge,
 }) => {
   return (
     <div className="space-y-4">
@@ -252,7 +305,8 @@ const ChallengeDisplay: React.FC<ChallengeDisplayProps> = ({
         {challenge.options.map((option) => {
           const isSelected = selectedAnswer === option.id;
           const isCorrect = option.id === challenge.correctOptionId;
-          const showFeedback = hasAnswered && userResult?.selectedOptionId === option.id;
+          const showFeedback =
+            hasAnswered && userResult?.selectedOptionId === option.id;
 
           return (
             <OptionButton
@@ -306,29 +360,29 @@ const OptionButton: React.FC<OptionButtonProps> = ({
   isCorrect,
   hasAnswered,
   showFeedback,
-  onSelect
+  onSelect,
 }) => {
   const getButtonClasses = () => {
     if (hasAnswered) {
       if (showFeedback) {
         return isCorrect
-          ? 'border-green-500 bg-green-500/10'
-          : 'border-red-500 bg-red-500/10';
+          ? "border-green-500 bg-green-500/10"
+          : "border-red-500 bg-red-500/10";
       }
-      return 'border-slate-700 bg-slate-800/50 opacity-50';
+      return "border-slate-700 bg-slate-800/50 opacity-50";
     }
     return isSelected
-      ? 'border-indigo-500 bg-indigo-500/10'
-      : 'border-slate-700 bg-slate-800 hover:border-slate-600';
+      ? "border-indigo-500 bg-indigo-500/10"
+      : "border-slate-700 bg-slate-800 hover:border-slate-600";
   };
 
   const getIndicatorClasses = () => {
     if (hasAnswered && showFeedback) {
       return isCorrect
-        ? 'border-green-500 bg-green-500'
-        : 'border-red-500 bg-red-500';
+        ? "border-green-500 bg-green-500"
+        : "border-red-500 bg-red-500";
     }
-    return isSelected ? 'border-indigo-500 bg-indigo-500' : 'border-slate-600';
+    return isSelected ? "border-indigo-500 bg-indigo-500" : "border-slate-600";
   };
 
   return (
@@ -338,9 +392,15 @@ const OptionButton: React.FC<OptionButtonProps> = ({
       className={`w-full text-left p-4 rounded-lg border-2 transition-all ${getButtonClasses()}`}
     >
       <div className="flex items-start">
-        <div className={`w-5 h-5 rounded-full border-2 mr-3 mt-0.5 flex items-center justify-center ${getIndicatorClasses()}`}>
-          {hasAnswered && showFeedback && isCorrect && <CheckCircle className="w-3 h-3" />}
-          {hasAnswered && showFeedback && !isCorrect && <XCircle className="w-3 h-3" />}
+        <div
+          className={`w-5 h-5 rounded-full border-2 mr-3 mt-0.5 flex items-center justify-center ${getIndicatorClasses()}`}
+        >
+          {hasAnswered && showFeedback && isCorrect && (
+            <CheckCircle className="w-3 h-3" />
+          )}
+          {hasAnswered && showFeedback && !isCorrect && (
+            <XCircle className="w-3 h-3" />
+          )}
         </div>
         <div>
           <p className="text-white">{option.text}</p>
@@ -388,16 +448,20 @@ interface ProgressPanelProps {
 
 const ProgressPanel: React.FC<ProgressPanelProps> = ({ state }) => {
   const { currentSession, challengeResults, sessionStartTime } = state;
-  
+
   if (!currentSession) return null;
 
-  const elapsed = sessionStartTime ? Math.floor((Date.now() - sessionStartTime.getTime()) / 1000) : 0;
+  const elapsed = sessionStartTime
+    ? Math.floor((Date.now() - sessionStartTime.getTime()) / 1000)
+    : 0;
   const minutes = Math.floor(elapsed / 60);
   const seconds = elapsed % 60;
-  const totalChallenges = currentSession.currentScenario?.challenges?.length || 0;
-  const progressPercent = totalChallenges > 0 
-    ? Math.min(100, (challengeResults.length / totalChallenges) * 100) 
-    : 0;
+  const totalChallenges =
+    currentSession.currentScenario?.challenges?.length || 0;
+  const progressPercent =
+    totalChallenges > 0
+      ? Math.min(100, (challengeResults.length / totalChallenges) * 100)
+      : 0;
 
   return (
     <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
@@ -409,11 +473,13 @@ const ProgressPanel: React.FC<ProgressPanelProps> = ({ state }) => {
         <div>
           <div className="flex justify-between text-sm mb-1">
             <span className="text-slate-400">Session Time</span>
-            <span className="text-white">{minutes}:{seconds.toString().padStart(2, '0')}</span>
+            <span className="text-white">
+              {minutes}:{seconds.toString().padStart(2, "0")}
+            </span>
           </div>
           <div className="w-full bg-slate-700 rounded-full h-2">
-            <div 
-              className="bg-green-500 h-2 rounded-full transition-all duration-300" 
+            <div
+              className="bg-green-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             ></div>
           </div>
@@ -421,11 +487,13 @@ const ProgressPanel: React.FC<ProgressPanelProps> = ({ state }) => {
         <div>
           <div className="flex justify-between text-sm mb-1">
             <span className="text-slate-400">Challenges Completed</span>
-            <span className="text-white">{challengeResults.length}/{totalChallenges}</span>
+            <span className="text-white">
+              {challengeResults.length}/{totalChallenges}
+            </span>
           </div>
           <div className="w-full bg-slate-700 rounded-full h-2">
-            <div 
-              className="bg-indigo-500 h-2 rounded-full transition-all duration-300" 
+            <div
+              className="bg-indigo-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             ></div>
           </div>

@@ -3,8 +3,8 @@
  * Phase 10: Prominent display, confirmation modal, weekly refresh, usage tracking
  */
 
-import { useState } from 'react';
-import type { TokenAllocation } from '../../types/tokens';
+import { useState } from "react";
+import type { TokenAllocation } from "../../types/tokens";
 
 // Import extracted components and utilities
 import {
@@ -18,12 +18,12 @@ import {
   LastTokenWarning,
   AlternativesSection,
   ConfirmationCheckbox,
-  ActionButtons
-} from './reset-token/ResetTokenComponents';
+  ActionButtons,
+} from "./reset-token/ResetTokenComponents";
 
 interface ResetTokenConfirmationProps {
   allocation: TokenAllocation;
-  type: 'quiz' | 'lab' | 'battleDrill';
+  type: "quiz" | "lab" | "battleDrill";
   contentTitle: string;
   onConfirm: () => Promise<void>;
   onCancel: () => void;
@@ -34,7 +34,7 @@ export default function ResetTokenConfirmation({
   type,
   contentTitle,
   onConfirm,
-  onCancel
+  onCancel,
 }: ResetTokenConfirmationProps) {
   const [confirming, setConfirming] = useState(false);
   const [understood, setUnderstood] = useState(false);
@@ -48,7 +48,7 @@ export default function ResetTokenConfirmation({
     try {
       await onConfirm();
     } catch (error) {
-      console.error('Error using reset token:', error);
+      console.error("Error using reset token:", error);
     } finally {
       setConfirming(false);
     }
@@ -59,15 +59,26 @@ export default function ResetTokenConfirmation({
       <div className="bg-slate-800 rounded-xl border-2 border-yellow-500 max-w-2xl w-full shadow-2xl">
         <ModalHeader onClose={onCancel} />
         <div className="p-6 space-y-6">
-          <TokenStatusDisplay info={info} remaining={remaining} daysUntilRefresh={daysUntilRefresh} />
+          <TokenStatusDisplay
+            info={info}
+            remaining={remaining}
+            daysUntilRefresh={daysUntilRefresh}
+          />
           <ContentInfoDisplay contentTitle={contentTitle} />
           <div className="space-y-3">
             <ResetLimitWarning />
-            <LowTokensWarning remaining={remaining} daysUntilRefresh={daysUntilRefresh} />
+            <LowTokensWarning
+              remaining={remaining}
+              daysUntilRefresh={daysUntilRefresh}
+            />
             {remaining === 1 && <LastTokenWarning />}
           </div>
           <AlternativesSection />
-          <ConfirmationCheckbox checked={understood} onChange={setUnderstood} totalTokens={info.total} />
+          <ConfirmationCheckbox
+            checked={understood}
+            onChange={setUnderstood}
+            totalTokens={info.total}
+          />
           <ActionButtons
             onCancel={onCancel}
             onConfirm={handleConfirm}

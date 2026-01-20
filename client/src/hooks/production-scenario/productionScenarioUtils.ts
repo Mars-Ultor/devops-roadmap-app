@@ -3,14 +3,23 @@
  * Helper functions for scenario attempts and performance
  */
 
-import type { ScenarioAttempt, ScenarioPerformance } from '../../types/scenarios';
+import type {
+  ScenarioAttempt,
+  ScenarioPerformance,
+} from "../../types/scenarios";
 
 /** Calculate efficiency score from attempt data */
-export function calculateEfficiency(attempt: ScenarioAttempt, totalTime: number): number {
-  const timeEfficiency = Math.max(0, 100 - (totalTime / 60));
+export function calculateEfficiency(
+  attempt: ScenarioAttempt,
+  totalTime: number,
+): number {
+  const timeEfficiency = Math.max(0, 100 - totalTime / 60);
   const hintPenalty = attempt.hintsUsed * 10;
   const rollbackPenalty = attempt.rollbacksRequired * 5;
-  return Math.max(0, Math.min(100, timeEfficiency - hintPenalty - rollbackPenalty));
+  return Math.max(
+    0,
+    Math.min(100, timeEfficiency - hintPenalty - rollbackPenalty),
+  );
 }
 
 /** Calculate accuracy score from attempt data */
@@ -21,14 +30,25 @@ export function calculateAccuracy(attempt: ScenarioAttempt): number {
 }
 
 /** Calculate total weighted score */
-export function calculateTotalScore(attempt: ScenarioAttempt, efficiency: number, accuracyScore: number): number {
-  const completionRate = (attempt.stepsCompleted.length + attempt.resolutionStepsCompleted.length) / 10;
+export function calculateTotalScore(
+  attempt: ScenarioAttempt,
+  efficiency: number,
+  accuracyScore: number,
+): number {
+  const completionRate =
+    (attempt.stepsCompleted.length + attempt.resolutionStepsCompleted.length) /
+    10;
   const completionScore = completionRate * 100;
-  return Math.round(accuracyScore * 0.4 + efficiency * 0.3 + completionScore * 0.3);
+  return Math.round(
+    accuracyScore * 0.4 + efficiency * 0.3 + completionScore * 0.3,
+  );
 }
 
 /** Calculate skill growth */
-export function calculateSkillGrowth(current: number, newScore: number): number {
+export function calculateSkillGrowth(
+  current: number,
+  newScore: number,
+): number {
   return Math.min(100, current + (newScore - current) * 0.2);
 }
 
@@ -45,20 +65,23 @@ export function calculatePercentile(avgTime: number): number {
 export function calculateMasteryLevel(
   attempts: number,
   successful: number,
-  bestScore: number
-): 'novice' | 'competent' | 'proficient' | 'expert' {
-  if (attempts < 2) return 'novice';
+  bestScore: number,
+): "novice" | "competent" | "proficient" | "expert" {
+  if (attempts < 2) return "novice";
   const successRate = successful / attempts;
-  if (successRate >= 0.9 && bestScore >= 90) return 'expert';
-  if (successRate >= 0.7 && bestScore >= 75) return 'proficient';
-  if (successRate >= 0.5 && bestScore >= 60) return 'competent';
-  return 'novice';
+  if (successRate >= 0.9 && bestScore >= 90) return "expert";
+  if (successRate >= 0.7 && bestScore >= 75) return "proficient";
+  if (successRate >= 0.5 && bestScore >= 60) return "competent";
+  return "novice";
 }
 
 /** Create initial attempt object */
-export function createInitialAttempt(userId: string, scenarioId: string): ScenarioAttempt {
+export function createInitialAttempt(
+  userId: string,
+  scenarioId: string,
+): ScenarioAttempt {
   return {
-    id: '',
+    id: "",
     userId,
     scenarioId,
     startedAt: new Date(),
@@ -75,7 +98,7 @@ export function createInitialAttempt(userId: string, scenarioId: string): Scenar
     efficiency: 0,
     accuracyScore: 0,
     lessonsLearned: [],
-    mistakesMade: []
+    mistakesMade: [],
   };
 }
 
@@ -84,11 +107,13 @@ export function calculateUpdatedPerformance(
   userId: string,
   scenarioId: string,
   attempt: ScenarioAttempt,
-  existingPerf: ScenarioPerformance | null
+  existingPerf: ScenarioPerformance | null,
 ): ScenarioPerformance {
   const newAttempts = (existingPerf?.attempts || 0) + 1;
-  const newSuccessful = (existingPerf?.successfulAttempts || 0) + (attempt.success ? 1 : 0);
-  const totalTime = (existingPerf?.averageTimeToResolve || 0) * (existingPerf?.attempts || 0);
+  const newSuccessful =
+    (existingPerf?.successfulAttempts || 0) + (attempt.success ? 1 : 0);
+  const totalTime =
+    (existingPerf?.averageTimeToResolve || 0) * (existingPerf?.attempts || 0);
   const attemptTime = attempt.investigationTime + attempt.resolutionTime;
   const newAvgTime = (totalTime + attemptTime) / newAttempts;
 
@@ -99,10 +124,20 @@ export function calculateUpdatedPerformance(
     successfulAttempts: newSuccessful,
     averageTimeToResolve: newAvgTime,
     bestScore: Math.max(existingPerf?.bestScore || 0, attempt.score),
-    investigationSkillGrowth: calculateSkillGrowth(existingPerf?.investigationSkillGrowth || 0, attempt.accuracyScore),
-    resolutionSkillGrowth: calculateSkillGrowth(existingPerf?.resolutionSkillGrowth || 0, attempt.efficiency),
+    investigationSkillGrowth: calculateSkillGrowth(
+      existingPerf?.investigationSkillGrowth || 0,
+      attempt.accuracyScore,
+    ),
+    resolutionSkillGrowth: calculateSkillGrowth(
+      existingPerf?.resolutionSkillGrowth || 0,
+      attempt.efficiency,
+    ),
     troubleshootingSpeed: calculatePercentile(newAvgTime),
     lastAttemptedAt: new Date(),
-    masteryLevel: calculateMasteryLevel(newAttempts, newSuccessful, attempt.score)
+    masteryLevel: calculateMasteryLevel(
+      newAttempts,
+      newSuccessful,
+      attempt.score,
+    ),
   };
 }

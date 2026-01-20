@@ -1,5 +1,5 @@
-import React from 'react';
-import { Brain, ChevronRight } from 'lucide-react';
+import React from "react";
+import { Brain, ChevronRight } from "lucide-react";
 
 const AIInsights: React.FC = () => {
   return (
@@ -10,7 +10,9 @@ const AIInsights: React.FC = () => {
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <h4 className="text-white font-medium mb-2">Recommended Focus Areas</h4>
+          <h4 className="text-white font-medium mb-2">
+            Recommended Focus Areas
+          </h4>
           <ul className="space-y-1">
             <li className="flex items-center text-slate-300 text-sm">
               <ChevronRight className="w-3 h-3 mr-2 text-indigo-400" />
@@ -27,7 +29,9 @@ const AIInsights: React.FC = () => {
           </ul>
         </div>
         <div>
-          <h4 className="text-white font-medium mb-2">Learning Style Adaptation</h4>
+          <h4 className="text-white font-medium mb-2">
+            Learning Style Adaptation
+          </h4>
           <div className="space-y-2 text-sm text-slate-300">
             <p>• Scenarios will adapt based on your performance</p>
             <p>• Difficulty scales with mastery level</p>

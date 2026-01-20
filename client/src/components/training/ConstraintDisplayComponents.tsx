@@ -2,13 +2,19 @@
  * Sub-components for ConstraintDisplay
  */
 
-import { Shield, AlertTriangle, Lightbulb, RotateCcw, Copy } from 'lucide-react';
-import { 
-  getHintsStyle, 
-  getResetsStyle, 
+import {
+  Shield,
+  AlertTriangle,
+  Lightbulb,
+  RotateCcw,
+  Copy,
+} from "lucide-react";
+import {
+  getHintsStyle,
+  getResetsStyle,
   formatResourceValue,
-  PHASE_PROGRESSION 
-} from './ConstraintDisplayUtils';
+  PHASE_PROGRESSION,
+} from "./ConstraintDisplayUtils";
 
 interface HeaderProps {
   readonly badgeColor: string;
@@ -16,14 +22,20 @@ interface HeaderProps {
   readonly badgeLabel: string;
 }
 
-export function ConstraintHeader({ badgeColor, badgeIcon, badgeLabel }: HeaderProps) {
+export function ConstraintHeader({
+  badgeColor,
+  badgeIcon,
+  badgeLabel,
+}: HeaderProps) {
   return (
     <div className="flex items-center justify-between mb-4">
       <h3 className="text-lg font-semibold text-white flex items-center gap-2">
         <Shield className="w-5 h-5 text-indigo-400" />
         Training Constraints
       </h3>
-      <div className={`px-3 py-1 rounded-full text-sm font-semibold ${badgeColor}`}>
+      <div
+        className={`px-3 py-1 rounded-full text-sm font-semibold ${badgeColor}`}
+      >
         {badgeIcon} {badgeLabel}
       </div>
     </div>
@@ -51,9 +63,13 @@ interface HintsCounterProps {
   readonly hintsUsed: number;
 }
 
-export function HintsCounter({ hintsRemaining, maxHints, hintsUsed }: HintsCounterProps) {
+export function HintsCounter({
+  hintsRemaining,
+  maxHints,
+  hintsUsed,
+}: HintsCounterProps) {
   const style = getHintsStyle(hintsRemaining);
-  
+
   return (
     <div className={`rounded-lg p-4 border-2 ${style.container}`}>
       <div className="flex items-center gap-2 mb-2">
@@ -68,9 +84,7 @@ export function HintsCounter({ hintsRemaining, maxHints, hintsUsed }: HintsCount
           <span className="text-gray-400">/ {maxHints}</span>
         )}
       </div>
-      <div className="text-xs text-gray-400 mt-1">
-        {hintsUsed} used
-      </div>
+      <div className="text-xs text-gray-400 mt-1">{hintsUsed} used</div>
     </div>
   );
 }
@@ -81,9 +95,13 @@ interface ResetsCounterProps {
   readonly resetsUsed: number;
 }
 
-export function ResetsCounter({ resetsRemaining, maxResets, resetsUsed }: ResetsCounterProps) {
+export function ResetsCounter({
+  resetsRemaining,
+  maxResets,
+  resetsUsed,
+}: ResetsCounterProps) {
   const style = getResetsStyle(resetsRemaining);
-  
+
   return (
     <div className={`rounded-lg p-4 border-2 ${style.container}`}>
       <div className="flex items-center gap-2 mb-2">
@@ -98,9 +116,7 @@ export function ResetsCounter({ resetsRemaining, maxResets, resetsUsed }: Resets
           <span className="text-gray-400">/ {maxResets}</span>
         )}
       </div>
-      <div className="text-xs text-gray-400 mt-1">
-        {resetsUsed} used
-      </div>
+      <div className="text-xs text-gray-400 mt-1">{resetsUsed} used</div>
     </div>
   );
 }
@@ -115,7 +131,8 @@ export function CopyPasteBlockedNotice() {
             Copy-Paste Blocked
           </p>
           <p className="text-red-200 text-xs">
-            You must type all commands and code manually. This builds muscle memory and prevents dependency on copy-paste.
+            You must type all commands and code manually. This builds muscle
+            memory and prevents dependency on copy-paste.
           </p>
         </div>
       </div>

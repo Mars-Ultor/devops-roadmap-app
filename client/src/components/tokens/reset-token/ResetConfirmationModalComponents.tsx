@@ -3,7 +3,7 @@
  * NOTE: Utility functions moved to ResetTokenUtils.ts for fast-refresh compliance
  */
 
-import { AlertTriangle, RefreshCw, X } from 'lucide-react';
+import { AlertTriangle, RefreshCw, X } from "lucide-react";
 
 // ============================================================================
 // Modal Header
@@ -20,7 +20,10 @@ export function ConfirmationModalHeader({ onClose }: ModalHeaderProps) {
         <AlertTriangle className="w-6 h-6 text-yellow-400" />
         <h2 className="text-xl font-bold text-white">Confirm Reset</h2>
       </div>
-      <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
+      <button
+        onClick={onClose}
+        className="text-gray-400 hover:text-white transition-colors"
+      >
         <X className="w-5 h-5" />
       </button>
     </div>
@@ -43,8 +46,12 @@ export function CooldownWarning({ cooldownMinutes }: CooldownWarningProps) {
         <div>
           <div className="font-semibold text-red-400 mb-1">Cooldown Active</div>
           <p className="text-sm text-red-300">
-            You must wait <span className="font-semibold">{cooldownMinutes} more minutes</span> before using another reset token.
-            This prevents rapid consecutive resets and encourages learning from mistakes.
+            You must wait{" "}
+            <span className="font-semibold">
+              {cooldownMinutes} more minutes
+            </span>{" "}
+            before using another reset token. This prevents rapid consecutive
+            resets and encourages learning from mistakes.
           </p>
         </div>
       </div>
@@ -69,9 +76,18 @@ export function TokenUsageWarning({ remainingTokens }: TokenUsageWarningProps) {
           <div className="font-semibold text-yellow-400 mb-1">Token Usage</div>
           <p className="text-sm text-yellow-300">
             {remainingTokens === 1 ? (
-              <>This is your <span className="font-semibold">last reset</span> for this week. Resets refresh every Monday.</>
+              <>
+                This is your <span className="font-semibold">last reset</span>{" "}
+                for this week. Resets refresh every Monday.
+              </>
             ) : (
-              <>You have <span className="font-semibold">{remainingTokens - 1} resets</span> remaining after this.</>
+              <>
+                You have{" "}
+                <span className="font-semibold">
+                  {remainingTokens - 1} resets
+                </span>{" "}
+                remaining after this.
+              </>
             )}
           </p>
         </div>
@@ -90,7 +106,9 @@ export function MilitaryPhilosophyWarning() {
       <div className="flex items-start gap-3">
         <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
         <div>
-          <div className="font-semibold text-red-400 mb-2">Military Training Philosophy</div>
+          <div className="font-semibold text-red-400 mb-2">
+            Military Training Philosophy
+          </div>
           <ul className="text-sm text-red-300 space-y-1">
             <li>• Resets are limited to simulate real-world consequences</li>
             <li>• Failures are learning opportunities</li>
@@ -115,7 +133,10 @@ interface ReasonInputProps {
 export function ReasonInput({ value, onChange }: ReasonInputProps) {
   return (
     <div>
-      <label htmlFor="reset-reason" className="block text-sm font-medium text-gray-300 mb-2">
+      <label
+        htmlFor="reset-reason"
+        className="block text-sm font-medium text-gray-300 mb-2"
+      >
         Why are you resetting? (Optional)
       </label>
       <textarea
@@ -125,7 +146,9 @@ export function ReasonInput({ value, onChange }: ReasonInputProps) {
         placeholder="e.g., I misunderstood the question, I need to try a different approach..."
         className="w-full h-20 bg-gray-800 border border-gray-700 rounded-lg p-3 text-white placeholder-gray-500 text-sm"
       />
-      <p className="text-xs text-gray-500 mt-1">Recording your reason helps track learning patterns</p>
+      <p className="text-xs text-gray-500 mt-1">
+        Recording your reason helps track learning patterns
+      </p>
     </div>
   );
 }
@@ -139,7 +162,10 @@ interface AcknowledgmentCheckboxProps {
   readonly onChange: (checked: boolean) => void;
 }
 
-export function AcknowledgmentCheckbox({ checked, onChange }: AcknowledgmentCheckboxProps) {
+export function AcknowledgmentCheckbox({
+  checked,
+  onChange,
+}: AcknowledgmentCheckboxProps) {
   return (
     <div className="flex items-start gap-3">
       <input
@@ -149,8 +175,12 @@ export function AcknowledgmentCheckbox({ checked, onChange }: AcknowledgmentChec
         onChange={(e) => onChange(e.target.checked)}
         className="mt-1"
       />
-      <label htmlFor="acknowledge" className="text-sm text-gray-300 cursor-pointer">
-        I understand this will use one of my limited reset tokens and I have reviewed my failure analysis
+      <label
+        htmlFor="acknowledge"
+        className="text-sm text-gray-300 cursor-pointer"
+      >
+        I understand this will use one of my limited reset tokens and I have
+        reviewed my failure analysis
       </label>
     </div>
   );
@@ -167,7 +197,12 @@ interface ModalActionsProps {
   readonly showConfirm: boolean;
 }
 
-export function ConfirmationModalActions({ onClose, onConfirm, canConfirm, showConfirm }: ModalActionsProps) {
+export function ConfirmationModalActions({
+  onClose,
+  onConfirm,
+  canConfirm,
+  showConfirm,
+}: ModalActionsProps) {
   return (
     <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-700">
       <button

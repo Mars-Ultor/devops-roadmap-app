@@ -1,11 +1,11 @@
-import React from 'react';
-import { Target, Crown, Settings, Star } from 'lucide-react';
+import React from "react";
+import { Target, Crown, Settings, Star } from "lucide-react";
 
 interface LearningPath {
   id: string;
   title: string;
   description: string;
-  careerFocus: 'generalist' | 'specialist' | 'leadership' | 'technical';
+  careerFocus: "generalist" | "specialist" | "leadership" | "technical";
   currentLevel: number;
   totalLevels: number;
   progress: number;
@@ -13,7 +13,7 @@ interface LearningPath {
   completedScenarios: string[];
   strengths: string[];
   areasForImprovement: string[];
-  recommendedPace: 'accelerated' | 'standard' | 'intensive';
+  recommendedPace: "accelerated" | "standard" | "intensive";
 }
 
 interface PathCardProps {
@@ -23,21 +23,31 @@ interface PathCardProps {
 
 const getCareerFocusIcon = (focus: string) => {
   switch (focus) {
-    case 'generalist': return <Target className="w-5 h-5" />;
-    case 'leadership': return <Crown className="w-5 h-5" />;
-    case 'technical': return <Settings className="w-5 h-5" />;
-    case 'specialist': return <Star className="w-5 h-5" />;
-    default: return <Target className="w-5 h-5" />;
+    case "generalist":
+      return <Target className="w-5 h-5" />;
+    case "leadership":
+      return <Crown className="w-5 h-5" />;
+    case "technical":
+      return <Settings className="w-5 h-5" />;
+    case "specialist":
+      return <Star className="w-5 h-5" />;
+    default:
+      return <Target className="w-5 h-5" />;
   }
 };
 
 const getCareerFocusColor = (focus: string) => {
   switch (focus) {
-    case 'generalist': return 'text-blue-400 border-blue-400';
-    case 'leadership': return 'text-purple-400 border-purple-400';
-    case 'technical': return 'text-green-400 border-green-400';
-    case 'specialist': return 'text-orange-400 border-orange-400';
-    default: return 'text-gray-400 border-gray-400';
+    case "generalist":
+      return "text-blue-400 border-blue-400";
+    case "leadership":
+      return "text-purple-400 border-purple-400";
+    case "technical":
+      return "text-green-400 border-green-400";
+    case "specialist":
+      return "text-orange-400 border-orange-400";
+    default:
+      return "text-gray-400 border-gray-400";
   }
 };
 
@@ -49,13 +59,21 @@ const PathCard: React.FC<PathCardProps> = ({ path, onPathSelect }) => {
       onClick={() => onPathSelect(path)}
     >
       <div className="flex items-center justify-between mb-4">
-        <div className={`flex items-center px-3 py-1 rounded-full border ${getCareerFocusColor(path.careerFocus)}`}>
+        <div
+          className={`flex items-center px-3 py-1 rounded-full border ${getCareerFocusColor(path.careerFocus)}`}
+        >
           {getCareerFocusIcon(path.careerFocus)}
-          <span className="ml-2 text-sm font-medium capitalize">{path.careerFocus}</span>
+          <span className="ml-2 text-sm font-medium capitalize">
+            {path.careerFocus}
+          </span>
         </div>
         <div className="text-right">
-          <div className="text-sm text-slate-400">Level {path.currentLevel}/{path.totalLevels}</div>
-          <div className="text-xs text-slate-500">{path.estimatedCompletion}</div>
+          <div className="text-sm text-slate-400">
+            Level {path.currentLevel}/{path.totalLevels}
+          </div>
+          <div className="text-xs text-slate-500">
+            {path.estimatedCompletion}
+          </div>
         </div>
       </div>
 
@@ -107,11 +125,14 @@ const PathCard: React.FC<PathCardProps> = ({ path, onPathSelect }) => {
             <h4 className="font-medium">Ready to Start</h4>
           </div>
           <p className="text-sm text-slate-400">
-            Begin your {path.careerFocus} training journey with AI-adaptive scenarios that match your skill level.
+            Begin your {path.careerFocus} training journey with AI-adaptive
+            scenarios that match your skill level.
           </p>
           <div className="mt-3 flex items-center text-xs text-slate-500">
             <span className="mr-2">Recommended pace:</span>
-            <span className="capitalize text-indigo-400">{path.recommendedPace}</span>
+            <span className="capitalize text-indigo-400">
+              {path.recommendedPace}
+            </span>
           </div>
         </div>
       )}

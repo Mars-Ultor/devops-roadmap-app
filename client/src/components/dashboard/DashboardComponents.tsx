@@ -3,13 +3,24 @@
  * Reduces complexity of main Dashboard component
  */
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import ResetTokenDisplay from '../tokens/ResetTokenDisplay';
+import React from "react";
+import { Link } from "react-router-dom";
+import ResetTokenDisplay from "../tokens/ResetTokenDisplay";
 import {
-  Flame, BookOpen, Zap, Code, Trophy, Target, Settings, Brain,
-  Users, Award, RefreshCw, AlertTriangle, Shield
-} from 'lucide-react';
+  Flame,
+  BookOpen,
+  Zap,
+  Code,
+  Trophy,
+  Target,
+  Settings,
+  Brain,
+  Users,
+  Award,
+  RefreshCw,
+  AlertTriangle,
+  Shield,
+} from "lucide-react";
 
 // Define RecertificationStatus type locally
 export interface RecertificationStatus {
@@ -34,7 +45,7 @@ export interface WeeklyCommitment {
 }
 
 // Temporary local definitions to fix build issue
-type DifficultyLevel = 'recruit' | 'soldier' | 'specialist' | 'elite';
+type DifficultyLevel = "recruit" | "soldier" | "specialist" | "elite";
 
 interface TokenAllocation {
   userId: string;
@@ -58,47 +69,47 @@ interface TokenAllocation {
 interface DifficultySettings {
   quizPassingScore: number;
   quizTimeMultiplier: number;
-  labGuidanceLevel: 'full' | 'partial' | 'minimal' | 'none';
+  labGuidanceLevel: "full" | "partial" | "minimal" | "none";
   stressIntensity: number;
 }
 
 const DIFFICULTY_THRESHOLDS = {
   recruit: {
-    name: 'Recruit',
-    description: 'Learning the basics with full support',
+    name: "Recruit",
+    description: "Learning the basics with full support",
     quizPassingScore: 70,
     quizTimeMultiplier: 1.5,
-    labGuidanceLevel: 'full' as const,
+    labGuidanceLevel: "full" as const,
     drillTimeTarget: 600, // 10 min
-    stressIntensity: 1
+    stressIntensity: 1,
   },
   soldier: {
-    name: 'Soldier',
-    description: 'Building competence with moderate support',
+    name: "Soldier",
+    description: "Building competence with moderate support",
     quizPassingScore: 75,
     quizTimeMultiplier: 1.2,
-    labGuidanceLevel: 'partial' as const,
+    labGuidanceLevel: "partial" as const,
     drillTimeTarget: 480, // 8 min
-    stressIntensity: 2
+    stressIntensity: 2,
   },
   specialist: {
-    name: 'Specialist',
-    description: 'Demonstrating mastery with minimal support',
+    name: "Specialist",
+    description: "Demonstrating mastery with minimal support",
     quizPassingScore: 80,
     quizTimeMultiplier: 1.0,
-    labGuidanceLevel: 'minimal' as const,
+    labGuidanceLevel: "minimal" as const,
     drillTimeTarget: 360, // 6 min
-    stressIntensity: 3
+    stressIntensity: 3,
   },
   elite: {
-    name: 'Elite',
-    description: 'Operating at professional level under pressure',
+    name: "Elite",
+    description: "Operating at professional level under pressure",
     quizPassingScore: 85,
     quizTimeMultiplier: 0.8,
-    labGuidanceLevel: 'none' as const,
+    labGuidanceLevel: "none" as const,
     drillTimeTarget: 300, // 5 min
-    stressIntensity: 4
-  }
+    stressIntensity: 4,
+  },
 };
 
 interface DashboardStats {
@@ -110,9 +121,7 @@ interface DashboardStats {
 
 export const HeroSection: React.FC = () => (
   <div className="mb-12">
-    <h1 className="text-4xl font-bold text-white mb-3">
-      Welcome back! 👋
-    </h1>
+    <h1 className="text-4xl font-bold text-white mb-3">Welcome back! 👋</h1>
     <p className="text-xl text-gray-400">
       Continue your DevOps journey and become job-ready in 3 months.
     </p>
@@ -128,8 +137,9 @@ export const DiagnosticBanner: React.FC = () => (
           📊 Personalize Your Learning Path
         </h3>
         <p className="text-indigo-100 mb-4">
-          Take our 2-minute diagnostic quiz to get a customized learning path based on your current skills.
-          Skip topics you know and focus on what matters most!
+          Take our 2-minute diagnostic quiz to get a customized learning path
+          based on your current skills. Skip topics you know and focus on what
+          matters most!
         </p>
         <div className="flex gap-3">
           <Link
@@ -151,7 +161,10 @@ export const DiagnosticBanner: React.FC = () => (
   </div>
 );
 
-export const ProgressOverview: React.FC<{ stats: DashboardStats; currentStreak: number }> = ({ stats, currentStreak }) => (
+export const ProgressOverview: React.FC<{
+  stats: DashboardStats;
+  currentStreak: number;
+}> = ({ stats, currentStreak }) => (
   <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
     <div className="bg-gradient-to-br from-orange-900 to-red-800 rounded-xl p-6 border border-orange-700 shadow-lg hover:shadow-xl transition">
       <div className="flex items-center justify-between mb-2">
@@ -182,8 +195,12 @@ export const ProgressOverview: React.FC<{ stats: DashboardStats; currentStreak: 
         <p className="text-sm font-medium text-green-200">Labs Done</p>
         <Code className="w-6 h-6 text-green-300" />
       </div>
-      <p className="text-4xl font-bold text-white mb-1">{stats.labsCompleted}</p>
-      <p className="text-sm text-green-300">{Math.round((stats.labsCompleted / 33) * 100)}% of 33</p>
+      <p className="text-4xl font-bold text-white mb-1">
+        {stats.labsCompleted}
+      </p>
+      <p className="text-sm text-green-300">
+        {Math.round((stats.labsCompleted / 33) * 100)}% of 33
+      </p>
     </div>
     <div className="bg-gradient-to-br from-purple-900 to-purple-800 rounded-xl p-6 border border-purple-700 shadow-lg hover:shadow-xl transition">
       <div className="flex items-center justify-between mb-2">
@@ -196,7 +213,9 @@ export const ProgressOverview: React.FC<{ stats: DashboardStats; currentStreak: 
   </div>
 );
 
-export const ResetTokensSection: React.FC<{ currentAllocation: TokenAllocation }> = ({ currentAllocation }) => (
+export const ResetTokensSection: React.FC<{
+  currentAllocation: TokenAllocation;
+}> = ({ currentAllocation }) => (
   <div className="mb-12">
     <div className="flex items-center justify-between mb-4">
       <h2 className="text-2xl font-bold text-white">Reset Tokens</h2>
@@ -216,8 +235,11 @@ export const ResetTokensSection: React.FC<{ currentAllocation: TokenAllocation }
       <div className="flex items-start gap-3">
         <RefreshCw className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
         <p className="text-sm text-yellow-300">
-          <span className="font-semibold">Limited resets encourage learning from failures.</span> Tokens refresh every Monday.
-          Review your After Action Reports before using a reset!
+          <span className="font-semibold">
+            Limited resets encourage learning from failures.
+          </span>{" "}
+          Tokens refresh every Monday. Review your After Action Reports before
+          using a reset!
         </p>
       </div>
     </div>
@@ -246,45 +268,64 @@ export const AccountabilitySection: React.FC<{
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-gray-400">
-              Week {currentWeekCommitment.weekNumber} • {currentWeekCommitment.weekStart.toLocaleDateString()} - {currentWeekCommitment.weekEnd.toLocaleDateString()}
+              Week {currentWeekCommitment.weekNumber} •{" "}
+              {currentWeekCommitment.weekStart.toLocaleDateString()} -{" "}
+              {currentWeekCommitment.weekEnd.toLocaleDateString()}
             </span>
-            <span className={`px-3 py-1 rounded-lg text-sm font-semibold bg-green-900/30 text-green-400`}>
+            <span
+              className={`px-3 py-1 rounded-lg text-sm font-semibold bg-green-900/30 text-green-400`}
+            >
               {currentWeekCommitment.overallStatus.toUpperCase()}
             </span>
           </div>
 
           <div className="space-y-3">
-            {(Array.isArray(currentWeekCommitment.commitments) ? currentWeekCommitment.commitments : []).slice(0, 3).map((commitment: Commitment) => (
-              <div key={commitment.id} className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-indigo-400" />
-                    <span className="font-medium text-white">{commitment.description}</span>
+            {(Array.isArray(currentWeekCommitment.commitments)
+              ? currentWeekCommitment.commitments
+              : []
+            )
+              .slice(0, 3)
+              .map((commitment: Commitment) => (
+                <div
+                  key={commitment.id}
+                  className="bg-gray-900/50 border border-gray-700 rounded-lg p-4"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Target className="w-4 h-4 text-indigo-400" />
+                      <span className="font-medium text-white">
+                        {commitment.description}
+                      </span>
+                    </div>
+                    <span className="text-sm text-gray-400">
+                      {commitment.current} / {commitment.target}
+                    </span>
                   </div>
-                  <span className="text-sm text-gray-400">
-                    {commitment.current} / {commitment.target}
-                  </span>
+                  <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="h-2 rounded-full bg-blue-500 transition-all"
+                      style={{
+                        width: `${Math.min((commitment.current / commitment.target) * 100, 100)}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
-                  <div
-                    className="h-2 rounded-full bg-blue-500 transition-all"
-                    style={{ width: `${Math.min((commitment.current / commitment.target) * 100, 100)}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
 
-          {Array.isArray(currentWeekCommitment.commitments) && currentWeekCommitment.commitments.length > 3 && (
-            <p className="mt-4 text-center text-sm text-gray-400">
-              +{currentWeekCommitment.commitments.length - 3} more commitments
-            </p>
-          )}
+          {Array.isArray(currentWeekCommitment.commitments) &&
+            currentWeekCommitment.commitments.length > 3 && (
+              <p className="mt-4 text-center text-sm text-gray-400">
+                +{currentWeekCommitment.commitments.length - 3} more commitments
+              </p>
+            )}
         </div>
       ) : (
         <div className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-700 rounded-lg p-6 text-center">
           <Users className="w-12 h-12 text-indigo-400 mx-auto mb-3" />
-          <h3 className="text-lg font-semibold text-white mb-2">No Active Commitments</h3>
+          <h3 className="text-lg font-semibold text-white mb-2">
+            No Active Commitments
+          </h3>
           <p className="text-gray-400 mb-4">
             Start your week strong by setting clear, measurable commitments
           </p>
@@ -302,21 +343,31 @@ export const AccountabilitySection: React.FC<{
 
 const getLevelClass = (level: DifficultyLevel) => {
   switch (level) {
-    case 'recruit': return 'bg-green-900/30 border-green-700';
-    case 'soldier': return 'bg-blue-900/30 border-blue-700';
-    case 'specialist': return 'bg-purple-900/30 border-purple-700';
-    case 'elite': return 'bg-red-900/30 border-red-700';
-    default: return 'bg-gray-900/30 border-gray-700';
+    case "recruit":
+      return "bg-green-900/30 border-green-700";
+    case "soldier":
+      return "bg-blue-900/30 border-blue-700";
+    case "specialist":
+      return "bg-purple-900/30 border-purple-700";
+    case "elite":
+      return "bg-red-900/30 border-red-700";
+    default:
+      return "bg-gray-900/30 border-gray-700";
   }
 };
 
 const getLevelTextClass = (level: DifficultyLevel) => {
   switch (level) {
-    case 'recruit': return 'text-green-400';
-    case 'soldier': return 'text-blue-400';
-    case 'specialist': return 'text-purple-400';
-    case 'elite': return 'text-red-400';
-    default: return 'text-gray-400';
+    case "recruit":
+      return "text-green-400";
+    case "soldier":
+      return "text-blue-400";
+    case "specialist":
+      return "text-purple-400";
+    case "elite":
+      return "text-red-400";
+    default:
+      return "text-gray-400";
   }
 };
 
@@ -358,19 +409,27 @@ export const AdaptiveDifficultySection: React.FC<{
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="bg-gray-900/40 rounded-lg p-3">
             <div className="text-xs text-gray-400 mb-1">Quiz Pass</div>
-            <div className="text-lg font-bold text-white">{settings.quizPassingScore}%</div>
+            <div className="text-lg font-bold text-white">
+              {settings.quizPassingScore}%
+            </div>
           </div>
           <div className="bg-gray-900/40 rounded-lg p-3">
             <div className="text-xs text-gray-400 mb-1">Time Limit</div>
-            <div className="text-lg font-bold text-white">{(settings.quizTimeMultiplier * 100).toFixed(0)}%</div>
+            <div className="text-lg font-bold text-white">
+              {(settings.quizTimeMultiplier * 100).toFixed(0)}%
+            </div>
           </div>
           <div className="bg-gray-900/40 rounded-lg p-3">
             <div className="text-xs text-gray-400 mb-1">Lab Support</div>
-            <div className="text-lg font-bold text-white capitalize">{settings.labGuidanceLevel}</div>
+            <div className="text-lg font-bold text-white capitalize">
+              {settings.labGuidanceLevel}
+            </div>
           </div>
           <div className="bg-gray-900/40 rounded-lg p-3">
             <div className="text-xs text-gray-400 mb-1">Stress Level</div>
-            <div className="text-lg font-bold text-white">{settings.stressIntensity}/5</div>
+            <div className="text-lg font-bold text-white">
+              {settings.stressIntensity}/5
+            </div>
           </div>
         </div>
       </div>
@@ -378,32 +437,44 @@ export const AdaptiveDifficultySection: React.FC<{
   );
 };
 
-export const QuickActionsSection: React.FC<{ stats: DashboardStats }> = ({ stats }) => (
+export const QuickActionsSection: React.FC<{ stats: DashboardStats }> = ({
+  stats,
+}) => (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-12">
     <Link
       to="/training"
       className="group bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 sm:p-8 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] min-h-[120px] flex flex-col justify-between"
     >
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-xl sm:text-2xl font-bold text-white">Continue Learning</h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-white">
+          Continue Learning
+        </h3>
         <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-200 group-hover:scale-110 transition flex-shrink-0" />
       </div>
-      <p className="text-indigo-100 text-base sm:text-lg">Pick up where you left off in Week {stats.currentWeek}</p>
+      <p className="text-indigo-100 text-base sm:text-lg">
+        Pick up where you left off in Week {stats.currentWeek}
+      </p>
     </Link>
     <Link
       to="/projects"
       className="group bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl p-6 sm:p-8 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] min-h-[120px] flex flex-col justify-between"
     >
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-xl sm:text-2xl font-bold text-white">Portfolio Projects</h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-white">
+          Portfolio Projects
+        </h3>
         <Code className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-200 group-hover:scale-110 transition flex-shrink-0" />
       </div>
-      <p className="text-emerald-100 text-base sm:text-lg">Build real-world projects for your resume</p>
+      <p className="text-emerald-100 text-base sm:text-lg">
+        Build real-world projects for your resume
+      </p>
     </Link>
   </div>
 );
 
-export const MotivationSection: React.FC<{ stats: DashboardStats }> = ({ stats }) => (
+export const MotivationSection: React.FC<{ stats: DashboardStats }> = ({
+  stats,
+}) => (
   <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 shadow-lg">
     <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
       🎯 Your 3-Month Goal
@@ -419,7 +490,10 @@ export const MotivationSection: React.FC<{ stats: DashboardStats }> = ({ stats }
       </div>
     </div>
     <p className="text-gray-300 text-lg">
-      <span className="font-bold text-indigo-400">{12 - stats.currentWeek}</span> weeks until job-ready 🚀
+      <span className="font-bold text-indigo-400">
+        {12 - stats.currentWeek}
+      </span>{" "}
+      weeks until job-ready 🚀
     </p>
   </div>
 );
@@ -429,7 +503,11 @@ export const RecertificationAlert: React.FC<{
   recertLoading: boolean;
   showRecertification: () => void;
 }> = ({ recertStatus, recertLoading, showRecertification }) => {
-  if (recertLoading || !recertStatus || (!recertStatus.isOverdue && recertStatus.skillsNeedingRecert.length === 0)) {
+  if (
+    recertLoading ||
+    !recertStatus ||
+    (!recertStatus.isOverdue && recertStatus.skillsNeedingRecert.length === 0)
+  ) {
     return null;
   }
 
@@ -443,11 +521,14 @@ export const RecertificationAlert: React.FC<{
           <div>
             <h3 className="text-2xl font-bold text-white flex items-center gap-2">
               <AlertTriangle className="w-6 h-6" />
-              Recertification {recertStatus.isOverdue ? 'Overdue' : 'Recommended'}
+              Recertification{" "}
+              {recertStatus.isOverdue ? "Overdue" : "Recommended"}
             </h3>
             <p className="text-red-100 mt-2">
-              {recertStatus.skillsNeedingRecert.length} skill{recertStatus.skillsNeedingRecert.length === 1 ? '' : 's'} showing decay
-              {recertStatus.isOverdue && ' • Content blocked until recertified'}
+              {recertStatus.skillsNeedingRecert.length} skill
+              {recertStatus.skillsNeedingRecert.length === 1 ? "" : "s"} showing
+              decay
+              {recertStatus.isOverdue && " • Content blocked until recertified"}
             </p>
           </div>
           <Shield className="w-12 h-12 text-red-300" />
@@ -464,7 +545,14 @@ export const ChallengeButtonsSection: React.FC<{
   recertStatus: RecertificationStatus | null;
   recertLoading: boolean;
   showRecertification: () => void;
-}> = ({ stats, showDailyChallenge, showBossBattle, recertStatus, recertLoading, showRecertification }) => (
+}> = ({
+  stats,
+  showDailyChallenge,
+  showBossBattle,
+  recertStatus,
+  recertLoading,
+  showRecertification,
+}) => (
   <>
     {/* Challenge Buttons */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-8">
@@ -473,10 +561,14 @@ export const ChallengeButtonsSection: React.FC<{
         className="bg-gradient-to-r from-amber-900 to-orange-900 hover:from-amber-800 hover:to-orange-800 rounded-xl p-4 sm:p-6 border border-amber-700 text-left shadow-lg hover:shadow-xl transition group min-h-[100px] flex flex-col justify-between"
       >
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg sm:text-2xl font-bold text-white">Daily Challenge</h3>
+          <h3 className="text-lg sm:text-2xl font-bold text-white">
+            Daily Challenge
+          </h3>
           <Target className="w-6 h-6 sm:w-8 sm:h-8 text-amber-300 group-hover:scale-110 transition flex-shrink-0" />
         </div>
-        <p className="text-amber-100 text-sm sm:text-base">5-minute randomized scenario • Sharpen your skills</p>
+        <p className="text-amber-100 text-sm sm:text-base">
+          5-minute randomized scenario • Sharpen your skills
+        </p>
       </button>
 
       <button
@@ -484,10 +576,14 @@ export const ChallengeButtonsSection: React.FC<{
         className="bg-gradient-to-r from-red-900 to-rose-900 hover:from-red-800 hover:to-rose-800 rounded-xl p-4 sm:p-6 border border-red-700 text-left shadow-lg hover:shadow-xl transition group min-h-[100px] flex flex-col justify-between"
       >
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg sm:text-2xl font-bold text-white">Week {stats.currentWeek} Boss Battle</h3>
+          <h3 className="text-lg sm:text-2xl font-bold text-white">
+            Week {stats.currentWeek} Boss Battle
+          </h3>
           <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-red-300 group-hover:scale-110 transition flex-shrink-0" />
         </div>
-        <p className="text-red-100 text-sm sm:text-base">2-hour comprehensive challenge • Required to advance</p>
+        <p className="text-red-100 text-sm sm:text-base">
+          2-hour comprehensive challenge • Required to advance
+        </p>
       </button>
     </div>
 

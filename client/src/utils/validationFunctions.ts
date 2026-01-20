@@ -42,7 +42,11 @@ export const dockerValidations = {
   /**
    * Check if port is mapped correctly
    */
-  async checkPortMapping(containerName: string, hostPort: number, containerPort: number): Promise<boolean> {
+  async checkPortMapping(
+    containerName: string,
+    hostPort: number,
+    containerPort: number,
+  ): Promise<boolean> {
     // Simulated - would exec `docker port ${containerName}`
     // Parameters are intentionally unused in simulation
     void containerName;
@@ -75,7 +79,7 @@ export const dockerValidations = {
     return new Promise((resolve) => {
       setTimeout(() => resolve(true), 700);
     });
-  }
+  },
 };
 
 // File system validation functions
@@ -95,7 +99,10 @@ export const fileSystemValidations = {
   /**
    * Check file permissions
    */
-  async checkFilePermissions(path: string, expectedPermissions: string): Promise<boolean> {
+  async checkFilePermissions(
+    path: string,
+    expectedPermissions: string,
+  ): Promise<boolean> {
     // Simulated - would exec `ls -l ${path}`
     // Parameters are intentionally unused in simulation
     void path;
@@ -119,7 +126,10 @@ export const fileSystemValidations = {
   /**
    * Validate file content contains expected string
    */
-  async checkFileContains(path: string, expectedContent: string): Promise<boolean> {
+  async checkFileContains(
+    path: string,
+    expectedContent: string,
+  ): Promise<boolean> {
     // Simulated - would read and search file
     // Parameters are intentionally unused in simulation
     void path;
@@ -127,7 +137,7 @@ export const fileSystemValidations = {
     return new Promise((resolve) => {
       setTimeout(() => resolve(Math.random() > 0.1), 600);
     });
-  }
+  },
 };
 
 // Kubernetes validation functions
@@ -159,7 +169,10 @@ export const kubernetesValidations = {
   /**
    * Check deployment has correct replicas
    */
-  async checkReplicaCount(deploymentName: string, expectedCount: number): Promise<boolean> {
+  async checkReplicaCount(
+    deploymentName: string,
+    expectedCount: number,
+  ): Promise<boolean> {
     // Simulated
     // Parameters are intentionally unused in simulation
     void deploymentName;
@@ -167,7 +180,7 @@ export const kubernetesValidations = {
     return new Promise((resolve) => {
       setTimeout(() => resolve(true), 900);
     });
-  }
+  },
 };
 
 // Network validation functions
@@ -187,7 +200,10 @@ export const networkValidations = {
   /**
    * Check HTTP endpoint responds
    */
-  async checkHttpEndpoint(url: string, expectedStatus: number): Promise<boolean> {
+  async checkHttpEndpoint(
+    url: string,
+    expectedStatus: number,
+  ): Promise<boolean> {
     // Parameters are intentionally unused in simulation
     void url;
     void expectedStatus;
@@ -205,7 +221,7 @@ export const networkValidations = {
     return new Promise((resolve) => {
       setTimeout(() => resolve(true), 500);
     });
-  }
+  },
 };
 
 // Process validation functions
@@ -232,7 +248,7 @@ export const processValidations = {
     return new Promise((resolve) => {
       setTimeout(() => resolve(true), 800);
     });
-  }
+  },
 };
 
 // CI/CD validation functions
@@ -266,7 +282,7 @@ export const cicdValidations = {
     return new Promise((resolve) => {
       setTimeout(() => resolve(true), 600);
     });
-  }
+  },
 };
 
 /**
@@ -276,50 +292,53 @@ export function createValidationCriterion(
   id: string,
   description: string,
   checkFunction: () => Promise<boolean>,
-  errorHint?: string
+  errorHint?: string,
 ) {
   return {
     id,
     description,
     checkFunction,
-    errorHint
+    errorHint,
   };
 }
 
 /**
  * Example: Create Docker deployment validation checklist
  */
-export function createDockerDeploymentValidation(containerName: string, port: number) {
+export function createDockerDeploymentValidation(
+  containerName: string,
+  port: number,
+) {
   return [
     createValidationCriterion(
-      'docker-installed',
-      'Docker is installed and running',
+      "docker-installed",
+      "Docker is installed and running",
       dockerValidations.checkDockerInstalled,
-      'Install Docker or start the Docker daemon: sudo systemctl start docker'
+      "Install Docker or start the Docker daemon: sudo systemctl start docker",
     ),
     createValidationCriterion(
-      'image-exists',
-      'Container image has been pulled',
-      () => dockerValidations.checkImageExists('nginx'),
-      'Pull the image: docker pull nginx:latest'
+      "image-exists",
+      "Container image has been pulled",
+      () => dockerValidations.checkImageExists("nginx"),
+      "Pull the image: docker pull nginx:latest",
     ),
     createValidationCriterion(
-      'container-running',
+      "container-running",
       `Container "${containerName}" is running`,
       () => dockerValidations.checkContainerRunning(containerName),
-      'Start container: docker start ' + containerName
+      "Start container: docker start " + containerName,
     ),
     createValidationCriterion(
-      'port-accessible',
+      "port-accessible",
       `Application responds on port ${port}`,
       () => dockerValidations.checkServiceResponds(port),
-      `Check port mapping and firewall. Test with: curl localhost:${port}`
+      `Check port mapping and firewall. Test with: curl localhost:${port}`,
     ),
     createValidationCriterion(
-      'container-healthy',
-      'Container health check passing',
+      "container-healthy",
+      "Container health check passing",
       () => dockerValidations.checkContainerHealthy(containerName),
-      'View logs for errors: docker logs ' + containerName
-    )
+      "View logs for errors: docker logs " + containerName,
+    ),
   ];
 }

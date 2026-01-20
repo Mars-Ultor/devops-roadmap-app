@@ -4,10 +4,10 @@
  * Comprehensive AI-powered coaching with machine learning insights
  */
 
-import React, { useState, useEffect } from 'react';
-import { useAuthStore } from '../store/authStore';
-import { MLCoachingDashboard } from '../components/ai/MLCoachingDashboard';
-import { MLModelManagementDashboard } from '../components/ai/MLModelManagementDashboard';
+import React, { useState, useEffect } from "react";
+import { useAuthStore } from "../store/authStore";
+import { MLCoachingDashboard } from "../components/ai/MLCoachingDashboard";
+import { MLModelManagementDashboard } from "../components/ai/MLModelManagementDashboard";
 import {
   Brain,
   TrendingUp,
@@ -18,35 +18,35 @@ import {
   Zap,
   Award,
   BookOpen,
-  Settings
-} from 'lucide-react';
-import type { CoachContext } from '../../types/aiCoach';
+  Settings,
+} from "lucide-react";
+import type { CoachContext } from "../../types/aiCoach";
 
 export default function AICoachingPage() {
   const { user } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<'coaching' | 'models'>('coaching');
+  const [activeTab, setActiveTab] = useState<"coaching" | "models">("coaching");
   const [coachContext, setCoachContext] = useState<CoachContext | undefined>();
 
   // Initialize with sample context - in real app this would come from current lesson/session
   useEffect(() => {
     if (user?.uid) {
       setCoachContext({
-        contentType: 'lesson',
-        contentId: 'sample-lesson',
+        contentType: "lesson",
+        contentId: "sample-lesson",
         userProgress: {
           attempts: 3,
           timeSpent: 45,
           hintsUsed: 1,
           successRate: 0.75,
-          streakCount: 5
+          streakCount: 5,
         },
         currentWeek: 6,
         performanceMetrics: {
           accuracy: 0.8,
           speed: 0.7,
           persistence: 0.9,
-          learningVelocity: 0.85
-        }
+          learningVelocity: 0.85,
+        },
       });
     }
   }, [user?.uid]);
@@ -54,40 +54,70 @@ export default function AICoachingPage() {
   const features = [
     {
       icon: Brain,
-      title: 'ML-Powered Coaching',
-      description: 'AI coach that learns from your patterns and adapts its teaching style',
-      capabilities: ['Personalized feedback', 'Adaptive difficulty', 'Learning style detection']
+      title: "ML-Powered Coaching",
+      description:
+        "AI coach that learns from your patterns and adapts its teaching style",
+      capabilities: [
+        "Personalized feedback",
+        "Adaptive difficulty",
+        "Learning style detection",
+      ],
     },
     {
       icon: TrendingUp,
-      title: 'Performance Prediction',
-      description: 'Machine learning models predict your completion timeline and success probability',
-      capabilities: ['Completion forecasting', 'Risk assessment', 'Intervention recommendations']
+      title: "Performance Prediction",
+      description:
+        "Machine learning models predict your completion timeline and success probability",
+      capabilities: [
+        "Completion forecasting",
+        "Risk assessment",
+        "Intervention recommendations",
+      ],
     },
     {
       icon: Target,
-      title: 'Skill Gap Analysis',
-      description: 'Advanced algorithms identify knowledge gaps and recommend focused study',
-      capabilities: ['Gap detection', 'Priority ranking', 'Targeted remediation']
+      title: "Skill Gap Analysis",
+      description:
+        "Advanced algorithms identify knowledge gaps and recommend focused study",
+      capabilities: [
+        "Gap detection",
+        "Priority ranking",
+        "Targeted remediation",
+      ],
     },
     {
       icon: BookOpen,
-      title: 'Learning Path Optimization',
-      description: 'ML-optimized learning sequences based on your progress and preferences',
-      capabilities: ['Path recommendation', 'Topic sequencing', 'Time estimation']
+      title: "Learning Path Optimization",
+      description:
+        "ML-optimized learning sequences based on your progress and preferences",
+      capabilities: [
+        "Path recommendation",
+        "Topic sequencing",
+        "Time estimation",
+      ],
     },
     {
       icon: Users,
-      title: 'Style-Aware Teaching',
-      description: 'Automatically detects and adapts to your preferred learning style',
-      capabilities: ['Style classification', 'Method adaptation', 'Effectiveness tracking']
+      title: "Style-Aware Teaching",
+      description:
+        "Automatically detects and adapts to your preferred learning style",
+      capabilities: [
+        "Style classification",
+        "Method adaptation",
+        "Effectiveness tracking",
+      ],
     },
     {
       icon: Sparkles,
-      title: 'Intelligent Insights',
-      description: 'Deep learning analysis provides actionable insights about your learning',
-      capabilities: ['Pattern recognition', 'Trend analysis', 'Predictive recommendations']
-    }
+      title: "Intelligent Insights",
+      description:
+        "Deep learning analysis provides actionable insights about your learning",
+      capabilities: [
+        "Pattern recognition",
+        "Trend analysis",
+        "Predictive recommendations",
+      ],
+    },
   ];
 
   return (
@@ -105,7 +135,8 @@ export default function AICoachingPage() {
             </span>
           </div>
           <p className="text-gray-400 text-lg">
-            Experience the future of personalized learning with AI-powered coaching and machine learning insights
+            Experience the future of personalized learning with AI-powered
+            coaching and machine learning insights
           </p>
         </div>
 
@@ -113,16 +144,16 @@ export default function AICoachingPage() {
         <div className="mb-8">
           <div className="flex gap-2 border-b border-gray-700">
             {[
-              { id: 'coaching', label: 'AI Coaching', icon: Brain },
-              { id: 'models', label: 'ML Models', icon: Settings }
-            ].map(tab => (
+              { id: "coaching", label: "AI Coaching", icon: Brain },
+              { id: "models", label: "ML Models", icon: Settings },
+            ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as 'coaching' | 'models')}
+                onClick={() => setActiveTab(tab.id as "coaching" | "models")}
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-indigo-400 text-indigo-400'
-                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                    ? "border-indigo-400 text-indigo-400"
+                    : "border-transparent text-gray-400 hover:text-gray-300"
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -133,7 +164,7 @@ export default function AICoachingPage() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'coaching' && (
+        {activeTab === "coaching" && (
           <div className="space-y-8">
             {/* Hero Section */}
             <div className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-700 rounded-lg">
@@ -149,8 +180,10 @@ export default function AICoachingPage() {
                   </div>
                   <h2 className="text-2xl font-bold">Your Personal AI Coach</h2>
                   <p className="text-gray-300 max-w-2xl mx-auto">
-                    Powered by advanced machine learning algorithms, your AI coach analyzes your learning patterns,
-                    predicts performance, and provides personalized guidance to accelerate your DevOps journey.
+                    Powered by advanced machine learning algorithms, your AI
+                    coach analyzes your learning patterns, predicts performance,
+                    and provides personalized guidance to accelerate your DevOps
+                    journey.
                   </p>
                   <div className="flex justify-center gap-4 mt-6">
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-900/30 text-green-400 border border-green-400">
@@ -172,19 +205,31 @@ export default function AICoachingPage() {
 
             {/* Features Grid */}
             <div>
-              <h3 className="text-xl font-bold mb-6">AI/ML Coaching Features</h3>
+              <h3 className="text-xl font-bold mb-6">
+                AI/ML Coaching Features
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {features.map((feature) => (
-                  <div key={feature.title} className="bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-750 transition-colors">
+                  <div
+                    key={feature.title}
+                    className="bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-750 transition-colors"
+                  >
                     <div className="p-6">
                       <div className="flex items-center gap-3 mb-4">
                         <feature.icon className="w-6 h-6 text-indigo-400" />
-                        <h3 className="text-lg font-semibold">{feature.title}</h3>
+                        <h3 className="text-lg font-semibold">
+                          {feature.title}
+                        </h3>
                       </div>
-                      <p className="text-gray-400 text-sm mb-4">{feature.description}</p>
+                      <p className="text-gray-400 text-sm mb-4">
+                        {feature.description}
+                      </p>
                       <div className="space-y-2">
                         {feature.capabilities.map((capability) => (
-                          <div key={capability} className="flex items-center gap-2 text-sm">
+                          <div
+                            key={capability}
+                            className="flex items-center gap-2 text-sm"
+                          >
                             <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
                             <span className="text-gray-300">{capability}</span>
                           </div>
@@ -198,7 +243,9 @@ export default function AICoachingPage() {
 
             {/* ML Coaching Dashboard */}
             <div>
-              <h3 className="text-xl font-bold mb-6">Your ML-Powered Coaching Session</h3>
+              <h3 className="text-xl font-bold mb-6">
+                Your ML-Powered Coaching Session
+              </h3>
               <MLCoachingDashboard
                 context={coachContext}
                 onContextUpdate={setCoachContext}
@@ -207,7 +254,7 @@ export default function AICoachingPage() {
           </div>
         )}
 
-        {activeTab === 'models' && (
+        {activeTab === "models" && (
           <div className="space-y-8">
             {/* Models Header */}
             <div className="bg-gradient-to-r from-blue-900/30 to-cyan-900/30 border border-blue-700 rounded-lg">
@@ -216,10 +263,13 @@ export default function AICoachingPage() {
                   <div className="flex justify-center">
                     <Settings className="w-16 h-16 text-blue-400" />
                   </div>
-                  <h2 className="text-2xl font-bold">Machine Learning Models</h2>
+                  <h2 className="text-2xl font-bold">
+                    Machine Learning Models
+                  </h2>
                   <p className="text-gray-300 max-w-2xl mx-auto">
-                    Explore the ML models powering your personalized coaching experience.
-                    These models continuously learn and adapt to provide better insights.
+                    Explore the ML models powering your personalized coaching
+                    experience. These models continuously learn and adapt to
+                    provide better insights.
                   </p>
                   <div className="flex justify-center gap-4 mt-6">
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-900/30 text-orange-400 border border-orange-400">
@@ -248,11 +298,15 @@ export default function AICoachingPage() {
         <div className="mt-12 bg-gray-800/50 border border-gray-700 rounded-lg">
           <div className="p-6">
             <div className="text-center space-y-4">
-              <h3 className="text-lg font-semibold">About ML-Enhanced Coaching</h3>
+              <h3 className="text-lg font-semibold">
+                About ML-Enhanced Coaching
+              </h3>
               <p className="text-gray-400 text-sm max-w-3xl mx-auto">
-                Our AI coaching system uses multiple machine learning models trained on thousands of learning sessions
-                to provide personalized guidance. The system analyzes your performance patterns, learning style,
-                and progress trajectory to offer targeted recommendations and interventions.
+                Our AI coaching system uses multiple machine learning models
+                trained on thousands of learning sessions to provide
+                personalized guidance. The system analyzes your performance
+                patterns, learning style, and progress trajectory to offer
+                targeted recommendations and interventions.
               </p>
               <div className="flex justify-center gap-6 text-sm text-gray-400">
                 <div className="flex items-center gap-2">

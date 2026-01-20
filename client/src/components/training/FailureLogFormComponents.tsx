@@ -2,9 +2,9 @@
  * FailureLogForm - UI Components
  */
 
-import { AlertTriangle, X, FileText, Lightbulb } from 'lucide-react';
-import type { FailureCategory, FailureSeverity } from '../../types/training';
-import { CATEGORIES, SEVERITIES, countWords } from './FailureLogFormUtils';
+import { AlertTriangle, X, FileText, Lightbulb } from "lucide-react";
+import type { FailureCategory, FailureSeverity } from "../../types/training";
+import { CATEGORIES, SEVERITIES, countWords } from "./FailureLogFormUtils";
 
 // Header Component
 interface FormHeaderProps {
@@ -43,7 +43,8 @@ export function ContextInfo({ contentType, contentTitle }: ContextInfoProps) {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700">
       <p className="text-sm text-slate-400">
-        <span className="font-semibold text-white">Context:</span> {contentType} - {contentTitle}
+        <span className="font-semibold text-white">Context:</span> {contentType}{" "}
+        - {contentTitle}
       </p>
     </div>
   );
@@ -61,7 +62,7 @@ export function CategorySeveritySection({
   category,
   severity,
   onCategoryChange,
-  onSeverityChange
+  onSeverityChange,
 }: CategorySeveritySectionProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -74,7 +75,7 @@ export function CategorySeveritySection({
           onChange={(e) => onCategoryChange(e.target.value as FailureCategory)}
           className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
         >
-          {CATEGORIES.map(cat => (
+          {CATEGORIES.map((cat) => (
             <option key={cat.value} value={cat.value}>
               {cat.label}
             </option>
@@ -87,15 +88,15 @@ export function CategorySeveritySection({
           Severity *
         </label>
         <div className="grid grid-cols-2 gap-2">
-          {SEVERITIES.map(sev => (
+          {SEVERITIES.map((sev) => (
             <button
               key={sev.value}
               type="button"
               onClick={() => onSeverityChange(sev.value)}
               className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
                 severity === sev.value
-                  ? sev.color + ' border-2 border-current'
-                  : 'bg-slate-700 text-slate-400 border-2 border-transparent hover:bg-slate-600'
+                  ? sev.color + " border-2 border-current"
+                  : "bg-slate-700 text-slate-400 border-2 border-transparent hover:bg-slate-600"
               }`}
             >
               {sev.label}
@@ -142,7 +143,8 @@ export function DescriptionInput({ value, onChange }: DescriptionInputProps) {
   return (
     <div>
       <label className="block text-sm font-semibold text-slate-300 mb-2">
-        Detailed Description * <span className="text-slate-500">(What happened?)</span>
+        Detailed Description *{" "}
+        <span className="text-slate-500">(What happened?)</span>
       </label>
       <textarea
         value={value}
@@ -151,9 +153,7 @@ export function DescriptionInput({ value, onChange }: DescriptionInputProps) {
         rows={4}
         className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 resize-none"
       />
-      <p className="text-xs text-slate-500 mt-1">
-        {countWords(value)} words
-      </p>
+      <p className="text-xs text-slate-500 mt-1">{countWords(value)} words</p>
     </div>
   );
 }
@@ -168,7 +168,8 @@ export function ErrorMessageInput({ value, onChange }: ErrorMessageInputProps) {
   return (
     <div>
       <label className="block text-sm font-semibold text-slate-300 mb-2">
-        Error Message <span className="text-slate-500">(Optional - exact error text)</span>
+        Error Message{" "}
+        <span className="text-slate-500">(Optional - exact error text)</span>
       </label>
       <textarea
         value={value}
@@ -188,7 +189,9 @@ export function ProTipBox() {
       <div className="flex items-start gap-2">
         <Lightbulb className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" />
         <p className="text-sm text-indigo-200">
-          <strong>Pro Tip:</strong> You can add root cause analysis and resolution details after you fix the issue. This initial log helps track what&apos;s going wrong.
+          <strong>Pro Tip:</strong> You can add root cause analysis and
+          resolution details after you fix the issue. This initial log helps
+          track what&apos;s going wrong.
         </p>
       </div>
     </div>
@@ -202,7 +205,11 @@ interface ActionButtonsProps {
   canSubmit: boolean;
 }
 
-export function ActionButtons({ onCancel, submitting, canSubmit }: ActionButtonsProps) {
+export function ActionButtons({
+  onCancel,
+  submitting,
+  canSubmit,
+}: ActionButtonsProps) {
   return (
     <div className="flex gap-3">
       <button
@@ -218,7 +225,7 @@ export function ActionButtons({ onCancel, submitting, canSubmit }: ActionButtons
         disabled={submitting || !canSubmit}
         className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:bg-slate-700 disabled:text-slate-500 text-white font-semibold rounded-lg transition-colors"
       >
-        {submitting ? 'Logging...' : 'Log Failure'}
+        {submitting ? "Logging..." : "Log Failure"}
       </button>
     </div>
   );

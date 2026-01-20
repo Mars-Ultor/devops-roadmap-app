@@ -3,9 +3,9 @@
  * Interface for managing and monitoring ML models
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { MLModelService } from '../../services/mlModelService';
-import type { MLModel, MLPrediction } from '../../services/mlModelService';
+import { useState, useEffect, useCallback } from "react";
+import { MLModelService } from "../../services/mlModelService";
+import type { MLModel, MLPrediction } from "../../services/mlModelService";
 
 // Import extracted components
 import {
@@ -13,20 +13,22 @@ import {
   ModelDashboardHeader,
   InferenceResults,
   ModelInformationPanel,
-  ErrorDisplay
-} from './ml-model/MLModelComponents';
+  ErrorDisplay,
+} from "./ml-model/MLModelComponents";
 
 // Import utility functions
 import {
   generateSampleInput,
   generateSampleTrainingData,
-  MODEL_IDS
-} from './ml-model/MLModelUtils';
+  MODEL_IDS,
+} from "./ml-model/MLModelUtils";
 
 export function MLModelManagementDashboard() {
   const [models, setModels] = useState<MLModel[]>([]);
   const [selectedModel, setSelectedModel] = useState<MLModel | null>(null);
-  const [inferenceResult, setInferenceResult] = useState<MLPrediction | null>(null);
+  const [inferenceResult, setInferenceResult] = useState<MLPrediction | null>(
+    null,
+  );
   const [loading, setLoading] = useState(false);
   const [training, setTraining] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export function MLModelManagementDashboard() {
       }
       setModels(loadedModels);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load models');
+      setError(err instanceof Error ? err.message : "Failed to load models");
     } finally {
       setLoading(false);
     }
@@ -59,7 +61,7 @@ export function MLModelManagementDashboard() {
   }, [loadModels]);
 
   const runInference = async (modelId: string) => {
-    const model = models.find(m => m.id === modelId);
+    const model = models.find((m) => m.id === modelId);
     if (!model) return;
 
     setLoading(true);
@@ -72,7 +74,7 @@ export function MLModelManagementDashboard() {
       const result = await mlService.predict(modelId, sampleInput);
       setInferenceResult(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Inference failed');
+      setError(err instanceof Error ? err.message : "Inference failed");
     } finally {
       setLoading(false);
     }
@@ -87,7 +89,7 @@ export function MLModelManagementDashboard() {
       await mlService.trainModel(modelId, trainingData);
       await loadModels();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Training failed');
+      setError(err instanceof Error ? err.message : "Training failed");
     } finally {
       setTraining(null);
     }
@@ -113,7 +115,10 @@ export function MLModelManagementDashboard() {
       </div>
 
       {selectedModel && inferenceResult && (
-        <InferenceResults selectedModel={selectedModel} inferenceResult={inferenceResult} />
+        <InferenceResults
+          selectedModel={selectedModel}
+          inferenceResult={inferenceResult}
+        />
       )}
 
       <ModelInformationPanel />

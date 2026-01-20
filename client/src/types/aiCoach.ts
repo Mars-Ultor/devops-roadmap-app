@@ -4,18 +4,25 @@
  */
 
 export interface CoachFeedback {
-  type: 'encouragement' | 'hint' | 'warning' | 'insight' | 'question' | 'discipline' | 'tactical_advice';
+  type:
+    | "encouragement"
+    | "hint"
+    | "warning"
+    | "insight"
+    | "question"
+    | "discipline"
+    | "tactical_advice";
   message: string;
   confidence: number; // 0-1
   context?: string;
   mode?: CoachMode;
-  priority?: 'low' | 'medium' | 'high' | 'critical';
+  priority?: "low" | "medium" | "high" | "critical";
   actionRequired?: boolean;
   followUpQuestions?: string[];
 }
 
 export interface CoachContext {
-  contentType: 'lesson' | 'lab' | 'drill' | 'struggle_session';
+  contentType: "lesson" | "lab" | "drill" | "struggle_session";
   contentId: string;
   userProgress: {
     attempts: number;
@@ -27,7 +34,7 @@ export interface CoachContext {
   };
   currentIssue?: string;
   recentErrors?: string[];
-  masteryLevel?: 'novice' | 'intermediate' | 'advanced' | 'expert';
+  masteryLevel?: "novice" | "intermediate" | "advanced" | "expert";
   currentWeek?: number;
   commandExecuted?: string;
   errorEncountered?: string;
@@ -45,7 +52,11 @@ export interface CoachContext {
   };
 }
 
-export type CoachMode = 'instructor' | 'peer' | 'independent' | 'drill_sergeant';
+export type CoachMode =
+  | "instructor"
+  | "peer"
+  | "independent"
+  | "drill_sergeant";
 
 export interface CodeAnalysis {
   issues: CodeIssue[];
@@ -56,18 +67,18 @@ export interface CodeAnalysis {
 }
 
 export interface CodeIssue {
-  type: 'syntax' | 'logic' | 'performance' | 'security' | 'style';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  type: "syntax" | "logic" | "performance" | "security" | "style";
+  severity: "low" | "medium" | "high" | "critical";
   line?: number;
   message: string;
   suggestion: string;
 }
 
 export interface CodeSuggestion {
-  type: 'improvement' | 'optimization' | 'best_practice' | 'security';
+  type: "improvement" | "optimization" | "best_practice" | "security";
   description: string;
   code?: string;
-  impact: 'low' | 'medium' | 'high';
+  impact: "low" | "medium" | "high";
 }
 
 export interface LearningPath {
@@ -81,7 +92,7 @@ export interface LearningPath {
 
 export interface PerformanceAnalytics {
   userId: string;
-  period: 'week' | 'month' | 'quarter';
+  period: "week" | "month" | "quarter";
   metrics: {
     averageAttempts: number;
     averageTime: number;
@@ -99,10 +110,10 @@ export interface PerformanceAnalytics {
 }
 
 export interface MotivationalProfile {
-  primaryDriver: 'achievement' | 'mastery' | 'autonomy' | 'purpose';
+  primaryDriver: "achievement" | "mastery" | "autonomy" | "purpose";
   motivationalTriggers: string[];
   demotivators: string[];
-  communicationStyle: 'direct' | 'encouraging' | 'analytical' | 'tactical';
+  communicationStyle: "direct" | "encouraging" | "analytical" | "tactical";
   responsePatterns: {
     toSuccess: string[];
     toFailure: string[];
@@ -115,28 +126,28 @@ export const COACH_CONFIG = {
   MODES: {
     INSTRUCTOR: {
       weeks: [1, 2, 3, 4],
-      style: 'directive',
-      feedbackFrequency: 'high',
+      style: "directive",
+      feedbackFrequency: "high",
       hintThreshold: 0.3, // Allow hints after 30% of attempts
     },
     PEER: {
       weeks: [5, 6, 7, 8],
-      style: 'socratic',
-      feedbackFrequency: 'medium',
+      style: "socratic",
+      feedbackFrequency: "medium",
       hintThreshold: 0.6, // Allow hints after 60% of attempts
     },
     INDEPENDENT: {
       weeks: [9, 10, 11, 12],
-      style: 'minimal',
-      feedbackFrequency: 'low',
+      style: "minimal",
+      feedbackFrequency: "low",
       hintThreshold: 0.9, // Allow hints after 90% of attempts
     },
     DRILL_SERGEANT: {
       weeks: [13, 14, 15, 16],
-      style: 'intense',
-      feedbackFrequency: 'high',
+      style: "intense",
+      feedbackFrequency: "high",
       hintThreshold: 1.0, // No hints - pure discipline
-    }
+    },
   },
 
   DISCIPLINE_THRESHOLDS: {
@@ -148,20 +159,40 @@ export const COACH_CONFIG = {
 
   MOTIVATIONAL_PATTERNS: {
     ACHIEVEMENT: {
-      triggers: ['badges', 'leaderboards', 'completion_rates'],
-      messages: ['Excellence recognized', 'Standard met', 'Mission accomplished']
+      triggers: ["badges", "leaderboards", "completion_rates"],
+      messages: [
+        "Excellence recognized",
+        "Standard met",
+        "Mission accomplished",
+      ],
     },
     MASTERY: {
-      triggers: ['skill_progression', 'concept_mastery', 'deep_understanding'],
-      messages: ['Knowledge internalized', 'Skill mastered', 'Expertise growing']
+      triggers: ["skill_progression", "concept_mastery", "deep_understanding"],
+      messages: [
+        "Knowledge internalized",
+        "Skill mastered",
+        "Expertise growing",
+      ],
     },
     AUTONOMY: {
-      triggers: ['independent_solutions', 'creative_approaches', 'self_direction'],
-      messages: ['Self-reliance demonstrated', 'Initiative shown', 'Leadership emerging']
+      triggers: [
+        "independent_solutions",
+        "creative_approaches",
+        "self_direction",
+      ],
+      messages: [
+        "Self-reliance demonstrated",
+        "Initiative shown",
+        "Leadership emerging",
+      ],
     },
     PURPOSE: {
-      triggers: ['impact_recognition', 'team_contribution', 'mission_alignment'],
-      messages: ['Purpose fulfilled', 'Impact made', 'Mission advanced']
-    }
-  }
+      triggers: [
+        "impact_recognition",
+        "team_contribution",
+        "mission_alignment",
+      ],
+      messages: ["Purpose fulfilled", "Impact made", "Mission advanced"],
+    },
+  },
 } as const;

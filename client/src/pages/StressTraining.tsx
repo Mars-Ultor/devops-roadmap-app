@@ -4,18 +4,21 @@
  * Progressive stress scenario training
  */
 
-import { useState, useEffect } from 'react';
-import { Zap, TrendingUp, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useStressTraining } from '../hooks/useStressTraining';
-import { StressScenarioCard } from '../components/training/StressScenarioCard';
-import { StressSessionPanel } from '../components/training/StressSessionPanel';
-import { StressMetricsDashboard } from '../components/training/StressMetricsDashboard';
-import { STRESS_SCENARIOS, getScenarioByStressLevel } from '../data/stressScenarios';
-import type { StressScenario } from '../types/training';
+import { useState, useEffect } from "react";
+import { Zap, TrendingUp, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useStressTraining } from "../hooks/useStressTraining";
+import { StressScenarioCard } from "../components/training/StressScenarioCard";
+import { StressSessionPanel } from "../components/training/StressSessionPanel";
+import { StressMetricsDashboard } from "../components/training/StressMetricsDashboard";
+import {
+  STRESS_SCENARIOS,
+  getScenarioByStressLevel,
+} from "../data/stressScenarios";
+import type { StressScenario } from "../types/training";
 
-type ViewMode = 'scenarios' | 'session' | 'metrics';
-type FilterLevel = 'all' | 'low' | 'medium' | 'high' | 'extreme';
+type ViewMode = "scenarios" | "session" | "metrics";
+type FilterLevel = "all" | "low" | "medium" | "high" | "extreme";
 
 export default function StressTraining() {
   const {
@@ -25,23 +28,28 @@ export default function StressTraining() {
     error,
     startSession,
     completeSession,
-    canAttemptStressLevel
+    canAttemptStressLevel,
   } = useStressTraining();
 
-  const [viewMode, setViewMode] = useState<ViewMode>('scenarios');
-  const [selectedScenario, setSelectedScenario] = useState<StressScenario | null>(null);
-  const [filterLevel, setFilterLevel] = useState<FilterLevel>('all');
+  const [viewMode, setViewMode] = useState<ViewMode>("scenarios");
+  const [selectedScenario, setSelectedScenario] =
+    useState<StressScenario | null>(null);
+  const [filterLevel, setFilterLevel] = useState<FilterLevel>("all");
 
   useEffect(() => {
     if (currentSession && !currentSession.completedAt) {
-      setViewMode('session');
+      setViewMode("session");
     } else if (currentSession?.completedAt) {
-      setViewMode('scenarios');
+      setViewMode("scenarios");
     }
   }, [currentSession]);
 
   const handleScenarioSelect = (scenario: StressScenario) => {
-    const levelCheck = scenario.stressLevel as 'low' | 'medium' | 'high' | 'extreme';
+    const levelCheck = scenario.stressLevel as
+      | "low"
+      | "medium"
+      | "high"
+      | "extreme";
     if (!canAttemptStressLevel(levelCheck)) return;
     setSelectedScenario(scenario);
   };
@@ -54,14 +62,21 @@ export default function StressTraining() {
 
   const handleCompleteSession = async (success: boolean) => {
     await completeSession(success);
-    setViewMode('scenarios');
+    setViewMode("scenarios");
   };
 
-  const filteredScenarios = filterLevel === 'all'
-    ? STRESS_SCENARIOS
-    : getScenarioByStressLevel(filterLevel);
+  const filteredScenarios =
+    filterLevel === "all"
+      ? STRESS_SCENARIOS
+      : getScenarioByStressLevel(filterLevel);
 
-  const stressLevels: FilterLevel[] = ['all', 'low', 'medium', 'high', 'extreme'];
+  const stressLevels: FilterLevel[] = [
+    "all",
+    "low",
+    "medium",
+    "high",
+    "extreme",
+  ];
 
   if (loading && !currentSession) {
     return (
@@ -83,7 +98,7 @@ export default function StressTraining() {
             <ArrowLeft className="w-4 h-4" />
             Back to Battle Drills
           </Link>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
@@ -98,21 +113,21 @@ export default function StressTraining() {
             {/* View Mode Toggle */}
             <div className="flex gap-2 bg-gray-800 p-1 rounded-lg">
               <button
-                onClick={() => setViewMode('scenarios')}
+                onClick={() => setViewMode("scenarios")}
                 className={`px-4 py-2 rounded transition-colors ${
-                  viewMode === 'scenarios'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-white'
+                  viewMode === "scenarios"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-400 hover:text-white"
                 }`}
               >
                 Scenarios
               </button>
               <button
-                onClick={() => setViewMode('metrics')}
+                onClick={() => setViewMode("metrics")}
                 className={`px-4 py-2 rounded transition-colors flex items-center gap-2 ${
-                  viewMode === 'metrics'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-white'
+                  viewMode === "metrics"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-400 hover:text-white"
                 }`}
               >
                 <TrendingUp className="w-4 h-4" />
@@ -129,7 +144,7 @@ export default function StressTraining() {
         )}
 
         {/* Scenarios View */}
-        {viewMode === 'scenarios' && (
+        {viewMode === "scenarios" && (
           <div>
             {/* Filters */}
             <div className="mb-6 flex gap-2">
@@ -139,11 +154,11 @@ export default function StressTraining() {
                   onClick={() => setFilterLevel(level)}
                   className={`px-4 py-2 rounded-lg transition-colors capitalize ${
                     filterLevel === level
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:text-white'
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-800 text-gray-400 hover:text-white"
                   }`}
                 >
-                  {level === 'all' ? 'All Levels' : `${level} Stress`}
+                  {level === "all" ? "All Levels" : `${level} Stress`}
                 </button>
               ))}
             </div>
@@ -151,7 +166,11 @@ export default function StressTraining() {
             {/* Scenario Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {filteredScenarios.map((scenario) => {
-                const levelCheck = scenario.stressLevel as 'low' | 'medium' | 'high' | 'extreme';
+                const levelCheck = scenario.stressLevel as
+                  | "low"
+                  | "medium"
+                  | "high"
+                  | "extreme";
                 return (
                   <StressScenarioCard
                     key={scenario.id}
@@ -168,17 +187,31 @@ export default function StressTraining() {
             {selectedScenario && (
               <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
                 <div className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full border border-gray-700">
-                  <h2 className="text-2xl font-bold mb-4">Start Stress Training?</h2>
+                  <h2 className="text-2xl font-bold mb-4">
+                    Start Stress Training?
+                  </h2>
                   <p className="text-gray-300 mb-6">
-                    You're about to begin <span className="font-semibold text-white">{selectedScenario.title}</span>.
-                    This is a <span className="font-semibold capitalize">{String(selectedScenario.stressLevel)}</span> stress scenario.
+                    You're about to begin{" "}
+                    <span className="font-semibold text-white">
+                      {selectedScenario.title}
+                    </span>
+                    . This is a{" "}
+                    <span className="font-semibold capitalize">
+                      {String(selectedScenario.stressLevel)}
+                    </span>{" "}
+                    stress scenario.
                   </p>
 
                   <div className="bg-gray-900/50 rounded-lg p-4 mb-6">
-                    <h3 className="text-sm font-semibold text-gray-400 mb-3">You will face:</h3>
+                    <h3 className="text-sm font-semibold text-gray-400 mb-3">
+                      You will face:
+                    </h3>
                     <ul className="space-y-2">
                       {selectedScenario.conditions.map((condition) => (
-                        <li key={condition.description} className="text-sm text-gray-300 flex items-start gap-2">
+                        <li
+                          key={condition.description}
+                          className="text-sm text-gray-300 flex items-start gap-2"
+                        >
                           <span className="text-yellow-400">▸</span>
                           {condition.description}
                         </li>
@@ -207,35 +240,39 @@ export default function StressTraining() {
         )}
 
         {/* Session View */}
-        {viewMode === 'session' && currentSession && !currentSession.completedAt && (
-          <div>
-            <StressSessionPanel session={currentSession} />
+        {viewMode === "session" &&
+          currentSession &&
+          !currentSession.completedAt && (
+            <div>
+              <StressSessionPanel session={currentSession} />
 
-            {/* Session Controls */}
-            <div className="mt-6 flex gap-3 justify-center">
-              <button
-                onClick={() => handleCompleteSession(true)}
-                disabled={currentSession.tasksCompleted < currentSession.totalTasks}
-                className="px-8 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-semibold transition-colors"
-              >
-                Complete Session
-              </button>
-              <button
-                onClick={() => handleCompleteSession(false)}
-                className="px-8 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors"
-              >
-                Abort Session
-              </button>
+              {/* Session Controls */}
+              <div className="mt-6 flex gap-3 justify-center">
+                <button
+                  onClick={() => handleCompleteSession(true)}
+                  disabled={
+                    currentSession.tasksCompleted < currentSession.totalTasks
+                  }
+                  className="px-8 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-semibold transition-colors"
+                >
+                  Complete Session
+                </button>
+                <button
+                  onClick={() => handleCompleteSession(false)}
+                  className="px-8 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors"
+                >
+                  Abort Session
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Metrics View */}
-        {viewMode === 'metrics' && stressMetrics && (
+        {viewMode === "metrics" && stressMetrics && (
           <StressMetricsDashboard metrics={stressMetrics} />
         )}
 
-        {viewMode === 'metrics' && !stressMetrics && (
+        {viewMode === "metrics" && !stressMetrics && (
           <div className="text-center py-12 text-gray-400">
             Complete your first stress training session to see analytics.
           </div>

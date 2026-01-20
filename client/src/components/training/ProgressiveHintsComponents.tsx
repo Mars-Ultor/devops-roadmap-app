@@ -2,7 +2,7 @@
  * ProgressiveHints - UI Components
  */
 
-import { Lightbulb, ChevronRight, Lock } from 'lucide-react';
+import { Lightbulb, ChevronRight, Lock } from "lucide-react";
 
 // Locked State (before 30-minute period)
 export function LockedState() {
@@ -46,7 +46,8 @@ export function HintsHeader() {
       <div>
         <h3 className="text-lg font-bold text-white">Progressive Hints</h3>
         <p className="text-sm text-slate-300">
-          Hints are released one at a time. Start with Hint 1 before requesting more.
+          Hints are released one at a time. Start with Hint 1 before requesting
+          more.
         </p>
       </div>
     </div>
@@ -63,15 +64,22 @@ interface HintCardProps {
   onRequest: () => void;
 }
 
-export function HintCard({ level, hint, isRequested, canRequest, isRequesting, onRequest }: HintCardProps) {
+export function HintCard({
+  level,
+  hint,
+  isRequested,
+  canRequest,
+  isRequesting,
+  onRequest,
+}: HintCardProps) {
   return (
     <div
       className={`rounded-lg border-2 overflow-hidden transition-all ${
         isRequested
-          ? 'border-yellow-500/50 bg-yellow-900/20'
+          ? "border-yellow-500/50 bg-yellow-900/20"
           : canRequest
-          ? 'border-slate-700 bg-slate-900'
-          : 'border-slate-800 bg-slate-900/50'
+            ? "border-slate-700 bg-slate-900"
+            : "border-slate-800 bg-slate-900/50"
       }`}
     >
       <HintHeader
@@ -100,15 +108,29 @@ interface HintHeaderProps {
   onRequest: () => void;
 }
 
-function HintHeader({ level, isRequested, canRequest, isRequesting, onRequest }: HintHeaderProps) {
+function HintHeader({
+  level,
+  isRequested,
+  canRequest,
+  isRequesting,
+  onRequest,
+}: HintHeaderProps) {
   return (
-    <div className={`flex items-center justify-between p-4 ${
-      isRequested ? 'bg-yellow-900/30' : 'bg-slate-900/50'
-    }`}>
+    <div
+      className={`flex items-center justify-between p-4 ${
+        isRequested ? "bg-yellow-900/30" : "bg-slate-900/50"
+      }`}
+    >
       <div className="flex items-center gap-3">
-        <HintBadge level={level} isRequested={isRequested} canRequest={canRequest} />
+        <HintBadge
+          level={level}
+          isRequested={isRequested}
+          canRequest={canRequest}
+        />
         <div>
-          <h4 className={`font-semibold ${isRequested ? 'text-yellow-400' : 'text-white'}`}>
+          <h4
+            className={`font-semibold ${isRequested ? "text-yellow-400" : "text-white"}`}
+          >
             Hint {level}
           </h4>
           {!isRequested && !canRequest && (
@@ -151,13 +173,15 @@ interface HintBadgeProps {
 
 function HintBadge({ level, isRequested, canRequest }: HintBadgeProps) {
   return (
-    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-      isRequested
-        ? 'bg-yellow-500'
-        : canRequest
-        ? 'bg-indigo-600'
-        : 'bg-slate-700'
-    }`}>
+    <div
+      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+        isRequested
+          ? "bg-yellow-500"
+          : canRequest
+            ? "bg-indigo-600"
+            : "bg-slate-700"
+      }`}
+    >
       {isRequested ? (
         <Lightbulb className="w-4 h-4 text-white" />
       ) : canRequest ? (
@@ -174,8 +198,8 @@ export function AllHintsComplete() {
   return (
     <div className="bg-green-900/30 border border-green-600/30 rounded-lg p-4">
       <p className="text-sm text-green-300 text-center">
-        ✓ All hints revealed. If you&apos;re still stuck, consider reviewing documentation
-        or discussing with peers before requesting the solution.
+        ✓ All hints revealed. If you&apos;re still stuck, consider reviewing
+        documentation or discussing with peers before requesting the solution.
       </p>
     </div>
   );

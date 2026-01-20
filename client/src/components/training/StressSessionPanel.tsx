@@ -3,23 +3,24 @@
  * Live session UI with physiological metrics
  */
 
-import type { StressTrainingSession } from '../../types/training';
-import { useStressSession } from './useStressSession';
+import type { StressTrainingSession } from "../../types/training";
+import { useStressSession } from "./useStressSession";
 import {
   ScenarioHeader,
   MetricsGrid,
   ActiveConditions,
   SuccessCriteria,
   ProgressSection,
-  WarningMessages
-} from './StressSessionPanelComponents';
+  WarningMessages,
+} from "./StressSessionPanelComponents";
 
 interface StressSessionPanelProps {
   session: StressTrainingSession;
 }
 
 export function StressSessionPanel({ session }: StressSessionPanelProps) {
-  const { remainingSeconds, timeProgress, isTimeWarning, isTimeCritical } = useStressSession(session);
+  const { remainingSeconds, timeProgress, isTimeWarning, isTimeCritical } =
+    useStressSession(session);
 
   return (
     <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6">

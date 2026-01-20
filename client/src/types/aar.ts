@@ -13,34 +13,38 @@ export interface StruggleMetrics {
 }
 
 /** Type of AAR based on struggle metrics */
-export type AARFormType = 'skip' | 'quick' | 'full';
+export type AARFormType = "skip" | "quick" | "full";
 
 /** Determines AAR type based on struggle metrics */
 export function determineAARType(metrics: StruggleMetrics): AARFormType {
   // Perfect completion with no struggles - allow skip
-  if (metrics.isPerfectCompletion && 
-      metrics.hintsUsed === 0 && 
-      metrics.validationErrors === 0 && 
-      metrics.retryCount === 0) {
-    return 'skip';
+  if (
+    metrics.isPerfectCompletion &&
+    metrics.hintsUsed === 0 &&
+    metrics.validationErrors === 0 &&
+    metrics.retryCount === 0
+  ) {
+    return "skip";
   }
-  
+
   // Minor struggles - quick form
-  if (metrics.hintsUsed <= 1 && 
-      metrics.validationErrors <= 2 && 
-      metrics.retryCount <= 1) {
-    return 'quick';
+  if (
+    metrics.hintsUsed <= 1 &&
+    metrics.validationErrors <= 2 &&
+    metrics.retryCount <= 1
+  ) {
+    return "quick";
   }
-  
+
   // Significant struggles - full detailed AAR
-  return 'full';
+  return "full";
 }
 
 export interface AfterActionReview {
   id: string;
   userId: string;
   lessonId: string;
-  level: 'crawl' | 'walk' | 'run-guided' | 'run-independent';
+  level: "crawl" | "walk" | "run-guided" | "run-independent";
   labId: string; // specific lab/exercise identifier
   completedAt: Date;
 
@@ -71,7 +75,7 @@ export interface AfterActionReview {
 
 export interface AARReview {
   reviewedAt: Date;
-  reviewer: 'ai' | 'human';
+  reviewer: "ai" | "human";
   score: number; // 1-10 quality score
   feedback: string;
   suggestions: string[];
@@ -80,7 +84,13 @@ export interface AARReview {
 
 export interface AARPattern {
   patternId: string;
-  type: 'strength' | 'weakness' | 'recurring_issue' | 'improvement_trend' | 'skill_gap' | 'process_issue';
+  type:
+    | "strength"
+    | "weakness"
+    | "recurring_issue"
+    | "improvement_trend"
+    | "skill_gap"
+    | "process_issue";
   description: string;
   frequency: number; // how many times this pattern appears
   relatedLessons: string[];
@@ -95,7 +105,7 @@ export const AAR_REQUIREMENTS = {
   MIN_ITEMS_DID_NOT_WORK: 2,
   MIN_WORDS_WHY_NOT_WORK: 15,
   MIN_WORDS_DO_DIFFERENTLY: 15,
-  MIN_WORDS_LEARNED: 15
+  MIN_WORDS_LEARNED: 15,
 } as const;
 
 // AAR form state during creation
@@ -122,7 +132,7 @@ export interface AARStats {
   commonPatterns: AARPattern[];
   improvementTrends: {
     category: string;
-    trend: 'improving' | 'declining' | 'stable';
+    trend: "improving" | "declining" | "stable";
     dataPoints: number[];
   }[];
   strengths: string[];

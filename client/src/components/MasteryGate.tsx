@@ -4,8 +4,8 @@
  * Phase 2: Hard Mastery Gates
  */
 
-import type { MasteryProgress, MasteryLevel } from '../types/training';
-import { getLevelColor } from './mastery-gate/masteryGateUtils';
+import type { MasteryProgress, MasteryLevel } from "../types/training";
+import { getLevelColor } from "./mastery-gate/masteryGateUtils";
 import {
   MasteryGateCompact,
   MasteryGateHeader,
@@ -13,8 +13,8 @@ import {
   AttemptIndicators,
   MasteryStatistics,
   StatusMessages,
-  PerfectRequirements
-} from './mastery-gate/MasteryGateComponents';
+  PerfectRequirements,
+} from "./mastery-gate/MasteryGateComponents";
 
 interface MasteryGateProps {
   readonly level: MasteryLevel;
@@ -23,21 +23,28 @@ interface MasteryGateProps {
   readonly compact?: boolean;
 }
 
-export default function MasteryGate({ level, progress, nextLevelName, compact = false }: MasteryGateProps) {
-  const { attempts, perfectCompletions, requiredPerfectCompletions, unlocked } = progress;
-  
+export default function MasteryGate({
+  level,
+  progress,
+  nextLevelName,
+  compact = false,
+}: MasteryGateProps) {
+  const { attempts, perfectCompletions, requiredPerfectCompletions, unlocked } =
+    progress;
+
   const isMastered = perfectCompletions >= requiredPerfectCompletions;
   const failedAttempts = attempts - perfectCompletions;
-  const progressPercentage = (perfectCompletions / requiredPerfectCompletions) * 100;
+  const progressPercentage =
+    (perfectCompletions / requiredPerfectCompletions) * 100;
   const color = getLevelColor(level);
-  
+
   let containerClasses: string;
   if (isMastered) {
-    containerClasses = 'bg-green-900/20 border-green-700';
+    containerClasses = "bg-green-900/20 border-green-700";
   } else if (unlocked) {
     containerClasses = `bg-${color}-900/10 border-${color}-700/30`;
   } else {
-    containerClasses = 'bg-slate-900/50 border-slate-700';
+    containerClasses = "bg-slate-900/50 border-slate-700";
   }
 
   if (compact) {
@@ -95,10 +102,7 @@ export default function MasteryGate({ level, progress, nextLevelName, compact = 
         nextLevelName={nextLevelName}
       />
 
-      <PerfectRequirements
-        isMastered={isMastered}
-        unlocked={unlocked}
-      />
+      <PerfectRequirements isMastered={isMastered} unlocked={unlocked} />
     </div>
   );
 }

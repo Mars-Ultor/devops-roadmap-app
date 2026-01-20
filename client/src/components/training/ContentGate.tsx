@@ -3,16 +3,19 @@
  * Shows blocking modal if drill is required
  */
 
-import { type ReactNode } from 'react';
-import { useDailyDrill } from '../../hooks/useDailyDrill';
-import { Lock, Target } from 'lucide-react';
+import { type ReactNode } from "react";
+import { useDailyDrill } from "../../hooks/useDailyDrill";
+import { Lock, Target } from "lucide-react";
 
 interface ContentGateProps {
   children: ReactNode;
-  contentType?: 'lesson' | 'lab' | 'quiz' | 'general';
+  contentType?: "lesson" | "lab" | "quiz" | "general";
 }
 
-export default function ContentGate({ children, contentType = 'general' }: ContentGateProps) {
+export default function ContentGate({
+  children,
+  contentType = "general",
+}: ContentGateProps) {
   const { dailyDrillRequired, dailyDrillCompleted, loading } = useDailyDrill();
 
   // Show loading state
@@ -36,24 +39,28 @@ export default function ContentGate({ children, contentType = 'general' }: Conte
             <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500/20 rounded-full mb-6">
               <Lock className="w-8 h-8 text-red-400" />
             </div>
-            
+
             <h1 className="text-3xl font-bold text-white mb-4">
               Daily Drill Required
             </h1>
-            
+
             <p className="text-lg text-slate-300 mb-6">
-              You must complete your daily drill before accessing new {contentType} content.
+              You must complete your daily drill before accessing new{" "}
+              {contentType} content.
             </p>
 
             <div className="bg-slate-900/50 rounded-lg p-6 border border-slate-700 mb-6">
               <div className="flex items-start gap-3 text-left">
                 <Target className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="text-white font-semibold mb-2">Why Daily Drills?</h3>
+                  <h3 className="text-white font-semibold mb-2">
+                    Why Daily Drills?
+                  </h3>
                   <p className="text-sm text-slate-400">
-                    Daily drills use spaced repetition to prevent skill decay. Completing quick 5-10 minute 
-                    reviews of past content ensures you retain what you've learned and build muscle memory 
-                    for critical DevOps tasks.
+                    Daily drills use spaced repetition to prevent skill decay.
+                    Completing quick 5-10 minute reviews of past content ensures
+                    you retain what you've learned and build muscle memory for
+                    critical DevOps tasks.
                   </p>
                 </div>
               </div>

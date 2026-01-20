@@ -1,6 +1,6 @@
-import React from 'react';
-import { CheckCircle2, XCircle, Award, RotateCcw } from 'lucide-react';
-import type { QuizQuestion } from './Quiz';
+import React from "react";
+import { CheckCircle2, XCircle, Award, RotateCcw } from "lucide-react";
+import type { QuizQuestion } from "./Quiz";
 
 // Answer Review Item
 interface AnswerReviewItemProps {
@@ -8,13 +8,20 @@ interface AnswerReviewItemProps {
   userAnswer: number | null;
 }
 
-export const AnswerReviewItem: React.FC<AnswerReviewItemProps> = ({ question, userAnswer }) => {
+export const AnswerReviewItem: React.FC<AnswerReviewItemProps> = ({
+  question,
+  userAnswer,
+}) => {
   const isCorrect = userAnswer === question.correctAnswer;
 
   return (
-    <div className={`p-4 rounded-lg border-2 ${
-      isCorrect ? 'border-green-500 bg-green-900/10' : 'border-red-500 bg-red-900/10'
-    }`}>
+    <div
+      className={`p-4 rounded-lg border-2 ${
+        isCorrect
+          ? "border-green-500 bg-green-900/10"
+          : "border-red-500 bg-red-900/10"
+      }`}
+    >
       <div className="flex items-start gap-3 mb-3">
         {isCorrect ? (
           <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
@@ -24,8 +31,11 @@ export const AnswerReviewItem: React.FC<AnswerReviewItemProps> = ({ question, us
         <div className="flex-1">
           <p className="text-white font-medium mb-2">{question.question}</p>
           <p className="text-sm text-slate-400">
-            Your answer: <span className={isCorrect ? 'text-green-400' : 'text-red-400'}>
-              {userAnswer === null ? 'Not answered' : question.options[userAnswer]}
+            Your answer:{" "}
+            <span className={isCorrect ? "text-green-400" : "text-red-400"}>
+              {userAnswer === null
+                ? "Not answered"
+                : question.options[userAnswer]}
             </span>
           </p>
           {!isCorrect && (
@@ -66,31 +76,41 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
   selectedAnswers,
   awarding,
   onRetake,
-  onClaimReward
+  onClaimReward,
 }) => (
   <div className="bg-slate-800 rounded-lg p-4 sm:p-8 border border-slate-700">
     <div className="text-center mb-8">
-      <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 ${
-        passed ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
-      }`}>
-        {passed ? <CheckCircle2 className="w-12 h-12" /> : <XCircle className="w-12 h-12" />}
+      <div
+        className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 ${
+          passed
+            ? "bg-green-900/30 text-green-400"
+            : "bg-red-900/30 text-red-400"
+        }`}
+      >
+        {passed ? (
+          <CheckCircle2 className="w-12 h-12" />
+        ) : (
+          <XCircle className="w-12 h-12" />
+        )}
       </div>
-      
+
       <h2 className="text-3xl font-bold text-white mb-2">
-        {passed ? 'Quiz Passed!' : 'Keep Trying!'}
+        {passed ? "Quiz Passed!" : "Keep Trying!"}
       </h2>
-      
+
       <p className="text-xl text-slate-300 mb-4">
-        Your Score: <span className={`font-bold ${passed ? 'text-green-400' : 'text-red-400'}`}>
+        Your Score:{" "}
+        <span
+          className={`font-bold ${passed ? "text-green-400" : "text-red-400"}`}
+        >
           {score}%
         </span>
       </p>
-      
+
       <p className="text-slate-400">
-        {passed 
+        {passed
           ? `You passed with a score of ${score}%! Passing score: ${passingScore}%`
-          : `You need ${passingScore}% to pass. Review the material and try again!`
-        }
+          : `You need ${passingScore}% to pass. Review the material and try again!`}
       </p>
     </div>
 
@@ -98,11 +118,11 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
     <div className="space-y-6 mb-8">
       <h3 className="text-xl font-semibold text-white mb-4">Answer Review</h3>
       {questions.map((q, index) => (
-        <AnswerReviewItem 
-          key={q.question} 
-          question={q} 
-          userAnswer={selectedAnswers[index]} 
-          index={index} 
+        <AnswerReviewItem
+          key={q.question}
+          question={q}
+          userAnswer={selectedAnswers[index]}
+          index={index}
         />
       ))}
     </div>
@@ -116,7 +136,7 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
         <RotateCcw className="w-5 h-5" />
         Retake Quiz
       </button>
-      
+
       {passed && (
         <button
           onClick={onClaimReward}
@@ -148,19 +168,26 @@ interface QuizOptionProps {
   onSelect: (index: number) => void;
 }
 
-const QuizOption: React.FC<QuizOptionProps> = ({ option, index, isSelected, onSelect }) => (
+const QuizOption: React.FC<QuizOptionProps> = ({
+  option,
+  index,
+  isSelected,
+  onSelect,
+}) => (
   <button
     onClick={() => onSelect(index)}
     className={`w-full text-left p-4 sm:p-4 rounded-lg border-2 transition-all min-h-[44px] sm:min-h-0 ${
       isSelected
-        ? 'border-indigo-500 bg-indigo-900/30 text-white'
-        : 'border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500 hover:bg-slate-700'
+        ? "border-indigo-500 bg-indigo-900/30 text-white"
+        : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500 hover:bg-slate-700"
     }`}
   >
     <div className="flex items-center gap-3">
-      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-        isSelected ? 'border-indigo-400 bg-indigo-500' : 'border-slate-500'
-      }`}>
+      <div
+        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+          isSelected ? "border-indigo-400 bg-indigo-500" : "border-slate-500"
+        }`}
+      >
         {isSelected && <div className="w-3 h-3 bg-white rounded-full" />}
       </div>
       <span>{option}</span>
@@ -184,7 +211,7 @@ const QuizNavigation: React.FC<QuizNavigationProps> = ({
   canSubmit,
   onPrevious,
   onNext,
-  onSubmit
+  onSubmit,
 }) => (
   <div className="flex flex-col sm:flex-row justify-between gap-3">
     <button
@@ -194,7 +221,7 @@ const QuizNavigation: React.FC<QuizNavigationProps> = ({
     >
       Previous
     </button>
-    
+
     <div className="flex gap-3">
       {isLastQuestion ? (
         <button
@@ -242,7 +269,7 @@ export const QuizQuestionView: React.FC<QuizQuestionViewProps> = ({
   onPrevious,
   onNext,
   onSubmit,
-  canSubmit
+  canSubmit,
 }) => {
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
   const isLastQuestion = currentQuestion === totalQuestions - 1;
@@ -267,7 +294,9 @@ export const QuizQuestionView: React.FC<QuizQuestionViewProps> = ({
 
       {/* Question */}
       <div className="mb-8">
-        <h3 className="text-xl text-white font-medium mb-6">{question.question}</h3>
+        <h3 className="text-xl text-white font-medium mb-6">
+          {question.question}
+        </h3>
         <div className="space-y-3">
           {question.options.map((option, idx) => (
             <QuizOption

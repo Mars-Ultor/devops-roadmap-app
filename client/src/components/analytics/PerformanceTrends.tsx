@@ -1,5 +1,5 @@
-import React from 'react';
-import { BarChart3, TrendingUp, Calendar } from 'lucide-react';
+import React from "react";
+import { BarChart3, TrendingUp, Calendar } from "lucide-react";
 
 interface AnalyticsData {
   weeklyProgress: Array<{
@@ -30,18 +30,25 @@ const PerformanceTrends: React.FC<PerformanceTrendsProps> = ({ analytics }) => {
 
         <div className="space-y-4">
           {analytics.weeklyProgress.map((week, index) => (
-            <div key={week.week} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+            <div
+              key={week.week}
+              className="flex items-center justify-between p-3 bg-gray-700 rounded-lg"
+            >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">
                   {index + 1}
                 </div>
                 <div>
                   <div className="font-medium">{week.week}</div>
-                  <div className="text-sm text-gray-400">{week.sessions} sessions</div>
+                  <div className="text-sm text-gray-400">
+                    {week.sessions} sessions
+                  </div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="font-semibold text-green-400">{Math.round(week.avgScore)}%</div>
+                <div className="font-semibold text-green-400">
+                  {Math.round(week.avgScore)}%
+                </div>
                 <div className="text-sm text-gray-400">avg score</div>
               </div>
             </div>
@@ -58,16 +65,23 @@ const PerformanceTrends: React.FC<PerformanceTrendsProps> = ({ analytics }) => {
 
         <div className="space-y-4">
           {analytics.monthlyTrends.map((month) => (
-            <div key={month.month} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+            <div
+              key={month.month}
+              className="flex items-center justify-between p-3 bg-gray-700 rounded-lg"
+            >
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-purple-400" />
                 <div>
                   <div className="font-medium">{month.month}</div>
-                  <div className="text-sm text-gray-400">{month.skillsLearned} skills learned</div>
+                  <div className="text-sm text-gray-400">
+                    {month.skillsLearned} skills learned
+                  </div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="font-semibold text-yellow-400">+{month.totalXP} XP</div>
+                <div className="font-semibold text-yellow-400">
+                  +{month.totalXP} XP
+                </div>
                 <div className="text-sm text-gray-400">total XP</div>
               </div>
             </div>

@@ -1,31 +1,39 @@
-import type { LeveledLessonContent } from '../types/lessonContent';
+import type { LeveledLessonContent } from "../types/lessonContent";
 
 export const week7Lesson3DeploymentsServices: LeveledLessonContent = {
-  lessonId: 'week7-lesson3-deployments-services',
+  lessonId: "week7-lesson3-deployments-services",
   baseLesson: {
-    title: 'Deployments & Services',
-    description: 'Master production deployment patterns, service networking, and operational practices for Kubernetes applications.',
+    title: "Deployments & Services",
+    description:
+      "Master production deployment patterns, service networking, and operational practices for Kubernetes applications.",
     learningObjectives: [
-      'Implement production-ready deployment strategies',
-      'Configure advanced service networking patterns',
-      'Manage application configuration and secrets',
-      'Implement health checks and resource management',
-      'Perform zero-downtime updates and rollbacks'
+      "Implement production-ready deployment strategies",
+      "Configure advanced service networking patterns",
+      "Manage application configuration and secrets",
+      "Implement health checks and resource management",
+      "Perform zero-downtime updates and rollbacks",
     ],
-    prerequisites: ['Kubernetes basics', 'kubectl proficiency', 'YAML manifests', 'Container networking'],
+    prerequisites: [
+      "Kubernetes basics",
+      "kubectl proficiency",
+      "YAML manifests",
+      "Container networking",
+    ],
     estimatedTimePerLevel: {
       crawl: 120,
       walk: 60,
       runGuided: 90,
-      runIndependent: 180
-    }
+      runIndependent: 180,
+    },
   },
   crawl: {
-    introduction: 'Learn advanced Kubernetes patterns for production deployments, including multi-tier applications, configuration management, and operational best practices.',
+    introduction:
+      "Learn advanced Kubernetes patterns for production deployments, including multi-tier applications, configuration management, and operational best practices.",
     steps: [
       {
         stepNumber: 1,
-        instruction: 'Create a multi-tier application with frontend, API, and database',
+        instruction:
+          "Create a multi-tier application with frontend, API, and database",
         command: `# Create namespace for isolation:
 kubectl create namespace myapp
 
@@ -92,24 +100,26 @@ spec:
   - port: 5432
     targetPort: 5432
 EOF`,
-        explanation: 'Multi-tier applications need careful planning. We use StatefulSet for database (persistent identity and storage), ClusterIP Service for internal access, and Secrets for passwords. Namespace provides isolation. VolumeClaimTemplates create persistent storage that survives pod restarts.',
-        expectedOutput: 'StatefulSet, Secret, and Service created successfully, postgres pod running with persistent volume',
+        explanation:
+          "Multi-tier applications need careful planning. We use StatefulSet for database (persistent identity and storage), ClusterIP Service for internal access, and Secrets for passwords. Namespace provides isolation. VolumeClaimTemplates create persistent storage that survives pod restarts.",
+        expectedOutput:
+          "StatefulSet, Secret, and Service created successfully, postgres pod running with persistent volume",
         validationCriteria: [
-          'StatefulSet creates postgres pod with persistent volume',
-          'Secret contains password',
-          'Service provides stable DNS name postgres.myapp.svc.cluster.local',
-          'Database accessible internally'
+          "StatefulSet creates postgres pod with persistent volume",
+          "Secret contains password",
+          "Service provides stable DNS name postgres.myapp.svc.cluster.local",
+          "Database accessible internally",
         ],
         commonMistakes: [
-          'Forgetting namespace in kubectl commands',
-          'Using Deployment instead of StatefulSet for database (loses data on restart)',
-          'Not creating Secret before StatefulSet (pod fails to start)',
-          'Wrong volume mount path for PostgreSQL'
-        ]
+          "Forgetting namespace in kubectl commands",
+          "Using Deployment instead of StatefulSet for database (loses data on restart)",
+          "Not creating Secret before StatefulSet (pod fails to start)",
+          "Wrong volume mount path for PostgreSQL",
+        ],
       },
       {
         stepNumber: 2,
-        instruction: 'Deploy API tier with configuration management',
+        instruction: "Deploy API tier with configuration management",
         command: `# Create ConfigMap for API configuration:
 kubectl apply -f - <<EOF
 apiVersion: v1
@@ -189,25 +199,27 @@ spec:
   - port: 80
     targetPort: 3000
 EOF`,
-        explanation: 'ConfigMaps store non-sensitive configuration, Secrets for sensitive data. envFrom injects all values as environment variables. Resources prevent starvation and ensure scheduling. Readiness probes ensure traffic only goes to ready pods, liveness probes restart unhealthy containers.',
-        expectedOutput: 'ConfigMap, Secret, Deployment with 3 replicas, Service created, all pods running and ready',
+        explanation:
+          "ConfigMaps store non-sensitive configuration, Secrets for sensitive data. envFrom injects all values as environment variables. Resources prevent starvation and ensure scheduling. Readiness probes ensure traffic only goes to ready pods, liveness probes restart unhealthy containers.",
+        expectedOutput:
+          "ConfigMap, Secret, Deployment with 3 replicas, Service created, all pods running and ready",
         validationCriteria: [
-          'ConfigMap contains environment variables',
-          'Secret contains JWT secret',
-          'API pods have resource requests/limits',
-          'Readiness and liveness probes configured',
-          'All 3 API pods running and passing health checks'
+          "ConfigMap contains environment variables",
+          "Secret contains JWT secret",
+          "API pods have resource requests/limits",
+          "Readiness and liveness probes configured",
+          "All 3 API pods running and passing health checks",
         ],
         commonMistakes: [
-          'Hardcoding secrets in ConfigMap (use Secrets for sensitive data)',
-          'Not setting resource requests (pods may not schedule or starve resources)',
-          'Wrong probe paths (must match actual API endpoints)',
-          'Forgetting envFrom syntax (env vs envFrom)'
-        ]
+          "Hardcoding secrets in ConfigMap (use Secrets for sensitive data)",
+          "Not setting resource requests (pods may not schedule or starve resources)",
+          "Wrong probe paths (must match actual API endpoints)",
+          "Forgetting envFrom syntax (env vs envFrom)",
+        ],
       },
       {
         stepNumber: 3,
-        instruction: 'Deploy frontend with external access',
+        instruction: "Deploy frontend with external access",
         command: `# Create frontend ConfigMap:
 kubectl apply -f - <<EOF
 apiVersion: v1
@@ -274,24 +286,26 @@ spec:
     targetPort: 80
   type: LoadBalancer
 EOF`,
-        explanation: 'Frontend uses nginx to serve static files. ConfigMap provides API URL. LoadBalancer Service provisions external load balancer (AWS ELB, GCP Load Balancer). External users access via LoadBalancer IP/DNS. Frontend calls API via internal Service DNS.',
-        expectedOutput: 'Frontend deployment with 3 replicas, LoadBalancer Service created, external IP assigned',
+        explanation:
+          "Frontend uses nginx to serve static files. ConfigMap provides API URL. LoadBalancer Service provisions external load balancer (AWS ELB, GCP Load Balancer). External users access via LoadBalancer IP/DNS. Frontend calls API via internal Service DNS.",
+        expectedOutput:
+          "Frontend deployment with 3 replicas, LoadBalancer Service created, external IP assigned",
         validationCriteria: [
-          'Frontend pods running with nginx',
-          'LoadBalancer Service gets external IP (cloud) or NodePort (local)',
-          'Frontend can reach API via internal DNS',
-          'External access works via LoadBalancer'
+          "Frontend pods running with nginx",
+          "LoadBalancer Service gets external IP (cloud) or NodePort (local)",
+          "Frontend can reach API via internal DNS",
+          "External access works via LoadBalancer",
         ],
         commonMistakes: [
-          'Using ClusterIP for frontend (not externally accessible)',
-          'Wrong API URL in ConfigMap (must use internal Service DNS)',
-          'Not setting readiness probe for nginx (traffic to unhealthy pods)',
-          'LoadBalancer not working on local clusters (use NodePort instead)'
-        ]
+          "Using ClusterIP for frontend (not externally accessible)",
+          "Wrong API URL in ConfigMap (must use internal Service DNS)",
+          "Not setting readiness probe for nginx (traffic to unhealthy pods)",
+          "LoadBalancer not working on local clusters (use NodePort instead)",
+        ],
       },
       {
         stepNumber: 4,
-        instruction: 'Implement HorizontalPodAutoscaler for automatic scaling',
+        instruction: "Implement HorizontalPodAutoscaler for automatic scaling",
         command: `# Enable metrics server (required for HPA):
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
@@ -332,24 +346,26 @@ kubectl get hpa -n myapp
 
 # Generate load to trigger scaling:
 kubectl run load-generator --image=busybox --rm -it --restart=Never -- sh -c "while true; do wget -q -O- http://api.myapp.svc.cluster.local/health; done"`,
-        explanation: 'HPA automatically scales pods based on CPU/memory utilization. Metrics server collects resource metrics. HPA maintains target utilization by adding/removing pods. Multiple metrics can be used (CPU + memory). Load testing triggers scaling up.',
-        expectedOutput: 'HPA created, shows current replicas and target utilization, pods scale up under load',
+        explanation:
+          "HPA automatically scales pods based on CPU/memory utilization. Metrics server collects resource metrics. HPA maintains target utilization by adding/removing pods. Multiple metrics can be used (CPU + memory). Load testing triggers scaling up.",
+        expectedOutput:
+          "HPA created, shows current replicas and target utilization, pods scale up under load",
         validationCriteria: [
-          'HPA created and shows metrics',
-          'Pods scale up when CPU exceeds 70%',
-          'Pods scale down when load decreases',
-          'Stays within min/max replica bounds'
+          "HPA created and shows metrics",
+          "Pods scale up when CPU exceeds 70%",
+          "Pods scale down when load decreases",
+          "Stays within min/max replica bounds",
         ],
         commonMistakes: [
-          'Metrics server not installed (HPA shows <unknown> metrics)',
-          'No resource requests on pods (HPA can\'t calculate utilization)',
-          'Too low minReplicas (can\'t handle traffic spikes)',
-          'Too high maxReplicas (cost explosion under attack)'
-        ]
+          "Metrics server not installed (HPA shows <unknown> metrics)",
+          "No resource requests on pods (HPA can't calculate utilization)",
+          "Too low minReplicas (can't handle traffic spikes)",
+          "Too high maxReplicas (cost explosion under attack)",
+        ],
       },
       {
         stepNumber: 5,
-        instruction: 'Configure Ingress for HTTP routing and SSL termination',
+        instruction: "Configure Ingress for HTTP routing and SSL termination",
         command: `# Install NGINX Ingress Controller (if not already installed):
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
 
@@ -388,24 +404,27 @@ kubectl create secret tls myapp-tls --key /path/to/tls.key --cert /path/to/tls.c
 kubectl get ingress -n myapp
 
 # Test access (update DNS or /etc/hosts to point myapp.example.com to Ingress IP)`,
-        explanation: 'Ingress provides HTTP/HTTPS routing, SSL termination, and path-based routing. NGINX Ingress Controller handles traffic. Annotations control behavior (rewrites, rate limiting). TLS secrets enable HTTPS. Multiple hosts and paths supported.',
-        expectedOutput: 'Ingress created, routes traffic to frontend service, HTTPS enabled with TLS secret',
+        explanation:
+          "Ingress provides HTTP/HTTPS routing, SSL termination, and path-based routing. NGINX Ingress Controller handles traffic. Annotations control behavior (rewrites, rate limiting). TLS secrets enable HTTPS. Multiple hosts and paths supported.",
+        expectedOutput:
+          "Ingress created, routes traffic to frontend service, HTTPS enabled with TLS secret",
         validationCriteria: [
-          'Ingress shows ADDRESS (load balancer IP)',
-          'HTTP requests route to frontend pods',
-          'HTTPS works with valid certificate',
-          'Host-based routing works (myapp.example.com)'
+          "Ingress shows ADDRESS (load balancer IP)",
+          "HTTP requests route to frontend pods",
+          "HTTPS works with valid certificate",
+          "Host-based routing works (myapp.example.com)",
         ],
         commonMistakes: [
-          'Ingress controller not installed (traffic not routed)',
-          'Wrong ingressClassName (must match controller)',
-          'TLS secret not created (HTTPS fails)',
-          'DNS not pointing to Ingress IP (requests fail)'
-        ]
+          "Ingress controller not installed (traffic not routed)",
+          "Wrong ingressClassName (must match controller)",
+          "TLS secret not created (HTTPS fails)",
+          "DNS not pointing to Ingress IP (requests fail)",
+        ],
       },
       {
         stepNumber: 6,
-        instruction: 'Implement rolling updates with blue-green deployment strategy',
+        instruction:
+          "Implement rolling updates with blue-green deployment strategy",
         command: `# Update API with new image (rolling update):
 kubectl set image deployment/api api=node:19-alpine -n myapp
 
@@ -449,24 +468,26 @@ kubectl get pods -l app=api -n myapp
 
 # Delete blue deployment after verification:
 kubectl delete deployment api -n myapp`,
-        explanation: 'Rolling updates gradually replace pods (default). Blue-green creates parallel deployment, then switches Service selector. Zero downtime, easy rollback (switch selector back). Blue-green uses more resources but safer for complex changes.',
-        expectedOutput: 'Rolling update completes without downtime, blue-green deployment switches traffic instantly',
+        explanation:
+          "Rolling updates gradually replace pods (default). Blue-green creates parallel deployment, then switches Service selector. Zero downtime, easy rollback (switch selector back). Blue-green uses more resources but safer for complex changes.",
+        expectedOutput:
+          "Rolling update completes without downtime, blue-green deployment switches traffic instantly",
         validationCriteria: [
-          'Rolling update maintains service availability',
-          'Blue-green switches all traffic at once',
-          'Service selector change routes to new pods',
-          'Old deployment can be kept for rollback'
+          "Rolling update maintains service availability",
+          "Blue-green switches all traffic at once",
+          "Service selector change routes to new pods",
+          "Old deployment can be kept for rollback",
         ],
         commonMistakes: [
-          'Not waiting for rollout to complete before declaring success',
-          'Blue-green: forgetting to update Service selector (traffic still goes to blue)',
-          'Resource constraints during blue-green (double the pods)',
-          'Not testing new version before switching traffic'
-        ]
+          "Not waiting for rollout to complete before declaring success",
+          "Blue-green: forgetting to update Service selector (traffic still goes to blue)",
+          "Resource constraints during blue-green (double the pods)",
+          "Not testing new version before switching traffic",
+        ],
       },
       {
         stepNumber: 7,
-        instruction: 'Set up monitoring with Prometheus and Grafana',
+        instruction: "Set up monitoring with Prometheus and Grafana",
         command: `# Install kube-prometheus-stack (includes Prometheus, Grafana, AlertManager):
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
@@ -487,24 +508,26 @@ kubectl port-forward svc/monitoring-grafana 3000:80 -n monitoring
 kubectl port-forward svc/monitoring-prometheus 9090:9090 -n monitoring
 
 # Query metrics at http://localhost:9090 (e.g., container_cpu_usage_seconds_total)`,
-        explanation: 'kube-prometheus-stack provides production monitoring. Prometheus collects metrics, Grafana visualizes them. AlertManager handles alerts. Pre-configured dashboards for Kubernetes monitoring. Port forwarding enables local access.',
-        expectedOutput: 'Prometheus and Grafana deployed, accessible via port forwarding, Kubernetes metrics collected',
+        explanation:
+          "kube-prometheus-stack provides production monitoring. Prometheus collects metrics, Grafana visualizes them. AlertManager handles alerts. Pre-configured dashboards for Kubernetes monitoring. Port forwarding enables local access.",
+        expectedOutput:
+          "Prometheus and Grafana deployed, accessible via port forwarding, Kubernetes metrics collected",
         validationCriteria: [
-          'All monitoring pods running',
-          'Grafana accessible with admin credentials',
-          'Kubernetes dashboards available',
-          'Custom metrics can be queried in Prometheus'
+          "All monitoring pods running",
+          "Grafana accessible with admin credentials",
+          "Kubernetes dashboards available",
+          "Custom metrics can be queried in Prometheus",
         ],
         commonMistakes: [
-          'Helm not installed (use kubectl apply for manifests instead)',
-          'Port forwarding conflicts (choose different local ports)',
-          'Security groups blocking access (open ports in cloud)',
-          'Not waiting for all components to be ready'
-        ]
+          "Helm not installed (use kubectl apply for manifests instead)",
+          "Port forwarding conflicts (choose different local ports)",
+          "Security groups blocking access (open ports in cloud)",
+          "Not waiting for all components to be ready",
+        ],
       },
       {
         stepNumber: 8,
-        instruction: 'Implement logging with centralized log aggregation',
+        instruction: "Implement logging with centralized log aggregation",
         command: `# Install Elasticsearch, Fluent Bit, Kibana (EFK stack):
 kubectl apply -f https://raw.githubusercontent.com/fluent/fluent-bit-kubernetes-logging/main/output/elasticsearch/fluent-bit-configmap.yaml
 kubectl apply -f https://raw.githubusercontent.com/fluent/fluent-bit-kubernetes-logging/main/output/elasticsearch/fluent-bit-ds.yaml
@@ -527,24 +550,26 @@ kubectl port-forward svc/kibana-kibana 5601:5601 -n logging
 kubectl logs -f deployment/api -n myapp
 
 # Search logs in Kibana (create index pattern for fluent-bit*)`,
-        explanation: 'Fluent Bit collects logs from all pods and sends to Elasticsearch. Kibana provides search and visualization. EFK stack enables centralized logging. Structured logging in applications enables better querying.',
-        expectedOutput: 'EFK stack deployed, logs collected from all pods, searchable in Kibana',
+        explanation:
+          "Fluent Bit collects logs from all pods and sends to Elasticsearch. Kibana provides search and visualization. EFK stack enables centralized logging. Structured logging in applications enables better querying.",
+        expectedOutput:
+          "EFK stack deployed, logs collected from all pods, searchable in Kibana",
         validationCriteria: [
-          'Fluent Bit collecting logs from all namespaces',
-          'Elasticsearch storing logs',
-          'Kibana accessible for log search',
-          'Application logs visible with pod metadata'
+          "Fluent Bit collecting logs from all namespaces",
+          "Elasticsearch storing logs",
+          "Kibana accessible for log search",
+          "Application logs visible with pod metadata",
         ],
         commonMistakes: [
-          'Resource constraints (Elasticsearch needs significant CPU/memory)',
-          'Not configuring log parsing (logs as plain text)',
-          'Security (EFK exposed externally without authentication)',
-          'Log retention not configured (disk fills up)'
-        ]
+          "Resource constraints (Elasticsearch needs significant CPU/memory)",
+          "Not configuring log parsing (logs as plain text)",
+          "Security (EFK exposed externally without authentication)",
+          "Log retention not configured (disk fills up)",
+        ],
       },
       {
         stepNumber: 9,
-        instruction: 'Implement backup and disaster recovery',
+        instruction: "Implement backup and disaster recovery",
         command: `# Backup database with pg_dump:
 kubectl run pg-backup --image=postgres:15-alpine --rm -it --restart=Never -n myapp -- \
   pg_dump -h postgres.myapp.svc.cluster.local -U appuser -d myapp > /tmp/backup.sql
@@ -608,24 +633,26 @@ spec:
     requests:
       storage: 100Gi
 EOF`,
-        explanation: 'Database backups critical for DR. pg_dump creates logical backup. CronJob automates daily backups. PVC provides persistent storage for backups. In production, use cloud storage (S3) and backup tools like Velero for cluster backups.',
-        expectedOutput: 'Manual backup succeeds, CronJob created for automated backups, backups stored on PVC',
+        explanation:
+          "Database backups critical for DR. pg_dump creates logical backup. CronJob automates daily backups. PVC provides persistent storage for backups. In production, use cloud storage (S3) and backup tools like Velero for cluster backups.",
+        expectedOutput:
+          "Manual backup succeeds, CronJob created for automated backups, backups stored on PVC",
         validationCriteria: [
-          'pg_dump creates valid SQL backup',
-          'CronJob runs on schedule',
-          'Backups stored persistently',
-          'Backup can be restored (test with new database)'
+          "pg_dump creates valid SQL backup",
+          "CronJob runs on schedule",
+          "Backups stored persistently",
+          "Backup can be restored (test with new database)",
         ],
         commonMistakes: [
-          'Running backup during peak hours (schedule off-peak)',
-          'No password environment variable (connection fails)',
-          'Not testing backup restoration',
-          'Insufficient PVC storage for backups'
-        ]
+          "Running backup during peak hours (schedule off-peak)",
+          "No password environment variable (connection fails)",
+          "Not testing backup restoration",
+          "Insufficient PVC storage for backups",
+        ],
       },
       {
         stepNumber: 10,
-        instruction: 'Set up CI/CD pipeline for automated deployments',
+        instruction: "Set up CI/CD pipeline for automated deployments",
         command: `# Create GitHub Actions workflow (.github/workflows/deploy.yml):
 cat > .github/workflows/deploy.yml <<EOF
 name: Deploy to Kubernetes
@@ -667,24 +694,26 @@ mkdir k8s
 # Copy all YAML manifests to k8s/ directory
 
 # Push to GitHub, trigger deployment on merge to main`,
-        explanation: 'GitHub Actions builds Docker images, pushes to ECR, updates Kubernetes manifests, applies to cluster. Automated deployment on every main branch push. Rollout status ensures deployment succeeds.',
-        expectedOutput: 'GitHub Actions workflow created, triggers on push to main, builds and deploys successfully',
+        explanation:
+          "GitHub Actions builds Docker images, pushes to ECR, updates Kubernetes manifests, applies to cluster. Automated deployment on every main branch push. Rollout status ensures deployment succeeds.",
+        expectedOutput:
+          "GitHub Actions workflow created, triggers on push to main, builds and deploys successfully",
         validationCriteria: [
-          'Workflow runs on push to main',
-          'Docker image built and pushed to registry',
-          'Kubernetes manifests updated and applied',
-          'Rollout completes successfully'
+          "Workflow runs on push to main",
+          "Docker image built and pushed to registry",
+          "Kubernetes manifests updated and applied",
+          "Rollout completes successfully",
         ],
         commonMistakes: [
-          'AWS credentials not in GitHub secrets',
-          'Wrong ECR registry URL',
-          'Manifest paths incorrect in workflow',
-          'Not waiting for rollout status (deployment may fail silently)'
-        ]
+          "AWS credentials not in GitHub secrets",
+          "Wrong ECR registry URL",
+          "Manifest paths incorrect in workflow",
+          "Not waiting for rollout status (deployment may fail silently)",
+        ],
       },
       {
         stepNumber: 11,
-        instruction: 'Implement security best practices',
+        instruction: "Implement security best practices",
         command: `# Create NetworkPolicy to restrict traffic:
 kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
@@ -758,24 +787,26 @@ spec:
     image: aquasecurity/trivy:latest
     command: ["trivy", "image", "node:18-alpine"]
 EOF`,
-        explanation: 'NetworkPolicy restricts pod-to-pod communication. ServiceAccount provides identity. Security context runs containers as non-root, drops capabilities. Trivy scans for vulnerabilities. RBAC limits permissions.',
-        expectedOutput: 'NetworkPolicy blocks unauthorized traffic, pods run with security context, vulnerability scan completes',
+        explanation:
+          "NetworkPolicy restricts pod-to-pod communication. ServiceAccount provides identity. Security context runs containers as non-root, drops capabilities. Trivy scans for vulnerabilities. RBAC limits permissions.",
+        expectedOutput:
+          "NetworkPolicy blocks unauthorized traffic, pods run with security context, vulnerability scan completes",
         validationCriteria: [
-          'NetworkPolicy allows only frontend→API traffic',
-          'Pods run as non-root user',
-          'Capabilities dropped',
-          'Trivy identifies known vulnerabilities'
+          "NetworkPolicy allows only frontend→API traffic",
+          "Pods run as non-root user",
+          "Capabilities dropped",
+          "Trivy identifies known vulnerabilities",
         ],
         commonMistakes: [
-          'NetworkPolicy too restrictive (blocks legitimate traffic)',
-          'Security context breaks application (wrong user ID)',
-          'Not scanning images regularly',
-          'RBAC too permissive (principle of least privilege)'
-        ]
+          "NetworkPolicy too restrictive (blocks legitimate traffic)",
+          "Security context breaks application (wrong user ID)",
+          "Not scanning images regularly",
+          "RBAC too permissive (principle of least privilege)",
+        ],
       },
       {
         stepNumber: 12,
-        instruction: 'Troubleshoot common production issues',
+        instruction: "Troubleshoot common production issues",
         command: `# Check pod status and events:
 kubectl get pods -n myapp
 kubectl describe pod <pod-name> -n myapp
@@ -801,31 +832,36 @@ kubectl cluster-info
 # Debug deployments:
 kubectl rollout status deployment/api -n myapp
 kubectl rollout history deployment/api -n myapp`,
-        explanation: 'Systematic troubleshooting: check status first, then events, logs, resources, networking. kubectl describe provides comprehensive information. --previous shows crashed container logs. kubectl top shows resource usage.',
-        expectedOutput: 'All debugging commands work, issues identified and resolved using kubectl commands',
+        explanation:
+          "Systematic troubleshooting: check status first, then events, logs, resources, networking. kubectl describe provides comprehensive information. --previous shows crashed container logs. kubectl top shows resource usage.",
+        expectedOutput:
+          "All debugging commands work, issues identified and resolved using kubectl commands",
         validationCriteria: [
-          'Pod status and events reveal issues',
-          'Logs show application errors',
-          'Resource usage identifies bottlenecks',
-          'Networking tests verify connectivity',
-          'Deployment status shows rollout issues'
+          "Pod status and events reveal issues",
+          "Logs show application errors",
+          "Resource usage identifies bottlenecks",
+          "Networking tests verify connectivity",
+          "Deployment status shows rollout issues",
         ],
         commonMistakes: [
-          'Not checking events first (shows cluster-level issues)',
-          'Forgetting -n namespace flag',
-          'Not using --previous for crash logs',
-          'Running debug commands as different user (RBAC issues)'
-        ]
-      }
+          "Not checking events first (shows cluster-level issues)",
+          "Forgetting -n namespace flag",
+          "Not using --previous for crash logs",
+          "Running debug commands as different user (RBAC issues)",
+        ],
+      },
     ],
-    expectedOutcome: 'Production-ready Kubernetes deployment with multi-tier application, monitoring, security, CI/CD, and operational practices.'
+    expectedOutcome:
+      "Production-ready Kubernetes deployment with multi-tier application, monitoring, security, CI/CD, and operational practices.",
   },
   walk: {
-    introduction: 'Apply production deployment patterns to scenario-based exercises, focusing on configuration, networking, and operational excellence.',
+    introduction:
+      "Apply production deployment patterns to scenario-based exercises, focusing on configuration, networking, and operational excellence.",
     exercises: [
       {
         exerciseNumber: 1,
-        scenario: 'Design a production deployment for a Node.js API with PostgreSQL database. Complete the YAML manifests.',
+        scenario:
+          "Design a production deployment for a Node.js API with PostgreSQL database. Complete the YAML manifests.",
         template: `# StatefulSet for PostgreSQL:
 apiVersion: apps/v1
 kind: StatefulSet
@@ -918,152 +954,153 @@ spec:
           initialDelaySeconds: ___________`,
         blanks: [
           {
-            id: 'statefulset_replicas',
-            label: 'PostgreSQL replicas',
-            hint: 'How many for database?',
-            correctValue: '1',
-            validationPattern: '1'
+            id: "statefulset_replicas",
+            label: "PostgreSQL replicas",
+            hint: "How many for database?",
+            correctValue: "1",
+            validationPattern: "1",
           },
           {
-            id: 'postgres_port',
-            label: 'PostgreSQL port',
-            hint: 'Default PostgreSQL port',
-            correctValue: '5432',
-            validationPattern: '5432'
+            id: "postgres_port",
+            label: "PostgreSQL port",
+            hint: "Default PostgreSQL port",
+            correctValue: "5432",
+            validationPattern: "5432",
           },
           {
-            id: 'env_valuefrom',
-            label: 'Environment value source',
-            hint: 'Where to get password from?',
-            correctValue: 'secretKeyRef',
-            validationPattern: 'secretKeyRef'
+            id: "env_valuefrom",
+            label: "Environment value source",
+            hint: "Where to get password from?",
+            correctValue: "secretKeyRef",
+            validationPattern: "secretKeyRef",
           },
           {
-            id: 'postgres_mountpath',
-            label: 'PostgreSQL data mount path',
-            hint: 'Where PostgreSQL stores data?',
-            correctValue: '/var/lib/postgresql/data',
-            validationPattern: '/var/lib/postgresql/data'
+            id: "postgres_mountpath",
+            label: "PostgreSQL data mount path",
+            hint: "Where PostgreSQL stores data?",
+            correctValue: "/var/lib/postgresql/data",
+            validationPattern: "/var/lib/postgresql/data",
           },
           {
-            id: 'storage_size',
-            label: 'Storage size',
-            hint: 'How much storage for database?',
-            correctValue: '10Gi',
-            validationPattern: '10Gi|10.*Gi'
+            id: "storage_size",
+            label: "Storage size",
+            hint: "How much storage for database?",
+            correctValue: "10Gi",
+            validationPattern: "10Gi|10.*Gi",
           },
           {
-            id: 'secret_password',
-            label: 'Base64 encoded password',
-            hint: 'Encode password with base64',
-            correctValue: 'bXlzZWNyZXRwYXNzd29yZA==',
-            validationPattern: 'bXlzZWNyZXRwYXNzd29yZA==|base64.*password'
+            id: "secret_password",
+            label: "Base64 encoded password",
+            hint: "Encode password with base64",
+            correctValue: "bXlzZWNyZXRwYXNzd29yZA==",
+            validationPattern: "bXlzZWNyZXRwYXNzd29yZA==|base64.*password",
           },
           {
-            id: 'api_replicas',
-            label: 'API replicas',
-            hint: 'How many for high availability?',
-            correctValue: '3',
-            validationPattern: '3'
+            id: "api_replicas",
+            label: "API replicas",
+            hint: "How many for high availability?",
+            correctValue: "3",
+            validationPattern: "3",
           },
           {
-            id: 'api_port',
-            label: 'API container port',
-            hint: 'What port does API listen on?',
-            correctValue: '3000',
-            validationPattern: '3000'
+            id: "api_port",
+            label: "API container port",
+            hint: "What port does API listen on?",
+            correctValue: "3000",
+            validationPattern: "3000",
           },
           {
-            id: 'database_url',
-            label: 'Database URL value',
-            hint: 'Full connection string',
-            correctValue: 'postgres://appuser:mysecretpassword@postgres.default.svc.cluster.local:5432/myapp',
-            validationPattern: 'postgres://.*@postgres.*svc.*5432'
+            id: "database_url",
+            label: "Database URL value",
+            hint: "Full connection string",
+            correctValue:
+              "postgres://appuser:mysecretpassword@postgres.default.svc.cluster.local:5432/myapp",
+            validationPattern: "postgres://.*@postgres.*svc.*5432",
           },
           {
-            id: 'cpu_request',
-            label: 'CPU request',
-            hint: 'Minimum CPU for scheduling',
-            correctValue: '100m',
-            validationPattern: '100m|0\\.1'
+            id: "cpu_request",
+            label: "CPU request",
+            hint: "Minimum CPU for scheduling",
+            correctValue: "100m",
+            validationPattern: "100m|0\\.1",
           },
           {
-            id: 'memory_request',
-            label: 'Memory request',
-            hint: 'Minimum memory for scheduling',
-            correctValue: '128Mi',
-            validationPattern: '128Mi|128.*Mi'
+            id: "memory_request",
+            label: "Memory request",
+            hint: "Minimum memory for scheduling",
+            correctValue: "128Mi",
+            validationPattern: "128Mi|128.*Mi",
           },
           {
-            id: 'cpu_limit',
-            label: 'CPU limit',
-            hint: 'Maximum CPU usage',
-            correctValue: '500m',
-            validationPattern: '500m|0\\.5'
+            id: "cpu_limit",
+            label: "CPU limit",
+            hint: "Maximum CPU usage",
+            correctValue: "500m",
+            validationPattern: "500m|0\\.5",
           },
           {
-            id: 'memory_limit',
-            label: 'Memory limit',
-            hint: 'Maximum memory usage',
-            correctValue: '512Mi',
-            validationPattern: '512Mi|512.*Mi'
+            id: "memory_limit",
+            label: "Memory limit",
+            hint: "Maximum memory usage",
+            correctValue: "512Mi",
+            validationPattern: "512Mi|512.*Mi",
           },
           {
-            id: 'readiness_probe_type',
-            label: 'Readiness probe type',
-            hint: 'How to check if ready?',
-            correctValue: 'httpGet',
-            validationPattern: 'httpGet'
+            id: "readiness_probe_type",
+            label: "Readiness probe type",
+            hint: "How to check if ready?",
+            correctValue: "httpGet",
+            validationPattern: "httpGet",
           },
           {
-            id: 'readiness_path',
-            label: 'Readiness probe path',
-            hint: 'Health check endpoint',
-            correctValue: '/health',
-            validationPattern: '/health'
+            id: "readiness_path",
+            label: "Readiness probe path",
+            hint: "Health check endpoint",
+            correctValue: "/health",
+            validationPattern: "/health",
           },
           {
-            id: 'readiness_port',
-            label: 'Readiness probe port',
-            hint: 'Which port to check?',
-            correctValue: '3000',
-            validationPattern: '3000'
+            id: "readiness_port",
+            label: "Readiness probe port",
+            hint: "Which port to check?",
+            correctValue: "3000",
+            validationPattern: "3000",
           },
           {
-            id: 'readiness_delay',
-            label: 'Readiness initial delay',
-            hint: 'How long to wait before first check?',
-            correctValue: '5',
-            validationPattern: '5'
+            id: "readiness_delay",
+            label: "Readiness initial delay",
+            hint: "How long to wait before first check?",
+            correctValue: "5",
+            validationPattern: "5",
           },
           {
-            id: 'liveness_probe_type',
-            label: 'Liveness probe type',
-            hint: 'How to check if alive?',
-            correctValue: 'httpGet',
-            validationPattern: 'httpGet'
+            id: "liveness_probe_type",
+            label: "Liveness probe type",
+            hint: "How to check if alive?",
+            correctValue: "httpGet",
+            validationPattern: "httpGet",
           },
           {
-            id: 'liveness_path',
-            label: 'Liveness probe path',
-            hint: 'Health check endpoint',
-            correctValue: '/health',
-            validationPattern: '/health'
+            id: "liveness_path",
+            label: "Liveness probe path",
+            hint: "Health check endpoint",
+            correctValue: "/health",
+            validationPattern: "/health",
           },
           {
-            id: 'liveness_port',
-            label: 'Liveness probe port',
-            hint: 'Which port to check?',
-            correctValue: '3000',
-            validationPattern: '3000'
+            id: "liveness_port",
+            label: "Liveness probe port",
+            hint: "Which port to check?",
+            correctValue: "3000",
+            validationPattern: "3000",
           },
           {
-            id: 'liveness_delay',
-            label: 'Liveness initial delay',
-            hint: 'How long to wait before first check?',
-            correctValue: '30',
-            validationPattern: '30'
-          }
+            id: "liveness_delay",
+            label: "Liveness initial delay",
+            hint: "How long to wait before first check?",
+            correctValue: "30",
+            validationPattern: "30",
+          },
         ],
         solution: `# StatefulSet for PostgreSQL:
 apiVersion: apps/v1
@@ -1155,11 +1192,13 @@ spec:
             path: /health
             port: 3000
           initialDelaySeconds: 30`,
-        explanation: 'Production deployment uses StatefulSet for database persistence, Secrets for passwords, ConfigMaps for configuration, resource limits, and health probes. StatefulSet ensures ordered deployment and stable network identity.'
+        explanation:
+          "Production deployment uses StatefulSet for database persistence, Secrets for passwords, ConfigMaps for configuration, resource limits, and health probes. StatefulSet ensures ordered deployment and stable network identity.",
       },
       {
         exerciseNumber: 2,
-        scenario: 'Configure Ingress for a multi-service application with SSL and path-based routing.',
+        scenario:
+          "Configure Ingress for a multi-service application with SSL and path-based routing.",
         template: `# Install NGINX Ingress Controller:
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
 
@@ -1203,68 +1242,68 @@ curl -k https://myapp.example.com/api/health
 curl -k https://myapp.example.com/`,
         blanks: [
           {
-            id: 'rewrite_target',
-            label: 'Rewrite target annotation',
-            hint: 'How to handle path rewrites?',
-            correctValue: '/',
-            validationPattern: '/'
+            id: "rewrite_target",
+            label: "Rewrite target annotation",
+            hint: "How to handle path rewrites?",
+            correctValue: "/",
+            validationPattern: "/",
           },
           {
-            id: 'ingress_class',
-            label: 'Ingress class name',
-            hint: 'Which controller to use?',
-            correctValue: 'nginx',
-            validationPattern: 'nginx'
+            id: "ingress_class",
+            label: "Ingress class name",
+            hint: "Which controller to use?",
+            correctValue: "nginx",
+            validationPattern: "nginx",
           },
           {
-            id: 'frontend_path',
-            label: 'Frontend path',
-            hint: 'Root path for frontend',
-            correctValue: '/',
-            validationPattern: '/'
+            id: "frontend_path",
+            label: "Frontend path",
+            hint: "Root path for frontend",
+            correctValue: "/",
+            validationPattern: "/",
           },
           {
-            id: 'frontend_service',
-            label: 'Frontend service name',
-            hint: 'Which service serves frontend?',
-            correctValue: 'frontend',
-            validationPattern: 'frontend'
+            id: "frontend_service",
+            label: "Frontend service name",
+            hint: "Which service serves frontend?",
+            correctValue: "frontend",
+            validationPattern: "frontend",
           },
           {
-            id: 'frontend_port',
-            label: 'Frontend service port',
-            hint: 'Which port does frontend service expose?',
-            correctValue: '80',
-            validationPattern: '80'
+            id: "frontend_port",
+            label: "Frontend service port",
+            hint: "Which port does frontend service expose?",
+            correctValue: "80",
+            validationPattern: "80",
           },
           {
-            id: 'api_path',
-            label: 'API path',
-            hint: 'Path prefix for API routes',
-            correctValue: '/api',
-            validationPattern: '/api'
+            id: "api_path",
+            label: "API path",
+            hint: "Path prefix for API routes",
+            correctValue: "/api",
+            validationPattern: "/api",
           },
           {
-            id: 'api_service',
-            label: 'API service name',
-            hint: 'Which service serves API?',
-            correctValue: 'api',
-            validationPattern: 'api'
+            id: "api_service",
+            label: "API service name",
+            hint: "Which service serves API?",
+            correctValue: "api",
+            validationPattern: "api",
           },
           {
-            id: 'api_port',
-            label: 'API service port',
-            hint: 'Which port does API service expose?',
-            correctValue: '80',
-            validationPattern: '80'
+            id: "api_port",
+            label: "API service port",
+            hint: "Which port does API service expose?",
+            correctValue: "80",
+            validationPattern: "80",
           },
           {
-            id: 'tls_secret',
-            label: 'TLS secret name',
-            hint: 'Name of the TLS secret',
-            correctValue: 'myapp-tls',
-            validationPattern: 'myapp-tls'
-          }
+            id: "tls_secret",
+            label: "TLS secret name",
+            hint: "Name of the TLS secret",
+            correctValue: "myapp-tls",
+            validationPattern: "myapp-tls",
+          },
         ],
         solution: `# Install NGINX Ingress Controller:
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
@@ -1307,11 +1346,13 @@ kubectl create secret tls myapp-tls --cert=/path/to/cert.pem --key=/path/to/key.
 # Test routing:
 curl -k https://myapp.example.com/api/health
 curl -k https://myapp.example.com/`,
-        explanation: 'Ingress provides external access with path-based routing (/ for frontend, /api for API). TLS terminates SSL at ingress. NGINX controller handles the routing. Host-based routing enables multiple apps on same IP.'
+        explanation:
+          "Ingress provides external access with path-based routing (/ for frontend, /api for API). TLS terminates SSL at ingress. NGINX controller handles the routing. Host-based routing enables multiple apps on same IP.",
       },
       {
         exerciseNumber: 3,
-        scenario: 'Implement HorizontalPodAutoscaler for an API service based on CPU and memory metrics.',
+        scenario:
+          "Implement HorizontalPodAutoscaler for an API service based on CPU and memory metrics.",
         template: `# Enable metrics server:
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
@@ -1356,75 +1397,75 @@ kubectl run load-test --image=busybox --rm -it --restart=Never -- \
   while true; do wget -q -O- http://api.default.svc.cluster.local/health; sleep 0.1; done`,
         blanks: [
           {
-            id: 'hpa_kind',
-            label: 'HPA scale target kind',
-            hint: 'What resource type to scale?',
-            correctValue: 'Deployment',
-            validationPattern: 'Deployment'
+            id: "hpa_kind",
+            label: "HPA scale target kind",
+            hint: "What resource type to scale?",
+            correctValue: "Deployment",
+            validationPattern: "Deployment",
           },
           {
-            id: 'min_replicas',
-            label: 'Minimum replicas',
-            hint: 'Minimum pods to maintain',
-            correctValue: '2',
-            validationPattern: '2'
+            id: "min_replicas",
+            label: "Minimum replicas",
+            hint: "Minimum pods to maintain",
+            correctValue: "2",
+            validationPattern: "2",
           },
           {
-            id: 'max_replicas',
-            label: 'Maximum replicas',
-            hint: 'Maximum pods allowed',
-            correctValue: '10',
-            validationPattern: '10'
+            id: "max_replicas",
+            label: "Maximum replicas",
+            hint: "Maximum pods allowed",
+            correctValue: "10",
+            validationPattern: "10",
           },
           {
-            id: 'cpu_metric',
-            label: 'CPU metric name',
-            hint: 'Resource name for CPU',
-            correctValue: 'cpu',
-            validationPattern: 'cpu'
+            id: "cpu_metric",
+            label: "CPU metric name",
+            hint: "Resource name for CPU",
+            correctValue: "cpu",
+            validationPattern: "cpu",
           },
           {
-            id: 'cpu_target',
-            label: 'CPU target utilization',
-            hint: 'Target CPU percentage',
-            correctValue: '70',
-            validationPattern: '70'
+            id: "cpu_target",
+            label: "CPU target utilization",
+            hint: "Target CPU percentage",
+            correctValue: "70",
+            validationPattern: "70",
           },
           {
-            id: 'memory_metric',
-            label: 'Memory metric name',
-            hint: 'Resource name for memory',
-            correctValue: 'memory',
-            validationPattern: 'memory'
+            id: "memory_metric",
+            label: "Memory metric name",
+            hint: "Resource name for memory",
+            correctValue: "memory",
+            validationPattern: "memory",
           },
           {
-            id: 'memory_target',
-            label: 'Memory target utilization',
-            hint: 'Target memory percentage',
-            correctValue: '80',
-            validationPattern: '80'
+            id: "memory_target",
+            label: "Memory target utilization",
+            hint: "Target memory percentage",
+            correctValue: "80",
+            validationPattern: "80",
           },
           {
-            id: 'stabilization_window',
-            label: 'Scale down stabilization window',
-            hint: 'How long to wait before scaling down?',
-            correctValue: '300',
-            validationPattern: '300'
+            id: "stabilization_window",
+            label: "Scale down stabilization window",
+            hint: "How long to wait before scaling down?",
+            correctValue: "300",
+            validationPattern: "300",
           },
           {
-            id: 'scale_down_percent',
-            label: 'Scale down percentage',
-            hint: 'How much to scale down at once?',
-            correctValue: '10',
-            validationPattern: '10'
+            id: "scale_down_percent",
+            label: "Scale down percentage",
+            hint: "How much to scale down at once?",
+            correctValue: "10",
+            validationPattern: "10",
           },
           {
-            id: 'scale_down_period',
-            label: 'Scale down period',
-            hint: 'How often to apply scale down?',
-            correctValue: '60',
-            validationPattern: '60'
-          }
+            id: "scale_down_period",
+            label: "Scale down period",
+            hint: "How often to apply scale down?",
+            correctValue: "60",
+            validationPattern: "60",
+          },
         ],
         solution: `# Enable metrics server:
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
@@ -1468,11 +1509,13 @@ kubectl get hpa api-hpa
 # Generate load to test scaling:
 kubectl run load-test --image=busybox --rm -it --restart=Never -- \
   while true; do wget -q -O- http://api.default.svc.cluster.local/health; sleep 0.1; done`,
-        explanation: 'HPA scales based on CPU/memory utilization. Multiple metrics supported. Behavior controls scaling speed to prevent thrashing. Stabilization window prevents rapid scale-down on temporary load drops.'
+        explanation:
+          "HPA scales based on CPU/memory utilization. Multiple metrics supported. Behavior controls scaling speed to prevent thrashing. Stabilization window prevents rapid scale-down on temporary load drops.",
       },
       {
         exerciseNumber: 4,
-        scenario: 'Set up monitoring with Prometheus and Grafana for a Kubernetes application.',
+        scenario:
+          "Set up monitoring with Prometheus and Grafana for a Kubernetes application.",
         template: `# Install kube-prometheus-stack:
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
@@ -1501,61 +1544,63 @@ kubectl get secret monitoring-grafana -o jsonpath="{.data.admin-password}" -n mo
 kubectl port-forward svc/monitoring-prometheus ___________ -n monitoring`,
         blanks: [
           {
-            id: 'grafana_port_forward',
-            label: 'Grafana port forward command',
-            hint: 'How to access Grafana locally?',
-            correctValue: '3000:80',
-            validationPattern: '3000.*80|80.*3000'
+            id: "grafana_port_forward",
+            label: "Grafana port forward command",
+            hint: "How to access Grafana locally?",
+            correctValue: "3000:80",
+            validationPattern: "3000.*80|80.*3000",
           },
           {
-            id: 'get_password_command',
-            label: 'Get password command',
-            hint: 'How to decode base64 password?',
-            correctValue: 'base64 -d',
-            validationPattern: 'base64.*-d'
+            id: "get_password_command",
+            label: "Get password command",
+            hint: "How to decode base64 password?",
+            correctValue: "base64 -d",
+            validationPattern: "base64.*-d",
           },
           {
-            id: 'cpu_query',
-            label: 'Prometheus CPU query',
-            hint: 'Query for container CPU usage',
-            correctValue: 'rate(container_cpu_usage_seconds_total{pod=~"$pod", container!=""}[5m])',
-            validationPattern: 'container_cpu_usage_seconds_total|rate.*cpu'
+            id: "cpu_query",
+            label: "Prometheus CPU query",
+            hint: "Query for container CPU usage",
+            correctValue:
+              'rate(container_cpu_usage_seconds_total{pod=~"$pod", container!=""}[5m])',
+            validationPattern: "container_cpu_usage_seconds_total|rate.*cpu",
           },
           {
-            id: 'memory_query',
-            label: 'Prometheus memory query',
-            hint: 'Query for container memory usage',
-            correctValue: 'container_memory_usage_bytes{pod=~"$pod", container!=""}',
-            validationPattern: 'container_memory_usage_bytes|memory.*usage'
+            id: "memory_query",
+            label: "Prometheus memory query",
+            hint: "Query for container memory usage",
+            correctValue:
+              'container_memory_usage_bytes{pod=~"$pod", container!=""}',
+            validationPattern: "container_memory_usage_bytes|memory.*usage",
           },
           {
-            id: 'alert_query',
-            label: 'Alert query',
-            hint: 'What to alert on?',
-            correctValue: 'up == 0',
-            validationPattern: 'up.*==.*0'
+            id: "alert_query",
+            label: "Alert query",
+            hint: "What to alert on?",
+            correctValue: "up == 0",
+            validationPattern: "up.*==.*0",
           },
           {
-            id: 'alert_condition',
-            label: 'Alert condition',
-            hint: 'When to trigger alert?',
-            correctValue: 'WHEN last() OF query IS BELOW 1',
-            validationPattern: 'below.*1|last.*below'
+            id: "alert_condition",
+            label: "Alert condition",
+            hint: "When to trigger alert?",
+            correctValue: "WHEN last() OF query IS BELOW 1",
+            validationPattern: "below.*1|last.*below",
           },
           {
-            id: 'alert_duration',
-            label: 'Alert duration',
-            hint: 'How long before alerting?',
-            correctValue: '5m',
-            validationPattern: '5m|5.*min'
+            id: "alert_duration",
+            label: "Alert duration",
+            hint: "How long before alerting?",
+            correctValue: "5m",
+            validationPattern: "5m|5.*min",
           },
           {
-            id: 'prometheus_port_forward',
-            label: 'Prometheus port forward',
-            hint: 'How to access Prometheus UI?',
-            correctValue: '9090:9090',
-            validationPattern: '9090.*9090'
-          }
+            id: "prometheus_port_forward",
+            label: "Prometheus port forward",
+            hint: "How to access Prometheus UI?",
+            correctValue: "9090:9090",
+            validationPattern: "9090.*9090",
+          },
         ],
         solution: `# Install kube-prometheus-stack:
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -1583,11 +1628,13 @@ kubectl get secret monitoring-grafana -o jsonpath="{.data.admin-password}" -n mo
 
 # Check Prometheus metrics:
 kubectl port-forward svc/monitoring-prometheus 9090:9090 -n monitoring`,
-        explanation: 'kube-prometheus-stack provides complete monitoring. Grafana visualizes metrics, Prometheus stores them, AlertManager handles alerts. Custom dashboards show application-specific metrics. Port forwarding enables local access.'
+        explanation:
+          "kube-prometheus-stack provides complete monitoring. Grafana visualizes metrics, Prometheus stores them, AlertManager handles alerts. Custom dashboards show application-specific metrics. Port forwarding enables local access.",
       },
       {
         exerciseNumber: 5,
-        scenario: 'Implement a blue-green deployment strategy for zero-downtime updates.',
+        scenario:
+          "Implement a blue-green deployment strategy for zero-downtime updates.",
         template: `# Current production deployment (blue):
 apiVersion: apps/v1
 kind: Deployment
@@ -1662,26 +1709,26 @@ kubectl patch service api -p '{"spec":{"selector":{"app":"api","version":"______
 kubectl delete deployment api-blue`,
         blanks: [
           {
-            id: 'service_blue_selector',
-            label: 'Service selector for blue',
-            hint: 'Initially points to blue version',
-            correctValue: 'blue',
-            validationPattern: 'blue'
+            id: "service_blue_selector",
+            label: "Service selector for blue",
+            hint: "Initially points to blue version",
+            correctValue: "blue",
+            validationPattern: "blue",
           },
           {
-            id: 'switch_to_green',
-            label: 'Switch service to green',
-            hint: 'Change selector to green',
-            correctValue: 'green',
-            validationPattern: 'green'
+            id: "switch_to_green",
+            label: "Switch service to green",
+            hint: "Change selector to green",
+            correctValue: "green",
+            validationPattern: "green",
           },
           {
-            id: 'rollback_selector',
-            label: 'Rollback selector',
-            hint: 'Switch back to blue',
-            correctValue: 'blue',
-            validationPattern: 'blue'
-          }
+            id: "rollback_selector",
+            label: "Rollback selector",
+            hint: "Switch back to blue",
+            correctValue: "blue",
+            validationPattern: "blue",
+          },
         ],
         solution: `# Current production deployment (blue):
 apiVersion: apps/v1
@@ -1755,186 +1802,212 @@ kubectl patch service api -p '{"spec":{"selector":{"app":"api","version":"blue"}
 
 # Clean up old deployment:
 kubectl delete deployment api-blue`,
-        explanation: 'Blue-green deployments run two versions simultaneously. Service selector switches traffic instantly. Test green thoroughly before switching. Rollback by switching selector back. Clean up old version after confirming stability.'
-      }
+        explanation:
+          "Blue-green deployments run two versions simultaneously. Service selector switches traffic instantly. Test green thoroughly before switching. Rollback by switching selector back. Clean up old version after confirming stability.",
+      },
     ],
     hints: [
-      'StatefulSet for databases, Deployment for stateless services',
-      'ConfigMaps for non-sensitive config, Secrets for passwords',
-      'Resource requests ensure scheduling, limits prevent starvation',
-      'Readiness probes ensure traffic only to ready pods',
-      'LoadBalancer for external access, ClusterIP for internal',
-      'HPA requires metrics server and resource requests on pods',
-      'Blue-green enables instant rollback by switching Service selector'
-    ]
+      "StatefulSet for databases, Deployment for stateless services",
+      "ConfigMaps for non-sensitive config, Secrets for passwords",
+      "Resource requests ensure scheduling, limits prevent starvation",
+      "Readiness probes ensure traffic only to ready pods",
+      "LoadBalancer for external access, ClusterIP for internal",
+      "HPA requires metrics server and resource requests on pods",
+      "Blue-green enables instant rollback by switching Service selector",
+    ],
   },
   runGuided: {
-    objective: 'Design and implement a complete production-ready Kubernetes deployment for a real application with all operational considerations.',
+    objective:
+      "Design and implement a complete production-ready Kubernetes deployment for a real application with all operational considerations.",
     conceptualGuidance: [
-      'Application Architecture: Multi-tier with proper separation (frontend, API, database, cache)',
-      'Infrastructure: Managed Kubernetes cluster, persistent storage, networking',
-      'Configuration Management: Externalized config, secrets management, environment-specific values',
-      'High Availability: Multi-zone deployment, pod anti-affinity, health checks',
-      'Security: Network policies, RBAC, security contexts, image scanning',
-      'Monitoring & Observability: Metrics, logs, traces, alerts',
-      'CI/CD Integration: Automated builds, deployments, testing',
-      'Backup & Recovery: Database backups, cluster backups, disaster recovery',
-      'Cost Optimization: Right-sizing resources, spot instances, auto-scaling'
+      "Application Architecture: Multi-tier with proper separation (frontend, API, database, cache)",
+      "Infrastructure: Managed Kubernetes cluster, persistent storage, networking",
+      "Configuration Management: Externalized config, secrets management, environment-specific values",
+      "High Availability: Multi-zone deployment, pod anti-affinity, health checks",
+      "Security: Network policies, RBAC, security contexts, image scanning",
+      "Monitoring & Observability: Metrics, logs, traces, alerts",
+      "CI/CD Integration: Automated builds, deployments, testing",
+      "Backup & Recovery: Database backups, cluster backups, disaster recovery",
+      "Cost Optimization: Right-sizing resources, spot instances, auto-scaling",
     ],
     keyConceptsToApply: [
-      'Deployments with rolling updates and health checks',
-      'StatefulSets for stateful workloads with persistent storage',
-      'Services for internal networking (ClusterIP) and external access (LoadBalancer/Ingress)',
-      'ConfigMaps and Secrets for configuration management',
-      'HorizontalPodAutoscaler for automatic scaling',
-      'NetworkPolicies for security',
-      'PersistentVolumeClaims for storage',
-      'Ingress with TLS for external access',
-      'Monitoring stack (Prometheus, Grafana, AlertManager)',
-      'CI/CD pipelines for automated deployments'
+      "Deployments with rolling updates and health checks",
+      "StatefulSets for stateful workloads with persistent storage",
+      "Services for internal networking (ClusterIP) and external access (LoadBalancer/Ingress)",
+      "ConfigMaps and Secrets for configuration management",
+      "HorizontalPodAutoscaler for automatic scaling",
+      "NetworkPolicies for security",
+      "PersistentVolumeClaims for storage",
+      "Ingress with TLS for external access",
+      "Monitoring stack (Prometheus, Grafana, AlertManager)",
+      "CI/CD pipelines for automated deployments",
     ],
     checkpoints: [
       {
-        checkpoint: 'Production architecture designed with all components',
-        description: 'Design complete architecture: frontend (nginx), API (Node.js/Python), database (PostgreSQL), cache (Redis), message queue (RabbitMQ). Define all K8s objects, networking, storage, and security.',
+        checkpoint: "Production architecture designed with all components",
+        description:
+          "Design complete architecture: frontend (nginx), API (Node.js/Python), database (PostgreSQL), cache (Redis), message queue (RabbitMQ). Define all K8s objects, networking, storage, and security.",
         validationCriteria: [
-          'Architecture diagram with all components and their relationships',
-          'K8s manifests for all tiers (Deployments, StatefulSets, Services, ConfigMaps, Secrets)',
-          'Storage strategy (PVCs for databases, ephemeral for stateless)',
-          'Networking plan (internal Services, external Ingress)',
-          'Security design (NetworkPolicies, RBAC, security contexts)'
+          "Architecture diagram with all components and their relationships",
+          "K8s manifests for all tiers (Deployments, StatefulSets, Services, ConfigMaps, Secrets)",
+          "Storage strategy (PVCs for databases, ephemeral for stateless)",
+          "Networking plan (internal Services, external Ingress)",
+          "Security design (NetworkPolicies, RBAC, security contexts)",
         ],
-        hintIfStuck: 'Start with core tiers: frontend Deployment + LoadBalancer Service, API Deployment + ClusterIP Service, database StatefulSet + ClusterIP Service. Add cache and queue as needed. Use ConfigMaps for config, Secrets for passwords.'
+        hintIfStuck:
+          "Start with core tiers: frontend Deployment + LoadBalancer Service, API Deployment + ClusterIP Service, database StatefulSet + ClusterIP Service. Add cache and queue as needed. Use ConfigMaps for config, Secrets for passwords.",
       },
       {
-        checkpoint: 'High availability and scaling implemented',
-        description: 'Implement HA: multi-replica deployments, pod anti-affinity, HPA, cluster multi-zone. Configure rolling updates with proper strategy.',
+        checkpoint: "High availability and scaling implemented",
+        description:
+          "Implement HA: multi-replica deployments, pod anti-affinity, HPA, cluster multi-zone. Configure rolling updates with proper strategy.",
         validationCriteria: [
-          'All stateless services have 3+ replicas with anti-affinity rules',
-          'HPA configured for CPU/memory scaling',
-          'Rolling update strategy with maxUnavailable=0 or 1',
-          'Readiness and liveness probes on all services',
-          'Multi-zone cluster or node affinity for HA'
+          "All stateless services have 3+ replicas with anti-affinity rules",
+          "HPA configured for CPU/memory scaling",
+          "Rolling update strategy with maxUnavailable=0 or 1",
+          "Readiness and liveness probes on all services",
+          "Multi-zone cluster or node affinity for HA",
         ],
-        hintIfStuck: 'Set replicas=3 for all Deployments. Add podAntiAffinity to spread across nodes. Configure HPA with metrics server. Set rollingUpdate maxUnavailable=1 for zero-downtime updates.'
+        hintIfStuck:
+          "Set replicas=3 for all Deployments. Add podAntiAffinity to spread across nodes. Configure HPA with metrics server. Set rollingUpdate maxUnavailable=1 for zero-downtime updates.",
       },
       {
-        checkpoint: 'Monitoring, logging, and alerting configured',
-        description: 'Deploy monitoring stack, configure application logging, set up alerts for critical metrics and errors.',
+        checkpoint: "Monitoring, logging, and alerting configured",
+        description:
+          "Deploy monitoring stack, configure application logging, set up alerts for critical metrics and errors.",
         validationCriteria: [
-          'Prometheus collecting metrics from all services',
-          'Grafana dashboards for application and infrastructure metrics',
-          'Centralized logging (EFK or similar) with application logs',
-          'Alert rules for pod crashes, high resource usage, failed health checks',
-          'Log aggregation with searchable interface'
+          "Prometheus collecting metrics from all services",
+          "Grafana dashboards for application and infrastructure metrics",
+          "Centralized logging (EFK or similar) with application logs",
+          "Alert rules for pod crashes, high resource usage, failed health checks",
+          "Log aggregation with searchable interface",
         ],
-        hintIfStuck: 'Use kube-prometheus-stack Helm chart. Configure Prometheus service monitors. Set up Fluent Bit for log collection to Elasticsearch. Create Grafana dashboards for CPU/memory per pod.'
+        hintIfStuck:
+          "Use kube-prometheus-stack Helm chart. Configure Prometheus service monitors. Set up Fluent Bit for log collection to Elasticsearch. Create Grafana dashboards for CPU/memory per pod.",
       },
       {
-        checkpoint: 'CI/CD pipeline and operational procedures',
-        description: 'Implement automated deployment pipeline, create runbooks for common operations, set up backup procedures.',
+        checkpoint: "CI/CD pipeline and operational procedures",
+        description:
+          "Implement automated deployment pipeline, create runbooks for common operations, set up backup procedures.",
         validationCriteria: [
-          'GitHub Actions or similar CI/CD pipeline building and deploying',
-          'Automated testing in pipeline (unit, integration, e2e)',
-          'Runbook for deploy, rollback, scale, troubleshoot',
-          'Database backup strategy with automated schedules',
-          'Cluster backup for disaster recovery'
+          "GitHub Actions or similar CI/CD pipeline building and deploying",
+          "Automated testing in pipeline (unit, integration, e2e)",
+          "Runbook for deploy, rollback, scale, troubleshoot",
+          "Database backup strategy with automated schedules",
+          "Cluster backup for disaster recovery",
         ],
-        hintIfStuck: 'Create GitHub Actions workflow: checkout → build → test → push image → update manifests → deploy. Use kubectl rollout for rollbacks. Set up CronJobs for backups. Document procedures in README.'
-      }
+        hintIfStuck:
+          "Create GitHub Actions workflow: checkout → build → test → push image → update manifests → deploy. Use kubectl rollout for rollbacks. Set up CronJobs for backups. Document procedures in README.",
+      },
     ],
     resourcesAllowed: [
-      'Kubernetes documentation for production patterns',
-      'Helm charts for monitoring and logging stacks',
-      'GitHub Actions documentation',
-      'Production deployment examples',
-      'Security best practices guides'
-    ]
+      "Kubernetes documentation for production patterns",
+      "Helm charts for monitoring and logging stacks",
+      "GitHub Actions documentation",
+      "Production deployment examples",
+      "Security best practices guides",
+    ],
   },
   runIndependent: {
-    objective: 'Independently design, deploy, and operate a complete production Kubernetes application with enterprise-grade features and operational excellence.',
+    objective:
+      "Independently design, deploy, and operate a complete production Kubernetes application with enterprise-grade features and operational excellence.",
     successCriteria: [
-      'Complete multi-tier application deployed and running',
-      'High availability across multiple zones/nodes',
-      'Comprehensive monitoring and alerting',
-      'Automated CI/CD pipeline with testing',
-      'Security hardening with NetworkPolicies and RBAC',
-      'Backup and disaster recovery procedures',
-      'Performance optimization and cost management',
-      'Complete documentation and runbooks',
-      'Zero-downtime deployment capability',
-      'Scalability to handle traffic spikes'
+      "Complete multi-tier application deployed and running",
+      "High availability across multiple zones/nodes",
+      "Comprehensive monitoring and alerting",
+      "Automated CI/CD pipeline with testing",
+      "Security hardening with NetworkPolicies and RBAC",
+      "Backup and disaster recovery procedures",
+      "Performance optimization and cost management",
+      "Complete documentation and runbooks",
+      "Zero-downtime deployment capability",
+      "Scalability to handle traffic spikes",
     ],
     timeTarget: 240,
     minimumRequirements: [
-      'Architecture diagram and all YAML manifests',
-      'Multi-tier application (frontend, API, database minimum)',
-      'LoadBalancer or Ingress for external access',
-      '3+ replicas for stateless services with anti-affinity',
-      'HPA configured and working',
-      'Prometheus/Grafana monitoring stack',
-      'Centralized logging (EFK or similar)',
-      'GitHub Actions CI/CD pipeline',
-      'NetworkPolicies restricting traffic',
-      'Runbook with 8+ operational procedures',
-      'Backup strategy documented and implemented',
-      'Security scan results (Trivy or similar)',
-      'Performance test results showing auto-scaling'
+      "Architecture diagram and all YAML manifests",
+      "Multi-tier application (frontend, API, database minimum)",
+      "LoadBalancer or Ingress for external access",
+      "3+ replicas for stateless services with anti-affinity",
+      "HPA configured and working",
+      "Prometheus/Grafana monitoring stack",
+      "Centralized logging (EFK or similar)",
+      "GitHub Actions CI/CD pipeline",
+      "NetworkPolicies restricting traffic",
+      "Runbook with 8+ operational procedures",
+      "Backup strategy documented and implemented",
+      "Security scan results (Trivy or similar)",
+      "Performance test results showing auto-scaling",
     ],
     evaluationRubric: [
       {
-        criterion: 'Architecture & Design',
+        criterion: "Architecture & Design",
         weight: 15,
-        passingThreshold: 'Complete multi-tier architecture with proper K8s objects, clear separation of concerns, scalable design patterns, comprehensive YAML manifests'
+        passingThreshold:
+          "Complete multi-tier architecture with proper K8s objects, clear separation of concerns, scalable design patterns, comprehensive YAML manifests",
       },
       {
-        criterion: 'High Availability & Reliability',
+        criterion: "High Availability & Reliability",
         weight: 15,
-        passingThreshold: 'Multi-zone deployment, pod anti-affinity, 3+ replicas, health checks, rolling updates with zero downtime, proper resource management'
+        passingThreshold:
+          "Multi-zone deployment, pod anti-affinity, 3+ replicas, health checks, rolling updates with zero downtime, proper resource management",
       },
       {
-        criterion: 'Security Implementation',
+        criterion: "Security Implementation",
         weight: 15,
-        passingThreshold: 'NetworkPolicies, RBAC, security contexts, Secrets for sensitive data, image scanning, no privileged containers, TLS encryption'
+        passingThreshold:
+          "NetworkPolicies, RBAC, security contexts, Secrets for sensitive data, image scanning, no privileged containers, TLS encryption",
       },
       {
-        criterion: 'Monitoring & Observability',
+        criterion: "Monitoring & Observability",
         weight: 15,
-        passingThreshold: 'Complete monitoring stack, application metrics, centralized logging, alerting rules, dashboards for key metrics, log aggregation'
+        passingThreshold:
+          "Complete monitoring stack, application metrics, centralized logging, alerting rules, dashboards for key metrics, log aggregation",
       },
       {
-        criterion: 'CI/CD & Automation',
+        criterion: "CI/CD & Automation",
         weight: 10,
-        passingThreshold: 'Automated build/test/deploy pipeline, infrastructure as code, deployment strategies (rolling/blue-green), automated testing'
+        passingThreshold:
+          "Automated build/test/deploy pipeline, infrastructure as code, deployment strategies (rolling/blue-green), automated testing",
       },
       {
-        criterion: 'Operational Excellence',
+        criterion: "Operational Excellence",
         weight: 15,
-        passingThreshold: 'Comprehensive runbooks, backup procedures, disaster recovery plan, troubleshooting guides, performance optimization, cost management'
+        passingThreshold:
+          "Comprehensive runbooks, backup procedures, disaster recovery plan, troubleshooting guides, performance optimization, cost management",
       },
       {
-        criterion: 'Documentation & Testing',
+        criterion: "Documentation & Testing",
         weight: 10,
-        passingThreshold: 'Complete documentation, runbooks for all procedures, performance test results, security scan reports, architecture diagrams'
+        passingThreshold:
+          "Complete documentation, runbooks for all procedures, performance test results, security scan reports, architecture diagrams",
       },
       {
-        criterion: 'Scalability & Performance',
+        criterion: "Scalability & Performance",
         weight: 5,
-        passingThreshold: 'Auto-scaling working, performance tests showing capacity, resource optimization, cost-effective scaling policies'
-      }
-    ]
+        passingThreshold:
+          "Auto-scaling working, performance tests showing capacity, resource optimization, cost-effective scaling policies",
+      },
+    ],
   },
-  videoUrl: 'https://www.youtube.com/watch?v=X48VuDVv0do',
+  videoUrl: "https://www.youtube.com/watch?v=X48VuDVv0do",
   documentation: [
-    'https://kubernetes.io/docs/setup/production-environment/',
-    'https://kubernetes.io/docs/concepts/workloads/controllers/deployment/',
-    'https://kubernetes.io/docs/concepts/services-networking/service/',
-    'https://kubernetes.io/docs/concepts/services-networking/ingress/',
-    'https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/',
-    'https://kubernetes.io/docs/concepts/configuration/configmap/',
-    'https://kubernetes.io/docs/concepts/configuration/secret/',
-    'https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/',
-    'https://kubernetes.io/docs/concepts/services-networking/network-policies/'
+    "https://kubernetes.io/docs/setup/production-environment/",
+    "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/",
+    "https://kubernetes.io/docs/concepts/services-networking/service/",
+    "https://kubernetes.io/docs/concepts/services-networking/ingress/",
+    "https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/",
+    "https://kubernetes.io/docs/concepts/configuration/configmap/",
+    "https://kubernetes.io/docs/concepts/configuration/secret/",
+    "https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/",
+    "https://kubernetes.io/docs/concepts/services-networking/network-policies/",
   ],
-  relatedConcepts: ['Container orchestration', 'Microservices architecture', 'Infrastructure as Code', 'CI/CD pipelines', 'Monitoring and observability', 'Security best practices']
+  relatedConcepts: [
+    "Container orchestration",
+    "Microservices architecture",
+    "Infrastructure as Code",
+    "CI/CD pipelines",
+    "Monitoring and observability",
+    "Security best practices",
+  ],
 };

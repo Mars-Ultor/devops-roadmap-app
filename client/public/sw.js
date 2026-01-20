@@ -8,23 +8,19 @@ const CACHE_NAME = `devops-roadmap-${Date.now()}`;
 const STATIC_CACHE_NAME = `devops-roadmap-static-${Date.now()}`;
 
 // Assets to cache immediately
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-];
+const STATIC_ASSETS = ["/", "/index.html", "/manifest.json"];
 
 // Cache strategies
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
-    })
+    }),
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -33,25 +29,27 @@ self.addEventListener('activate', (event) => {
           if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE_NAME) {
             return caches.delete(cacheName);
           }
-        })
+        }),
       );
-    })
+    }),
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
   // Only cache GET requests
-  if (request.method !== 'GET') return;
+  if (request.method !== "GET") return;
 
   // Cache strategy for JS/CSS chunks and assets
   if (
-    url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/) ||
-    url.pathname.includes('/assets/') ||
-    url.pathname.startsWith('/src/')
+    url.pathname.match(
+      /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/,
+    ) ||
+    url.pathname.includes("/assets/") ||
+    url.pathname.startsWith("/src/")
   ) {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
@@ -61,7 +59,11 @@ self.addEventListener('fetch', (event) => {
 
         return fetch(request).then((response) => {
           // Don't cache if not a valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+          if (
+            !response ||
+            response.status !== 200 ||
+            response.type !== "basic"
+          ) {
             return response;
           }
 
@@ -72,7 +74,7 @@ self.addEventListener('fetch', (event) => {
 
           return response;
         });
-      })
+      }),
     );
   }
 });

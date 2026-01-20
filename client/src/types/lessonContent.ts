@@ -130,13 +130,13 @@ export interface LeveledLessonContent {
       runIndependent: number;
     };
   };
-  
+
   // Level-specific content
   crawl: CrawlContent;
   walk: WalkContent;
   runGuided: RunGuidedContent;
   runIndependent: RunIndependentContent;
-  
+
   // Common across all levels
   videoUrl?: string;
   documentation: string[];
@@ -158,21 +158,35 @@ export interface CommonError {
 }
 
 // Helper type for accessing level-specific content
-export type LevelContent = CrawlContent | WalkContent | RunGuidedContent | RunIndependentContent;
+export type LevelContent =
+  | CrawlContent
+  | WalkContent
+  | RunGuidedContent
+  | RunIndependentContent;
 
 // Type guard functions
 export function isCrawlContent(content: LevelContent): content is CrawlContent {
-  return 'steps' in content && Array.isArray(content.steps);
+  return "steps" in content && Array.isArray(content.steps);
 }
 
 export function isWalkContent(content: LevelContent): content is WalkContent {
-  return 'exercises' in content && Array.isArray(content.exercises);
+  return "exercises" in content && Array.isArray(content.exercises);
 }
 
-export function isRunGuidedContent(content: LevelContent): content is RunGuidedContent {
-  return 'conceptualGuidance' in content && Array.isArray(content.conceptualGuidance);
+export function isRunGuidedContent(
+  content: LevelContent,
+): content is RunGuidedContent {
+  return (
+    "conceptualGuidance" in content && Array.isArray(content.conceptualGuidance)
+  );
 }
 
-export function isRunIndependentContent(content: LevelContent): content is RunIndependentContent {
-  return 'successCriteria' in content && !('steps' in content) && !('exercises' in content);
+export function isRunIndependentContent(
+  content: LevelContent,
+): content is RunIndependentContent {
+  return (
+    "successCriteria" in content &&
+    !("steps" in content) &&
+    !("exercises" in content)
+  );
 }

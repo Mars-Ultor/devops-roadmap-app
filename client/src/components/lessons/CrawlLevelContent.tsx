@@ -4,9 +4,15 @@
  * Shows each step with commands, explanations, and validation
  */
 
-import { type FC, useState } from 'react';
-import { CheckCircle, Circle, AlertCircle, Terminal, HelpCircle } from 'lucide-react';
-import type { CrawlContent } from '../../types/lessonContent';
+import { type FC, useState } from "react";
+import {
+  CheckCircle,
+  Circle,
+  AlertCircle,
+  Terminal,
+  HelpCircle,
+} from "lucide-react";
+import type { CrawlContent } from "../../types/lessonContent";
 
 interface CrawlLevelContentProps {
   content: CrawlContent;
@@ -17,15 +23,15 @@ interface CrawlLevelContentProps {
 export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
   content,
   onStepComplete,
-  completedSteps
+  completedSteps,
 }) => {
   const [expandedStep, setExpandedStep] = useState<number | null>(1);
   const [showMistakes, setShowMistakes] = useState<Record<number, boolean>>({});
 
   const getStepStyles = (isCompleted: boolean, canExpand: boolean) => {
-    if (isCompleted) return 'bg-emerald-900/20 border-emerald-500/50';
-    if (canExpand) return 'bg-slate-800/50 border-slate-600';
-    return 'bg-slate-900/50 border-slate-700 opacity-50';
+    if (isCompleted) return "bg-emerald-900/20 border-emerald-500/50";
+    if (canExpand) return "bg-slate-800/50 border-slate-600";
+    return "bg-slate-900/50 border-slate-700 opacity-50";
   };
 
   return (
@@ -44,7 +50,10 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
         {content.steps.map((step) => {
           const isCompleted = completedSteps.includes(step.stepNumber);
           const isExpanded = expandedStep === step.stepNumber;
-          const canExpand = isCompleted || step.stepNumber === 1 || completedSteps.includes(step.stepNumber - 1);
+          const canExpand =
+            isCompleted ||
+            step.stepNumber === 1 ||
+            completedSteps.includes(step.stepNumber - 1);
 
           return (
             <div
@@ -53,7 +62,10 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
             >
               {/* Step Header */}
               <button
-                onClick={() => canExpand && setExpandedStep(isExpanded ? null : step.stepNumber)}
+                onClick={() =>
+                  canExpand &&
+                  setExpandedStep(isExpanded ? null : step.stepNumber)
+                }
                 className="w-full p-4 flex items-center justify-between text-left"
                 disabled={!canExpand}
               >
@@ -64,8 +76,12 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
                     <Circle className="w-6 h-6 text-slate-400 flex-shrink-0" />
                   )}
                   <div>
-                    <span className="text-sm text-slate-400">Step {step.stepNumber}</span>
-                    <h4 className="text-white font-medium">{step.instruction}</h4>
+                    <span className="text-sm text-slate-400">
+                      Step {step.stepNumber}
+                    </span>
+                    <h4 className="text-white font-medium">
+                      {step.instruction}
+                    </h4>
                   </div>
                 </div>
               </button>
@@ -76,12 +92,16 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
                   {/* Command */}
                   {step.command && (
                     <div>
-                      <p className="block text-sm text-slate-400 mb-2">Command to execute:</p>
+                      <p className="block text-sm text-slate-400 mb-2">
+                        Command to execute:
+                      </p>
                       <div className="bg-slate-950 rounded p-4 font-mono text-sm text-emerald-400 flex items-start gap-2">
                         <Terminal className="w-4 h-4 mt-1 flex-shrink-0" />
                         <code className="flex-1">{step.command}</code>
                         <button
-                          onClick={() => navigator.clipboard.writeText(step.command!)}
+                          onClick={() =>
+                            navigator.clipboard.writeText(step.command!)
+                          }
                           className="text-slate-400 hover:text-white text-xs px-2 py-1 bg-slate-800 rounded"
                         >
                           Copy
@@ -92,14 +112,18 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
 
                   {/* Explanation */}
                   <div className="bg-blue-900/10 border border-blue-500/20 rounded-lg p-4">
-                    <h5 className="text-sm font-semibold text-blue-300 mb-2">Why this step?</h5>
+                    <h5 className="text-sm font-semibold text-blue-300 mb-2">
+                      Why this step?
+                    </h5>
                     <p className="text-slate-300 text-sm">{step.explanation}</p>
                   </div>
 
                   {/* Expected Output */}
                   {step.expectedOutput && (
                     <div>
-                      <p className="block text-sm text-slate-400 mb-2">Expected output:</p>
+                      <p className="block text-sm text-slate-400 mb-2">
+                        Expected output:
+                      </p>
                       <div className="bg-slate-900 border border-slate-700 rounded p-3 font-mono text-xs text-slate-300">
                         {step.expectedOutput}
                       </div>
@@ -108,10 +132,15 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
 
                   {/* Validation Criteria */}
                   <div>
-                    <h5 className="text-sm font-semibold text-white mb-2">Check that:</h5>
+                    <h5 className="text-sm font-semibold text-white mb-2">
+                      Check that:
+                    </h5>
                     <ul className="space-y-1">
                       {step.validationCriteria.map((criteria) => (
-                        <li key={criteria} className="flex items-start gap-2 text-sm text-slate-300">
+                        <li
+                          key={criteria}
+                          className="flex items-start gap-2 text-sm text-slate-300"
+                        >
                           <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
                           {criteria}
                         </li>
@@ -126,7 +155,7 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
                         onClick={() =>
                           setShowMistakes((prev) => ({
                             ...prev,
-                            [step.stepNumber]: !prev[step.stepNumber]
+                            [step.stepNumber]: !prev[step.stepNumber],
                           }))
                         }
                         className="w-full bg-amber-900/20 px-4 py-2 flex items-center justify-between text-left"
@@ -136,7 +165,7 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
                           Common Mistakes
                         </span>
                         <span className="text-amber-400">
-                          {showMistakes[step.stepNumber] ? '−' : '+'}
+                          {showMistakes[step.stepNumber] ? "−" : "+"}
                         </span>
                       </button>
                       {showMistakes[step.stepNumber] && (
@@ -176,7 +205,8 @@ export const CrawlLevelContent: FC<CrawlLevelContentProps> = ({
           </h3>
           <p className="text-slate-300">{content.expectedOutcome}</p>
           <p className="text-sm text-emerald-400 mt-3">
-            You've mastered the Crawl level. Complete this perfectly 3 times to unlock Walk level.
+            You've mastered the Crawl level. Complete this perfectly 3 times to
+            unlock Walk level.
           </p>
         </div>
       )}

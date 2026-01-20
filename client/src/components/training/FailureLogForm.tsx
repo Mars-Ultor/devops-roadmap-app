@@ -3,8 +3,12 @@
  * Military-style incident reporting for learning
  */
 
-import { useState } from 'react';
-import type { FailureLog, FailureCategory, FailureSeverity } from '../../types/training';
+import { useState } from "react";
+import type {
+  FailureLog,
+  FailureCategory,
+  FailureSeverity,
+} from "../../types/training";
 import {
   FormHeader,
   ContextInfo,
@@ -13,14 +17,19 @@ import {
   DescriptionInput,
   ErrorMessageInput,
   ProTipBox,
-  ActionButtons
-} from './FailureLogFormComponents';
+  ActionButtons,
+} from "./FailureLogFormComponents";
 
 interface FailureLogFormProps {
   contentId: string;
-  contentType: 'lesson' | 'lab' | 'drill' | 'project';
+  contentType: "lesson" | "lab" | "drill" | "project";
   contentTitle: string;
-  onSubmit: (failureData: Omit<FailureLog, 'id' | 'userId' | 'timestamp' | 'isRecurring' | 'previousOccurrences'>) => Promise<void>;
+  onSubmit: (
+    failureData: Omit<
+      FailureLog,
+      "id" | "userId" | "timestamp" | "isRecurring" | "previousOccurrences"
+    >,
+  ) => Promise<void>;
   onCancel: () => void;
   prefilledError?: string; // Auto-fill from validation errors
 }
@@ -31,26 +40,29 @@ export default function FailureLogForm({
   contentTitle,
   onSubmit,
   onCancel,
-  prefilledError
+  prefilledError,
 }: FailureLogFormProps) {
-  const [category, setCategory] = useState<FailureCategory>('other');
-  const [severity, setSeverity] = useState<FailureSeverity>('medium');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [errorMessage, setErrorMessage] = useState(prefilledError || '');
+  const [category, setCategory] = useState<FailureCategory>("other");
+  const [severity, setSeverity] = useState<FailureSeverity>("medium");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [errorMessage, setErrorMessage] = useState(prefilledError || "");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim() || !description.trim()) {
-      alert('Please fill in title and description');
+      alert("Please fill in title and description");
       return;
     }
 
     setSubmitting(true);
     try {
-      const failureData: Omit<FailureLog, 'id' | 'userId' | 'timestamp' | 'isRecurring' | 'previousOccurrences'> = {
+      const failureData: Omit<
+        FailureLog,
+        "id" | "userId" | "timestamp" | "isRecurring" | "previousOccurrences"
+      > = {
         contentType,
         contentId,
         contentTitle,
@@ -60,13 +72,13 @@ export default function FailureLogForm({
         description: description.trim(),
         errorMessage: errorMessage.trim() || undefined,
         lessonsLearned: [],
-        relatedConcepts: []
+        relatedConcepts: [],
       };
 
       await onSubmit(failureData);
     } catch (error) {
-      console.error('Error submitting failure log:', error);
-      alert('Failed to log failure. Please try again.');
+      console.error("Error submitting failure log:", error);
+      alert("Failed to log failure. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -79,7 +91,7 @@ export default function FailureLogForm({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <ContextInfo contentType={contentType} contentTitle={contentTitle} />
-          
+
           <CategorySeveritySection
             category={category}
             severity={severity}

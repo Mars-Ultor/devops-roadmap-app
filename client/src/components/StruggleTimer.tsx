@@ -4,7 +4,7 @@
  * Phase 3: Time-Boxed Struggle
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   HintsUnlockedBanner,
   TimerHeader,
@@ -12,8 +12,8 @@ import {
   DocumentStruggleButton,
   StruggleForm,
   StrugglesLoggedBanner,
-  type StruggleLog
-} from './struggle-timer/StruggleTimerComponents';
+  type StruggleLog,
+} from "./struggle-timer/StruggleTimerComponents";
 
 export type { StruggleLog };
 
@@ -26,15 +26,20 @@ interface StruggleTimerProps {
 
 const HINT_UNLOCK_TIME = 30 * 60 * 1000;
 
-export default function StruggleTimer({ startTime, onHintUnlocked, onStruggleLogged, currentTime }: StruggleTimerProps) {
+export default function StruggleTimer({
+  startTime,
+  onHintUnlocked,
+  onStruggleLogged,
+  currentTime,
+}: StruggleTimerProps) {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [hintsUnlocked, setHintsUnlocked] = useState(false);
   const [strugglesLogged, setStrugglesLogged] = useState(false);
   const [showStruggleForm, setShowStruggleForm] = useState(false);
   const [struggles, setStruggles] = useState<Partial<StruggleLog>>({
-    attemptedSolutions: ['', '', ''],
-    stuckPoint: '',
-    hypothesis: ''
+    attemptedSolutions: ["", "", ""],
+    stuckPoint: "",
+    hypothesis: "",
   });
 
   useEffect(() => {
@@ -56,22 +61,40 @@ export default function StruggleTimer({ startTime, onHintUnlocked, onStruggleLog
   const formatTime = (ms: number): string => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   const handleStruggleSubmit = () => {
-    const allSolutionsFilled = struggles.attemptedSolutions?.every(s => s && s.trim().length > 0);
-    if (!allSolutionsFilled) { alert('Please list at least 3 things you tried'); return; }
-    if (!struggles.stuckPoint || struggles.stuckPoint.trim().length < 20) { alert('Please describe where you\'re stuck (minimum 20 characters)'); return; }
-    if (!struggles.hypothesis || struggles.hypothesis.trim().length < 20) { alert('Please provide your hypothesis about the problem (minimum 20 characters)'); return; }
-    const log: StruggleLog = { attemptedSolutions: struggles.attemptedSolutions!, stuckPoint: struggles.stuckPoint!, hypothesis: struggles.hypothesis!, submittedAt: new Date() };
+    const allSolutionsFilled = struggles.attemptedSolutions?.every(
+      (s) => s && s.trim().length > 0,
+    );
+    if (!allSolutionsFilled) {
+      alert("Please list at least 3 things you tried");
+      return;
+    }
+    if (!struggles.stuckPoint || struggles.stuckPoint.trim().length < 20) {
+      alert("Please describe where you're stuck (minimum 20 characters)");
+      return;
+    }
+    if (!struggles.hypothesis || struggles.hypothesis.trim().length < 20) {
+      alert(
+        "Please provide your hypothesis about the problem (minimum 20 characters)",
+      );
+      return;
+    }
+    const log: StruggleLog = {
+      attemptedSolutions: struggles.attemptedSolutions!,
+      stuckPoint: struggles.stuckPoint!,
+      hypothesis: struggles.hypothesis!,
+      submittedAt: new Date(),
+    };
     setStrugglesLogged(true);
     setShowStruggleForm(false);
     onStruggleLogged(log);
   };
 
   const updateAttempt = (index: number, value: string) => {
-    const newAttempts = [...(struggles.attemptedSolutions || ['', '', ''])];
+    const newAttempts = [...(struggles.attemptedSolutions || ["", "", ""])];
     newAttempts[index] = value;
     setStruggles({ ...struggles, attemptedSolutions: newAttempts });
   };
@@ -80,15 +103,25 @@ export default function StruggleTimer({ startTime, onHintUnlocked, onStruggleLog
 
   return (
     <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg mb-6">
-      <TimerHeader timeRemaining={timeRemaining} strugglesLogged={strugglesLogged} formatTime={formatTime} />
+      <TimerHeader
+        timeRemaining={timeRemaining}
+        strugglesLogged={strugglesLogged}
+        formatTime={formatTime}
+      />
       <WhyWaitInfo />
-      {!strugglesLogged && !showStruggleForm && <DocumentStruggleButton onClick={() => setShowStruggleForm(true)} />}
+      {!strugglesLogged && !showStruggleForm && (
+        <DocumentStruggleButton onClick={() => setShowStruggleForm(true)} />
+      )}
       {showStruggleForm && !strugglesLogged && (
         <StruggleForm
           struggles={struggles}
           onUpdateAttempt={updateAttempt}
-          onUpdateStuckPoint={(v) => setStruggles({ ...struggles, stuckPoint: v })}
-          onUpdateHypothesis={(v) => setStruggles({ ...struggles, hypothesis: v })}
+          onUpdateStuckPoint={(v) =>
+            setStruggles({ ...struggles, stuckPoint: v })
+          }
+          onUpdateHypothesis={(v) =>
+            setStruggles({ ...struggles, hypothesis: v })
+          }
           onSubmit={handleStruggleSubmit}
           onCancel={() => setShowStruggleForm(false)}
         />

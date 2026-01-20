@@ -3,15 +3,15 @@
  * Provides a text editor and submission mechanism for open-ended mastery challenges
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 import {
   TimerBar,
   SelfAssessmentChecklist,
   ResponseEditor,
   SubmissionGuidelines,
-  SubmitButton
-} from './RunIndependentComponents';
-import StrategyGuide from './StrategyGuide';
+  SubmitButton,
+} from "./RunIndependentComponents";
+import StrategyGuide from "./StrategyGuide";
 
 interface EvaluationCriterion {
   criterion: string;
@@ -58,16 +58,24 @@ interface RunIndependentWorkspaceProps {
 }
 
 /** Custom hook for timer and auto-save logic */
-function useWorkspaceState(savedDraft: string, onSaveDraft: (draft: string) => void) {
+function useWorkspaceState(
+  savedDraft: string,
+  onSaveDraft: (draft: string) => void,
+) {
   const [submission, setSubmission] = useState(savedDraft);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
   const [showChecklist, setShowChecklist] = useState(true);
-  const [checkedCriteria, setCheckedCriteria] = useState<Set<number>>(new Set());
+  const [checkedCriteria, setCheckedCriteria] = useState<Set<number>>(
+    new Set(),
+  );
 
   useEffect(() => {
     if (!isTimerRunning) return;
-    const interval = setInterval(() => setElapsedTime(prev => prev + 1), 1000);
+    const interval = setInterval(
+      () => setElapsedTime((prev) => prev + 1),
+      1000,
+    );
     return () => clearInterval(interval);
   }, [isTimerRunning]);
 
@@ -78,7 +86,7 @@ function useWorkspaceState(savedDraft: string, onSaveDraft: (draft: string) => v
   }, [submission, onSaveDraft]);
 
   const handleCriteriaToggle = useCallback((index: number) => {
-    setCheckedCriteria(prev => {
+    setCheckedCriteria((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(index)) newSet.delete(index);
       else newSet.add(index);
@@ -87,17 +95,29 @@ function useWorkspaceState(savedDraft: string, onSaveDraft: (draft: string) => v
   }, []);
 
   const stopTimer = useCallback(() => setIsTimerRunning(false), []);
-  const toggleChecklist = useCallback(() => setShowChecklist(prev => !prev), []);
+  const toggleChecklist = useCallback(
+    () => setShowChecklist((prev) => !prev),
+    [],
+  );
 
   return {
-    submission, setSubmission, elapsedTime, showChecklist, checkedCriteria,
-    handleCriteriaToggle, stopTimer, toggleChecklist
+    submission,
+    setSubmission,
+    elapsedTime,
+    showChecklist,
+    checkedCriteria,
+    handleCriteriaToggle,
+    stopTimer,
+    toggleChecklist,
   };
 }
 
-function CompanyOverview({ description, businessContext }: { 
-  readonly description: string; 
-  readonly businessContext: string; 
+function CompanyOverview({
+  description,
+  businessContext,
+}: {
+  readonly description: string;
+  readonly businessContext: string;
 }) {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4">
@@ -108,13 +128,18 @@ function CompanyOverview({ description, businessContext }: {
   );
 }
 
-function CurrentMetrics({ metrics }: { 
-  readonly metrics: CompanyProfile['currentMetrics']; 
+function CurrentMetrics({
+  metrics,
+}: {
+  readonly metrics: CompanyProfile["currentMetrics"];
 }) {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4">
       <h4 className="text-green-400 font-semibold mb-3 flex items-center">
-        <div className="w-2 h-2 bg-green-400 rounded-full mr-2" aria-hidden="true"></div>
+        <div
+          className="w-2 h-2 bg-green-400 rounded-full mr-2"
+          aria-hidden="true"
+        ></div>
         <span>Current DORA Metrics</span>
       </h4>
       <div className="space-y-2 text-sm">
@@ -139,13 +164,18 @@ function CurrentMetrics({ metrics }: {
   );
 }
 
-function TeamStructure({ team }: { 
-  readonly team: CompanyProfile['teamStructure']; 
+function TeamStructure({
+  team,
+}: {
+  readonly team: CompanyProfile["teamStructure"];
 }) {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4">
       <h4 className="text-purple-400 font-semibold mb-3 flex items-center">
-        <div className="w-2 h-2 bg-purple-400 rounded-full mr-2" aria-hidden="true"></div>
+        <div
+          className="w-2 h-2 bg-purple-400 rounded-full mr-2"
+          aria-hidden="true"
+        ></div>
         <span>Team Structure</span>
       </h4>
       <div className="space-y-2 text-sm">
@@ -170,13 +200,18 @@ function TeamStructure({ team }: {
   );
 }
 
-function TechnologyStack({ stack }: { 
-  readonly stack: CompanyProfile['technologyStack']; 
+function TechnologyStack({
+  stack,
+}: {
+  readonly stack: CompanyProfile["technologyStack"];
 }) {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4">
       <h4 className="text-cyan-400 font-semibold mb-3 flex items-center">
-        <div className="w-2 h-2 bg-cyan-400 rounded-full mr-2" aria-hidden="true"></div>
+        <div
+          className="w-2 h-2 bg-cyan-400 rounded-full mr-2"
+          aria-hidden="true"
+        ></div>
         <span>Technology Stack</span>
       </h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -205,13 +240,14 @@ function TechnologyStack({ stack }: {
   );
 }
 
-function CurrentChallenges({ challenges }: { 
-  readonly challenges: string[]; 
-}) {
+function CurrentChallenges({ challenges }: { readonly challenges: string[] }) {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4">
       <h4 className="text-red-400 font-semibold mb-3 flex items-center">
-        <div className="w-2 h-2 bg-red-400 rounded-full mr-2" aria-hidden="true"></div>
+        <div
+          className="w-2 h-2 bg-red-400 rounded-full mr-2"
+          aria-hidden="true"
+        ></div>
         <span>Current Challenges</span>
       </h4>
       <ul className="space-y-2">
@@ -228,7 +264,7 @@ function CurrentChallenges({ challenges }: {
 
 function CompanyProfile({ profile }: { readonly profile: CompanyProfile }) {
   const [isOpen, setIsOpen] = useState(true);
-  
+
   return (
     <div className="bg-slate-800 rounded-lg border border-blue-600/50 overflow-hidden">
       <button
@@ -240,27 +276,41 @@ function CompanyProfile({ profile }: { readonly profile: CompanyProfile }) {
             <span className="text-white font-bold text-sm">TC</span>
           </div>
           <div>
-            <span className="font-semibold text-blue-400 text-lg">{profile.name}</span>
-            <p className="text-xs text-slate-400">Company Profile - Use this as your starting point</p>
+            <span className="font-semibold text-blue-400 text-lg">
+              {profile.name}
+            </span>
+            <p className="text-xs text-slate-400">
+              Company Profile - Use this as your starting point
+            </p>
           </div>
         </div>
-        <svg className={`w-5 h-5 text-blue-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <svg
+          className={`w-5 h-5 text-blue-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
-      
+
       {isOpen && (
         <div className="p-6 space-y-6">
-          <CompanyOverview 
-            description={profile.description} 
-            businessContext={profile.businessContext} 
+          <CompanyOverview
+            description={profile.description}
+            businessContext={profile.businessContext}
           />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CurrentMetrics metrics={profile.currentMetrics} />
             <TeamStructure team={profile.teamStructure} />
           </div>
-          
+
           <TechnologyStack stack={profile.technologyStack} />
           <CurrentChallenges challenges={profile.currentChallenges} />
         </div>
@@ -270,37 +320,80 @@ function CompanyProfile({ profile }: { readonly profile: CompanyProfile }) {
 }
 
 export default function RunIndependentWorkspace({
-  objective, companyProfile, successCriteria, timeTarget, minimumRequirements, evaluationRubric,
-  onSubmit, onSaveDraft, savedDraft = ''
+  objective,
+  companyProfile,
+  successCriteria,
+  timeTarget,
+  minimumRequirements,
+  evaluationRubric,
+  onSubmit,
+  onSaveDraft,
+  savedDraft = "",
 }: RunIndependentWorkspaceProps) {
   const {
-    submission, setSubmission, elapsedTime, showChecklist, checkedCriteria,
-    handleCriteriaToggle, stopTimer, toggleChecklist
+    submission,
+    setSubmission,
+    elapsedTime,
+    showChecklist,
+    checkedCriteria,
+    handleCriteriaToggle,
+    stopTimer,
+    toggleChecklist,
   } = useWorkspaceState(savedDraft, onSaveDraft);
 
-  const allCriteriaChecked = successCriteria.length > 0 && checkedCriteria.size === successCriteria.length;
+  const allCriteriaChecked =
+    successCriteria.length > 0 &&
+    checkedCriteria.size === successCriteria.length;
   const wordCount = submission.trim().split(/\s+/).filter(Boolean).length;
   const canSubmit = submission.trim().length >= 100;
 
   const handleSubmit = () => {
-    if (!canSubmit) { alert('Please provide a more detailed response (at least 100 characters).'); return; }
+    if (!canSubmit) {
+      alert(
+        "Please provide a more detailed response (at least 100 characters).",
+      );
+      return;
+    }
     stopTimer();
     onSubmit(submission);
   };
 
   return (
     <div className="space-y-6">
-      <TimerBar elapsedTime={elapsedTime} timeTarget={timeTarget} wordCount={wordCount}
-        checkedCount={checkedCriteria.size} totalCriteria={successCriteria.length}
-        allChecked={allCriteriaChecked} onSaveDraft={() => onSaveDraft(submission)} onToggleChecklist={toggleChecklist} />
-      {showChecklist && <SelfAssessmentChecklist successCriteria={successCriteria}
-        checkedCriteria={checkedCriteria} onToggle={handleCriteriaToggle} />}
-      <StrategyGuide minimumRequirements={minimumRequirements} evaluationRubric={evaluationRubric} />
+      <TimerBar
+        elapsedTime={elapsedTime}
+        timeTarget={timeTarget}
+        wordCount={wordCount}
+        checkedCount={checkedCriteria.size}
+        totalCriteria={successCriteria.length}
+        allChecked={allCriteriaChecked}
+        onSaveDraft={() => onSaveDraft(submission)}
+        onToggleChecklist={toggleChecklist}
+      />
+      {showChecklist && (
+        <SelfAssessmentChecklist
+          successCriteria={successCriteria}
+          checkedCriteria={checkedCriteria}
+          onToggle={handleCriteriaToggle}
+        />
+      )}
+      <StrategyGuide
+        minimumRequirements={minimumRequirements}
+        evaluationRubric={evaluationRubric}
+      />
       {companyProfile && <CompanyProfile profile={companyProfile} />}
-      <ResponseEditor submission={submission} objective={objective} onChange={setSubmission} />
+      <ResponseEditor
+        submission={submission}
+        objective={objective}
+        onChange={setSubmission}
+      />
       <SubmissionGuidelines />
-      <SubmitButton allCriteriaChecked={allCriteriaChecked}
-        uncheckedCount={successCriteria.length - checkedCriteria.size} canSubmit={canSubmit} onSubmit={handleSubmit} />
+      <SubmitButton
+        allCriteriaChecked={allCriteriaChecked}
+        uncheckedCount={successCriteria.length - checkedCriteria.size}
+        canSubmit={canSubmit}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 }

@@ -56,22 +56,22 @@ export const STRUGGLE_SESSION_CONFIG = {
   MIN_APPROACHES_REQUIRED: 3,
   MIN_STRUGGLE_TIME_MINUTES: 10,
   MAX_HINTS_PER_SESSION: 3,
-  MAX_FAILED_ATTEMPTS_BEFORE_SOLUTION: 3
+  MAX_FAILED_ATTEMPTS_BEFORE_SOLUTION: 3,
 } as const;
 
 // Hint progression levels - using const assertion instead of enum for erasableSyntaxOnly
 export const HintLevel = {
-  GENTLE_NUDGE: 1,    // "Check your configuration file"
-  MORE_SPECIFIC: 2,   // "Look at the ports section"
-  VERY_SPECIFIC: 3    // "Port 8080 should be 80"
+  GENTLE_NUDGE: 1, // "Check your configuration file"
+  MORE_SPECIFIC: 2, // "Look at the ports section"
+  VERY_SPECIFIC: 3, // "Port 8080 should be 80"
 } as const;
 
 // Struggle session status
 export type StruggleStatus =
-  | 'active'           // Currently struggling, hints locked
-  | 'hints_available'  // Can request hints
-  | 'completed'        // Session finished
-  | 'abandoned';       // User gave up
+  | "active" // Currently struggling, hints locked
+  | "hints_available" // Can request hints
+  | "completed" // Session finished
+  | "abandoned"; // User gave up
 
 // Timer display states
 export interface TimerDisplay {

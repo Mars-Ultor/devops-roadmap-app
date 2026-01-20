@@ -9,22 +9,28 @@ export const MIN_IMPROVEMENTS = 2;
 export const MIN_KNOWLEDGE_WORDS = 30;
 
 export function countWords(text: string): number {
-  return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((w) => w.length > 0).length;
 }
 
 export function updateArrayField(
   array: string[],
   setter: (arr: string[]) => void,
   index: number,
-  value: string
+  value: string,
 ): void {
   const updated = [...array];
   updated[index] = value;
   setter(updated);
 }
 
-export function addArrayField(array: string[], setter: (arr: string[]) => void): void {
-  setter([...array, '']);
+export function addArrayField(
+  array: string[],
+  setter: (arr: string[]) => void,
+): void {
+  setter([...array, ""]);
 }
 
 export function validateAARForm(
@@ -33,13 +39,17 @@ export function validateAARForm(
   whatDidntWork: string[],
   rootCauses: string[],
   improvements: string[],
-  transferableKnowledge: string
+  transferableKnowledge: string,
 ): boolean {
   const objectiveWords = countWords(objective);
-  const validWhatWorked = whatWorked.filter(w => w.trim().length > 0).length;
-  const validWhatDidntWork = whatDidntWork.filter(w => w.trim().length > 0).length;
-  const validRootCauses = rootCauses.filter(r => r.trim().length > 0).length;
-  const validImprovements = improvements.filter(i => i.trim().length > 0).length;
+  const validWhatWorked = whatWorked.filter((w) => w.trim().length > 0).length;
+  const validWhatDidntWork = whatDidntWork.filter(
+    (w) => w.trim().length > 0,
+  ).length;
+  const validRootCauses = rootCauses.filter((r) => r.trim().length > 0).length;
+  const validImprovements = improvements.filter(
+    (i) => i.trim().length > 0,
+  ).length;
   const knowledgeWords = countWords(transferableKnowledge);
 
   return (

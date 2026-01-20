@@ -3,15 +3,15 @@
  * Refactored to use extracted components and custom hook
  */
 
-import { useDailyDrill } from './useDailyDrill';
+import { useDailyDrill } from "./useDailyDrill";
 import {
   LoadingState,
   DrillHeader,
   SelectionInfo,
   WhyDailyDrills,
   DrillDisplay,
-  DrillFooter
-} from './DailyDrillModalComponents';
+  DrillFooter,
+} from "./DailyDrillModalComponents";
 
 interface DailyDrillModalProps {
   isOpen: boolean;
@@ -19,7 +19,11 @@ interface DailyDrillModalProps {
   canDismiss?: boolean;
 }
 
-export default function DailyDrillModal({ isOpen, onComplete, canDismiss = false }: DailyDrillModalProps) {
+export default function DailyDrillModal({
+  isOpen,
+  onComplete,
+  canDismiss = false,
+}: DailyDrillModalProps) {
   const { selectedDrill, drillCandidate, loading } = useDailyDrill(isOpen);
 
   if (!isOpen) return null;
@@ -35,7 +39,11 @@ export default function DailyDrillModal({ isOpen, onComplete, canDismiss = false
           {drillCandidate && <SelectionInfo candidate={drillCandidate} />}
           <WhyDailyDrills />
           <DrillDisplay drill={selectedDrill} />
-          <DrillFooter canDismiss={canDismiss} onDismiss={onComplete} onStart={handleStart} />
+          <DrillFooter
+            canDismiss={canDismiss}
+            onDismiss={onComplete}
+            onStart={handleStart}
+          />
         </div>
       </div>
     </div>

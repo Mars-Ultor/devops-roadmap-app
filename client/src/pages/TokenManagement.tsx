@@ -3,21 +3,22 @@
  * Refactored to use extracted components
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useResetTokens } from '../hooks/useResetTokens';
-import type { TokenUsageStats } from '../types/tokens';
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { useResetTokens } from "../hooks/useResetTokens";
+import type { TokenUsageStats } from "../types/tokens";
 import {
   PageHeader,
   CurrentWeekSection,
   StatsSection,
   RecentHistory,
-  PhilosophyReminder
-} from './TokenManagementComponents';
+  PhilosophyReminder,
+} from "./TokenManagementComponents";
 
 export default function TokenManagement() {
   const navigate = useNavigate();
-  const { currentAllocation, recentResets, loading, getUsageStats } = useResetTokens();
+  const { currentAllocation, recentResets, loading, getUsageStats } =
+    useResetTokens();
   const [stats, setStats] = useState<TokenUsageStats | null>(null);
 
   const loadStats = useCallback(async () => {
@@ -25,7 +26,9 @@ export default function TokenManagement() {
     setStats(usageStats);
   }, [getUsageStats]);
 
-  useEffect(() => { loadStats(); }, [loadStats]);
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   if (loading) {
     return (
@@ -38,7 +41,7 @@ export default function TokenManagement() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <PageHeader onBack={() => navigate('/dashboard')} />
+        <PageHeader onBack={() => navigate("/dashboard")} />
         <CurrentWeekSection allocation={currentAllocation} />
         {stats && <StatsSection stats={stats} />}
         <RecentHistory resets={recentResets} />

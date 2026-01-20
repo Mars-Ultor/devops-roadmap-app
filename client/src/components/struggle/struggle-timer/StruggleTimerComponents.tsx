@@ -2,9 +2,9 @@
  * StruggleTimerComponents - Extracted UI components for StruggleTimer
  */
 
-import { Clock, Lock, Unlock, Lightbulb, AlertTriangle } from 'lucide-react';
-import { STRUGGLE_SESSION_CONFIG } from '../../../types/struggle';
-import type { TimerDisplay } from '../../../types/struggle';
+import { Clock, Lock, Unlock, Lightbulb, AlertTriangle } from "lucide-react";
+import { STRUGGLE_SESSION_CONFIG } from "../../../types/struggle";
+import type { TimerDisplay } from "../../../types/struggle";
 
 // ============================================================================
 // Timer Header Component
@@ -45,11 +45,15 @@ export function TimerDisplaySection({ display }: TimerDisplayProps) {
   return (
     <div className="mb-4">
       <div className="flex items-center space-x-3 mb-2">
-        <Clock className={`w-6 h-6 ${display.isLocked ? 'text-red-400' : 'text-green-400'}`} />
-        <span className={`text-xl font-mono font-bold ${display.isLocked ? 'text-red-400' : 'text-green-400'}`}>
-          {display.isLocked 
-            ? `${display.minutes}:${display.seconds.toString().padStart(2, '0')}` 
-            : 'UNLOCKED'}
+        <Clock
+          className={`w-6 h-6 ${display.isLocked ? "text-red-400" : "text-green-400"}`}
+        />
+        <span
+          className={`text-xl font-mono font-bold ${display.isLocked ? "text-red-400" : "text-green-400"}`}
+        >
+          {display.isLocked
+            ? `${display.minutes}:${display.seconds.toString().padStart(2, "0")}`
+            : "UNLOCKED"}
         </span>
       </div>
 
@@ -57,7 +61,7 @@ export function TimerDisplaySection({ display }: TimerDisplayProps) {
       <div className="w-full bg-slate-700 rounded-full h-2 mb-2">
         <div
           className={`h-2 rounded-full transition-all duration-1000 ${
-            display.isLocked ? 'bg-red-500' : 'bg-green-500'
+            display.isLocked ? "bg-red-500" : "bg-green-500"
           }`}
           style={{ width: `${display.progressPercent}%` }}
         />
@@ -86,8 +90,8 @@ export function StruggleLogPrompt({ onSubmit }: StruggleLogPromptProps) {
             Document Your Struggle First
           </h4>
           <p className="text-xs text-yellow-200 mb-2">
-            Before accessing hints, you must document at least 3 different approaches 
-            you've tried and where you're currently stuck.
+            Before accessing hints, you must document at least 3 different
+            approaches you've tried and where you're currently stuck.
           </p>
           <button
             onClick={onSubmit}
@@ -111,7 +115,11 @@ interface HintRequestSectionProps {
   onHintRequested: () => void;
 }
 
-export function HintRequestSection({ canRequestHints, hintsUsed, onHintRequested }: HintRequestSectionProps) {
+export function HintRequestSection({
+  canRequestHints,
+  hintsUsed,
+  onHintRequested,
+}: HintRequestSectionProps) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
@@ -119,7 +127,7 @@ export function HintRequestSection({ canRequestHints, hintsUsed, onHintRequested
         <span className="text-sm text-gray-300">
           {canRequestHints
             ? `Hint ${hintsUsed + 1} available`
-            : 'All hints used - solve independently'}
+            : "All hints used - solve independently"}
         </span>
       </div>
 
@@ -142,9 +150,10 @@ export function HintRequestSection({ canRequestHints, hintsUsed, onHintRequested
 export function HintUnlockingInfo() {
   return (
     <div className="text-xs text-gray-500 mt-2">
-      • Hints unlock progressively: 1 hint every {STRUGGLE_SESSION_CONFIG.HINT_UNLOCK_INTERVAL_MINUTES} minutes
-      • Full solution available after 90 minutes or 3 failed attempts
-      • Struggle builds problem-solving skills
+      • Hints unlock progressively: 1 hint every{" "}
+      {STRUGGLE_SESSION_CONFIG.HINT_UNLOCK_INTERVAL_MINUTES} minutes • Full
+      solution available after 90 minutes or 3 failed attempts • Struggle builds
+      problem-solving skills
     </div>
   );
 }

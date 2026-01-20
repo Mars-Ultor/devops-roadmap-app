@@ -3,8 +3,8 @@
  * Warns user about token usage before resetting
  */
 
-import { useState } from 'react';
-import type { TokenType } from '../../types/tokens';
+import { useState } from "react";
+import type { TokenType } from "../../types/tokens";
 
 // Import extracted components
 import {
@@ -15,8 +15,8 @@ import {
   MilitaryPhilosophyWarning,
   ReasonInput,
   AcknowledgmentCheckbox,
-  ConfirmationModalActions
-} from './reset-token/ResetConfirmationModalComponents';
+  ConfirmationModalActions,
+} from "./reset-token/ResetConfirmationModalComponents";
 
 interface ResetConfirmationModalProps {
   isOpen: boolean;
@@ -37,16 +37,16 @@ export default function ResetConfirmationModal({
   type,
   remainingTokens,
   cooldownActive = false,
-  cooldownMinutes = 0
+  cooldownMinutes = 0,
 }: ResetConfirmationModalProps) {
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState("");
   const [acknowledged, setAcknowledged] = useState(false);
 
   if (!isOpen) return null;
 
   const handleConfirm = () => {
     onConfirm(reason.trim() || undefined);
-    setReason('');
+    setReason("");
     setAcknowledged(false);
   };
 
@@ -61,7 +61,8 @@ export default function ResetConfirmationModal({
             <>
               <div>
                 <p className="text-gray-300">
-                  You are about to reset <span className="font-semibold text-white">{itemTitle}</span>
+                  You are about to reset{" "}
+                  <span className="font-semibold text-white">{itemTitle}</span>
                 </p>
                 <p className="text-sm text-gray-400 mt-1">
                   Type: <span className="text-white">{getTypeLabel(type)}</span>
@@ -70,7 +71,10 @@ export default function ResetConfirmationModal({
               <TokenUsageWarning remainingTokens={remainingTokens} />
               <MilitaryPhilosophyWarning />
               <ReasonInput value={reason} onChange={setReason} />
-              <AcknowledgmentCheckbox checked={acknowledged} onChange={setAcknowledged} />
+              <AcknowledgmentCheckbox
+                checked={acknowledged}
+                onChange={setAcknowledged}
+              />
             </>
           )}
         </div>

@@ -10,9 +10,9 @@ import type {
   CodeAnalysis,
   CodeIssue,
   CodeSuggestion,
-  PerformanceAnalytics
-} from '../types/aiCoach';
-import { COACH_CONFIG } from '../types/aiCoach';
+  PerformanceAnalytics,
+} from "../types/aiCoach";
+import { COACH_CONFIG } from "../types/aiCoach";
 
 export class AICoachService {
   private static instance: AICoachService;
@@ -28,9 +28,11 @@ export class AICoachService {
   /**
    * Get enhanced coach feedback with military discipline
    */
-  async getEnhancedCoachFeedback(context: CoachContext): Promise<CoachFeedback> {
+  async getEnhancedCoachFeedback(
+    context: CoachContext,
+  ): Promise<CoachFeedback> {
     // Simulate AI processing delay
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     const mode = this.getCoachMode(context.currentWeek || 1);
     const disciplineCheck = this.checkDiscipline(context);
@@ -39,42 +41,45 @@ export class AICoachService {
     // Critical discipline issues override everything
     if (disciplineCheck.critical) {
       return {
-        type: 'discipline',
+        type: "discipline",
         message: disciplineCheck.message,
         confidence: 0.95,
-        priority: 'critical',
+        priority: "critical",
         actionRequired: true,
-        mode
+        mode,
       };
     }
 
     // Code analysis for labs and drills
-    if (context.codeSnippet && (context.contentType === 'lab' || context.contentType === 'drill')) {
+    if (
+      context.codeSnippet &&
+      (context.contentType === "lab" || context.contentType === "drill")
+    ) {
       const codeAnalysis = await this.analyzeCode(context.codeSnippet);
-      if (codeAnalysis.issues.some(issue => issue.severity === 'critical')) {
+      if (codeAnalysis.issues.some((issue) => issue.severity === "critical")) {
         return {
-          type: 'warning',
-          message: `Critical code issue detected: ${codeAnalysis.issues.find(i => i.severity === 'critical')?.message}`,
+          type: "warning",
+          message: `Critical code issue detected: ${codeAnalysis.issues.find((i) => i.severity === "critical")?.message}`,
           confidence: 0.9,
-          priority: 'high',
-          mode
+          priority: "high",
+          mode,
         };
       }
     }
 
     // Struggle session specific coaching
-    if (context.contentType === 'struggle_session' && context.struggleSession) {
+    if (context.contentType === "struggle_session" && context.struggleSession) {
       return this.getStruggleSessionFeedback(context);
     }
 
     // Performance-based feedback
     if (performanceMetrics.trends.declining.length > 0) {
       return {
-        type: 'tactical_advice',
-        message: `Performance analysis shows declining trends in: ${performanceMetrics.trends.declining.join(', ')}. Execute corrective actions immediately.`,
+        type: "tactical_advice",
+        message: `Performance analysis shows declining trends in: ${performanceMetrics.trends.declining.join(", ")}. Execute corrective actions immediately.`,
         confidence: 0.85,
-        priority: 'high',
-        mode
+        priority: "high",
+        mode,
       };
     }
 
@@ -87,36 +92,43 @@ export class AICoachService {
    */
   async analyzeCode(code: string): Promise<CodeAnalysis> {
     // Simulate AI analysis
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     const issues: CodeIssue[] = [];
     const suggestions: CodeSuggestion[] = [];
 
     // Basic syntax checks
-    if (code.includes('sudo') && !code.includes('sudo -i')) {
+    if (code.includes("sudo") && !code.includes("sudo -i")) {
       issues.push({
-        type: 'security',
-        severity: 'high',
-        message: 'Using sudo without proper context validation',
-        suggestion: 'Always validate the need for elevated privileges and use sudo -i for interactive sessions'
+        type: "security",
+        severity: "high",
+        message: "Using sudo without proper context validation",
+        suggestion:
+          "Always validate the need for elevated privileges and use sudo -i for interactive sessions",
       });
     }
 
-    if (code.includes('rm -rf') && !code.includes('--preserve-root')) {
+    if (code.includes("rm -rf") && !code.includes("--preserve-root")) {
       issues.push({
-        type: 'security',
-        severity: 'critical',
-        message: 'Dangerous rm -rf command without safeguards',
-        suggestion: 'Never use rm -rf / or similar destructive commands in production'
+        type: "security",
+        severity: "critical",
+        message: "Dangerous rm -rf command without safeguards",
+        suggestion:
+          "Never use rm -rf / or similar destructive commands in production",
       });
     }
 
     // Best practices
-    if (code.includes('password') && !code.includes('encrypted') && !code.includes('hash')) {
+    if (
+      code.includes("password") &&
+      !code.includes("encrypted") &&
+      !code.includes("hash")
+    ) {
       suggestions.push({
-        type: 'security',
-        description: 'Consider using encrypted passwords or environment variables',
-        impact: 'high'
+        type: "security",
+        description:
+          "Consider using encrypted passwords or environment variables",
+        impact: "high",
       });
     }
 
@@ -125,45 +137,62 @@ export class AICoachService {
       suggestions,
       complexity: this.calculateComplexity(code),
       bestPractices: [
-        'Use environment variables for sensitive data',
-        'Implement proper error handling',
-        'Add comments for complex operations'
+        "Use environment variables for sensitive data",
+        "Implement proper error handling",
+        "Add comments for complex operations",
       ],
-      securityConcerns: issues.filter(i => i.type === 'security').map(i => i.message)
+      securityConcerns: issues
+        .filter((i) => i.type === "security")
+        .map((i) => i.message),
     };
   }
 
   /**
    * Check for discipline violations
    */
-  private checkDiscipline(context: CoachContext): { critical: boolean; message: string } {
+  private checkDiscipline(context: CoachContext): {
+    critical: boolean;
+    message: string;
+  } {
     const { userProgress } = context;
 
     // Hint abuse
-    if (userProgress.hintsUsed > COACH_CONFIG.DISCIPLINE_THRESHOLDS.HINT_ABUSE) {
+    if (
+      userProgress.hintsUsed > COACH_CONFIG.DISCIPLINE_THRESHOLDS.HINT_ABUSE
+    ) {
       return {
         critical: true,
-        message: `HINT ABUSE DETECTED: ${userProgress.hintsUsed} hints used. This violates training discipline. Solve independently or face consequences.`
+        message: `HINT ABUSE DETECTED: ${userProgress.hintsUsed} hints used. This violates training discipline. Solve independently or face consequences.`,
       };
     }
 
     // Time wasting
-    if (userProgress.timeSpent > COACH_CONFIG.DISCIPLINE_THRESHOLDS.TIME_WASTING && userProgress.attempts < 2) {
+    if (
+      userProgress.timeSpent >
+        COACH_CONFIG.DISCIPLINE_THRESHOLDS.TIME_WASTING &&
+      userProgress.attempts < 2
+    ) {
       return {
         critical: true,
-        message: `TIME WASTING: ${Math.floor(userProgress.timeSpent / 60)} minutes spent with minimal attempts. Execute with purpose or stand down.`
+        message: `TIME WASTING: ${Math.floor(userProgress.timeSpent / 60)} minutes spent with minimal attempts. Execute with purpose or stand down.`,
       };
     }
 
     // Struggle avoidance
-    if (context.struggleSession && context.struggleSession.timeRemaining > COACH_CONFIG.DISCIPLINE_THRESHOLDS.STRUGGLE_AVOIDANCE && context.struggleSession.logsSubmitted === 0) {
+    if (
+      context.struggleSession &&
+      context.struggleSession.timeRemaining >
+        COACH_CONFIG.DISCIPLINE_THRESHOLDS.STRUGGLE_AVOIDANCE &&
+      context.struggleSession.logsSubmitted === 0
+    ) {
       return {
         critical: false,
-        message: 'Struggle avoidance detected. Document your attempts before requesting assistance.'
+        message:
+          "Struggle avoidance detected. Document your attempts before requesting assistance.",
       };
     }
 
-    return { critical: false, message: '' };
+    return { critical: false, message: "" };
   }
 
   /**
@@ -173,83 +202,98 @@ export class AICoachService {
     const session = context.struggleSession!;
     const timeSpent = context.userProgress.timeSpent;
 
-    if (timeSpent > 1800) { // 30+ minutes
+    if (timeSpent > 1800) {
+      // 30+ minutes
       return {
-        type: 'encouragement',
-        message: 'Outstanding endurance! You\'ve demonstrated the mental toughness required of elite operators. This struggle builds unbreakable problem-solving skills.',
+        type: "encouragement",
+        message:
+          "Outstanding endurance! You've demonstrated the mental toughness required of elite operators. This struggle builds unbreakable problem-solving skills.",
         confidence: 0.95,
-        priority: 'high'
+        priority: "high",
       };
     }
 
-    if (session.logsSubmitted === 0 && session.timeRemaining < 600) { // 10 minutes left
+    if (session.logsSubmitted === 0 && session.timeRemaining < 600) {
+      // 10 minutes left
       return {
-        type: 'discipline',
-        message: 'STRUGGLE LOG REQUIRED: Document your problem-solving attempts immediately. No struggle log = no assistance.',
+        type: "discipline",
+        message:
+          "STRUGGLE LOG REQUIRED: Document your problem-solving attempts immediately. No struggle log = no assistance.",
         confidence: 0.9,
-        priority: 'critical',
-        actionRequired: true
+        priority: "critical",
+        actionRequired: true,
       };
     }
 
     if (session.hintsAvailable === 0) {
       return {
-        type: 'tactical_advice',
-        message: 'All hints exhausted. This is where champions are made. Break down the problem systematically. What\'s the simplest test case?',
+        type: "tactical_advice",
+        message:
+          "All hints exhausted. This is where champions are made. Break down the problem systematically. What's the simplest test case?",
         confidence: 0.85,
-        priority: 'medium'
+        priority: "medium",
       };
     }
 
     return {
-      type: 'insight',
-      message: 'Struggle is the forge of mastery. Each failed attempt brings you closer to understanding. Stay disciplined.',
-      confidence: 0.8
+      type: "insight",
+      message:
+        "Struggle is the forge of mastery. Each failed attempt brings you closer to understanding. Stay disciplined.",
+      confidence: 0.8,
     };
   }
 
   /**
    * Analyze user performance patterns
    */
-  private async analyzePerformance(context: CoachContext): Promise<PerformanceAnalytics> {
+  private async analyzePerformance(
+    context: CoachContext,
+  ): Promise<PerformanceAnalytics> {
     const userId = context.contentId; // Using contentId as proxy for user session
     const cached = this.performanceCache.get(userId);
 
-    if (cached && Date.now() - cached.metrics.averageTime < 3600000) { // 1 hour cache
+    if (cached && Date.now() - cached.metrics.averageTime < 3600000) {
+      // 1 hour cache
       return cached;
     }
 
     // Simulate performance analysis
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await new Promise((resolve) => setTimeout(resolve, 150));
 
     const analytics: PerformanceAnalytics = {
       userId,
-      period: 'week',
+      period: "week",
       metrics: {
         averageAttempts: context.userProgress.attempts,
         averageTime: context.userProgress.timeSpent,
-        hintDependency: context.userProgress.hintsUsed / Math.max(context.userProgress.attempts, 1),
+        hintDependency:
+          context.userProgress.hintsUsed /
+          Math.max(context.userProgress.attempts, 1),
         errorRate: context.recentErrors?.length || 0,
         learningVelocity: this.calculateLearningVelocity(context),
-        persistenceScore: this.calculatePersistenceScore(context)
+        persistenceScore: this.calculatePersistenceScore(context),
       },
       trends: {
         improving: [],
         declining: [],
-        plateaued: []
+        plateaued: [],
       },
-      recommendations: []
+      recommendations: [],
     };
 
     // Analyze trends
     if (analytics.metrics.hintDependency > 0.5) {
-      analytics.trends.declining.push('hint dependency');
-      analytics.recommendations.push('Reduce hint usage through independent problem-solving');
+      analytics.trends.declining.push("hint dependency");
+      analytics.recommendations.push(
+        "Reduce hint usage through independent problem-solving",
+      );
     }
 
     if (analytics.metrics.persistenceScore < 0.3) {
-      analytics.trends.declining.push('persistence');
-      analytics.recommendations.push('Increase struggle time before seeking help');
+      analytics.trends.declining.push("persistence");
+      analytics.recommendations.push(
+        "Increase struggle time before seeking help",
+      );
     }
 
     this.performanceCache.set(userId, analytics);
@@ -262,132 +306,146 @@ export class AICoachService {
   private getModeSpecificFeedback(
     context: CoachContext,
     mode: CoachMode,
-    performance: PerformanceAnalytics
+    performance: PerformanceAnalytics,
   ): CoachFeedback {
-
     switch (mode) {
-      case 'instructor':
+      case "instructor":
         return this.getInstructorFeedback(context, performance);
 
-      case 'peer':
+      case "peer":
         return this.getPeerFeedback();
 
-      case 'independent':
+      case "independent":
         return this.getIndependentFeedback(performance);
 
-      case 'drill_sergeant':
+      case "drill_sergeant":
         return this.getDrillSergeantFeedback(context, performance);
 
       default:
         return {
-          type: 'encouragement',
-          message: 'Continue your training. Standards don\'t lower.',
-          confidence: 0.7
+          type: "encouragement",
+          message: "Continue your training. Standards don't lower.",
+          confidence: 0.7,
         };
     }
   }
 
-  private getInstructorFeedback(context: CoachContext, performance: PerformanceAnalytics): CoachFeedback {
+  private getInstructorFeedback(
+    context: CoachContext,
+    performance: PerformanceAnalytics,
+  ): CoachFeedback {
     if (performance.metrics.hintDependency > 0.7) {
       return {
-        type: 'discipline',
-        message: 'HINT DEPENDENCY CRITICAL: You\'re relying on external assistance instead of building internal capability. This must stop immediately.',
+        type: "discipline",
+        message:
+          "HINT DEPENDENCY CRITICAL: You're relying on external assistance instead of building internal capability. This must stop immediately.",
         confidence: 0.95,
-        priority: 'critical',
-        actionRequired: true
+        priority: "critical",
+        actionRequired: true,
       };
     }
 
     if (context.recentErrors && context.recentErrors.length > 0) {
       return {
-        type: 'hint',
+        type: "hint",
         message: `Error pattern detected: "${context.recentErrors[0]}". Here's how to debug this systematically...`,
         confidence: 0.9,
         followUpQuestions: [
-          'What does this error message tell you?',
-          'Which component is failing?',
-          'Have you verified the prerequisites?'
-        ]
+          "What does this error message tell you?",
+          "Which component is failing?",
+          "Have you verified the prerequisites?",
+        ],
       };
     }
 
     return {
-      type: 'tactical_advice',
-      message: 'Execute each step deliberately. Verify. Adapt. Overcome.',
-      confidence: 0.8
+      type: "tactical_advice",
+      message: "Execute each step deliberately. Verify. Adapt. Overcome.",
+      confidence: 0.8,
     };
   }
 
   private getPeerFeedback(): CoachFeedback {
     return {
-      type: 'question',
-      message: 'What\'s your hypothesis about why this isn\'t working? Walk me through your debugging process.',
+      type: "question",
+      message:
+        "What's your hypothesis about why this isn't working? Walk me through your debugging process.",
       confidence: 0.8,
       followUpQuestions: [
-        'What have you ruled out?',
-        'What\'s the simplest test case?',
-        'How does this compare to working examples?'
-      ]
+        "What have you ruled out?",
+        "What's the simplest test case?",
+        "How does this compare to working examples?",
+      ],
     };
   }
 
-  private getIndependentFeedback(performance: PerformanceAnalytics): CoachFeedback {
+  private getIndependentFeedback(
+    performance: PerformanceAnalytics,
+  ): CoachFeedback {
     if (performance.metrics.persistenceScore > 0.8) {
       return {
-        type: 'encouragement',
-        message: 'Elite performance detected. You\'re operating at expert level. Maintain standards.',
+        type: "encouragement",
+        message:
+          "Elite performance detected. You're operating at expert level. Maintain standards.",
         confidence: 0.9,
-        priority: 'high'
+        priority: "high",
       };
     }
 
     return {
-      type: 'insight',
-      message: 'Trust your training. You have the capability. Execute.',
-      confidence: 0.7
+      type: "insight",
+      message: "Trust your training. You have the capability. Execute.",
+      confidence: 0.7,
     };
   }
 
-  private getDrillSergeantFeedback(context: CoachContext, performance: PerformanceAnalytics): CoachFeedback {
+  private getDrillSergeantFeedback(
+    context: CoachContext,
+    performance: PerformanceAnalytics,
+  ): CoachFeedback {
     if (performance.metrics.hintDependency > 0) {
       return {
-        type: 'discipline',
-        message: 'HINT USAGE FORBIDDEN: This is advanced training. Solve it or fail trying. No excuses.',
+        type: "discipline",
+        message:
+          "HINT USAGE FORBIDDEN: This is advanced training. Solve it or fail trying. No excuses.",
         confidence: 0.98,
-        priority: 'critical',
-        actionRequired: true
+        priority: "critical",
+        actionRequired: true,
       };
     }
 
-    if (context.userProgress.timeSpent > 7200) { // 2 hours
+    if (context.userProgress.timeSpent > 7200) {
+      // 2 hours
       return {
-        type: 'discipline',
-        message: 'TIME LIMIT EXCEEDED: 2 hours spent. This demonstrates poor planning and execution. Learn from this failure.',
+        type: "discipline",
+        message:
+          "TIME LIMIT EXCEEDED: 2 hours spent. This demonstrates poor planning and execution. Learn from this failure.",
         confidence: 0.95,
-        priority: 'high'
+        priority: "high",
       };
     }
 
     return {
-      type: 'tactical_advice',
-      message: 'Execute with precision. Every second counts. Standards are absolute.',
-      confidence: 0.85
+      type: "tactical_advice",
+      message:
+        "Execute with precision. Every second counts. Standards are absolute.",
+      confidence: 0.85,
     };
   }
 
   // Utility methods
   private getCoachMode(week: number): CoachMode {
-    if (week <= 4) return 'instructor';
-    if (week <= 8) return 'peer';
-    if (week <= 12) return 'independent';
-    return 'drill_sergeant';
+    if (week <= 4) return "instructor";
+    if (week <= 8) return "peer";
+    if (week <= 12) return "independent";
+    return "drill_sergeant";
   }
 
   private calculateComplexity(code: string): number {
     let complexity = 1;
-    if (code.includes('&&') || code.includes('||')) complexity += 2;
-    if (code.includes('for ') || code.includes('while ')) complexity += 3;
-    if (code.includes('sudo') || code.includes('chmod')) complexity += 2;
+    if (code.includes("&&") || code.includes("||")) complexity += 2;
+    if (code.includes("for ") || code.includes("while ")) complexity += 3;
+    if (code.includes("sudo") || code.includes("chmod")) complexity += 2;
     return Math.min(complexity, 10);
   }
 
@@ -410,16 +468,18 @@ export class AICoachService {
 export const aiCoachService = AICoachService.getInstance();
 
 // Legacy compatibility functions
-export async function getCoachFeedback(context: CoachContext): Promise<CoachFeedback> {
+export async function getCoachFeedback(
+  context: CoachContext,
+): Promise<CoachFeedback> {
   return aiCoachService.getEnhancedCoachFeedback(context);
 }
 
 export function getCoachMode(week: number): CoachMode {
-  return aiCoachService['getCoachMode'](week);
+  return aiCoachService["getCoachMode"](week);
 }
 
 export function buildCoachContext(
-  contentType: 'lesson' | 'lab' | 'drill',
+  contentType: "lesson" | "lab" | "drill",
   contentId: string,
   activity: {
     attempts?: number;
@@ -427,7 +487,7 @@ export function buildCoachContext(
     hintsUsed?: number;
     currentIssue?: string;
     recentErrors?: string[];
-  }
+  },
 ): CoachContext {
   return {
     contentType,
@@ -435,9 +495,9 @@ export function buildCoachContext(
     userProgress: {
       attempts: activity.attempts || 0,
       timeSpent: activity.timeSpent || 0,
-      hintsUsed: activity.hintsUsed || 0
+      hintsUsed: activity.hintsUsed || 0,
     },
     currentIssue: activity.currentIssue,
-    recentErrors: activity.recentErrors
+    recentErrors: activity.recentErrors,
   };
 }

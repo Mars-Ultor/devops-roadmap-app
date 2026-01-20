@@ -2,9 +2,9 @@
  * AARReviewPanel - AI-powered AAR analysis and follow-up questions
  */
 
-import { useState, useEffect } from 'react';
-import { Brain, HelpCircle, Lightbulb } from 'lucide-react';
-import { reviewAAR } from '../../services/aiCoach';
+import { useState, useEffect } from "react";
+import { Brain, HelpCircle, Lightbulb } from "lucide-react";
+import { reviewAAR } from "../../services/aiCoach";
 
 interface AARReviewPanelProps {
   readonly aar: {
@@ -30,7 +30,10 @@ const LoadingState = () => (
 );
 
 export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
-  const [review, setReview] = useState<{ questions: string[]; insights: string[] } | null>(null);
+  const [review, setReview] = useState<{
+    questions: string[];
+    insights: string[];
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,13 +43,13 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
         const result = await reviewAAR(aar);
         setReview(result);
       } catch (error) {
-        console.error('Error reviewing AAR:', error);
+        console.error("Error reviewing AAR:", error);
       } finally {
         setLoading(false);
       }
     }
     analyze();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) return <LoadingState />;
@@ -71,7 +74,10 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
           </div>
           <div className="space-y-2">
             {review.insights.map((insight) => (
-              <div key={insight} className="bg-purple-900/20 border border-purple-500/20 rounded-lg p-3">
+              <div
+                key={insight}
+                className="bg-purple-900/20 border border-purple-500/20 rounded-lg p-3"
+              >
                 <p className="text-purple-100 text-sm">{insight}</p>
               </div>
             ))}
@@ -86,7 +92,10 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
           </div>
           <div className="space-y-3">
             {review.questions.map((question) => (
-              <div key={question} className="bg-indigo-900/20 border border-indigo-500/20 rounded-lg p-4">
+              <div
+                key={question}
+                className="bg-indigo-900/20 border border-indigo-500/20 rounded-lg p-4"
+              >
                 <p className="text-indigo-100">{question}</p>
                 <textarea
                   placeholder="Reflect on this question... (optional)"
@@ -99,7 +108,9 @@ export default function AARReviewPanel({ aar }: AARReviewPanelProps) {
         </div>
       )}
       <div className="mt-6 pt-4 border-t border-indigo-700/30">
-        <p className="text-xs text-indigo-300 text-center">💡 These questions help you think deeper about your learning.</p>
+        <p className="text-xs text-indigo-300 text-center">
+          💡 These questions help you think deeper about your learning.
+        </p>
       </div>
     </div>
   );

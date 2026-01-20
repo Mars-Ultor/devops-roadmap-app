@@ -2,12 +2,19 @@
  * PerformanceDashboardUtils - Utilities for PerformanceDashboard
  */
 
-import type { PerformanceAnalytics, LearningPath, CoachContext } from '../../types/aiCoach';
+import type {
+  PerformanceAnalytics,
+  LearningPath,
+  CoachContext,
+} from "../../types/aiCoach";
 
-export function getMetricColor(value: number, thresholds: { good: number; warning: number }): string {
-  if (value >= thresholds.good) return 'text-green-400';
-  if (value >= thresholds.warning) return 'text-amber-400';
-  return 'text-red-400';
+export function getMetricColor(
+  value: number,
+  thresholds: { good: number; warning: number },
+): string {
+  if (value >= thresholds.good) return "text-green-400";
+  if (value >= thresholds.warning) return "text-amber-400";
+  return "text-red-400";
 }
 
 export function formatTime(seconds: number): string {
@@ -17,36 +24,40 @@ export function formatTime(seconds: number): string {
   return `${minutes}m`;
 }
 
-export function getTrendStatus(analytics: PerformanceAnalytics): { improving: boolean; text: string } {
-  const improving = analytics.trends.improving.length > analytics.trends.declining.length;
-  return { improving, text: improving ? 'Improving' : 'Needs Focus' };
+export function getTrendStatus(analytics: PerformanceAnalytics): {
+  improving: boolean;
+  text: string;
+} {
+  const improving =
+    analytics.trends.improving.length > analytics.trends.declining.length;
+  return { improving, text: improving ? "Improving" : "Needs Focus" };
 }
 
 export async function generateLearningPath(
   context: CoachContext,
-  analytics: PerformanceAnalytics
+  analytics: PerformanceAnalytics,
 ): Promise<LearningPath> {
-  await new Promise(resolve => setTimeout(resolve, 200));
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
-  const currentLevel = context.masteryLevel || 'novice';
+  const currentLevel = context.masteryLevel || "novice";
   const recommendations: LearningPath = {
     currentLevel,
     recommendedNext: [],
     blockedBy: [],
-    estimatedCompletion: 12
+    estimatedCompletion: 12,
   };
 
   if (analytics.metrics.hintDependency > 0.5) {
-    recommendations.blockedBy.push('hint dependency reduction');
+    recommendations.blockedBy.push("hint dependency reduction");
   }
   if (analytics.metrics.persistenceScore < 0.4) {
-    recommendations.blockedBy.push('persistence training');
+    recommendations.blockedBy.push("persistence training");
   }
-  if (analytics.trends.improving.includes('learning velocity')) {
-    recommendations.recommendedNext.push('advanced scenarios');
+  if (analytics.trends.improving.includes("learning velocity")) {
+    recommendations.recommendedNext.push("advanced scenarios");
   }
-  if (analytics.trends.declining.includes('error rate')) {
-    recommendations.recommendedNext.push('error handling drills');
+  if (analytics.trends.declining.includes("error rate")) {
+    recommendations.recommendedNext.push("error handling drills");
   }
 
   return recommendations;

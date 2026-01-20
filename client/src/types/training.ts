@@ -1,7 +1,7 @@
 // Military Training System Type Definitions
 
 // Mastery Progression Levels
-export type MasteryLevel = 'crawl' | 'walk' | 'run-guided' | 'run-independent';
+export type MasteryLevel = "crawl" | "walk" | "run-guided" | "run-independent";
 
 // Validation Result for step validation
 export interface ValidationResult {
@@ -35,13 +35,26 @@ export interface LessonMastery {
 }
 
 // Recertification System
-export type CertificationLevel = 'bronze' | 'silver' | 'gold' | 'platinum' | 'master';
+export type CertificationLevel =
+  | "bronze"
+  | "silver"
+  | "gold"
+  | "platinum"
+  | "master";
 
 export interface RecertificationDrill {
   id: string;
   title: string;
   description: string;
-  category: 'deployment' | 'troubleshooting' | 'security' | 'scaling' | 'cicd' | 'recovery' | 'infrastructure' | 'monitoring';
+  category:
+    | "deployment"
+    | "troubleshooting"
+    | "security"
+    | "scaling"
+    | "cicd"
+    | "recovery"
+    | "infrastructure"
+    | "monitoring";
   certificationLevel: CertificationLevel;
   recertificationIntervalDays: number; // How often recertification is required
   timeLimitMinutes: number;
@@ -54,11 +67,11 @@ export interface RecertificationDrill {
 export interface RecertificationQuestion {
   id: string;
   question: string;
-  type: 'multiple-choice' | 'true-false' | 'fill-blank' | 'scenario';
+  type: "multiple-choice" | "true-false" | "fill-blank" | "scenario";
   options?: string[]; // For multiple choice
   correctAnswer: string | number | boolean;
   explanation: string;
-  difficulty: 'basic' | 'intermediate' | 'advanced';
+  difficulty: "basic" | "intermediate" | "advanced";
   timeLimitSeconds?: number;
 }
 
@@ -127,8 +140,14 @@ export interface BattleDrill {
   title: string;
   description: string;
   targetTimeSeconds: number;
-  difficulty: 'basic' | 'intermediate' | 'advanced';
-  category: 'deployment' | 'troubleshooting' | 'security' | 'scaling' | 'cicd' | 'recovery';
+  difficulty: "basic" | "intermediate" | "advanced";
+  category:
+    | "deployment"
+    | "troubleshooting"
+    | "security"
+    | "scaling"
+    | "cicd"
+    | "recovery";
   steps: BattleDrillStep[];
 }
 
@@ -160,7 +179,7 @@ export interface BattleDrillPerformance {
   bestTime: number;
   averageTime: number;
   successRate: number;
-  masteryLevel: 'novice' | 'competent' | 'proficient' | 'expert';
+  masteryLevel: "novice" | "competent" | "proficient" | "expert";
   lastAttemptDate: Date;
   needsRecertification: boolean;
   certificationExpiresAt?: Date;
@@ -250,7 +269,13 @@ export interface FailureLogEntry {
   keyLesson: string;
   prevention: string;
   quickCheckCommand?: string;
-  category: 'docker' | 'kubernetes' | 'cicd' | 'networking' | 'security' | 'other';
+  category:
+    | "docker"
+    | "kubernetes"
+    | "cicd"
+    | "networking"
+    | "security"
+    | "other";
   tags: string[];
 }
 
@@ -266,13 +291,13 @@ export interface SpacedRepetitionItem {
   id: string;
   userId: string;
   contentId: string; // lesson or drill ID
-  contentType: 'lesson' | 'drill';
+  contentType: "lesson" | "drill";
   lastReviewed: Date;
   nextReviewDate: Date;
   reviewCount: number;
   successRate: number; // 0-1
   averageTimeSeconds: number;
-  performanceTrend: 'improving' | 'stable' | 'degrading';
+  performanceTrend: "improving" | "stable" | "degrading";
 }
 
 export interface DailyDrill {
@@ -301,8 +326,8 @@ export interface ScenarioChallenge {
   id: string;
   title: string;
   description: string;
-  difficulty: 'week1-4' | 'week5-8' | 'week9-12';
-  type: 'daily' | 'weekly-boss' | 'capstone';
+  difficulty: "week1-4" | "week5-8" | "week9-12";
+  type: "daily" | "weekly-boss" | "capstone";
   timeLimitSeconds: number;
   scenario: string;
   objectives: string[];
@@ -327,7 +352,7 @@ export interface ChallengeAttempt {
 export interface PerformanceMetrics {
   userId: string;
   week: number;
-  
+
   // Battle Drill Performance
   battleDrillStats: {
     averageTime: number;
@@ -335,31 +360,31 @@ export interface PerformanceMetrics {
     improvementRate: number;
     drillsCompleted: number;
   };
-  
+
   // Struggle Endurance
   averageStruggleEndurance: number; // seconds before hint request
-  
+
   // Success Rates
   firstTrySuccessRate: number; // percentage
-  
+
   // Hints
   hintsRequestedPerLab: number;
-  
+
   // Resets
   resetsUsedThisWeek: number;
-  
+
   // Error Patterns
   errorPatterns: string[];
-  
+
   // Skill Decay Alerts
   degradingSkills: string[];
-  
+
   // Time Investment
   topicMastery: Record<string, string>;
-  
+
   // Optimal Study Time
   productivityByHour: Record<number, number>; // hour -> performance score
-  
+
   // Total time
   totalTimeSpent: number;
 }
@@ -369,13 +394,13 @@ export interface WeeklyReport {
   weekNumber: number;
   startDate: Date;
   endDate: Date;
-  
+
   improvements: string[];
   degradations: string[];
   recommendedFocus: string[];
   jobReadinessScore: number; // 0-100
   estimatedWeeksToReady: number;
-  
+
   generatedAt: Date;
 }
 
@@ -390,7 +415,7 @@ export interface ProgressStreak {
 }
 
 export interface ShareableProgress {
-  type: 'daily' | 'weekly' | 'achievement' | 'certification';
+  type: "daily" | "weekly" | "achievement" | "certification";
   text: string;
   imageUrl?: string;
   stats: Record<string, unknown>;
@@ -405,11 +430,11 @@ export interface AdaptiveDifficultyProfile {
     errorFrequency: number;
     firstAttemptSuccess: number;
   };
-  currentDifficulty: 'reduced' | 'standard' | 'increased';
+  currentDifficulty: "reduced" | "standard" | "increased";
   adjustments: {
     timeMultiplier: number; // 0.5-2.0
-    hintAvailability: 'generous' | 'standard' | 'limited';
-    scenarioComplexity: 'simplified' | 'standard' | 'advanced';
+    hintAvailability: "generous" | "standard" | "limited";
+    scenarioComplexity: "simplified" | "standard" | "advanced";
   };
   learningPath: {
     strongTopics: string[];
@@ -423,29 +448,29 @@ export interface AdaptiveDifficultyProfile {
 // Task-Condition-Standard (TCS) Format
 export interface TCSLesson {
   id: string;
-  
+
   // TASK
   task: {
     action: string; // action verb
     outcome: string; // measurable outcome
     fullDescription: string;
   };
-  
+
   // CONDITIONS
   conditions: {
     resources: string[]; // what's available
     constraints: string[]; // limitations
     timeLimit?: number; // seconds
-    teamSize: 'individual' | 'pair' | 'team';
-    documentation: 'full' | 'core' | 'minimal' | 'none';
+    teamSize: "individual" | "pair" | "team";
+    documentation: "full" | "core" | "minimal" | "none";
   };
-  
+
   // STANDARDS
   standards: {
     criteria: string[]; // specific, measurable success criteria
     goNoGo: boolean; // all must pass, no partial credit
   };
-  
+
   // Content
   levels: {
     crawl: TCSLessonLevel;
@@ -467,51 +492,51 @@ export interface TCSLessonLevel {
 
 // User Training State
 // Failure Log System
-export type FailureCategory = 
-  | 'docker' 
-  | 'deployment' 
-  | 'security' 
-  | 'networking' 
-  | 'database' 
-  | 'cicd' 
-  | 'infrastructure'
-  | 'testing'
-  | 'monitoring'
-  | 'configuration'
-  | 'other';
+export type FailureCategory =
+  | "docker"
+  | "deployment"
+  | "security"
+  | "networking"
+  | "database"
+  | "cicd"
+  | "infrastructure"
+  | "testing"
+  | "monitoring"
+  | "configuration"
+  | "other";
 
-export type FailureSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type FailureSeverity = "low" | "medium" | "high" | "critical";
 
 export interface FailureLog {
   id: string;
   userId: string;
-  
+
   // Context
-  contentType: 'lesson' | 'lab' | 'drill' | 'project';
+  contentType: "lesson" | "lab" | "drill" | "project";
   contentId: string;
   contentTitle: string;
-  
+
   // Failure Details
   category: FailureCategory;
   severity: FailureSeverity;
   title: string; // Brief failure description
   description: string; // Detailed what happened
   errorMessage?: string; // Exact error if available
-  
+
   // Analysis
   rootCause?: string; // What caused it
   resolution?: string; // How it was fixed
   preventionStrategy?: string; // How to avoid in future
-  
+
   // Metadata
   timestamp: Date;
   resolvedAt?: Date;
   timeToResolveMinutes?: number;
-  
+
   // Learning
   lessonsLearned: string[];
   relatedConcepts: string[];
-  
+
   // Pattern Detection
   isRecurring: boolean;
   previousOccurrences: string[]; // IDs of similar failures
@@ -537,17 +562,17 @@ export interface FailureAnalytics {
   resolvedFailures: number;
   unresolvedFailures: number;
   averageResolutionTimeMinutes: number;
-  
+
   // By Category
   failuresByCategory: Record<FailureCategory, number>;
-  
+
   // By Severity
   failuresBySeverity: Record<FailureSeverity, number>;
-  
+
   // Patterns
   activePatterns: FailurePattern[];
   resolvedPatterns: FailurePattern[];
-  
+
   // Trends
   failuresLast7Days: number;
   failuresLast30Days: number;
@@ -558,62 +583,70 @@ export interface UserTrainingState {
   userId: string;
   currentWeek: number;
   currentLesson?: string;
-  
+
   // Gates
   lessonsCompleted: string[];
   lessonsMastered: string[]; // all 4 levels complete
   weeksMastered: number[];
-  
+
   // Daily Requirements
   dailyDrillCompleted: boolean;
-  
+
   // Tokens
   resetTokensRemaining: number;
-  
+
   // Streaks
   currentStreak: number;
   longestStreak: number;
-  
+
   // Performance
   metrics: PerformanceMetrics;
 }
 
 // Stress Training System
-export type StressLevel = 'none' | 'low' | 'medium' | 'high' | 'extreme';
+export type StressLevel = "none" | "low" | "medium" | "high" | "extreme";
 
 export interface StressCondition {
   id: string;
-  type: 'time-pressure' | 'multi-tasking' | 'interruption' | 'production-incident' | 'resource-constraint';
+  type:
+    | "time-pressure"
+    | "multi-tasking"
+    | "interruption"
+    | "production-incident"
+    | "resource-constraint";
   description: string;
   enabled: boolean;
   severity: StressLevel;
 }
 
 export interface TimePressureCondition extends StressCondition {
-  type: 'time-pressure';
+  type: "time-pressure";
   targetTimeSeconds: number;
   penaltyPerSecondOver: number; // XP penalty
   warningThresholdPercent: number; // When to show warnings (e.g., 75%)
 }
 
 export interface MultiTaskingCondition extends StressCondition {
-  type: 'multi-tasking';
+  type: "multi-tasking";
   simultaneousTasks: number; // 2-4 tasks at once
   taskSwitchPenalty: number; // Time penalty for context switching
   requiresParallelExecution: boolean;
 }
 
 export interface InterruptionCondition extends StressCondition {
-  type: 'interruption';
+  type: "interruption";
   interruptionFrequency: number; // interruptions per hour
-  interruptionTypes: ('alert' | 'question' | 'incident' | 'meeting')[];
+  interruptionTypes: ("alert" | "question" | "incident" | "meeting")[];
   mustRespond: boolean;
   responseTimeSeconds: number;
 }
 
-export interface ProductionIncidentCondition extends Omit<StressCondition, 'severity'> {
-  type: 'production-incident';
-  severity: 'warning' | 'error' | 'critical' | 'outage';
+export interface ProductionIncidentCondition extends Omit<
+  StressCondition,
+  "severity"
+> {
+  type: "production-incident";
+  severity: "warning" | "error" | "critical" | "outage";
   affectedUsers: number;
   revenueImpact: number; // $ per minute
   stakeholderPressure: boolean;
@@ -621,18 +654,18 @@ export interface ProductionIncidentCondition extends Omit<StressCondition, 'seve
 }
 
 export interface ResourceConstraintCondition extends StressCondition {
-  type: 'resource-constraint';
+  type: "resource-constraint";
   limitedHints: number; // Max hints available
   limitedAttempts: number; // Max attempts before failure
   noDocumentation: boolean;
   limitedTools: string[]; // List of available tools
 }
 
-export type AnyStressCondition = 
-  | TimePressureCondition 
-  | MultiTaskingCondition 
-  | InterruptionCondition 
-  | ProductionIncidentCondition 
+export type AnyStressCondition =
+  | TimePressureCondition
+  | MultiTaskingCondition
+  | InterruptionCondition
+  | ProductionIncidentCondition
   | ResourceConstraintCondition;
 
 export interface StressScenario {
@@ -653,21 +686,21 @@ export interface StressTrainingSession {
   scenario: StressScenario;
   startedAt: Date;
   completedAt?: Date;
-  
+
   // Performance under stress
   tasksCompleted: number;
   totalTasks: number;
   errorsCount: number;
   timeToCompletion: number;
   succeeded: boolean;
-  
+
   // Physiological simulation (game mechanics)
   stressScore: number; // 0-100, increases with pressure
   fatigueLevel: number; // 0-100, increases with time/stress
   focusLevel: number; // 100-0, decreases with stress
-  
+
   // Results
-  performanceRating?: 'excellent' | 'good' | 'adequate' | 'poor' | 'failed';
+  performanceRating?: "excellent" | "good" | "adequate" | "poor" | "failed";
   adaptabilityScore: number; // How well they handled stress
 }
 
@@ -678,12 +711,12 @@ export interface StressMetrics {
   averageStressScore: number;
   averageAdaptabilityScore: number;
   stressToleranceLevel: string; // 'low' | 'medium' | 'high' | 'extreme'
-  
+
   performanceDegradation: {
     normalAccuracy: number; // % when not stressed
     stressedAccuracy: number; // % under stress
     degradationRate: number; // % performance drop under stress
   };
-  
+
   lastUpdated: Date;
 }

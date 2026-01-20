@@ -1,10 +1,10 @@
-import { useEffect, Suspense } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { useAuthStore } from './store/authStore';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import Navbar from './components/Navbar';
-import DailyDrillBlocker from './components/DailyDrillBlocker';
-import AppRoutes from './routes/AppRoutes';
+import { useEffect, Suspense } from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { useAuthStore } from "./store/authStore";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import Navbar from "./components/Navbar";
+import DailyDrillBlocker from "./components/DailyDrillBlocker";
+import AppRoutes from "./routes/AppRoutes";
 
 /** Loading spinner shown during initial auth check */
 function AuthLoadingScreen() {

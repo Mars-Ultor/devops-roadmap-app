@@ -4,15 +4,15 @@
  * Unified dashboard showing all active stress constraints and monitoring
  */
 
-import React, { useState, useEffect } from 'react';
-import { Zap, Shield, AlertTriangle } from 'lucide-react';
-import { ProgressiveStressService } from '../../services/progressiveStress';
-import type { StressSession, StressLevel } from '../../types/stress';
-import TimerCountdown from './TimerCountdown';
-import DocumentationRestrictor from './DocumentationRestrictor';
-import CopyPasteBlocker from './CopyPasteBlocker';
-import DistractionSimulator from './DistractionSimulator';
-import MultiTaskMonitor from './MultiTaskMonitor';
+import React, { useState, useEffect } from "react";
+import { Zap, Shield, AlertTriangle } from "lucide-react";
+import { ProgressiveStressService } from "../../services/progressiveStress";
+import type { StressSession, StressLevel } from "../../types/stress";
+import TimerCountdown from "./TimerCountdown";
+import DocumentationRestrictor from "./DocumentationRestrictor";
+import CopyPasteBlocker from "./CopyPasteBlocker";
+import DistractionSimulator from "./DistractionSimulator";
+import MultiTaskMonitor from "./MultiTaskMonitor";
 
 interface StressDashboardProps {
   sessionId: string;
@@ -25,7 +25,7 @@ export const StressDashboard: React.FC<StressDashboardProps> = ({
   sessionId,
   week,
   onSessionEnd,
-  className = ''
+  className = "",
 }) => {
   const [session, setSession] = useState<StressSession | null>(null);
   const [stressLevel, setStressLevel] = useState<StressLevel | null>(null);
@@ -50,10 +50,10 @@ export const StressDashboard: React.FC<StressDashboardProps> = ({
 
   const handleTimeWarning = (percentage: number) => {
     stressService.recordStressEvent(sessionId, {
-      type: 'time_warning',
+      type: "time_warning",
       message: `Time warning: ${percentage}% remaining`,
-      severity: percentage <= 25 ? 'critical' : 'high',
-      resolved: false
+      severity: percentage <= 25 ? "critical" : "high",
+      resolved: false,
     });
   };
 
@@ -61,7 +61,7 @@ export const StressDashboard: React.FC<StressDashboardProps> = ({
     console.log(`Access blocked: ${url}`);
   };
 
-  const handleActionBlocked = (action: 'copy' | 'paste') => {
+  const handleActionBlocked = (action: "copy" | "paste") => {
     console.log(`${action} blocked`);
   };
 
@@ -69,7 +69,10 @@ export const StressDashboard: React.FC<StressDashboardProps> = ({
     console.log(`Distraction shown: ${distraction}`);
   };
 
-  const handleDistractionDismissed = (distraction: string, timeToDismiss: number) => {
+  const handleDistractionDismissed = (
+    distraction: string,
+    timeToDismiss: number,
+  ) => {
     console.log(`Distraction dismissed: ${distraction} (${timeToDismiss}ms)`);
   };
 
@@ -78,7 +81,7 @@ export const StressDashboard: React.FC<StressDashboardProps> = ({
   };
 
   const handleAllTasksCompleted = () => {
-    console.log('All multi-tasks completed');
+    console.log("All multi-tasks completed");
   };
 
   if (!isActive || !session || !stressLevel) {
@@ -86,19 +89,23 @@ export const StressDashboard: React.FC<StressDashboardProps> = ({
   }
 
   const getStressIntensity = () => {
-    if (week <= 4) return 'minimal';
-    if (week <= 8) return 'moderate';
-    if (week <= 12) return 'high';
-    return 'extreme';
+    if (week <= 4) return "minimal";
+    if (week <= 8) return "moderate";
+    if (week <= 12) return "high";
+    return "extreme";
   };
 
   const getIntensityColor = () => {
     const intensity = getStressIntensity();
     switch (intensity) {
-      case 'extreme': return 'text-red-400 border-red-500 bg-red-900/20';
-      case 'high': return 'text-orange-400 border-orange-500 bg-orange-900/20';
-      case 'moderate': return 'text-yellow-400 border-yellow-500 bg-yellow-900/20';
-      default: return 'text-blue-400 border-blue-500 bg-blue-900/20';
+      case "extreme":
+        return "text-red-400 border-red-500 bg-red-900/20";
+      case "high":
+        return "text-orange-400 border-orange-500 bg-orange-900/20";
+      case "moderate":
+        return "text-yellow-400 border-yellow-500 bg-yellow-900/20";
+      default:
+        return "text-blue-400 border-blue-500 bg-blue-900/20";
     }
   };
 
@@ -110,7 +117,8 @@ export const StressDashboard: React.FC<StressDashboardProps> = ({
           <Zap className="w-6 h-6" />
           <div>
             <h3 className="text-lg font-bold">
-              PROGRESSIVE STRESS: WEEK {week} ({getStressIntensity().toUpperCase()})
+              PROGRESSIVE STRESS: WEEK {week} (
+              {getStressIntensity().toUpperCase()})
             </h3>
             <p className="text-sm opacity-75">
               Military-grade training constraints active
@@ -122,20 +130,28 @@ export const StressDashboard: React.FC<StressDashboardProps> = ({
           <div>
             <span className="text-gray-400">Time Limit:</span>
             <div className="font-mono">
-              {stressLevel.timeLimit ? `${Math.round(stressLevel.timeLimit / 60)} min` : 'None'}
+              {stressLevel.timeLimit
+                ? `${Math.round(stressLevel.timeLimit / 60)} min`
+                : "None"}
             </div>
           </div>
           <div>
             <span className="text-gray-400">Documentation:</span>
-            <div className="font-mono">{stressLevel.documentation.toUpperCase()}</div>
+            <div className="font-mono">
+              {stressLevel.documentation.toUpperCase()}
+            </div>
           </div>
           <div>
             <span className="text-gray-400">Copy/Paste:</span>
-            <div className="font-mono">{stressLevel.copyPaste ? 'Allowed' : 'BLOCKED'}</div>
+            <div className="font-mono">
+              {stressLevel.copyPaste ? "Allowed" : "BLOCKED"}
+            </div>
           </div>
           <div>
             <span className="text-gray-400">Multi-Task:</span>
-            <div className="font-mono">{stressLevel.simultaneousTasks} tasks</div>
+            <div className="font-mono">
+              {stressLevel.simultaneousTasks} tasks
+            </div>
           </div>
         </div>
       </div>
@@ -203,12 +219,16 @@ export const StressDashboard: React.FC<StressDashboardProps> = ({
           </div>
           <div>
             <span className="text-gray-400">Stress Events:</span>
-            <div className="font-mono text-orange-400">{session.stressEvents.length}</div>
+            <div className="font-mono text-orange-400">
+              {session.stressEvents.length}
+            </div>
           </div>
           <div>
             <span className="text-gray-400">Time Remaining:</span>
             <div className="font-mono text-green-400">
-              {session.timeRemaining ? `${Math.round(session.timeRemaining / 60)} min` : 'N/A'}
+              {session.timeRemaining
+                ? `${Math.round(session.timeRemaining / 60)} min`
+                : "N/A"}
             </div>
           </div>
         </div>
@@ -216,8 +236,9 @@ export const StressDashboard: React.FC<StressDashboardProps> = ({
         <div className="mt-3 p-2 bg-blue-900/20 border border-blue-500/50 rounded">
           <p className="text-xs text-blue-300">
             <AlertTriangle className="w-3 h-3 inline mr-1" />
-            These constraints build resilience and prepare you for real-world DevOps scenarios
-            where time pressure and limited resources are the norm.
+            These constraints build resilience and prepare you for real-world
+            DevOps scenarios where time pressure and limited resources are the
+            norm.
           </p>
         </div>
       </div>

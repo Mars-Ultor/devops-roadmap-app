@@ -3,13 +3,13 @@
  * Forces reflection on what's been tried and where user is stuck
  */
 
-import { useState } from 'react';
+import { useState } from "react";
 import {
   type StruggleEntry,
   INITIAL_FORM_STATE,
   validateForm,
-  createEntry
-} from './StruggleLogUtils';
+  createEntry,
+} from "./StruggleLogUtils";
 import {
   StruggleLogHeader,
   WhyThisMatters,
@@ -17,8 +17,8 @@ import {
   WhatTriedSection,
   WhereStuckSection,
   SuspectedProblemSection,
-  ActionButtons
-} from './StruggleLogComponents';
+  ActionButtons,
+} from "./StruggleLogComponents";
 
 interface StruggleLogProps {
   onSubmit: (entry: StruggleEntry) => void;
@@ -26,10 +26,18 @@ interface StruggleLogProps {
   onCancel?: () => void;
 }
 
-export default function StruggleLog({ onSubmit, isOpen, onCancel }: StruggleLogProps) {
-  const [whatTried, setWhatTried] = useState<string[]>(INITIAL_FORM_STATE.whatTried);
+export default function StruggleLog({
+  onSubmit,
+  isOpen,
+  onCancel,
+}: StruggleLogProps) {
+  const [whatTried, setWhatTried] = useState<string[]>(
+    INITIAL_FORM_STATE.whatTried,
+  );
   const [whereStuck, setWhereStuck] = useState(INITIAL_FORM_STATE.whereStuck);
-  const [suspectedProblem, setSuspectedProblem] = useState(INITIAL_FORM_STATE.suspectedProblem);
+  const [suspectedProblem, setSuspectedProblem] = useState(
+    INITIAL_FORM_STATE.suspectedProblem,
+  );
   const [errors, setErrors] = useState<string[]>(INITIAL_FORM_STATE.errors);
 
   if (!isOpen) return null;
@@ -37,14 +45,14 @@ export default function StruggleLog({ onSubmit, isOpen, onCancel }: StruggleLogP
   const handleSubmit = () => {
     const formState = { whatTried, whereStuck, suspectedProblem, errors };
     const validationErrors = validateForm(formState);
-    
+
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
       return;
     }
 
     onSubmit(createEntry(formState));
-    
+
     // Reset form
     setWhatTried(INITIAL_FORM_STATE.whatTried);
     setWhereStuck(INITIAL_FORM_STATE.whereStuck);
@@ -59,7 +67,7 @@ export default function StruggleLog({ onSubmit, isOpen, onCancel }: StruggleLogP
   };
 
   const addMoreTried = () => {
-    setWhatTried([...whatTried, '']);
+    setWhatTried([...whatTried, ""]);
   };
 
   return (
@@ -76,7 +84,10 @@ export default function StruggleLog({ onSubmit, isOpen, onCancel }: StruggleLogP
             onAddMore={addMoreTried}
           />
           <WhereStuckSection value={whereStuck} onChange={setWhereStuck} />
-          <SuspectedProblemSection value={suspectedProblem} onChange={setSuspectedProblem} />
+          <SuspectedProblemSection
+            value={suspectedProblem}
+            onChange={setSuspectedProblem}
+          />
           <ActionButtons onCancel={onCancel} onSubmit={handleSubmit} />
         </div>
       </div>
@@ -85,4 +96,4 @@ export default function StruggleLog({ onSubmit, isOpen, onCancel }: StruggleLogP
 }
 
 // Re-export types for consumers
-export type { StruggleEntry } from './StruggleLogUtils';
+export type { StruggleEntry } from "./StruggleLogUtils";

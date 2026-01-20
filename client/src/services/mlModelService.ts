@@ -3,14 +3,14 @@
  * Manages loading, running, and caching of machine learning models
  */
 
-import axios from 'axios';
+import axios from "axios";
 
 export interface MLModel {
   id: string;
   name: string;
   version: string;
-  type: 'tensorflow' | 'onnx' | 'custom';
-  status: 'ready' | 'training' | 'error' | 'loading';
+  type: "tensorflow" | "onnx" | "custom";
+  status: "ready" | "training" | "error" | "loading";
   description: string;
   inputShape: number[];
   outputShape: number[];
@@ -44,7 +44,8 @@ export interface MLTrainingData {
   metadata?: Record<string, unknown>[];
 }
 
-const ML_SERVICE_URL = import.meta.env.VITE_ML_API_URL || 'http://localhost:8000';
+const ML_SERVICE_URL =
+  import.meta.env.VITE_ML_API_URL || "http://localhost:8000";
 
 export class MLModelService {
   private static instance: MLModelService;
@@ -71,7 +72,9 @@ export class MLModelService {
       const response = await axios.get(`${ML_SERVICE_URL}/models`);
       const availableModels = response.data.models;
 
-      const modelInfo = availableModels.find((m: unknown) => (m as { name: string }).name === modelId);
+      const modelInfo = availableModels.find(
+        (m: unknown) => (m as { name: string }).name === modelId,
+      );
       if (!modelInfo) {
         throw new Error(`Model ${modelId} not found in ML service`);
       }
@@ -80,8 +83,8 @@ export class MLModelService {
       const model: MLModel = {
         id: modelId,
         name: (modelInfo as { name: string }).name,
-        version: '1.0.0',
-        type: 'custom',
+        version: "1.0.0",
+        type: "custom",
         inputShape: [modelInfo.features?.length || 10],
         outputShape: [1],
         model: null, // Models run on the server
@@ -90,13 +93,12 @@ export class MLModelService {
           trainingDataSize: 5000,
           lastTrained: new Date(),
           features: modelInfo.features || [],
-          target: 'prediction'
-        }
+          target: "prediction",
+        },
       };
 
       this.models.set(modelId, model);
       return model;
-
     } catch (error: unknown) {
       console.error(`Failed to load model ${modelId}:`, error);
       // Return fallback model for development
@@ -109,7 +111,10 @@ export class MLModelService {
    */
   async predict(modelId: string, input: MLInput): Promise<MLPrediction> {
     try {
-      const response = await axios.post(`${ML_SERVICE_URL}/predict/${modelId}`, input);
+      const response = await axios.post(
+        `${ML_SERVICE_URL}/predict/${modelId}`,
+        input,
+      );
       const result = response.data;
 
       return {
@@ -117,9 +122,8 @@ export class MLModelService {
         confidence: result.confidence,
         probabilities: result.probabilities,
         explanation: result.explanation,
-        featureImportance: result.feature_importance
+        featureImportance: result.feature_importance,
       };
-
     } catch (error: unknown) {
       console.error(`Inference failed for model ${modelId}:`, error);
       // Return fallback prediction
@@ -130,7 +134,10 @@ export class MLModelService {
   /**
    * Train or fine-tune a model with new data
    */
-  async trainModel(modelId: string, trainingData: MLTrainingData): Promise<void> {
+  async trainModel(
+    modelId: string,
+    trainingData: MLTrainingData,
+  ): Promise<void> {
     try {
       await axios.post(`${ML_SERVICE_URL}/train/${modelId}`, trainingData);
       console.log(`Model ${modelId} training initiated on ML service`);
@@ -146,7 +153,9 @@ export class MLModelService {
   async getModelMetrics(modelId: string): Promise<unknown> {
     try {
       const response = await axios.get(`${ML_SERVICE_URL}/models`);
-      const modelInfo = response.data.models.find((m: unknown) => (m as { name: string }).name === modelId);
+      const modelInfo = response.data.models.find(
+        (m: unknown) => (m as { name: string }).name === modelId,
+      );
       return (modelInfo as { metrics?: unknown })?.metrics || {};
     } catch (error: unknown) {
       console.error(`Failed to get metrics for ${modelId}:`, error);
@@ -159,66 +168,92 @@ export class MLModelService {
    */
   private createFallbackModel(modelId: string): MLModel {
     const fallbackConfigs: Record<string, Partial<MLModel>> = {
-      'learning-path-predictor': {
-        name: 'Learning Path Predictor (Fallback)',
+      "learning-path-predictor": {
+        name: "Learning Path Predictor (Fallback)",
         inputShape: [50],
         outputShape: [10],
         metadata: {
           accuracy: 0.75,
           trainingDataSize: 1000,
           lastTrained: new Date(),
-          features: ['current_week', 'performance_score', 'time_spent', 'hints_used', 'error_rate'],
-          target: 'optimal_next_topic'
-        }
+          features: [
+            "current_week",
+            "performance_score",
+            "time_spent",
+            "hints_used",
+            "error_rate",
+          ],
+          target: "optimal_next_topic",
+        },
       },
-      'performance-predictor': {
-        name: 'Performance Predictor (Fallback)',
+      "performance-predictor": {
+        name: "Performance Predictor (Fallback)",
         inputShape: [30],
         outputShape: [1],
         metadata: {
           accuracy: 0.8,
           trainingDataSize: 500,
           lastTrained: new Date(),
-          features: ['study_streak', 'avg_score', 'completion_rate', 'struggle_time'],
-          target: 'completion_probability'
-        }
+          features: [
+            "study_streak",
+            "avg_score",
+            "completion_rate",
+            "struggle_time",
+          ],
+          target: "completion_probability",
+        },
       },
-      'learning-style-detector': {
-        name: 'Learning Style Detector (Fallback)',
+      "learning-style-detector": {
+        name: "Learning Style Detector (Fallback)",
         inputShape: [20],
         outputShape: [4],
         metadata: {
           accuracy: 0.7,
           trainingDataSize: 300,
           lastTrained: new Date(),
-          features: ['visual_preference', 'hands_on_preference', 'theory_preference', 'practice_preference'],
-          target: 'learning_style'
-        }
+          features: [
+            "visual_preference",
+            "hands_on_preference",
+            "theory_preference",
+            "practice_preference",
+          ],
+          target: "learning_style",
+        },
       },
-      'skill-gap-analyzer': {
-        name: 'Skill Gap Analyzer (Fallback)',
+      "skill-gap-analyzer": {
+        name: "Skill Gap Analyzer (Fallback)",
         inputShape: [100],
         outputShape: [50],
         metadata: {
           accuracy: 0.75,
           trainingDataSize: 800,
           lastTrained: new Date(),
-          features: ['topic_scores', 'attempt_counts', 'time_spent_per_topic', 'error_patterns'],
-          target: 'skill_gaps'
-        }
+          features: [
+            "topic_scores",
+            "attempt_counts",
+            "time_spent_per_topic",
+            "error_patterns",
+          ],
+          target: "skill_gaps",
+        },
       },
-      'motivational-analyzer': {
-        name: 'Motivational Analyzer (Fallback)',
+      "motivational-analyzer": {
+        name: "Motivational Analyzer (Fallback)",
         inputShape: [15],
         outputShape: [3],
         metadata: {
           accuracy: 0.72,
           trainingDataSize: 600,
           lastTrained: new Date(),
-          features: ['engagement_score', 'consistency_score', 'progress_rate', 'feedback_sentiment'],
-          target: 'motivation_level'
-        }
-      }
+          features: [
+            "engagement_score",
+            "consistency_score",
+            "progress_rate",
+            "feedback_sentiment",
+          ],
+          target: "motivation_level",
+        },
+      },
     };
 
     const config = fallbackConfigs[modelId] || {
@@ -230,47 +265,55 @@ export class MLModelService {
         trainingDataSize: 100,
         lastTrained: new Date(),
         features: [],
-        target: 'prediction'
-      }
+        target: "prediction",
+      },
     };
 
     return {
       id: modelId,
-      version: 'fallback',
-      type: 'custom',
+      version: "fallback",
+      type: "custom",
       model: null,
-      ...config
+      ...config,
     } as MLModel;
   }
 
   /**
    * Generate fallback prediction when ML service is unavailable
    */
-  private generateFallbackPrediction(modelId: string, input: MLInput): MLPrediction {
+  private generateFallbackPrediction(
+    modelId: string,
+    input: MLInput,
+  ): MLPrediction {
     // Generate reasonable defaults based on input features
-    const avgFeature = input.features.length > 0 ? input.features.reduce((a, b) => a + b, 0) / input.features.length : 0.5;
+    const avgFeature =
+      input.features.length > 0
+        ? input.features.reduce((a, b) => a + b, 0) / input.features.length
+        : 0.5;
 
     let prediction: number[];
     let explanation: string;
 
     switch (modelId) {
-      case 'learning-path-predictor':
+      case "learning-path-predictor":
         prediction = [avgFeature, avgFeature * 0.9, avgFeature * 0.8];
-        explanation = "Fallback: Recommended basic to intermediate topics based on current performance";
+        explanation =
+          "Fallback: Recommended basic to intermediate topics based on current performance";
         break;
-      case 'performance-predictor':
+      case "performance-predictor":
         prediction = [Math.min(0.9, Math.max(0.1, avgFeature))];
-        explanation = "Fallback: Performance prediction based on historical patterns";
+        explanation =
+          "Fallback: Performance prediction based on historical patterns";
         break;
-      case 'learning-style-detector':
+      case "learning-style-detector":
         prediction = [0.4, 0.3, 0.2, 0.1]; // Visual, Kinesthetic, Reading, Auditory
         explanation = "Fallback: Mixed learning style preferences detected";
         break;
-      case 'skill-gap-analyzer':
-        prediction = input.features.slice(0, 8).map(f => Math.max(0, 1 - f)); // Inverse of scores
+      case "skill-gap-analyzer":
+        prediction = input.features.slice(0, 8).map((f) => Math.max(0, 1 - f)); // Inverse of scores
         explanation = "Fallback: Skill gaps identified in lower-scoring topics";
         break;
-      case 'motivational-analyzer':
+      case "motivational-analyzer":
         prediction = [0.5, 0.3, 0.2]; // High, Medium, Low motivation
         explanation = "Fallback: Moderate motivation level detected";
         break;
@@ -284,7 +327,7 @@ export class MLModelService {
       confidence: 0.6,
       probabilities: undefined,
       explanation,
-      featureImportance: undefined
+      featureImportance: undefined,
     };
   }
 }
@@ -304,37 +347,43 @@ export function useMLModel(modelId: string) {
       const loadedModel = await mlService.loadModel(modelId);
       setModel(loadedModel);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load model');
+      setError(err instanceof Error ? err.message : "Failed to load model");
     } finally {
       setLoading(false);
     }
   }, [modelId]);
 
-  const predict = useCallback(async (input: MLInput): Promise<MLPrediction | null> => {
-    if (!model) return null;
+  const predict = useCallback(
+    async (input: MLInput): Promise<MLPrediction | null> => {
+      if (!model) return null;
 
-    try {
-      const mlService = MLModelService.getInstance();
-      return await mlService.predict(modelId, input);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Prediction failed');
-      return null;
-    }
-  }, [model, modelId]);
+      try {
+        const mlService = MLModelService.getInstance();
+        return await mlService.predict(modelId, input);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Prediction failed");
+        return null;
+      }
+    },
+    [model, modelId],
+  );
 
-  const train = useCallback(async (trainingData: MLTrainingData) => {
-    if (!model) return;
+  const train = useCallback(
+    async (trainingData: MLTrainingData) => {
+      if (!model) return;
 
-    setLoading(true);
-    try {
-      const mlService = MLModelService.getInstance();
-      await mlService.trainModel(modelId, trainingData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Training failed');
-    } finally {
-      setLoading(false);
-    }
-  }, [model, modelId]);
+      setLoading(true);
+      try {
+        const mlService = MLModelService.getInstance();
+        await mlService.trainModel(modelId, trainingData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Training failed");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [model, modelId],
+  );
 
   useEffect(() => {
     loadModel();
@@ -346,7 +395,7 @@ export function useMLModel(modelId: string) {
     error,
     predict,
     train,
-    reload: loadModel
+    reload: loadModel,
   };
 }
 

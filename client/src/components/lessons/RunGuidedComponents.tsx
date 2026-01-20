@@ -3,8 +3,17 @@
  * Extracted UI components for the run-guided level workspace
  */
 
-import { useState } from 'react';
-import { Clock, Save, CheckCircle, FileText, Lightbulb, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from "react";
+import {
+  Clock,
+  Save,
+  CheckCircle,
+  FileText,
+  Lightbulb,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
 interface TimerBarProps {
   readonly elapsedTime: number;
@@ -19,15 +28,16 @@ export function RunGuidedTimerBar({
   wordCount,
   completedCheckpoints,
   totalCheckpoints,
-  onSaveDraft
+  onSaveDraft,
 }: TimerBarProps) {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const allComplete = completedCheckpoints === totalCheckpoints && totalCheckpoints > 0;
+  const allComplete =
+    completedCheckpoints === totalCheckpoints && totalCheckpoints > 0;
 
   return (
     <div className="bg-slate-800 rounded-lg p-4 border border-slate-700 flex items-center justify-between">
@@ -39,9 +49,13 @@ export function RunGuidedTimerBar({
         <div className="text-slate-400 text-sm">
           <span className="font-semibold text-white">{wordCount}</span> words
         </div>
-        <div className={`flex items-center space-x-2 ${allComplete ? 'text-green-400' : 'text-slate-400'}`}>
+        <div
+          className={`flex items-center space-x-2 ${allComplete ? "text-green-400" : "text-slate-400"}`}
+        >
           <CheckCircle className="w-5 h-5" />
-          <span>{completedCheckpoints}/{totalCheckpoints} checkpoints</span>
+          <span>
+            {completedCheckpoints}/{totalCheckpoints} checkpoints
+          </span>
         </div>
       </div>
       <button
@@ -79,7 +93,7 @@ export function CheckpointCard({
   response,
   onToggleComplete,
   onResponseChange,
-  onHintUsed
+  onHintUsed,
 }: CheckpointCardProps) {
   const [showHint, setShowHint] = useState(false);
   const [expanded, setExpanded] = useState(true);
@@ -90,47 +104,79 @@ export function CheckpointCard({
   };
 
   return (
-    <div className={`bg-slate-800 rounded-lg border transition ${isComplete ? 'border-green-600' : 'border-slate-700'}`}>
-      <button type="button" className="w-full p-4 flex items-center justify-between text-left"
-        onClick={() => setExpanded(!expanded)}>
+    <div
+      className={`bg-slate-800 rounded-lg border transition ${isComplete ? "border-green-600" : "border-slate-700"}`}
+    >
+      <button
+        type="button"
+        className="w-full p-4 flex items-center justify-between text-left"
+        onClick={() => setExpanded(!expanded)}
+      >
         <div className="flex items-center space-x-3">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-            isComplete ? 'bg-green-600 text-white' : 'bg-slate-700 text-slate-300'}`}>
-            {isComplete ? '✓' : index + 1}
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+              isComplete
+                ? "bg-green-600 text-white"
+                : "bg-slate-700 text-slate-300"
+            }`}
+          >
+            {isComplete ? "✓" : index + 1}
           </div>
           <div>
-            <h4 className="font-semibold text-white">{checkpoint.checkpoint}</h4>
+            <h4 className="font-semibold text-white">
+              {checkpoint.checkpoint}
+            </h4>
             <p className="text-sm text-slate-400">{checkpoint.description}</p>
           </div>
         </div>
-        {expanded ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+        {expanded ? (
+          <ChevronUp className="w-5 h-5 text-slate-400" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-slate-400" />
+        )}
       </button>
 
       {expanded && (
         <div className="px-4 pb-4 space-y-4">
           {checkpoint.validationCriteria && (
             <div className="bg-slate-900/50 rounded p-3">
-              <div className="text-sm font-semibold text-green-400 mb-2">Validation Criteria:</div>
+              <div className="text-sm font-semibold text-green-400 mb-2">
+                Validation Criteria:
+              </div>
               <ul className="space-y-1">
                 {checkpoint.validationCriteria.map((c) => (
-                  <li key={`vc-${c.slice(0, 20)}`} className="text-sm text-slate-300">• {c}</li>
+                  <li
+                    key={`vc-${c.slice(0, 20)}`}
+                    className="text-sm text-slate-300"
+                  >
+                    • {c}
+                  </li>
                 ))}
               </ul>
             </div>
           )}
 
           <div>
-            <span className="block text-sm font-semibold text-slate-300 mb-2">Your Work:</span>
-            <textarea value={response} onChange={(e) => onResponseChange(e.target.value)}
+            <span className="block text-sm font-semibold text-slate-300 mb-2">
+              Your Work:
+            </span>
+            <textarea
+              value={response}
+              onChange={(e) => onResponseChange(e.target.value)}
               placeholder="Document your work here..."
-              className="w-full h-32 p-3 bg-slate-900 border border-slate-700 rounded text-white text-sm resize-none focus:outline-none" />
+              className="w-full h-32 p-3 bg-slate-900 border border-slate-700 rounded text-white text-sm resize-none focus:outline-none"
+            />
           </div>
 
           {checkpoint.hintIfStuck && (
             <div>
-              <button type="button" onClick={handleHintClick}
-                className="flex items-center space-x-2 text-sm text-amber-400 hover:text-amber-300">
-                <Lightbulb className="w-4 h-4" /><span>{showHint ? 'Hide Hint' : 'Get Hint'}</span>
+              <button
+                type="button"
+                onClick={handleHintClick}
+                className="flex items-center space-x-2 text-sm text-amber-400 hover:text-amber-300"
+              >
+                <Lightbulb className="w-4 h-4" />
+                <span>{showHint ? "Hide Hint" : "Get Hint"}</span>
               </button>
               {showHint && (
                 <div className="mt-2 p-3 bg-amber-900/20 border border-amber-600/50 rounded text-sm text-amber-200">
@@ -141,9 +187,19 @@ export function CheckpointCard({
           )}
 
           <label className="flex items-center space-x-3 cursor-pointer">
-            <input type="checkbox" checked={isComplete} onChange={onToggleComplete}
-              className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-green-500" />
-            <span className={isComplete ? 'text-green-400 font-semibold' : 'text-slate-300'}>Mark complete</span>
+            <input
+              type="checkbox"
+              checked={isComplete}
+              onChange={onToggleComplete}
+              className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-green-500"
+            />
+            <span
+              className={
+                isComplete ? "text-green-400 font-semibold" : "text-slate-300"
+              }
+            >
+              Mark complete
+            </span>
           </label>
         </div>
       )}
@@ -167,7 +223,10 @@ export function AllowedResources({ resources }: ResourcesProps) {
       </p>
       <ul className="space-y-2">
         {resources.map((resource) => (
-          <li key={`res-${resource.slice(0, 20)}`} className="text-slate-300 text-sm flex items-start">
+          <li
+            key={`res-${resource.slice(0, 20)}`}
+            className="text-slate-300 text-sm flex items-start"
+          >
             <span className="text-cyan-400 mr-2">→</span>
             {resource}
           </li>
@@ -187,7 +246,9 @@ export function GeneralNotesEditor({ notes, onChange }: EditorProps) {
     <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
       <div className="bg-slate-900 px-4 py-3 border-b border-slate-700 flex items-center space-x-2">
         <FileText className="w-5 h-5 text-cyan-400" />
-        <span className="font-semibold text-white">General Notes & Summary</span>
+        <span className="font-semibold text-white">
+          General Notes & Summary
+        </span>
       </div>
       <textarea
         value={notes}

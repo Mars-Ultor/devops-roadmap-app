@@ -4,8 +4,8 @@
  * Quick 5-10 minute scenario-based skill application
  */
 
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Play,
   CheckCircle,
@@ -17,14 +17,14 @@ import {
   Code,
   Globe,
   AlertTriangle,
-  BookOpen
-} from 'lucide-react';
-import { doc, setDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import { ScenarioChallengeService } from '../services/scenarioChallenge';
-import type { ChallengeScenario, ChallengeAttempt } from '../types/scenarios';
-import { useAuthStore } from '../store/authStore';
-import { TimerCountdown } from '../components/stress/TimerCountdown';
+  BookOpen,
+} from "lucide-react";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
+import { ScenarioChallengeService } from "../services/scenarioChallenge";
+import type { ChallengeScenario, ChallengeAttempt } from "../types/scenarios";
+import { useAuthStore } from "../store/authStore";
+import { TimerCountdown } from "../components/stress/TimerCountdown";
 
 export default function DailyChallenge() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function DailyChallenge() {
   const [attempt, setAttempt] = useState<ChallengeAttempt | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [completedObjectives, setCompletedObjectives] = useState<string[]>([]);
-  const [currentCommand, setCurrentCommand] = useState('');
+  const [currentCommand, setCurrentCommand] = useState("");
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [showHints, setShowHints] = useState(false);
   const [availableHints, setAvailableHints] = useState<string[]>([]);
@@ -46,22 +46,25 @@ export default function DailyChallenge() {
   };
 
   function getResourceClassName(resource: Resource): string {
-    return resource.available ? 'text-gray-300' : 'text-gray-500';
+    return resource.available ? "text-gray-300" : "text-gray-500";
   }
 
   const challengeService = ScenarioChallengeService.getInstance();
 
   useEffect(() => {
-    console.log('DailyChallenge: user =', user);
+    console.log("DailyChallenge: user =", user);
     if (!user) {
-      console.log('DailyChallenge: No user, would redirect to login');
+      console.log("DailyChallenge: No user, would redirect to login");
     }
 
     // Get user's current week from their profile
     const userCurrentWeek = user?.currentWeek || 1;
 
     // Get daily challenge for user based on their unlocked week
-    const dailyScenario = challengeService.getDailyChallenge(user?.uid || 'test-user', userCurrentWeek);
+    const dailyScenario = challengeService.getDailyChallenge(
+      user?.uid || "test-user",
+      userCurrentWeek,
+    );
 
     if (dailyScenario) {
       setScenario(dailyScenario);
@@ -76,7 +79,10 @@ export default function DailyChallenge() {
   const startChallenge = () => {
     if (!scenario || !user) return;
 
-    const newAttempt = challengeService.startScenarioAttempt(user.uid, scenario.id);
+    const newAttempt = challengeService.startScenarioAttempt(
+      user.uid,
+      scenario.id,
+    );
     if (newAttempt) {
       setAttempt(newAttempt);
       setIsActive(true);
@@ -99,20 +105,20 @@ export default function DailyChallenge() {
       attempt.attemptId,
       currentCommand,
       success,
-      success ? 'Command executed successfully' : undefined,
-      success ? undefined : 'Command failed',
-      'terminal'
+      success ? "Command executed successfully" : undefined,
+      success ? undefined : "Command failed",
+      "terminal",
     );
 
     setCommandHistory([...commandHistory, currentCommand]);
-    setCurrentCommand('');
+    setCurrentCommand("");
   };
 
   const handleUseHint = (hintId: string) => {
     if (!attempt) return;
 
     const penalty = challengeService.useHint(attempt.attemptId, hintId);
-    setAvailableHints(availableHints.filter(id => id !== hintId));
+    setAvailableHints(availableHints.filter((id) => id !== hintId));
 
     // Apply penalty to score (would be handled by service)
     console.log(`Hint used with ${penalty}x penalty`);
@@ -124,7 +130,7 @@ export default function DailyChallenge() {
     const finalAttempt = challengeService.completeScenarioAttempt(
       attempt.attemptId,
       completedObjectives,
-      passed
+      passed,
     );
 
     if (finalAttempt) {
@@ -133,22 +139,28 @@ export default function DailyChallenge() {
 
       // Save completion to Firestore so ContentGate recognizes it
       try {
-        const today = new Date().toISOString().split('T')[0];
-        const drillRef = doc(db, 'userProgress', user.uid, 'dailyDrills', today);
-        
+        const today = new Date().toISOString().split("T")[0];
+        const drillRef = doc(
+          db,
+          "userProgress",
+          user.uid,
+          "dailyDrills",
+          today,
+        );
+
         await setDoc(drillRef, {
           completed: true,
           completedAt: new Date(),
           score: finalAttempt.score || 0,
           passed: passed,
           timeTaken: finalAttempt.timeSpent || 0,
-          scenarioId: scenario?.id || 'unknown',
-          updatedAt: new Date()
+          scenarioId: scenario?.id || "unknown",
+          updatedAt: new Date(),
         });
 
-        console.log('Daily drill completion saved to Firestore');
+        console.log("Daily drill completion saved to Firestore");
       } catch (error) {
-        console.error('Error saving drill completion:', error);
+        console.error("Error saving drill completion:", error);
       }
     }
   };
@@ -157,7 +169,7 @@ export default function DailyChallenge() {
     if (!attempt || !scenario) return [];
 
     const hintIds = challengeService.getAvailableHints(attempt.attemptId);
-    return scenario.hints.filter(hint => hintIds.includes(hint.id));
+    return scenario.hints.filter((hint) => hintIds.includes(hint.id));
   };
 
   if (loading) {
@@ -174,7 +186,9 @@ export default function DailyChallenge() {
         <div className="text-center text-white">
           <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-yellow-400" />
           <h2 className="text-2xl font-bold mb-2">No Challenge Available</h2>
-          <p className="text-gray-400">Check back tomorrow for your daily challenge!</p>
+          <p className="text-gray-400">
+            Check back tomorrow for your daily challenge!
+          </p>
         </div>
       </div>
     );
@@ -211,8 +225,8 @@ export default function DailyChallenge() {
                     key={i}
                     className={`w-2 h-2 rounded-full ${
                       i < scenario.estimatedDifficulty
-                        ? 'bg-yellow-400'
-                        : 'bg-gray-600'
+                        ? "bg-yellow-400"
+                        : "bg-gray-600"
                     }`}
                   />
                 ))}
@@ -232,7 +246,9 @@ export default function DailyChallenge() {
                 <AlertTriangle className="w-5 h-5 text-orange-400" />
                 Scenario
               </h2>
-              <p className="text-gray-300 leading-relaxed">{scenario.scenario}</p>
+              <p className="text-gray-300 leading-relaxed">
+                {scenario.scenario}
+              </p>
 
               {!isActive && (
                 <button
@@ -261,8 +277,8 @@ export default function DailyChallenge() {
                       key={objective}
                       className={`flex items-start gap-3 p-3 rounded border ${
                         isCompleted
-                          ? 'bg-green-900/20 border-green-500'
-                          : 'bg-slate-700/50 border-slate-600'
+                          ? "bg-green-900/20 border-green-500"
+                          : "bg-slate-700/50 border-slate-600"
                       }`}
                     >
                       <button
@@ -270,8 +286,8 @@ export default function DailyChallenge() {
                         disabled={!isActive}
                         className={`mt-0.5 ${
                           isCompleted
-                            ? 'text-green-400'
-                            : 'text-gray-400 hover:text-green-400'
+                            ? "text-green-400"
+                            : "text-gray-400 hover:text-green-400"
                         }`}
                       >
                         {isCompleted ? (
@@ -280,7 +296,11 @@ export default function DailyChallenge() {
                           <Circle className="w-5 h-5" />
                         )}
                       </button>
-                      <span className={isCompleted ? 'line-through text-gray-400' : ''}>
+                      <span
+                        className={
+                          isCompleted ? "line-through text-gray-400" : ""
+                        }
+                      >
                         {objective}
                       </span>
                     </div>
@@ -300,7 +320,9 @@ export default function DailyChallenge() {
                 {/* Command History */}
                 <div className="bg-black rounded p-4 mb-4 h-48 overflow-y-auto font-mono text-sm">
                   {commandHistory.length === 0 ? (
-                    <div className="text-gray-500">No commands executed yet...</div>
+                    <div className="text-gray-500">
+                      No commands executed yet...
+                    </div>
                   ) : (
                     commandHistory.map((cmd) => (
                       <div key={cmd} className="mb-1">
@@ -317,7 +339,7 @@ export default function DailyChallenge() {
                     type="text"
                     value={currentCommand}
                     onChange={(e) => setCurrentCommand(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && executeCommand()}
+                    onKeyDown={(e) => e.key === "Enter" && executeCommand()}
                     placeholder="Enter command..."
                     className="flex-1 bg-slate-700 border border-slate-600 rounded px-3 py-2 font-mono text-sm focus:outline-none focus:border-blue-500"
                     disabled={!isActive}
@@ -355,11 +377,13 @@ export default function DailyChallenge() {
 
             {/* Results */}
             {attempt && !isActive && (
-              <div className={`p-6 rounded-lg border ${
-                attempt.passed
-                  ? 'bg-green-900/20 border-green-500'
-                  : 'bg-red-900/20 border-red-500'
-              }`}>
+              <div
+                className={`p-6 rounded-lg border ${
+                  attempt.passed
+                    ? "bg-green-900/20 border-green-500"
+                    : "bg-red-900/20 border-red-500"
+                }`}
+              >
                 <div className="flex items-center gap-3 mb-4">
                   {attempt.passed ? (
                     <CheckCircle className="w-8 h-8 text-green-400" />
@@ -368,7 +392,9 @@ export default function DailyChallenge() {
                   )}
                   <div>
                     <h3 className="text-xl font-bold">
-                      {attempt.passed ? 'Challenge Completed!' : 'Challenge Incomplete'}
+                      {attempt.passed
+                        ? "Challenge Completed!"
+                        : "Challenge Incomplete"}
                     </h3>
                     <p className="text-gray-400">Score: {attempt.score}/100</p>
                   </div>
@@ -378,7 +404,7 @@ export default function DailyChallenge() {
 
                 <div className="flex gap-4">
                   <button
-                    onClick={() => navigate('/dashboard')}
+                    onClick={() => navigate("/dashboard")}
                     className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded font-semibold transition-colors"
                   >
                     Back to Dashboard
@@ -410,8 +436,13 @@ export default function DailyChallenge() {
                 {showHints && (
                   <div className="space-y-2">
                     {getAvailableHintsList().map((hint) => (
-                      <div key={hint.id} className="bg-slate-700 p-3 rounded border border-slate-600">
-                        <p className="text-sm text-gray-300 mb-2">{hint.content}</p>
+                      <div
+                        key={hint.id}
+                        className="bg-slate-700 p-3 rounded border border-slate-600"
+                      >
+                        <p className="text-sm text-gray-300 mb-2">
+                          {hint.content}
+                        </p>
                         <button
                           onClick={() => handleUseHint(hint.id)}
                           className="text-xs bg-yellow-600 hover:bg-yellow-500 px-2 py-1 rounded transition-colors"
@@ -433,27 +464,42 @@ export default function DailyChallenge() {
               </h3>
               <div className="space-y-2">
                 {scenario.resources.map((resource) => (
-                  <div key={resource.url} className="flex items-center gap-2 text-sm">
-                    {resource.type === 'documentation' && <BookOpen className="w-4 h-4 text-blue-400" />}
-                    {resource.type === 'tool' && <Code className="w-4 h-4 text-green-400" />}
-                    {resource.type === 'command' && <Terminal className="w-4 h-4 text-purple-400" />}
-                    {resource.type === 'diagram' && <Globe className="w-4 h-4 text-yellow-400" />}
+                  <div
+                    key={resource.url}
+                    className="flex items-center gap-2 text-sm"
+                  >
+                    {resource.type === "documentation" && (
+                      <BookOpen className="w-4 h-4 text-blue-400" />
+                    )}
+                    {resource.type === "tool" && (
+                      <Code className="w-4 h-4 text-green-400" />
+                    )}
+                    {resource.type === "command" && (
+                      <Terminal className="w-4 h-4 text-purple-400" />
+                    )}
+                    {resource.type === "diagram" && (
+                      <Globe className="w-4 h-4 text-yellow-400" />
+                    )}
                     {resource.url ? (
                       <a
                         href={resource.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`underline ${resource.available ? 'text-blue-400 hover:text-blue-300' : 'text-gray-500 cursor-not-allowed'}`}
-                        onClick={(e) => !resource.available && e.preventDefault()}
+                        className={`underline ${resource.available ? "text-blue-400 hover:text-blue-300" : "text-gray-500 cursor-not-allowed"}`}
+                        onClick={(e) =>
+                          !resource.available && e.preventDefault()
+                        }
                       >
                         {resource.title}
-                        {!resource.available && ' (Locked)'}
+                        {!resource.available && " (Locked)"}
                       </a>
                     ) : resource.content ? (
                       <details className={getResourceClassName(resource)}>
-                        <summary className={`cursor-pointer ${resource.available ? 'hover:text-white' : 'cursor-not-allowed'}`}>
+                        <summary
+                          className={`cursor-pointer ${resource.available ? "hover:text-white" : "cursor-not-allowed"}`}
+                        >
                           {resource.title}
-                          {!resource.available && ' (Locked)'}
+                          {!resource.available && " (Locked)"}
                         </summary>
                         {resource.available && (
                           <pre className="mt-2 p-2 bg-slate-900 rounded text-xs font-mono text-green-400 whitespace-pre-wrap">
@@ -462,9 +508,13 @@ export default function DailyChallenge() {
                         )}
                       </details>
                     ) : (
-                      <span className={resource.available ? 'text-gray-300' : 'text-gray-500'}>
+                      <span
+                        className={
+                          resource.available ? "text-gray-300" : "text-gray-500"
+                        }
+                      >
                         {resource.title}
-                        {!resource.available && ' (Locked)'}
+                        {!resource.available && " (Locked)"}
                       </span>
                     )}
                   </div>

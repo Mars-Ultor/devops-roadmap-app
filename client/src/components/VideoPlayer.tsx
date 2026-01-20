@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react';
-import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import { useAuthStore } from '../store/authStore';
-import { useProgress } from '../hooks/useProgress';
-import { VideoHeader, PlayButton, YouTubeEmbed, MarkWatchedButton } from './video-player/VideoPlayerComponents';
+import { useState, useEffect } from "react";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { db } from "../lib/firebase";
+import { useAuthStore } from "../store/authStore";
+import { useProgress } from "../hooks/useProgress";
+import {
+  VideoHeader,
+  PlayButton,
+  YouTubeEmbed,
+  MarkWatchedButton,
+} from "./video-player/VideoPlayerComponents";
 
 interface VideoPlayerProps {
   videoId: string;
@@ -12,7 +17,12 @@ interface VideoPlayerProps {
   xpReward?: number;
 }
 
-export default function VideoPlayer({ videoId, lessonId, title, xpReward = 50 }: VideoPlayerProps) {
+export default function VideoPlayer({
+  videoId,
+  lessonId,
+  title,
+  xpReward = 50,
+}: VideoPlayerProps) {
   const { user } = useAuthStore();
   const { completeLesson, getLessonProgress } = useProgress();
   const [isWatched, setIsWatched] = useState(false);
@@ -22,8 +32,12 @@ export default function VideoPlayer({ videoId, lessonId, title, xpReward = 50 }:
   useEffect(() => {
     const checkWatchStatus = async () => {
       if (!user) return;
-      try { const progress = await getLessonProgress(lessonId); setIsWatched(!!progress); }
-      catch (error) { console.error('Error checking watch status:', error); }
+      try {
+        const progress = await getLessonProgress(lessonId);
+        setIsWatched(!!progress);
+      } catch (error) {
+        console.error("Error checking watch status:", error);
+      }
     };
     checkWatchStatus();
   }, [user, lessonId, getLessonProgress]);
@@ -33,11 +47,17 @@ export default function VideoPlayer({ videoId, lessonId, title, xpReward = 50 }:
     setAwarding(true);
     try {
       await completeLesson(lessonId, xpReward, 5);
-      await updateDoc(doc(db, 'users', user.uid), { watchedVideos: arrayUnion(lessonId) });
+      await updateDoc(doc(db, "users", user.uid), {
+        watchedVideos: arrayUnion(lessonId),
+      });
       setIsWatched(true);
       window.location.reload();
-    } catch (error) { console.error('Error marking video as watched:', error); alert('Failed to award XP. Please try again.'); }
-    finally { setAwarding(false); }
+    } catch (error) {
+      console.error("Error marking video as watched:", error);
+      alert("Failed to award XP. Please try again.");
+    } finally {
+      setAwarding(false);
+    }
   };
 
   return (
@@ -48,7 +68,13 @@ export default function VideoPlayer({ videoId, lessonId, title, xpReward = 50 }:
       ) : (
         <div className="space-y-4">
           <YouTubeEmbed videoId={videoId} title={title} />
-          {!isWatched && <MarkWatchedButton xpReward={xpReward} awarding={awarding} onClick={handleMarkAsWatched} />}
+          {!isWatched && (
+            <MarkWatchedButton
+              xpReward={xpReward}
+              awarding={awarding}
+              onClick={handleMarkAsWatched}
+            />
+          )}
         </div>
       )}
     </div>

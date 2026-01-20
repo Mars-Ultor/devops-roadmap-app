@@ -1,26 +1,26 @@
 /* eslint-disable max-lines-per-function */
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
-import { Rocket, Zap, Trophy } from 'lucide-react';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
+import { Rocket, Zap, Trophy } from "lucide-react";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
       await login(email, password);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch {
-      setError('Invalid email or password. Please try again.');
+      setError("Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -47,8 +47,12 @@ export default function Login() {
                   <Rocket className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">33 Hands-On Labs</h3>
-                  <p className="text-gray-300">Master DevOps tools through interactive browser-based labs</p>
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    33 Hands-On Labs
+                  </h3>
+                  <p className="text-gray-300">
+                    Master DevOps tools through interactive browser-based labs
+                  </p>
                 </div>
               </div>
 
@@ -57,8 +61,12 @@ export default function Login() {
                   <Zap className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">6000+ XP to Earn</h3>
-                  <p className="text-gray-300">Track your progress and earn badges as you learn</p>
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    6000+ XP to Earn
+                  </h3>
+                  <p className="text-gray-300">
+                    Track your progress and earn badges as you learn
+                  </p>
                 </div>
               </div>
 
@@ -67,8 +75,12 @@ export default function Login() {
                   <Trophy className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">Cloud Resume Challenge</h3>
-                  <p className="text-gray-300">Build a portfolio project that impresses employers</p>
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    Cloud Resume Challenge
+                  </h3>
+                  <p className="text-gray-300">
+                    Build a portfolio project that impresses employers
+                  </p>
                 </div>
               </div>
             </div>
@@ -97,7 +109,10 @@ export default function Login() {
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
                     Email Address
                   </label>
                   <input
@@ -112,7 +127,10 @@ export default function Login() {
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
                     Password
                   </label>
                   <input
@@ -145,11 +163,12 @@ export default function Login() {
               </div>
 
               <div className="text-center">
-                <Link 
-                  to="/register" 
+                <Link
+                  to="/register"
                   className="text-indigo-400 hover:text-indigo-300 transition font-medium"
                 >
-                  Don't have an account? <span className="font-bold">Register here →</span>
+                  Don't have an account?{" "}
+                  <span className="font-bold">Register here →</span>
                 </Link>
               </div>
             </form>

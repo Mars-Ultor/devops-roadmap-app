@@ -1,7 +1,13 @@
-import React from 'react';
-import { AARReviewPanel } from './AARReviewPanel';
-import type { AAR } from '../types';
-import { ResultHeader, AARRequiredWarning, StatsGrid, AchievementBadges, ActionButtons } from './battle-drill/BattleDrillCompleteComponents';
+import React from "react";
+import { AARReviewPanel } from "./AARReviewPanel";
+import type { AAR } from "../types";
+import {
+  ResultHeader,
+  AARRequiredWarning,
+  StatsGrid,
+  AchievementBadges,
+  ActionButtons,
+} from "./battle-drill/BattleDrillCompleteComponents";
 
 interface BattleDrillCompleteModalProps {
   sessionResult: {
@@ -22,8 +28,16 @@ interface BattleDrillCompleteModalProps {
   onCompleteAAR: () => void;
 }
 
-export const BattleDrillCompleteModal: React.FC<BattleDrillCompleteModalProps> = ({
-  sessionResult, aarSubmitted, submittedAAR, formatTime, onTryAgain, onBackToDrills, onCompleteAAR
+export const BattleDrillCompleteModal: React.FC<
+  BattleDrillCompleteModalProps
+> = ({
+  sessionResult,
+  aarSubmitted,
+  submittedAAR,
+  formatTime,
+  onTryAgain,
+  onBackToDrills,
+  onCompleteAAR,
 }) => {
   if (!sessionResult) return null;
 
@@ -33,9 +47,13 @@ export const BattleDrillCompleteModal: React.FC<BattleDrillCompleteModalProps> =
         <div className="text-center">
           <ResultHeader passed={sessionResult.passed} />
           {!aarSubmitted && <AARRequiredWarning />}
-          {aarSubmitted && submittedAAR && <div className="mt-6"><AARReviewPanel aar={submittedAAR} /></div>}
-          <StatsGrid 
-            durationSeconds={sessionResult.durationSeconds} 
+          {aarSubmitted && submittedAAR && (
+            <div className="mt-6">
+              <AARReviewPanel aar={submittedAAR} />
+            </div>
+          )}
+          <StatsGrid
+            durationSeconds={sessionResult.durationSeconds}
             targetTimeSeconds={sessionResult.targetTimeSeconds}
             completedSteps={sessionResult.completedSteps}
             totalSteps={sessionResult.totalSteps}
@@ -43,8 +61,16 @@ export const BattleDrillCompleteModal: React.FC<BattleDrillCompleteModalProps> =
             beatTarget={sessionResult.beatTarget}
             formatTime={formatTime}
           />
-          <AchievementBadges beatTarget={sessionResult.beatTarget} personalBest={sessionResult.personalBest} />
-          <ActionButtons aarSubmitted={aarSubmitted} onTryAgain={onTryAgain} onBackToDrills={onBackToDrills} onCompleteAAR={onCompleteAAR} />
+          <AchievementBadges
+            beatTarget={sessionResult.beatTarget}
+            personalBest={sessionResult.personalBest}
+          />
+          <ActionButtons
+            aarSubmitted={aarSubmitted}
+            onTryAgain={onTryAgain}
+            onBackToDrills={onBackToDrills}
+            onCompleteAAR={onCompleteAAR}
+          />
         </div>
       </div>
     </div>

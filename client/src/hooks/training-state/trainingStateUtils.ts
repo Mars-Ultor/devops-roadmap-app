@@ -3,7 +3,11 @@
  * Helper functions for building training state
  */
 
-import type { UserTrainingState, LearningMetrics, BattleDrillStats } from '../../types/training';
+import type {
+  UserTrainingState,
+  LearningMetrics,
+  BattleDrillStats,
+} from "../../types/training";
 
 /** Default battle drill stats */
 export function getDefaultBattleDrillStats(): BattleDrillStats {
@@ -11,12 +15,15 @@ export function getDefaultBattleDrillStats(): BattleDrillStats {
     averageTime: 0,
     bestTime: undefined,
     improvementRate: 0,
-    drillsCompleted: 0
+    drillsCompleted: 0,
   };
 }
 
 /** Default learning metrics */
-export function getDefaultLearningMetrics(userId: string, week: number): LearningMetrics {
+export function getDefaultLearningMetrics(
+  userId: string,
+  week: number,
+): LearningMetrics {
   return {
     userId,
     week,
@@ -29,7 +36,7 @@ export function getDefaultLearningMetrics(userId: string, week: number): Learnin
     degradingSkills: [],
     topicMastery: {},
     productivityByHour: {},
-    totalTimeSpent: 0
+    totalTimeSpent: 0,
   };
 }
 
@@ -40,7 +47,7 @@ export function buildTrainingState(
   dailyDrillCompleted: boolean,
   resetTokensRemaining: number,
   currentStreak: number,
-  longestStreak: number
+  longestStreak: number,
 ): UserTrainingState {
   return {
     userId,
@@ -53,6 +60,6 @@ export function buildTrainingState(
     resetTokensRemaining,
     currentStreak,
     longestStreak,
-    metrics: getDefaultLearningMetrics(userId, currentWeek)
+    metrics: getDefaultLearningMetrics(userId, currentWeek),
   };
 }

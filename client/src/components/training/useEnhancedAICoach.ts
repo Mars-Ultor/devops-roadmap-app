@@ -2,9 +2,13 @@
  * useEnhancedAICoach - Custom hook for AI Coach state management
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { aiCoachService } from '../../services/aiCoachEnhanced';
-import type { CoachFeedback, CoachContext, CodeAnalysis } from '../../types/aiCoach';
+import { useState, useEffect, useRef } from "react";
+import { aiCoachService } from "../../services/aiCoachEnhanced";
+import type {
+  CoachFeedback,
+  CoachContext,
+  CodeAnalysis,
+} from "../../types/aiCoach";
 
 interface UseEnhancedAICoachProps {
   context: CoachContext;
@@ -16,7 +20,12 @@ interface UseEnhancedAICoachProps {
 }
 
 export function useEnhancedAICoach({
-  context, autoUpdate, updateInterval, showCodeAnalysis, codeSnippet, onDisciplineAction
+  context,
+  autoUpdate,
+  updateInterval,
+  showCodeAnalysis,
+  codeSnippet,
+  onDisciplineAction,
 }: UseEnhancedAICoachProps) {
   const [feedback, setFeedback] = useState<CoachFeedback | null>(null);
   const [loading, setLoading] = useState(false);
@@ -30,9 +39,13 @@ export function useEnhancedAICoach({
       const response = await aiCoachService.getEnhancedCoachFeedback(context);
       setFeedback(response);
 
-      if (response.type === 'discipline' && response.actionRequired && onDisciplineAction) {
+      if (
+        response.type === "discipline" &&
+        response.actionRequired &&
+        onDisciplineAction
+      ) {
         onDisciplineAction(response.message);
-        setDisciplineAlerts(prev => [...prev, response.message].slice(-3));
+        setDisciplineAlerts((prev) => [...prev, response.message].slice(-3));
       }
 
       if (showCodeAnalysis && codeSnippet) {
@@ -40,7 +53,7 @@ export function useEnhancedAICoach({
         setCodeAnalysis(analysis);
       }
     } catch (error) {
-      console.error('Error fetching enhanced coach feedback:', error);
+      console.error("Error fetching enhanced coach feedback:", error);
     } finally {
       setLoading(false);
     }
@@ -54,8 +67,12 @@ export function useEnhancedAICoach({
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [context.contentId, context.userProgress.attempts, context.userProgress.timeSpent]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    context.contentId,
+    context.userProgress.attempts,
+    context.userProgress.timeSpent,
+  ]);
 
   return { feedback, loading, codeAnalysis, disciplineAlerts, fetchFeedback };
 }

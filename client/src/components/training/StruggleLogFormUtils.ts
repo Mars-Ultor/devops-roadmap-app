@@ -18,16 +18,19 @@ export interface FormValidation {
 export const validateStruggleLogForm = (
   attemptedSolutions: string[],
   stuckLocation: string,
-  hypothesis: string
+  hypothesis: string,
 ): FormValidation => {
-  const validAttempts = attemptedSolutions.filter(a => a.trim().length >= MIN_ATTEMPT_LENGTH).length >= MIN_ATTEMPTS_COUNT;
-  const validLocation = stuckLocation.trim().length >= MIN_STUCK_LOCATION_LENGTH;
+  const validAttempts =
+    attemptedSolutions.filter((a) => a.trim().length >= MIN_ATTEMPT_LENGTH)
+      .length >= MIN_ATTEMPTS_COUNT;
+  const validLocation =
+    stuckLocation.trim().length >= MIN_STUCK_LOCATION_LENGTH;
   const validHypothesis = hypothesis.trim().length >= MIN_HYPOTHESIS_LENGTH;
-  
+
   return {
     validAttempts,
     validLocation,
     validHypothesis,
-    isValid: validAttempts && validLocation && validHypothesis
+    isValid: validAttempts && validLocation && validHypothesis,
   };
 };

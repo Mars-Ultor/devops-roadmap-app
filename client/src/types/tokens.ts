@@ -3,7 +3,7 @@
  * Limits quiz/lab resets to encourage learning from failures
  */
 
-export type TokenType = 'quiz-reset' | 'lab-reset' | 'battle-drill-reset';
+export type TokenType = "quiz-reset" | "lab-reset" | "battle-drill-reset";
 
 export interface ResetToken {
   id: string;

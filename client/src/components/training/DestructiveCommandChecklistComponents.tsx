@@ -2,8 +2,11 @@
  * Sub-components for DestructiveCommandChecklist
  */
 
-import { AlertTriangle, Shield, X } from 'lucide-react';
-import type { ChecklistState, ChecklistItem } from './DestructiveCommandChecklistUtils';
+import { AlertTriangle, Shield, X } from "lucide-react";
+import type {
+  ChecklistState,
+  ChecklistItem,
+} from "./DestructiveCommandChecklistUtils";
 
 interface ModalHeaderProps {
   readonly onCancel: () => void;
@@ -16,8 +19,12 @@ export function ModalHeader({ onCancel }: ModalHeaderProps) {
         <div className="flex items-center space-x-3">
           <AlertTriangle className="w-8 h-8 text-white animate-pulse" />
           <div>
-            <h2 className="text-2xl font-bold text-white">Destructive Command Detected</h2>
-            <p className="text-red-100 text-sm">Pre-Execution Safety Checklist Required</p>
+            <h2 className="text-2xl font-bold text-white">
+              Destructive Command Detected
+            </h2>
+            <p className="text-red-100 text-sm">
+              Pre-Execution Safety Checklist Required
+            </p>
           </div>
         </div>
         <button onClick={onCancel} className="text-white hover:text-red-200">
@@ -36,7 +43,9 @@ export function CommandDisplay({ command }: CommandDisplayProps) {
   return (
     <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 mb-6">
       <p className="text-gray-400 text-sm mb-2">You are about to execute:</p>
-      <code className="text-red-400 font-mono text-lg font-bold">{command}</code>
+      <code className="text-red-400 font-mono text-lg font-bold">
+        {command}
+      </code>
     </div>
   );
 }
@@ -47,10 +56,12 @@ export function WarningBanner() {
       <div className="flex items-start space-x-3">
         <Shield className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
         <div>
-          <h4 className="text-red-400 font-semibold mb-1">⚠️ High-Risk Operation</h4>
+          <h4 className="text-red-400 font-semibold mb-1">
+            ⚠️ High-Risk Operation
+          </h4>
           <p className="text-gray-300 text-sm">
-            This command can cause data loss, service disruption, or security issues.
-            You must complete all safety checks before proceeding.
+            This command can cause data loss, service disruption, or security
+            issues. You must complete all safety checks before proceeding.
           </p>
         </div>
       </div>
@@ -64,10 +75,18 @@ interface ChecklistItemRowProps {
   readonly onChange: (checked: boolean) => void;
 }
 
-export function ChecklistItemRow({ item, checked, onChange }: ChecklistItemRowProps) {
+export function ChecklistItemRow({
+  item,
+  checked,
+  onChange,
+}: ChecklistItemRowProps) {
   const checkboxId = `checklist-${item.key}`;
   return (
-    <label htmlFor={checkboxId} className="flex items-start space-x-3 cursor-pointer group" aria-label={`${item.label} - ${item.helpText}`}>
+    <label
+      htmlFor={checkboxId}
+      className="flex items-start space-x-3 cursor-pointer group"
+      aria-label={`${item.label} - ${item.helpText}`}
+    >
       <input
         id={checkboxId}
         type="checkbox"
@@ -79,9 +98,7 @@ export function ChecklistItemRow({ item, checked, onChange }: ChecklistItemRowPr
         <span className="text-gray-300 group-hover:text-white transition">
           {item.label}
         </span>
-        <p className="text-gray-500 text-xs mt-1">
-          {item.helpText}
-        </p>
+        <p className="text-gray-500 text-xs mt-1">{item.helpText}</p>
       </div>
     </label>
   );
@@ -93,7 +110,11 @@ interface SafetyChecklistProps {
   readonly onUpdate: (key: keyof ChecklistState, value: boolean) => void;
 }
 
-export function SafetyChecklist({ items, checklist, onUpdate }: SafetyChecklistProps) {
+export function SafetyChecklist({
+  items,
+  checklist,
+  onUpdate,
+}: SafetyChecklistProps) {
   return (
     <div className="space-y-4 mb-6">
       <h3 className="text-white font-semibold flex items-center space-x-2">
@@ -116,8 +137,9 @@ export function ProductionMindsetNotice() {
   return (
     <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 mb-6">
       <p className="text-gray-400 text-sm text-center">
-        <strong className="text-yellow-400">Production Mindset:</strong> In real DevOps work, these checks prevent costly outages. 
-        Get used to thinking through consequences before executing.
+        <strong className="text-yellow-400">Production Mindset:</strong> In real
+        DevOps work, these checks prevent costly outages. Get used to thinking
+        through consequences before executing.
       </p>
     </div>
   );
@@ -129,7 +151,11 @@ interface ActionButtonsProps {
   readonly onProceed: () => void;
 }
 
-export function ActionButtons({ allChecked, onCancel, onProceed }: ActionButtonsProps) {
+export function ActionButtons({
+  allChecked,
+  onCancel,
+  onProceed,
+}: ActionButtonsProps) {
   return (
     <div className="flex items-center justify-between">
       <button
@@ -143,11 +169,11 @@ export function ActionButtons({ allChecked, onCancel, onProceed }: ActionButtons
         disabled={!allChecked}
         className={`px-6 py-3 rounded-lg font-bold transition ${
           allChecked
-            ? 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white'
-            : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+            ? "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white"
+            : "bg-gray-700 text-gray-500 cursor-not-allowed"
         }`}
       >
-        {allChecked ? '✓ Execute Command' : '🔒 Complete Checklist to Proceed'}
+        {allChecked ? "✓ Execute Command" : "🔒 Complete Checklist to Proceed"}
       </button>
     </div>
   );

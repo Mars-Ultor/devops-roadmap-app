@@ -3,21 +3,25 @@
  * Multi-step troubleshooting simulations
  */
 
-export type ScenarioCategory = 
-  | 'deployment-failure'
-  | 'performance-degradation'
-  | 'security-incident'
-  | 'data-corruption'
-  | 'service-outage'
-  | 'configuration-drift'
-  | 'resource-exhaustion'
-  | 'network-issues';
+export type ScenarioCategory =
+  | "deployment-failure"
+  | "performance-degradation"
+  | "security-incident"
+  | "data-corruption"
+  | "service-outage"
+  | "configuration-drift"
+  | "resource-exhaustion"
+  | "network-issues";
 
-export type ScenarioDifficulty = 'beginner' | 'intermediate' | 'advanced' | 'expert';
+export type ScenarioDifficulty =
+  | "beginner"
+  | "intermediate"
+  | "advanced"
+  | "expert";
 
 export interface ScenarioSymptom {
-  type: 'log' | 'metric' | 'alert' | 'user-report';
-  severity: 'info' | 'warning' | 'error' | 'critical';
+  type: "log" | "metric" | "alert" | "user-report";
+  severity: "info" | "warning" | "error" | "critical";
   description: string;
   timestamp?: string;
   source?: string; // Service/component where symptom appears
@@ -36,7 +40,7 @@ export interface RootCause {
   id: string;
   description: string;
   category: string;
-  impact: 'low' | 'medium' | 'high' | 'critical';
+  impact: "low" | "medium" | "high" | "critical";
 }
 
 export interface ResolutionStep {
@@ -53,28 +57,28 @@ export interface ProductionScenario {
   title: string;
   category: ScenarioCategory;
   difficulty: ScenarioDifficulty;
-  
+
   // Incident details
   description: string;
   businessImpact: string; // What's at stake
   affectedUsers?: number;
   revenueImpact?: number; // $ per minute
-  
+
   // Investigation
   symptoms: ScenarioSymptom[];
   investigationSteps: InvestigationStep[];
   rootCause: RootCause;
-  
+
   // Resolution
   resolutionSteps: ResolutionStep[];
   preventionMeasures: string[];
-  
+
   // Metadata
   estimatedTimeToResolve: number; // minutes
   prerequisiteKnowledge: string[];
   learningObjectives: string[];
   realWorldExample?: string; // Based on famous incident
-  
+
   // Scoring
   maxScore: number;
   timeBonus: boolean; // Award bonus for quick resolution
@@ -87,28 +91,28 @@ export interface ScenarioAttempt {
   scenarioId: string;
   startedAt: Date;
   completedAt?: Date;
-  
+
   // Investigation tracking
   stepsCompleted: string[];
   hintsUsed: number;
   investigationTime: number; // seconds
-  
+
   // Root cause identification
   rootCauseIdentified: boolean;
   rootCauseAttempts: number;
   timeToIdentify?: number; // seconds
-  
+
   // Resolution tracking
   resolutionStepsCompleted: string[];
   resolutionTime: number; // seconds
   rollbacksRequired: number;
-  
+
   // Results
   success: boolean;
   score: number;
   efficiency: number; // 0-100, how efficient was the resolution
   accuracyScore: number; // 0-100, accuracy in diagnosis
-  
+
   // Learning
   lessonsLearned: string[];
   mistakesMade: string[];
@@ -129,7 +133,7 @@ export interface ScenarioPerformance {
   troubleshootingSpeed: number; // percentile
 
   lastAttemptedAt: Date;
-  masteryLevel: 'novice' | 'competent' | 'proficient' | 'expert';
+  masteryLevel: "novice" | "competent" | "proficient" | "expert";
 }
 
 // Enhanced Scenario Types for Military Training Methodology
@@ -137,8 +141,8 @@ export interface ChallengeScenario {
   id: string;
   title: string;
   description: string;
-  difficulty: 'week1-4' | 'week5-8' | 'week9-12' | 'week13-16';
-  type: 'daily' | 'weekly' | 'capstone';
+  difficulty: "week1-4" | "week5-8" | "week9-12" | "week13-16";
+  type: "daily" | "weekly" | "capstone";
   timeLimitSeconds: number;
   scenario: string;
   objectives: string[];
@@ -153,15 +157,15 @@ export interface ChallengeScenario {
 
 export interface ChallengeHint {
   id: string;
-  trigger: 'time' | 'stuck' | 'request'; // When hint becomes available
+  trigger: "time" | "stuck" | "request"; // When hint becomes available
   triggerValue?: number; // Time in seconds or stuck duration
   content: string;
   penalty: number; // Hint cost multiplier
-  category: 'diagnostic' | 'solution' | 'best_practice';
+  category: "diagnostic" | "solution" | "best_practice";
 }
 
 export interface ChallengeResource {
-  type: 'documentation' | 'tool' | 'command' | 'diagram';
+  type: "documentation" | "tool" | "command" | "diagram";
   title: string;
   url?: string;
   content?: string;
@@ -192,7 +196,7 @@ export interface ChallengeCommand {
   success: boolean;
   output?: string;
   error?: string;
-  context: 'terminal' | 'editor' | 'browser';
+  context: "terminal" | "editor" | "browser";
 }
 
 export interface ChallengeError {
@@ -218,49 +222,49 @@ export interface ChallengeProgress {
 }
 
 export const CHALLENGE_DIFFICULTY_CONFIG = {
-  'week1-4': {
+  "week1-4": {
     timeMultiplier: 1.5, // More time for beginners
     hintPenalty: 1.0,
-    resourceAccess: 'full',
-    maxConcurrentTasks: 1
+    resourceAccess: "full",
+    maxConcurrentTasks: 1,
   },
-  'week5-8': {
+  "week5-8": {
     timeMultiplier: 1.2,
     hintPenalty: 1.2,
-    resourceAccess: 'limited',
-    maxConcurrentTasks: 2
+    resourceAccess: "limited",
+    maxConcurrentTasks: 2,
   },
-  'week9-12': {
+  "week9-12": {
     timeMultiplier: 1.0,
     hintPenalty: 1.5,
-    resourceAccess: 'minimal',
-    maxConcurrentTasks: 3
+    resourceAccess: "minimal",
+    maxConcurrentTasks: 3,
   },
-  'week13-16': {
+  "week13-16": {
     timeMultiplier: 0.8, // Less time for experts
     hintPenalty: 2.0,
-    resourceAccess: 'none',
-    maxConcurrentTasks: 4
-  }
+    resourceAccess: "none",
+    maxConcurrentTasks: 4,
+  },
 };
 
 export const CHALLENGE_TYPES = {
   daily: {
-    name: 'Daily Challenge',
-    duration: '5-10 minutes',
-    frequency: 'daily',
-    purpose: 'Quick skill application practice'
+    name: "Daily Challenge",
+    duration: "5-10 minutes",
+    frequency: "daily",
+    purpose: "Quick skill application practice",
   },
   weekly: {
-    name: 'Weekly Boss Battle',
-    duration: '2 hours',
-    frequency: 'weekly',
-    purpose: 'Comprehensive scenario mastery'
+    name: "Weekly Boss Battle",
+    duration: "2 hours",
+    frequency: "weekly",
+    purpose: "Comprehensive scenario mastery",
   },
   capstone: {
-    name: 'Capstone Simulation',
-    duration: '4 hours',
-    frequency: 'monthly',
-    purpose: 'Production incident simulation'
-  }
+    name: "Capstone Simulation",
+    duration: "4 hours",
+    frequency: "monthly",
+    purpose: "Production incident simulation",
+  },
 };

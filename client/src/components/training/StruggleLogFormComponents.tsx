@@ -2,13 +2,13 @@
  * StruggleLogForm - UI Components
  */
 
-import { BookOpen, AlertCircle } from 'lucide-react';
-import { 
-  MIN_ATTEMPT_LENGTH, 
-  MAX_ATTEMPTS, 
-  MIN_STUCK_LOCATION_LENGTH, 
-  MIN_HYPOTHESIS_LENGTH 
-} from './StruggleLogFormUtils';
+import { BookOpen, AlertCircle } from "lucide-react";
+import {
+  MIN_ATTEMPT_LENGTH,
+  MAX_ATTEMPTS,
+  MIN_STUCK_LOCATION_LENGTH,
+  MIN_HYPOTHESIS_LENGTH,
+} from "./StruggleLogFormUtils";
 
 // Success State
 export function SubmittedState() {
@@ -33,10 +33,13 @@ export function FormHeader() {
     <div className="flex items-start gap-3 mb-6">
       <BookOpen className="w-6 h-6 text-indigo-400 mt-1" />
       <div>
-        <h3 className="text-lg font-bold text-white mb-2">Struggle Log Required</h3>
+        <h3 className="text-lg font-bold text-white mb-2">
+          Struggle Log Required
+        </h3>
         <p className="text-slate-300 text-sm">
-          Before requesting hints, document your struggle. This reflection deepens learning
-          and helps identify patterns in your problem-solving approach.
+          Before requesting hints, document your struggle. This reflection
+          deepens learning and helps identify patterns in your problem-solving
+          approach.
         </p>
       </div>
     </div>
@@ -72,16 +75,17 @@ interface AttemptedSolutionsSectionProps {
   readonly onAddAttempt: () => void;
 }
 
-export function AttemptedSolutionsSection({ 
-  attemptedSolutions, 
-  hintsUnlocked, 
-  onAttemptChange, 
-  onAddAttempt 
+export function AttemptedSolutionsSection({
+  attemptedSolutions,
+  hintsUnlocked,
+  onAttemptChange,
+  onAddAttempt,
 }: AttemptedSolutionsSectionProps) {
   return (
     <div>
       <label className="block text-sm font-semibold text-white mb-2">
-        Solutions Attempted (minimum 3, at least {MIN_ATTEMPT_LENGTH} chars each)
+        Solutions Attempted (minimum 3, at least {MIN_ATTEMPT_LENGTH} chars
+        each)
       </label>
       <div className="space-y-3">
         {attemptedSolutions.map((attempt, index) => (
@@ -120,7 +124,11 @@ interface StuckLocationSectionProps {
   readonly onChange: (value: string) => void;
 }
 
-export function StuckLocationSection({ value, hintsUnlocked, onChange }: StuckLocationSectionProps) {
+export function StuckLocationSection({
+  value,
+  hintsUnlocked,
+  onChange,
+}: StuckLocationSectionProps) {
   return (
     <div>
       <label className="block text-sm font-semibold text-white mb-2">
@@ -148,11 +156,16 @@ interface HypothesisSectionProps {
   readonly onChange: (value: string) => void;
 }
 
-export function HypothesisSection({ value, hintsUnlocked, onChange }: HypothesisSectionProps) {
+export function HypothesisSection({
+  value,
+  hintsUnlocked,
+  onChange,
+}: HypothesisSectionProps) {
   return (
     <div>
       <label className="block text-sm font-semibold text-white mb-2">
-        What do you think is causing the issue? (minimum {MIN_HYPOTHESIS_LENGTH} chars)
+        What do you think is causing the issue? (minimum {MIN_HYPOTHESIS_LENGTH}{" "}
+        chars)
       </label>
       <textarea
         value={value}
@@ -176,7 +189,11 @@ interface SubmitButtonProps {
   readonly submitting: boolean;
 }
 
-export function SubmitButton({ isValid, hintsUnlocked, submitting }: SubmitButtonProps) {
+export function SubmitButton({
+  isValid,
+  hintsUnlocked,
+  submitting,
+}: SubmitButtonProps) {
   return (
     <>
       <button
@@ -184,7 +201,7 @@ export function SubmitButton({ isValid, hintsUnlocked, submitting }: SubmitButto
         disabled={!isValid || !hintsUnlocked || submitting}
         className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
       >
-        {submitting ? 'Submitting...' : 'Submit Struggle Log'}
+        {submitting ? "Submitting..." : "Submit Struggle Log"}
       </button>
 
       {hintsUnlocked && !isValid && (

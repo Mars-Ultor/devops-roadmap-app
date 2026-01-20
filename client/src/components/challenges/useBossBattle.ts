@@ -2,16 +2,16 @@
  * useBossBattle - Custom hook for Boss Battle state management
  */
 
-import { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
-import { useAuthStore } from '../../store/authStore';
-import { 
-  type BossBattle, 
-  initializePhaseCompletion, 
-  calculateScore, 
-  generateBossBattle 
-} from './BossBattleUtils';
+import { useState, useEffect } from "react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "../../lib/firebase";
+import { useAuthStore } from "../../store/authStore";
+import {
+  type BossBattle,
+  initializePhaseCompletion,
+  calculateScore,
+  generateBossBattle,
+} from "./BossBattleUtils";
 
 interface UseBossBattleProps {
   isOpen: boolean;
@@ -19,7 +19,11 @@ interface UseBossBattleProps {
   onComplete: (success: boolean) => void;
 }
 
-export function useBossBattle({ isOpen, week, onComplete }: UseBossBattleProps) {
+export function useBossBattle({
+  isOpen,
+  week,
+  onComplete,
+}: UseBossBattleProps) {
   const { user } = useAuthStore();
   const [battle, setBattle] = useState<BossBattle | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
@@ -31,7 +35,7 @@ export function useBossBattle({ isOpen, week, onComplete }: UseBossBattleProps) 
   useEffect(() => {
     const loadBossBattleData = async () => {
       if (!user) return;
-      const battleRef = doc(db, 'bossBattles', `${user.uid}_week${week}`);
+      const battleRef = doc(db, "bossBattles", `${user.uid}_week${week}`);
       const battleDoc = await getDoc(battleRef);
 
       if (battleDoc.exists()) {
@@ -39,7 +43,9 @@ export function useBossBattle({ isOpen, week, onComplete }: UseBossBattleProps) 
         setBattle(data.battle);
         setTimeRemaining(data.timeRemaining || data.battle.timeLimit);
         setHasStarted(data.hasStarted || false);
-        setPhaseCompletion(data.phaseCompletion || initializePhaseCompletion(data.battle));
+        setPhaseCompletion(
+          data.phaseCompletion || initializePhaseCompletion(data.battle),
+        );
         if (data.hasStarted && data.timeRemaining > 0) setIsActive(true);
       } else {
         const newBattle = generateBossBattle(week);
@@ -55,8 +61,11 @@ export function useBossBattle({ isOpen, week, onComplete }: UseBossBattleProps) 
   useEffect(() => {
     if (!isActive || timeRemaining <= 0) return;
     const timer = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) { setIsActive(false); return 0; }
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          setIsActive(false);
+          return 0;
+        }
         return prev - 1;
       });
     }, 1000);
@@ -67,30 +76,50 @@ export function useBossBattle({ isOpen, week, onComplete }: UseBossBattleProps) 
     if (!user || !battle) return;
     setIsActive(true);
     setHasStarted(true);
-    const battleRef = doc(db, 'bossBattles', `${user.uid}_week${week}`);
-    await setDoc(battleRef, {
-      battle, hasStarted: true, startedAt: new Date().toISOString(),
-      timeRemaining, phaseCompletion, currentPhase: 0, completedAt: null, passed: false
-    }, { merge: true });
+    const battleRef = doc(db, "bossBattles", `${user.uid}_week${week}`);
+    await setDoc(
+      battleRef,
+      {
+        battle,
+        hasStarted: true,
+        startedAt: new Date().toISOString(),
+        timeRemaining,
+        phaseCompletion,
+        currentPhase: 0,
+        completedAt: null,
+        passed: false,
+      },
+      { merge: true },
+    );
   };
 
   const handleSubmit = async () => {
     if (!user || !battle) return;
     const score = calculateScore(battle, phaseCompletion);
     const passed = score >= battle.minimumPassScore;
-    const battleRef = doc(db, 'bossBattles', `${user.uid}_week${week}`);
-    await setDoc(battleRef, {
-      battle, completedAt: new Date().toISOString(), passed, score,
-      timeUsed: battle.timeLimit - timeRemaining, phaseCompletion
-    }, { merge: true });
+    const battleRef = doc(db, "bossBattles", `${user.uid}_week${week}`);
+    await setDoc(
+      battleRef,
+      {
+        battle,
+        completedAt: new Date().toISOString(),
+        passed,
+        score,
+        timeUsed: battle.timeLimit - timeRemaining,
+        phaseCompletion,
+      },
+      { merge: true },
+    );
     onComplete(passed);
     if (!passed) {
-      alert(`Boss Battle Failed!\n\nYou scored ${score}% but need ${battle.minimumPassScore}% to pass.\n\nYou must retry this battle before advancing to Week ${week + 1}.`);
+      alert(
+        `Boss Battle Failed!\n\nYou scored ${score}% but need ${battle.minimumPassScore}% to pass.\n\nYou must retry this battle before advancing to Week ${week + 1}.`,
+      );
     }
   };
 
   const toggleTask = (phaseIndex: number, taskIndex: number) => {
-    setPhaseCompletion(prev => {
+    setPhaseCompletion((prev) => {
       const newState = [...prev];
       newState[phaseIndex] = [...newState[phaseIndex]];
       newState[phaseIndex][taskIndex] = !newState[phaseIndex][taskIndex];
@@ -101,7 +130,14 @@ export function useBossBattle({ isOpen, week, onComplete }: UseBossBattleProps) 
   const currentScore = calculateScore(battle, phaseCompletion);
 
   return {
-    battle, timeRemaining, isActive, phaseCompletion,
-    hasStarted, currentScore, handleStart, handleSubmit, toggleTask
+    battle,
+    timeRemaining,
+    isActive,
+    phaseCompletion,
+    hasStarted,
+    currentScore,
+    handleStart,
+    handleSubmit,
+    toggleTask,
   };
 }

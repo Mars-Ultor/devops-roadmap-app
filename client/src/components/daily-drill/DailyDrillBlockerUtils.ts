@@ -5,15 +5,17 @@
 
 // Routes that bypass the daily drill blocker
 export const EXEMPT_ROUTES = [
-  '/daily-drill',
-  '/battle-drill',
-  '/achievements',
-  '/settings',
-  '/help',
-  '/'
+  "/daily-drill",
+  "/battle-drill",
+  "/achievements",
+  "/settings",
+  "/help",
+  "/",
 ];
 
 // Check if current path is exempt from drill requirement
 export function isExemptRoute(pathname: string): boolean {
-  return EXEMPT_ROUTES.some(route => pathname === route || pathname.startsWith(`${route}/`));
+  return EXEMPT_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
 }

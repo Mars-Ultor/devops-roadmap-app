@@ -1,6 +1,6 @@
-import { Component } from 'react';
-import type { ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { Component } from "react";
+import type { ReactNode } from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
   }
 
   render() {
@@ -35,12 +35,15 @@ export class ErrorBoundary extends Component<Props, State> {
                 <AlertTriangle className="w-8 h-8 text-red-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Oops! Something went wrong</h1>
+                <h1 className="text-2xl font-bold text-white">
+                  Oops! Something went wrong
+                </h1>
               </div>
             </div>
-            
+
             <p className="text-gray-300 mb-6">
-              We encountered an unexpected error. Don't worry, your progress is saved.
+              We encountered an unexpected error. Don't worry, your progress is
+              saved.
             </p>
 
             {this.state.error && (
@@ -52,7 +55,7 @@ export class ErrorBoundary extends Component<Props, State> {
             )}
 
             <button
-              onClick={() => window.location.href = '/dashboard'}
+              onClick={() => (window.location.href = "/dashboard")}
               className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg font-bold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
             >
               Return to Dashboard

@@ -4,20 +4,20 @@
  * Phase 3: Time-Boxed Struggle
  */
 
-import { useHintSystem } from '../hooks/useHintSystem';
+import { useHintSystem } from "../hooks/useHintSystem";
 import {
   HintsLockedBanner,
   HintProgress,
   NextHintCard,
   ViewedHintsList,
   AllHintsUsedWarning,
-  SolutionAvailableBanner
-} from './hint-system/HintSystemComponents';
+  SolutionAvailableBanner,
+} from "./hint-system/HintSystemComponents";
 
 interface Hint {
   id: number;
   text: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: "easy" | "medium" | "hard";
 }
 
 interface HintSystemProps {
@@ -28,7 +28,13 @@ interface HintSystemProps {
   currentTime?: number;
 }
 
-export default function HintSystem({ hints, hintsUnlocked, labStartTime, onHintViewed, currentTime }: HintSystemProps) {
+export default function HintSystem({
+  hints,
+  hintsUnlocked,
+  labStartTime,
+  onHintViewed,
+  currentTime,
+}: HintSystemProps) {
   const {
     viewedHints,
     nextHintAvailableIn,
@@ -37,8 +43,14 @@ export default function HintSystem({ hints, hintsUnlocked, labStartTime, onHintV
     canViewNextHint,
     getNextUnviewedHint,
     formatTime,
-    getTimeUntilSolution
-  } = useHintSystem({ hints, hintsUnlocked, labStartTime, onHintViewed, currentTime });
+    getTimeUntilSolution,
+  } = useHintSystem({
+    hints,
+    hintsUnlocked,
+    labStartTime,
+    onHintViewed,
+    currentTime,
+  });
 
   if (!hintsUnlocked) return <HintsLockedBanner />;
 
@@ -46,8 +58,12 @@ export default function HintSystem({ hints, hintsUnlocked, labStartTime, onHintV
 
   return (
     <div className="space-y-4">
-      <HintProgress viewedHints={viewedHints} hints={hints} solutionAvailable={solutionAvailable} />
-      
+      <HintProgress
+        viewedHints={viewedHints}
+        hints={hints}
+        solutionAvailable={solutionAvailable}
+      />
+
       {nextHint && (
         <NextHintCard
           hint={nextHint}
@@ -58,13 +74,16 @@ export default function HintSystem({ hints, hintsUnlocked, labStartTime, onHintV
           formatTime={formatTime}
         />
       )}
-      
+
       <ViewedHintsList hints={hints} viewedHints={viewedHints} />
-      
+
       {viewedHints.length === hints.length && !solutionAvailable && (
-        <AllHintsUsedWarning formatTime={formatTime} getTimeUntilSolution={getTimeUntilSolution} />
+        <AllHintsUsedWarning
+          formatTime={formatTime}
+          getTimeUntilSolution={getTimeUntilSolution}
+        />
       )}
-      
+
       {solutionAvailable && <SolutionAvailableBanner />}
     </div>
   );

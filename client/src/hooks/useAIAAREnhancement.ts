@@ -3,11 +3,15 @@
  * Detects vague responses and requires meaningful reflection
  */
 
-import { useState } from 'react';
+import { useState } from "react";
 import {
-  checkTooShort, checkVaguePatterns, checkWhatHappenedTechnical,
-  checkWhatLearnedInsight, checkWhatChangeAction, getFollowUpQuestions
-} from './ai-aar/aiAARUtils';
+  checkTooShort,
+  checkVaguePatterns,
+  checkWhatHappenedTechnical,
+  checkWhatLearnedInsight,
+  checkWhatChangeAction,
+  getFollowUpQuestions,
+} from "./ai-aar/aiAARUtils";
 
 interface VaguenessDetection {
   isVague: boolean;
@@ -17,13 +21,17 @@ interface VaguenessDetection {
 }
 
 export function useAIAAREnhancement() {
-  const [detectedVagueness, setDetectedVagueness] = useState<VaguenessDetection | null>(null);
+  const [detectedVagueness, setDetectedVagueness] =
+    useState<VaguenessDetection | null>(null);
 
-  const analyzeResponse = (response: string, context: 'what-happened' | 'what-learned' | 'what-change'): VaguenessDetection | null => {
+  const analyzeResponse = (
+    response: string,
+    context: "what-happened" | "what-learned" | "what-change",
+  ): VaguenessDetection | null => {
     // Check for too short response
     const tooShort = checkTooShort(response);
     if (tooShort) {
-      tooShort.followUpQuestions = getFollowUpQuestions(context, 'too-short');
+      tooShort.followUpQuestions = getFollowUpQuestions(context, "too-short");
       return tooShort;
     }
 
@@ -32,17 +40,17 @@ export function useAIAAREnhancement() {
     if (vague) return vague;
 
     // Context-specific checks
-    if (context === 'what-happened') {
+    if (context === "what-happened") {
       const tech = checkWhatHappenedTechnical(response);
       if (tech) return tech;
     }
 
-    if (context === 'what-learned') {
+    if (context === "what-learned") {
       const insight = checkWhatLearnedInsight(response);
       if (insight) return insight;
     }
 
-    if (context === 'what-change') {
+    if (context === "what-change") {
       const action = checkWhatChangeAction(response);
       if (action) return action;
     }

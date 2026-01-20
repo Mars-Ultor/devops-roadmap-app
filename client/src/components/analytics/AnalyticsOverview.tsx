@@ -1,15 +1,15 @@
-import { TimeAnalysisChart } from './TimeAnalysisChart';
-import KeyMetricsGrid from './KeyMetricsGrid';
-import TrainingPerformance from './TrainingPerformance';
-import MasteryProgression from './MasteryProgression';
-import PerformanceTrends from './PerformanceTrends';
-import SkillBreakdown from './SkillBreakdown';
-import QuizLabPerformance from './QuizLabPerformance';
-import FailureAnalysis from './FailureAnalysis';
-import WeakAreas from './WeakAreas';
-import PersonalizedInsights from './PersonalizedInsights';
-import type { TimeAnalysisData } from '../../hooks/useTimeAnalysis';
-import { memo } from 'react';
+import { TimeAnalysisChart } from "./TimeAnalysisChart";
+import KeyMetricsGrid from "./KeyMetricsGrid";
+import TrainingPerformance from "./TrainingPerformance";
+import MasteryProgression from "./MasteryProgression";
+import PerformanceTrends from "./PerformanceTrends";
+import SkillBreakdown from "./SkillBreakdown";
+import QuizLabPerformance from "./QuizLabPerformance";
+import FailureAnalysis from "./FailureAnalysis";
+import WeakAreas from "./WeakAreas";
+import PersonalizedInsights from "./PersonalizedInsights";
+import type { TimeAnalysisData } from "../../hooks/useTimeAnalysis";
+import { memo } from "react";
 
 interface AnalyticsData {
   // Study metrics
@@ -52,10 +52,25 @@ interface AnalyticsData {
   resetTokensUsed: number;
 
   // Additional data
-  weakTopics: Array<{ topic: string; easinessFactor: number; attempts: number; lastAttempt: Date }>;
+  weakTopics: Array<{
+    topic: string;
+    easinessFactor: number;
+    attempts: number;
+    lastAttempt: Date;
+  }>;
   weeklyProgress: Array<{ week: string; sessions: number; avgScore: number }>;
-  monthlyTrends: Array<{ month: string; totalXP: number; skillsLearned: number }>;
-  skills: Array<{ name: string; category: string; proficiency: number; sessionsCompleted: number; lastPracticed: string }>;
+  monthlyTrends: Array<{
+    month: string;
+    totalXP: number;
+    skillsLearned: number;
+  }>;
+  skills: Array<{
+    name: string;
+    category: string;
+    proficiency: number;
+    sessionsCompleted: number;
+    lastPracticed: string;
+  }>;
 }
 
 interface AnalyticsOverviewProps {
@@ -73,7 +88,7 @@ export default memo(function AnalyticsOverview({
   timeAnalysisLoading,
   formatHour,
   formatDuration,
-  formatTime
+  formatTime,
 }: AnalyticsOverviewProps) {
   return (
     <div>
@@ -102,12 +117,11 @@ export default memo(function AnalyticsOverview({
       <WeakAreas analytics={analytics} />
 
       {/* Time Analysis Chart */}
-      {!timeAnalysisLoading && analysisData && analysisData.totalDataPoints > 0 && (
-        <TimeAnalysisChart
-          data={analysisData}
-          formatHour={formatHour}
-        />
-      )}
+      {!timeAnalysisLoading &&
+        analysisData &&
+        analysisData.totalDataPoints > 0 && (
+          <TimeAnalysisChart data={analysisData} formatHour={formatHour} />
+        )}
 
       {/* Personalized Insights */}
       <PersonalizedInsights analytics={analytics} />

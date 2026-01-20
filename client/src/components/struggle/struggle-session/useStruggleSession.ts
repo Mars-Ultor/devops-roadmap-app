@@ -2,10 +2,10 @@
  * useStruggleSession - Custom hook for managing struggle session state and effects
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { HintService } from '../../../services/HintService';
-import type { StruggleSession, StruggleLog } from '../../../types/struggle';
-import type { SessionPhase } from './StruggleSessionComponents';
+import { useState, useEffect, useCallback } from "react";
+import { HintService } from "../../../services/HintService";
+import type { StruggleSession, StruggleLog } from "../../../types/struggle";
+import type { SessionPhase } from "./StruggleSessionComponents";
 
 interface UseStruggleSessionProps {
   labId: string;
@@ -22,7 +22,9 @@ interface UseStruggleSessionReturn {
   currentHint: string | null;
   isSubmittingLog: boolean;
   handleHintRequest: () => void;
-  handleStruggleLogSubmit: (logData: Omit<StruggleLog, 'id' | 'timestamp'>) => Promise<void>;
+  handleStruggleLogSubmit: (
+    logData: Omit<StruggleLog, "id" | "timestamp">,
+  ) => Promise<void>;
   handleStruggleLogCancel: () => void;
   setShowStruggleLogForm: (show: boolean) => void;
 }
@@ -32,10 +34,10 @@ export function useStruggleSession({
   userId,
   availableHints,
   onSessionComplete,
-  onHintUsed
+  onHintUsed,
 }: UseStruggleSessionProps): UseStruggleSessionReturn {
   const [session, setSession] = useState<StruggleSession | null>(null);
-  const [currentPhase, setCurrentPhase] = useState<SessionPhase>('struggling');
+  const [currentPhase, setCurrentPhase] = useState<SessionPhase>("struggling");
   const [showStruggleLogForm, setShowStruggleLogForm] = useState(false);
   const [currentHint, setCurrentHint] = useState<string | null>(null);
   const [isSubmittingLog, setIsSubmittingLog] = useState(false);
@@ -47,14 +49,14 @@ export function useStruggleSession({
     const newSession = hintService.initializeStruggleSession(labId, userId);
     newSession.hintSystem.availableHints = availableHints;
     setSession(newSession);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [labId, userId, availableHints]);
 
   // Update timer every second
   useEffect(() => {
     if (!session) return;
     const timer = setInterval(() => {
-      setSession(prev => {
+      setSession((prev) => {
         if (!prev) return prev;
         const updatedTimerState = hintService.updateTimer(prev);
         return { ...prev, timerState: updatedTimerState };
@@ -70,12 +72,12 @@ export function useStruggleSession({
     const shouldEnd = hintService.shouldEndSession(session);
 
     if (shouldEnd) {
-      setCurrentPhase('completed');
+      setCurrentPhase("completed");
       onSessionComplete(session);
     } else if (canRequestHint && !showStruggleLogForm) {
-      setCurrentPhase('hint_available');
+      setCurrentPhase("hint_available");
     } else if (session.timerState.isLocked) {
-      setCurrentPhase('struggling');
+      setCurrentPhase("struggling");
     }
   }, [session, showStruggleLogForm, hintService, onSessionComplete]);
 
@@ -83,7 +85,7 @@ export function useStruggleSession({
     if (!session) return;
     if (session.struggleLogs.length === 0) {
       setShowStruggleLogForm(true);
-      setCurrentPhase('logging');
+      setCurrentPhase("logging");
       return;
     }
     const { session: updatedSession, hint } = hintService.requestHint(session);
@@ -94,24 +96,29 @@ export function useStruggleSession({
     }
   }, [session, hintService, onHintUsed]);
 
-  const handleStruggleLogSubmit = useCallback(async (logData: Omit<StruggleLog, 'id' | 'timestamp'>) => {
-    if (!session) return;
-    setIsSubmittingLog(true);
-    try {
-      const updatedSession = hintService.submitStruggleLog(session, logData);
-      setSession(updatedSession);
-      setShowStruggleLogForm(false);
-      setCurrentPhase('hint_available');
-    } catch (error) {
-      console.error('Failed to submit struggle log:', error);
-    } finally {
-      setIsSubmittingLog(false);
-    }
-  }, [session, hintService]);
+  const handleStruggleLogSubmit = useCallback(
+    async (logData: Omit<StruggleLog, "id" | "timestamp">) => {
+      if (!session) return;
+      setIsSubmittingLog(true);
+      try {
+        const updatedSession = hintService.submitStruggleLog(session, logData);
+        setSession(updatedSession);
+        setShowStruggleLogForm(false);
+        setCurrentPhase("hint_available");
+      } catch (error) {
+        console.error("Failed to submit struggle log:", error);
+      } finally {
+        setIsSubmittingLog(false);
+      }
+    },
+    [session, hintService],
+  );
 
   const handleStruggleLogCancel = useCallback(() => {
     setShowStruggleLogForm(false);
-    setCurrentPhase(session?.timerState.canRequestHints ? 'hint_available' : 'struggling');
+    setCurrentPhase(
+      session?.timerState.canRequestHints ? "hint_available" : "struggling",
+    );
   }, [session]);
 
   return {
@@ -123,6 +130,6 @@ export function useStruggleSession({
     handleHintRequest,
     handleStruggleLogSubmit,
     handleStruggleLogCancel,
-    setShowStruggleLogForm
+    setShowStruggleLogForm,
   };
 }

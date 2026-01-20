@@ -2,9 +2,9 @@
  * StruggleLogForm - Mandatory reflection before requesting hints
  */
 
-import { useState } from 'react';
-import type { StruggleLog } from '../../types/training';
-import { validateStruggleLogForm } from './StruggleLogFormUtils';
+import { useState } from "react";
+import type { StruggleLog } from "../../types/training";
+import { validateStruggleLogForm } from "./StruggleLogFormUtils";
 import {
   SubmittedState,
   FormHeader,
@@ -12,18 +12,25 @@ import {
   AttemptedSolutionsSection,
   StuckLocationSection,
   HypothesisSection,
-  SubmitButton
-} from './StruggleLogFormComponents';
+  SubmitButton,
+} from "./StruggleLogFormComponents";
 
 interface StruggleLogFormProps {
   onSubmit: (log: StruggleLog) => Promise<void>;
   hintsUnlocked: boolean;
 }
 
-export default function StruggleLogForm({ onSubmit, hintsUnlocked }: StruggleLogFormProps) {
-  const [attemptedSolutions, setAttemptedSolutions] = useState<string[]>(['', '', '']);
-  const [stuckLocation, setStuckLocation] = useState('');
-  const [hypothesis, setHypothesis] = useState('');
+export default function StruggleLogForm({
+  onSubmit,
+  hintsUnlocked,
+}: StruggleLogFormProps) {
+  const [attemptedSolutions, setAttemptedSolutions] = useState<string[]>([
+    "",
+    "",
+    "",
+  ]);
+  const [stuckLocation, setStuckLocation] = useState("");
+  const [hypothesis, setHypothesis] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -34,10 +41,14 @@ export default function StruggleLogForm({ onSubmit, hintsUnlocked }: StruggleLog
   };
 
   const handleAddAttempt = () => {
-    setAttemptedSolutions([...attemptedSolutions, '']);
+    setAttemptedSolutions([...attemptedSolutions, ""]);
   };
 
-  const validation = validateStruggleLogForm(attemptedSolutions, stuckLocation, hypothesis);
+  const validation = validateStruggleLogForm(
+    attemptedSolutions,
+    stuckLocation,
+    hypothesis,
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,16 +57,16 @@ export default function StruggleLogForm({ onSubmit, hintsUnlocked }: StruggleLog
     setSubmitting(true);
     try {
       const log: StruggleLog = {
-        attemptedSolutions: attemptedSolutions.filter(a => a.trim()),
+        attemptedSolutions: attemptedSolutions.filter((a) => a.trim()),
         stuckLocation: stuckLocation.trim(),
         hypothesis: hypothesis.trim(),
-        createdAt: new Date()
+        createdAt: new Date(),
       };
 
       await onSubmit(log);
       setSubmitted(true);
     } catch (error) {
-      console.error('Error submitting struggle log:', error);
+      console.error("Error submitting struggle log:", error);
     } finally {
       setSubmitting(false);
     }

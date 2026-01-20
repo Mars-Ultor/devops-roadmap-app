@@ -3,8 +3,15 @@
  * Reduces main component complexity and improves maintainability
  */
 
-import { CheckCircle, Sparkles, AlertTriangle, FileText, Zap, X } from 'lucide-react';
-import type { StruggleMetrics, AARFormType } from '../../types/aar';
+import {
+  CheckCircle,
+  Sparkles,
+  AlertTriangle,
+  FileText,
+  Zap,
+  X,
+} from "lucide-react";
+import type { StruggleMetrics, AARFormType } from "../../types/aar";
 
 interface StruggleSummaryProps {
   readonly metrics: StruggleMetrics;
@@ -14,22 +21,30 @@ interface StruggleSummaryProps {
 export function StruggleSummary({ metrics }: StruggleSummaryProps) {
   return (
     <div className="bg-slate-700/50 rounded-lg p-4 mb-6">
-      <h3 className="text-sm font-medium text-slate-300 mb-3">Your Performance</h3>
+      <h3 className="text-sm font-medium text-slate-300 mb-3">
+        Your Performance
+      </h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
         <div>
-          <div className={`text-2xl font-bold ${metrics.hintsUsed === 0 ? 'text-green-400' : 'text-yellow-400'}`}>
+          <div
+            className={`text-2xl font-bold ${metrics.hintsUsed === 0 ? "text-green-400" : "text-yellow-400"}`}
+          >
             {metrics.hintsUsed}
           </div>
           <div className="text-xs text-slate-400">Hints Used</div>
         </div>
         <div>
-          <div className={`text-2xl font-bold ${metrics.validationErrors === 0 ? 'text-green-400' : 'text-yellow-400'}`}>
+          <div
+            className={`text-2xl font-bold ${metrics.validationErrors === 0 ? "text-green-400" : "text-yellow-400"}`}
+          >
             {metrics.validationErrors}
           </div>
           <div className="text-xs text-slate-400">Errors</div>
         </div>
         <div>
-          <div className={`text-2xl font-bold ${metrics.retryCount === 0 ? 'text-green-400' : 'text-yellow-400'}`}>
+          <div
+            className={`text-2xl font-bold ${metrics.retryCount === 0 ? "text-green-400" : "text-yellow-400"}`}
+          >
             {metrics.retryCount}
           </div>
           <div className="text-xs text-slate-400">Retries</div>
@@ -53,7 +68,12 @@ interface PerfectCompletionScreenProps {
 }
 
 /** Screen shown when user has perfect completion */
-export function PerfectCompletionScreen({ metrics, isSubmitting, onSkip, onSelectType }: PerfectCompletionScreenProps) {
+export function PerfectCompletionScreen({
+  metrics,
+  isSubmitting,
+  onSkip,
+  onSelectType,
+}: PerfectCompletionScreenProps) {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="bg-slate-800 rounded-lg shadow-xl p-6">
@@ -61,7 +81,9 @@ export function PerfectCompletionScreen({ metrics, isSubmitting, onSkip, onSelec
           <div className="inline-flex items-center justify-center w-16 h-16 bg-green-900/30 rounded-full mb-4">
             <CheckCircle className="w-10 h-10 text-green-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Perfect Completion! 🎉</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            Perfect Completion! 🎉
+          </h2>
           <p className="text-slate-300">
             You nailed it with no hints, errors, or retries.
           </p>
@@ -76,19 +98,21 @@ export function PerfectCompletionScreen({ metrics, isSubmitting, onSkip, onSelec
             className="w-full flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
             <Zap className="w-5 h-5" />
-            <span>{isSubmitting ? 'Saving...' : 'Skip Reflection & Continue'}</span>
+            <span>
+              {isSubmitting ? "Saving..." : "Skip Reflection & Continue"}
+            </span>
           </button>
-          
+
           <button
-            onClick={() => onSelectType('quick')}
+            onClick={() => onSelectType("quick")}
             className="w-full flex items-center justify-center space-x-2 bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
           >
             <Sparkles className="w-5 h-5" />
             <span>Quick Reflection (Optional)</span>
           </button>
-          
+
           <button
-            onClick={() => onSelectType('full')}
+            onClick={() => onSelectType("full")}
             className="w-full flex items-center justify-center space-x-2 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 font-medium py-2 px-6 rounded-lg transition-colors text-sm"
           >
             <FileText className="w-4 h-4" />
@@ -129,7 +153,7 @@ export function QuickReflectionScreen({
   onReflectionChange,
   onSubmit,
   onSelectFull,
-  onBack
+  onBack,
 }: QuickReflectionScreenProps) {
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -141,7 +165,9 @@ export function QuickReflectionScreen({
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">Quick Reflection</h2>
-              <p className="text-sm text-slate-400">Minor struggles - abbreviated review</p>
+              <p className="text-sm text-slate-400">
+                Minor struggles - abbreviated review
+              </p>
             </div>
           </div>
           {showBackButton && (
@@ -155,13 +181,21 @@ export function QuickReflectionScreen({
 
         <div className="space-y-6">
           <div>
-            <label htmlFor="mainTakeaway" className="block text-sm font-medium text-slate-300 mb-2">
+            <label
+              htmlFor="mainTakeaway"
+              className="block text-sm font-medium text-slate-300 mb-2"
+            >
               What's your main takeaway from this exercise?
             </label>
             <textarea
               id="mainTakeaway"
               value={reflection.mainTakeaway}
-              onChange={(e) => onReflectionChange({ ...reflection, mainTakeaway: e.target.value })}
+              onChange={(e) =>
+                onReflectionChange({
+                  ...reflection,
+                  mainTakeaway: e.target.value,
+                })
+              }
               placeholder="The key thing I learned or reinforced..."
               className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={3}
@@ -169,13 +203,21 @@ export function QuickReflectionScreen({
           </div>
 
           <div>
-            <label htmlFor="oneImprovement" className="block text-sm font-medium text-slate-300 mb-2">
+            <label
+              htmlFor="oneImprovement"
+              className="block text-sm font-medium text-slate-300 mb-2"
+            >
               One thing you'd do differently?
             </label>
             <textarea
               id="oneImprovement"
               value={reflection.oneImprovement}
-              onChange={(e) => onReflectionChange({ ...reflection, oneImprovement: e.target.value })}
+              onChange={(e) =>
+                onReflectionChange({
+                  ...reflection,
+                  oneImprovement: e.target.value,
+                })
+              }
               placeholder="Next time I would..."
               className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={2}
@@ -185,13 +227,19 @@ export function QuickReflectionScreen({
           <div className="flex space-x-3">
             <button
               onClick={onSubmit}
-              disabled={isSubmitting || !reflection.mainTakeaway.trim() || !reflection.oneImprovement.trim()}
+              disabled={
+                isSubmitting ||
+                !reflection.mainTakeaway.trim() ||
+                !reflection.oneImprovement.trim()
+              }
               className="flex-1 flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors"
             >
               <CheckCircle className="w-5 h-5" />
-              <span>{isSubmitting ? 'Saving...' : 'Submit Quick Reflection'}</span>
+              <span>
+                {isSubmitting ? "Saving..." : "Submit Quick Reflection"}
+              </span>
             </button>
-            
+
             <button
               onClick={onSelectFull}
               className="flex items-center justify-center space-x-2 bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
@@ -212,7 +260,10 @@ interface FullAARRequiredScreenProps {
 }
 
 /** Screen shown when full AAR is required due to significant struggles */
-export function FullAARRequiredScreen({ metrics, onStart }: FullAARRequiredScreenProps) {
+export function FullAARRequiredScreen({
+  metrics,
+  onStart,
+}: FullAARRequiredScreenProps) {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="bg-slate-800 rounded-lg shadow-xl p-6">
@@ -220,9 +271,12 @@ export function FullAARRequiredScreen({ metrics, onStart }: FullAARRequiredScree
           <div className="inline-flex items-center justify-center w-16 h-16 bg-red-900/30 rounded-full mb-4">
             <AlertTriangle className="w-10 h-10 text-red-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Reflection Required</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            Reflection Required
+          </h2>
           <p className="text-slate-300">
-            You encountered significant struggles. A detailed AAR will help you learn from this experience.
+            You encountered significant struggles. A detailed AAR will help you
+            learn from this experience.
           </p>
         </div>
 

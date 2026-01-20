@@ -2,8 +2,12 @@
  * StruggleLog - UI Components
  */
 
-import { FileText, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
-import { ATTEMPT_PLACEHOLDERS, MIN_WHERE_STUCK_LENGTH, MIN_SUSPECTED_PROBLEM_LENGTH } from './StruggleLogUtils';
+import { FileText, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import {
+  ATTEMPT_PLACEHOLDERS,
+  MIN_WHERE_STUCK_LENGTH,
+  MIN_SUSPECTED_PROBLEM_LENGTH,
+} from "./StruggleLogUtils";
 
 // Header Component
 export function StruggleLogHeader() {
@@ -31,9 +35,13 @@ export function WhyThisMatters() {
       <div className="flex items-start gap-2">
         <AlertCircle className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
         <div className="text-sm">
-          <p className="text-blue-300 font-semibold mb-1">Why log your struggle?</p>
+          <p className="text-blue-300 font-semibold mb-1">
+            Why log your struggle?
+          </p>
           <ul className="text-blue-200/80 space-y-1 ml-4 list-disc">
-            <li>Forces systematic troubleshooting instead of random guessing</li>
+            <li>
+              Forces systematic troubleshooting instead of random guessing
+            </li>
             <li>Builds your personal debugging methodology</li>
             <li>Creates a reference for similar future problems</li>
             <li>Prevents hint dependency - you&apos;ve earned the help</li>
@@ -57,7 +65,9 @@ export function ErrorsDisplay({ errors }: ErrorsDisplayProps) {
       <div className="flex items-start gap-2">
         <XCircle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
         <div className="flex-1">
-          <p className="text-red-300 font-semibold mb-2">Please complete all fields:</p>
+          <p className="text-red-300 font-semibold mb-2">
+            Please complete all fields:
+          </p>
           <ul className="text-sm text-red-200/80 space-y-1">
             {errors.map((error) => (
               <li key={error}>• {error}</li>
@@ -76,7 +86,11 @@ interface WhatTriedSectionProps {
   readonly onAddMore: () => void;
 }
 
-export function WhatTriedSection({ whatTried, onUpdate, onAddMore }: WhatTriedSectionProps) {
+export function WhatTriedSection({
+  whatTried,
+  onUpdate,
+  onAddMore,
+}: WhatTriedSectionProps) {
   return (
     <div>
       <div className="block text-sm font-semibold text-slate-300 mb-2">
@@ -85,14 +99,17 @@ export function WhatTriedSection({ whatTried, onUpdate, onAddMore }: WhatTriedSe
       </div>
       <div className="space-y-2">
         {whatTried.map((tried, idx) => (
-          <div key={tried || `attempt-${idx}`} className="flex items-start gap-2">
+          <div
+            key={tried || `attempt-${idx}`}
+            className="flex items-start gap-2"
+          >
             <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-300 mt-2 flex-shrink-0">
               {idx + 1}
             </div>
             <textarea
               value={tried}
               onChange={(e) => onUpdate(idx, e.target.value)}
-              placeholder={`e.g., ${ATTEMPT_PLACEHOLDERS[idx] || 'Describe what you tried...'}`}
+              placeholder={`e.g., ${ATTEMPT_PLACEHOLDERS[idx] || "Describe what you tried..."}`}
               className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 resize-none h-20"
             />
             {tried.trim().length > 0 && (
@@ -120,8 +137,12 @@ interface WhereStuckSectionProps {
 export function WhereStuckSection({ value, onChange }: WhereStuckSectionProps) {
   return (
     <div>
-      <label htmlFor="where-stuck-textarea" className="block text-sm font-semibold text-slate-300 mb-2">
-        Where specifically are you stuck? <span className="text-red-400">*</span>
+      <label
+        htmlFor="where-stuck-textarea"
+        className="block text-sm font-semibold text-slate-300 mb-2"
+      >
+        Where specifically are you stuck?{" "}
+        <span className="text-red-400">*</span>
       </label>
       <textarea
         id="where-stuck-textarea"
@@ -143,11 +164,18 @@ interface SuspectedProblemSectionProps {
   readonly onChange: (value: string) => void;
 }
 
-export function SuspectedProblemSection({ value, onChange }: SuspectedProblemSectionProps) {
+export function SuspectedProblemSection({
+  value,
+  onChange,
+}: SuspectedProblemSectionProps) {
   return (
     <div>
-      <label htmlFor="suspected-problem-textarea" className="block text-sm font-semibold text-slate-300 mb-2">
-        What do you think the problem might be? <span className="text-red-400">*</span>
+      <label
+        htmlFor="suspected-problem-textarea"
+        className="block text-sm font-semibold text-slate-300 mb-2"
+      >
+        What do you think the problem might be?{" "}
+        <span className="text-red-400">*</span>
       </label>
       <textarea
         id="suspected-problem-textarea"

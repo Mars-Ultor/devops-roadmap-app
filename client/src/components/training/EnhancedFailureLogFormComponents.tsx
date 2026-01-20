@@ -2,10 +2,21 @@
  * EnhancedFailureLogFormComponents - Extracted UI components
  */
 
-import { AlertTriangle, X, BookOpen, TrendingUp, Copy, Check, FileText } from 'lucide-react';
-import type { FailureCategory, FailureSeverity } from '../../types/training';
-import type { PatternDetection, ValidationState } from './EnhancedFailureLogFormUtils';
-import { CATEGORIES, SEVERITIES } from './EnhancedFailureLogFormUtils';
+import {
+  AlertTriangle,
+  X,
+  BookOpen,
+  TrendingUp,
+  Copy,
+  Check,
+  FileText,
+} from "lucide-react";
+import type { FailureCategory, FailureSeverity } from "../../types/training";
+import type {
+  PatternDetection,
+  ValidationState,
+} from "./EnhancedFailureLogFormUtils";
+import { CATEGORIES, SEVERITIES } from "./EnhancedFailureLogFormUtils";
 
 // ============================================================================
 // Form Header
@@ -21,15 +32,22 @@ export function FormHeader({ onCancel }: FormHeaderProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <AlertTriangle className="w-6 h-6 text-red-400" />
-          <h2 className="text-2xl font-bold text-white">Enhanced Failure Log</h2>
+          <h2 className="text-2xl font-bold text-white">
+            Enhanced Failure Log
+          </h2>
         </div>
         {onCancel && (
-          <button onClick={onCancel} className="text-slate-400 hover:text-white transition-colors">
+          <button
+            onClick={onCancel}
+            className="text-slate-400 hover:text-white transition-colors"
+          >
             <X className="w-6 h-6" />
           </button>
         )}
       </div>
-      <p className="text-slate-300 mt-2">Document failures systematically to build your personal runbook</p>
+      <p className="text-slate-300 mt-2">
+        Document failures systematically to build your personal runbook
+      </p>
     </div>
   );
 }
@@ -44,15 +62,18 @@ interface PatternAlertProps {
 
 export function PatternAlert({ pattern }: PatternAlertProps) {
   if (!pattern.detected) return null;
-  
+
   return (
     <div className="bg-yellow-900/30 border-2 border-yellow-600 rounded-lg p-4">
       <div className="flex items-start gap-3">
         <TrendingUp className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
         <div className="flex-1">
-          <h3 className="text-yellow-300 font-semibold mb-1">⚠️ Recurring Pattern Detected</h3>
+          <h3 className="text-yellow-300 font-semibold mb-1">
+            ⚠️ Recurring Pattern Detected
+          </h3>
           <p className="text-yellow-200 text-sm mb-2">
-            <strong>{pattern.category}</strong> - Occurred {pattern.occurrences} times (last: {pattern.lastSeen})
+            <strong>{pattern.category}</strong> - Occurred {pattern.occurrences}{" "}
+            times (last: {pattern.lastSeen})
           </p>
           <div className="bg-yellow-900/40 rounded p-3 text-yellow-100 text-sm">
             <strong>Suggested Fix:</strong> {pattern.suggestedRunbook}
@@ -76,7 +97,8 @@ export function ContextInfo({ contentType, contentTitle }: ContextInfoProps) {
   return (
     <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700">
       <p className="text-sm text-slate-400">
-        <span className="font-semibold text-white">Context:</span> {contentType} - {contentTitle}
+        <span className="font-semibold text-white">Context:</span> {contentType}{" "}
+        - {contentTitle}
       </p>
     </div>
   );
@@ -93,34 +115,48 @@ interface CategorySeverityProps {
   readonly onSeverityChange: (sev: FailureSeverity) => void;
 }
 
-export function CategorySeveritySelector({ category, severity, onCategoryChange, onSeverityChange }: CategorySeverityProps) {
+export function CategorySeveritySelector({
+  category,
+  severity,
+  onCategoryChange,
+  onSeverityChange,
+}: CategorySeverityProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
-        <label htmlFor="category-select" className="block text-sm font-semibold text-slate-300 mb-2">Category *</label>
+        <label
+          htmlFor="category-select"
+          className="block text-sm font-semibold text-slate-300 mb-2"
+        >
+          Category *
+        </label>
         <select
           id="category-select"
           value={category}
           onChange={(e) => onCategoryChange(e.target.value as FailureCategory)}
           className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
         >
-          {CATEGORIES.map(cat => (
-            <option key={cat.value} value={cat.value}>{cat.label}</option>
+          {CATEGORIES.map((cat) => (
+            <option key={cat.value} value={cat.value}>
+              {cat.label}
+            </option>
           ))}
         </select>
       </div>
       <div>
-        <div className="block text-sm font-semibold text-slate-300 mb-2">Severity *</div>
+        <div className="block text-sm font-semibold text-slate-300 mb-2">
+          Severity *
+        </div>
         <div className="grid grid-cols-2 gap-2">
-          {SEVERITIES.map(sev => (
+          {SEVERITIES.map((sev) => (
             <button
               key={sev.value}
               type="button"
               onClick={() => onSeverityChange(sev.value)}
               className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
                 severity === sev.value
-                  ? sev.color + ' border-2 border-current'
-                  : 'bg-slate-700 text-slate-400 border-2 border-transparent hover:bg-slate-600'
+                  ? sev.color + " border-2 border-current"
+                  : "bg-slate-700 text-slate-400 border-2 border-transparent hover:bg-slate-600"
               }`}
             >
               {sev.label}
@@ -143,16 +179,26 @@ interface WhatTriedSectionProps {
   readonly onAdd: () => void;
 }
 
-export function WhatTriedSection({ whatTried, validation, onChange, onAdd }: WhatTriedSectionProps) {
+export function WhatTriedSection({
+  whatTried,
+  validation,
+  onChange,
+  onAdd,
+}: WhatTriedSectionProps) {
   return (
     <div>
       <div className="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">
         <span className="flex items-center gap-2">
-          What I Tried *{' '}
-          <span className={`text-xs px-2 py-0.5 rounded ${
-            validation.whatTried ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
-          }`}>
-            {whatTried.filter(item => item.trim().length > 0).length} / 3 minimum
+          What I Tried *{" "}
+          <span
+            className={`text-xs px-2 py-0.5 rounded ${
+              validation.whatTried
+                ? "bg-green-900/30 text-green-400"
+                : "bg-red-900/30 text-red-400"
+            }`}
+          >
+            {whatTried.filter((item) => item.trim().length > 0).length} / 3
+            minimum
           </span>
         </span>
       </div>
@@ -167,7 +213,11 @@ export function WhatTriedSection({ whatTried, validation, onChange, onAdd }: Wha
             className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
           />
         ))}
-        <button type="button" onClick={onAdd} className="text-sm text-indigo-400 hover:text-indigo-300">
+        <button
+          type="button"
+          onClick={onAdd}
+          className="text-sm text-indigo-400 hover:text-indigo-300"
+        >
           + Add another approach
         </button>
       </div>
@@ -186,15 +236,27 @@ interface RootCauseSectionProps {
   readonly onChange: (value: string) => void;
 }
 
-export function RootCauseSection({ rootCause, wordCount, validation, onChange }: RootCauseSectionProps) {
+export function RootCauseSection({
+  rootCause,
+  wordCount,
+  validation,
+  onChange,
+}: RootCauseSectionProps) {
   return (
     <div>
-      <label htmlFor="root-cause-textarea" className="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">
+      <label
+        htmlFor="root-cause-textarea"
+        className="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between"
+      >
         <span className="flex items-center gap-2">
-          Root Cause Analysis *{' '}
-          <span className={`text-xs px-2 py-0.5 rounded ${
-            validation.rootCause ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
-          }`}>
+          Root Cause Analysis *{" "}
+          <span
+            className={`text-xs px-2 py-0.5 rounded ${
+              validation.rootCause
+                ? "bg-green-900/30 text-green-400"
+                : "bg-red-900/30 text-red-400"
+            }`}
+          >
             {wordCount} / 30 words minimum
           </span>
         </span>
@@ -208,7 +270,8 @@ export function RootCauseSection({ rootCause, wordCount, validation, onChange }:
         className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
       />
       <p className="text-xs text-slate-400 mt-1">
-        Dig deeper than surface symptoms. Understanding root causes prevents recurring failures.
+        Dig deeper than surface symptoms. Understanding root causes prevents
+        recurring failures.
       </p>
     </div>
   );
@@ -224,9 +287,13 @@ interface RunbookDisplayProps {
   readonly onCopy: () => void;
 }
 
-export function RunbookDisplay({ runbook, copied, onCopy }: RunbookDisplayProps) {
+export function RunbookDisplay({
+  runbook,
+  copied,
+  onCopy,
+}: RunbookDisplayProps) {
   if (!runbook) return null;
-  
+
   return (
     <div className="bg-indigo-900/20 border-2 border-indigo-600 rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
@@ -239,15 +306,20 @@ export function RunbookDisplay({ runbook, copied, onCopy }: RunbookDisplayProps)
           onClick={onCopy}
           className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded flex items-center gap-2"
         >
-          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-          {copied ? 'Copied!' : 'Copy Runbook'}
+          {copied ? (
+            <Check className="w-4 h-4" />
+          ) : (
+            <Copy className="w-4 h-4" />
+          )}
+          {copied ? "Copied!" : "Copy Runbook"}
         </button>
       </div>
       <pre className="bg-slate-900 rounded p-4 text-xs text-gray-300 overflow-x-auto max-h-64 overflow-y-auto">
         {runbook}
       </pre>
       <p className="text-xs text-indigo-300 mt-2">
-        💡 Save this runbook for future reference. It will be added to your personal knowledge base.
+        💡 Save this runbook for future reference. It will be added to your
+        personal knowledge base.
       </p>
     </div>
   );
@@ -263,7 +335,11 @@ interface FormActionsProps {
   readonly onCancel?: () => void;
 }
 
-export function FormActions({ validation, submitting, onCancel }: FormActionsProps) {
+export function FormActions({
+  validation,
+  submitting,
+  onCancel,
+}: FormActionsProps) {
   return (
     <div className="flex items-center justify-between pt-6 border-t border-slate-700">
       <div className="text-sm text-slate-400">
@@ -323,7 +399,12 @@ interface TitleFieldProps {
 export function TitleField({ value, onChange }: TitleFieldProps) {
   return (
     <div>
-      <label htmlFor="failure-title" className="block text-sm font-semibold text-slate-300 mb-2">Failure Title *</label>
+      <label
+        htmlFor="failure-title"
+        className="block text-sm font-semibold text-slate-300 mb-2"
+      >
+        Failure Title *
+      </label>
       <input
         id="failure-title"
         type="text"
@@ -344,7 +425,12 @@ interface DescriptionFieldProps {
 export function DescriptionField({ value, onChange }: DescriptionFieldProps) {
   return (
     <div>
-      <label htmlFor="description-textarea" className="block text-sm font-semibold text-slate-300 mb-2">Description</label>
+      <label
+        htmlFor="description-textarea"
+        className="block text-sm font-semibold text-slate-300 mb-2"
+      >
+        Description
+      </label>
       <textarea
         id="description-textarea"
         value={value}
@@ -364,10 +450,15 @@ interface ErrorMessageFieldProps {
 
 export function ErrorMessageField({ value, onChange }: ErrorMessageFieldProps) {
   if (!value) return null;
-  
+
   return (
     <div>
-      <label htmlFor="error-message-textarea" className="block text-sm font-semibold text-slate-300 mb-2">Error Message</label>
+      <label
+        htmlFor="error-message-textarea"
+        className="block text-sm font-semibold text-slate-300 mb-2"
+      >
+        Error Message
+      </label>
       <textarea
         id="error-message-textarea"
         value={value}

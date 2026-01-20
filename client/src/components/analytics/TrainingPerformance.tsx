@@ -1,5 +1,5 @@
-import React from 'react';
-import { Zap, Shield } from 'lucide-react';
+import React from "react";
+import { Zap, Shield } from "lucide-react";
 
 interface AnalyticsData {
   battleDrillsCompleted: number;
@@ -15,7 +15,10 @@ interface TrainingPerformanceProps {
   formatTime: (seconds: number) => string;
 }
 
-const TrainingPerformance: React.FC<TrainingPerformanceProps> = ({ analytics, formatTime }) => {
+const TrainingPerformance: React.FC<TrainingPerformanceProps> = ({
+  analytics,
+  formatTime,
+}) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       {/* Battle Drills */}
@@ -28,15 +31,21 @@ const TrainingPerformance: React.FC<TrainingPerformanceProps> = ({ analytics, fo
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Completed</span>
-            <span className="text-white font-semibold">{analytics.battleDrillsCompleted}</span>
+            <span className="text-white font-semibold">
+              {analytics.battleDrillsCompleted}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Avg Time</span>
-            <span className="text-white font-semibold">{formatTime(Math.round(analytics.battleDrillAvgTime))}</span>
+            <span className="text-white font-semibold">
+              {formatTime(Math.round(analytics.battleDrillAvgTime))}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Success Rate</span>
-            <span className="text-green-400 font-semibold">{Math.round(analytics.battleDrillSuccessRate * 100)}%</span>
+            <span className="text-green-400 font-semibold">
+              {Math.round(analytics.battleDrillSuccessRate * 100)}%
+            </span>
           </div>
 
           <div className="pt-4 border-t border-gray-700">
@@ -60,20 +69,28 @@ const TrainingPerformance: React.FC<TrainingPerformanceProps> = ({ analytics, fo
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Stress Sessions</span>
-            <span className="text-white font-semibold">{analytics.stressSessionsCompleted}</span>
+            <span className="text-white font-semibold">
+              {analytics.stressSessionsCompleted}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Production Scenarios</span>
-            <span className="text-white font-semibold">{analytics.productionScenariosCompleted}</span>
+            <span className="text-white font-semibold">
+              {analytics.productionScenariosCompleted}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Total Sessions</span>
-            <span className="text-white font-semibold">{analytics.totalSessions}</span>
+            <span className="text-white font-semibold">
+              {analytics.totalSessions}
+            </span>
           </div>
 
           <div className="pt-4 border-t border-gray-700">
             <div className="text-sm text-gray-400">
-              {analytics.stressSessionsCompleted + analytics.productionScenariosCompleted} advanced training scenarios completed
+              {analytics.stressSessionsCompleted +
+                analytics.productionScenariosCompleted}{" "}
+              advanced training scenarios completed
             </div>
           </div>
         </div>

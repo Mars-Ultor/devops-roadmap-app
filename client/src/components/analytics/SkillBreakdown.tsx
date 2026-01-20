@@ -1,5 +1,5 @@
-import React from 'react';
-import { Brain, Code, Database, Cloud, Shield } from 'lucide-react';
+import React from "react";
+import { Brain, Code, Database, Cloud, Shield } from "lucide-react";
 
 interface SkillData {
   name: string;
@@ -17,20 +17,22 @@ const SkillBreakdown: React.FC<SkillBreakdownProps> = ({ skills }) => {
   if (!skills || skills.length === 0) {
     return (
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-        <div className="text-center text-gray-400">No skills data available</div>
+        <div className="text-center text-gray-400">
+          No skills data available
+        </div>
       </div>
     );
   }
 
   const getCategoryIcon = (category: string) => {
     switch (category.toLowerCase()) {
-      case 'development':
+      case "development":
         return <Code className="w-5 h-5 text-blue-400" />;
-      case 'infrastructure':
+      case "infrastructure":
         return <Cloud className="w-5 h-5 text-purple-400" />;
-      case 'database':
+      case "database":
         return <Database className="w-5 h-5 text-green-400" />;
-      case 'security':
+      case "security":
         return <Shield className="w-5 h-5 text-red-400" />;
       default:
         return <Brain className="w-5 h-5 text-gray-400" />;
@@ -38,17 +40,17 @@ const SkillBreakdown: React.FC<SkillBreakdownProps> = ({ skills }) => {
   };
 
   const getProficiencyColor = (proficiency: number) => {
-    if (proficiency >= 80) return 'text-green-400';
-    if (proficiency >= 60) return 'text-yellow-400';
-    if (proficiency >= 40) return 'text-orange-400';
-    return 'text-red-400';
+    if (proficiency >= 80) return "text-green-400";
+    if (proficiency >= 60) return "text-yellow-400";
+    if (proficiency >= 40) return "text-orange-400";
+    return "text-red-400";
   };
 
   const getProficiencyBg = (proficiency: number) => {
-    if (proficiency >= 80) return 'from-green-500 to-green-600';
-    if (proficiency >= 60) return 'from-yellow-500 to-yellow-600';
-    if (proficiency >= 40) return 'from-orange-500 to-orange-600';
-    return 'from-red-500 to-red-600';
+    if (proficiency >= 80) return "from-green-500 to-green-600";
+    if (proficiency >= 60) return "from-yellow-500 to-yellow-600";
+    if (proficiency >= 40) return "from-orange-500 to-orange-600";
+    return "from-red-500 to-red-600";
   };
 
   return (
@@ -66,11 +68,15 @@ const SkillBreakdown: React.FC<SkillBreakdownProps> = ({ skills }) => {
                 {getCategoryIcon(skill.category)}
                 <div>
                   <div className="font-medium">{skill.name}</div>
-                  <div className="text-sm text-gray-400 capitalize">{skill.category}</div>
+                  <div className="text-sm text-gray-400 capitalize">
+                    {skill.category}
+                  </div>
                 </div>
               </div>
               <div className="text-right">
-                <div className={`font-semibold ${getProficiencyColor(skill.proficiency)}`}>
+                <div
+                  className={`font-semibold ${getProficiencyColor(skill.proficiency)}`}
+                >
                   {skill.proficiency}%
                 </div>
                 <div className="text-sm text-gray-400">proficiency</div>

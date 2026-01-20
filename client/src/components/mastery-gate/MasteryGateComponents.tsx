@@ -1,5 +1,9 @@
-import { Lock, Target, CheckCircle, Trophy, AlertCircle } from 'lucide-react';
-import { getDotClass, getAttemptClass, getColorClass } from './masteryGateUtils';
+import { Lock, Target, CheckCircle, Trophy, AlertCircle } from "lucide-react";
+import {
+  getDotClass,
+  getAttemptClass,
+  getColorClass,
+} from "./masteryGateUtils";
 
 // Compact View Component
 interface CompactViewProps {
@@ -17,17 +21,17 @@ export const MasteryGateCompact: React.FC<CompactViewProps> = ({
   perfectCompletions,
   requiredPerfectCompletions,
   attempts,
-  color
+  color,
 }) => {
   let containerClass: string;
   if (isMastered) {
-    containerClass = 'bg-green-900/20 border-green-700';
+    containerClass = "bg-green-900/20 border-green-700";
   } else if (unlocked) {
-    containerClass = 'bg-slate-800 border-slate-600';
+    containerClass = "bg-slate-800 border-slate-600";
   } else {
-    containerClass = 'bg-slate-900/50 border-slate-700';
+    containerClass = "bg-slate-900/50 border-slate-700";
   }
-  
+
   const targetClass = `w-5 h-5 text-${color}-400`;
 
   let icon;
@@ -40,25 +44,32 @@ export const MasteryGateCompact: React.FC<CompactViewProps> = ({
   }
 
   return (
-    <div className={`flex items-center justify-between p-3 rounded-lg border ${containerClass}`}>
+    <div
+      className={`flex items-center justify-between p-3 rounded-lg border ${containerClass}`}
+    >
       <div className="flex items-center space-x-3">
-        <div className="flex-shrink-0">
-          {icon}
-        </div>
+        <div className="flex-shrink-0">{icon}</div>
         <div>
           <div className="text-sm font-medium text-white">
-            {isMastered ? 'Mastered' : `${perfectCompletions}/${requiredPerfectCompletions} Perfect`}
+            {isMastered
+              ? "Mastered"
+              : `${perfectCompletions}/${requiredPerfectCompletions} Perfect`}
           </div>
           {attempts > 0 && !isMastered && (
-            <div className="text-xs text-slate-400">{attempts} total attempts</div>
+            <div className="text-xs text-slate-400">
+              {attempts} total attempts
+            </div>
           )}
         </div>
       </div>
-      
+
       {!isMastered && (
         <div className="flex space-x-1">
-          {Array.from({length: requiredPerfectCompletions}, (_, i) => (
-            <div key={i} className={`w-2 h-2 rounded-full ${getDotClass(i, perfectCompletions, color)}`} />
+          {Array.from({ length: requiredPerfectCompletions }, (_, i) => (
+            <div
+              key={i}
+              className={`w-2 h-2 rounded-full ${getDotClass(i, perfectCompletions, color)}`}
+            />
           ))}
         </div>
       )}
@@ -80,7 +91,7 @@ export const MasteryGateHeader: React.FC<HeaderProps> = ({
   unlocked,
   color,
   perfectCompletions,
-  requiredPerfectCompletions
+  requiredPerfectCompletions,
 }) => {
   const iconContainerClass = `w-12 h-12 rounded-full bg-${color}-600 flex items-center justify-center`;
 
@@ -109,16 +120,17 @@ export const MasteryGateHeader: React.FC<HeaderProps> = ({
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center space-x-3">
         {iconDiv}
-        
+
         <div>
           <h3 className="text-lg font-semibold text-white">
-            {isMastered ? 'Level Mastered!' : 'Mastery Progress'}
+            {isMastered ? "Level Mastered!" : "Mastery Progress"}
           </h3>
-          <p className={`text-sm ${isMastered ? 'text-green-300' : 'text-slate-400'}`}>
-            {isMastered 
+          <p
+            className={`text-sm ${isMastered ? "text-green-300" : "text-slate-400"}`}
+          >
+            {isMastered
               ? `Achieved ${requiredPerfectCompletions} perfect completions`
-              : `${perfectCompletions} of ${requiredPerfectCompletions} perfect completions`
-            }
+              : `${perfectCompletions} of ${requiredPerfectCompletions} perfect completions`}
           </p>
         </div>
       </div>
@@ -142,20 +154,22 @@ export const MasteryProgressBar: React.FC<ProgressBarProps> = ({
   color,
   perfectCompletions,
   requiredPerfectCompletions,
-  progressPercentage
+  progressPercentage,
 }) => {
-  const textClass = getColorClass(isMastered, color, 'text');
-  const barClass = getColorClass(isMastered, color, 'bg');
+  const textClass = getColorClass(isMastered, color, "text");
+  const barClass = getColorClass(isMastered, color, "bg");
 
   return (
     <div className="mb-4">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-slate-300">Perfect Attempts</span>
+        <span className="text-sm font-medium text-slate-300">
+          Perfect Attempts
+        </span>
         <span className={`text-sm font-bold ${textClass}`}>
           {perfectCompletions}/{requiredPerfectCompletions}
         </span>
       </div>
-      
+
       <div className="w-full bg-slate-700 rounded-full h-3">
         <div
           className={`h-3 rounded-full transition-all duration-500 ${barClass}`}
@@ -178,21 +192,31 @@ export const AttemptIndicators: React.FC<AttemptIndicatorsProps> = ({
   isMastered,
   color,
   perfectCompletions,
-  requiredPerfectCompletions
+  requiredPerfectCompletions,
 }) => (
   <div className="grid grid-cols-3 gap-2 mb-4">
-    {Array.from({length: requiredPerfectCompletions}, (_, i) => {
-      const indicatorClass = getAttemptClass(i, perfectCompletions, isMastered, color);
-      const iconClass = getColorClass(isMastered, color, 'text');
-      
+    {Array.from({ length: requiredPerfectCompletions }, (_, i) => {
+      const indicatorClass = getAttemptClass(
+        i,
+        perfectCompletions,
+        isMastered,
+        color,
+      );
+      const iconClass = getColorClass(isMastered, color, "text");
+
       return (
-        <div key={i} className={`flex items-center justify-center p-3 rounded-lg border ${indicatorClass}`}>
+        <div
+          key={i}
+          className={`flex items-center justify-center p-3 rounded-lg border ${indicatorClass}`}
+        >
           {i < perfectCompletions ? (
             <CheckCircle className={`w-6 h-6 ${iconClass}`} />
           ) : (
             <div className="w-6 h-6 rounded-full border-2 border-slate-600" />
           )}
-          <span className="ml-2 text-sm font-medium text-slate-300">Attempt {i + 1}</span>
+          <span className="ml-2 text-sm font-medium text-slate-300">
+            Attempt {i + 1}
+          </span>
         </div>
       );
     })}
@@ -213,9 +237,9 @@ export const MasteryStatistics: React.FC<StatisticsProps> = ({
   color,
   attempts,
   perfectCompletions,
-  failedAttempts
+  failedAttempts,
 }) => {
-  const perfectClass = getColorClass(isMastered, color, 'text');
+  const perfectClass = getColorClass(isMastered, color, "text");
 
   return (
     <div className="grid grid-cols-3 gap-4 mb-4 pt-4 border-t border-slate-700">
@@ -224,7 +248,9 @@ export const MasteryStatistics: React.FC<StatisticsProps> = ({
         <div className="text-xs text-slate-400">Total Attempts</div>
       </div>
       <div className="text-center">
-        <div className={`text-2xl font-bold ${perfectClass}`}>{perfectCompletions}</div>
+        <div className={`text-2xl font-bold ${perfectClass}`}>
+          {perfectCompletions}
+        </div>
         <div className="text-xs text-slate-400">Perfect</div>
       </div>
       <div className="text-center">
@@ -251,7 +277,7 @@ export const StatusMessages: React.FC<StatusMessageProps> = ({
   color,
   perfectCompletions,
   requiredPerfectCompletions,
-  nextLevelName
+  nextLevelName,
 }) => {
   const remaining = requiredPerfectCompletions - perfectCompletions;
   const containerClass = `bg-${color}-900/20 border border-${color}-700/50 rounded-lg p-4`;
@@ -265,10 +291,14 @@ export const StatusMessages: React.FC<StatusMessageProps> = ({
           <AlertCircle className={alertClass} />
           <div>
             <p className={textClass}>
-              {remaining === 1 ? 'One more perfect completion needed!' : `${remaining} perfect completions needed`}
+              {remaining === 1
+                ? "One more perfect completion needed!"
+                : `${remaining} perfect completions needed`}
             </p>
             <p className="text-slate-400 text-xs">
-              Complete this level perfectly {remaining} more {remaining === 1 ? 'time' : 'times'} to unlock {nextLevelName || 'the next level'}.
+              Complete this level perfectly {remaining} more{" "}
+              {remaining === 1 ? "time" : "times"} to unlock{" "}
+              {nextLevelName || "the next level"}.
             </p>
           </div>
         </div>
@@ -294,7 +324,9 @@ export const StatusMessages: React.FC<StatusMessageProps> = ({
       <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
         <div className="flex items-center space-x-3">
           <Lock className="w-5 h-5 text-slate-400" />
-          <p className="text-slate-400 text-sm">This level is locked. Master the previous level first.</p>
+          <p className="text-slate-400 text-sm">
+            This level is locked. Master the previous level first.
+          </p>
         </div>
       </div>
     );
@@ -309,19 +341,24 @@ interface PerfectRequirementsProps {
   unlocked: boolean;
 }
 
-export const PerfectRequirements: React.FC<PerfectRequirementsProps> = ({ isMastered, unlocked }) => {
+export const PerfectRequirements: React.FC<PerfectRequirementsProps> = ({
+  isMastered,
+  unlocked,
+}) => {
   if (isMastered || !unlocked) return null;
 
   const requirements = [
-    'Complete all objectives without errors',
-    'No hints used (for Walk and Run levels)',
-    'All validation checks passed',
-    'AAR completed with quality responses'
+    "Complete all objectives without errors",
+    "No hints used (for Walk and Run levels)",
+    "All validation checks passed",
+    "AAR completed with quality responses",
   ];
 
   return (
     <div className="mt-4 pt-4 border-t border-slate-700">
-      <h4 className="text-sm font-semibold text-slate-300 mb-2">What counts as "perfect"?</h4>
+      <h4 className="text-sm font-semibold text-slate-300 mb-2">
+        What counts as "perfect"?
+      </h4>
       <ul className="space-y-1 text-xs text-slate-400">
         {requirements.map((req: string) => (
           <li key={req} className="flex items-start">

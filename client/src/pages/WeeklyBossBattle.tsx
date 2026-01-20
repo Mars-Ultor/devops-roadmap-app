@@ -4,8 +4,8 @@
  * Comprehensive 2-hour scenario mastery challenges
  */
 
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Sword,
   Shield,
@@ -18,24 +18,27 @@ import {
   BookOpen,
   Terminal,
   Users,
-  Zap
-} from 'lucide-react';
-import { ScenarioChallengeService } from '../services/scenarioChallenge';
-import { getScenariosByType } from '../data/scenarios';
-import type { ChallengeScenario, ChallengeAttempt } from '../types/scenarios';
-import { useAuthStore } from '../store/authStore';
-import TimerCountdown from '../components/stress/TimerCountdown';
+  Zap,
+} from "lucide-react";
+import { ScenarioChallengeService } from "../services/scenarioChallenge";
+import { getScenariosByType } from "../data/scenarios";
+import type { ChallengeScenario, ChallengeAttempt } from "../types/scenarios";
+import { useAuthStore } from "../store/authStore";
+import TimerCountdown from "../components/stress/TimerCountdown";
 
 export default function WeeklyBossBattle() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [scenarios, setScenarios] = useState<ChallengeScenario[]>([]);
-  const [selectedScenario, setSelectedScenario] = useState<ChallengeScenario | null>(null);
+  const [selectedScenario, setSelectedScenario] =
+    useState<ChallengeScenario | null>(null);
   const [attempt, setAttempt] = useState<ChallengeAttempt | null>(null);
   const [isActive, setIsActive] = useState(false);
-  const [currentPhase, setCurrentPhase] = useState<'selection' | 'briefing' | 'execution' | 'debrief'>('selection');
+  const [currentPhase, setCurrentPhase] = useState<
+    "selection" | "briefing" | "execution" | "debrief"
+  >("selection");
   const [completedObjectives, setCompletedObjectives] = useState<string[]>([]);
-  const [investigationNotes, setInvestigationNotes] = useState('');
+  const [investigationNotes, setInvestigationNotes] = useState("");
   const [resolutionSteps, setResolutionSteps] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,29 +46,32 @@ export default function WeeklyBossBattle() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
     // Load weekly boss battle scenarios
-    const weeklyScenarios = getScenariosByType('weekly');
+    const weeklyScenarios = getScenariosByType("weekly");
     setScenarios(weeklyScenarios);
     setLoading(false);
   }, [user, navigate]);
 
   const selectScenario = (scenario: ChallengeScenario) => {
     setSelectedScenario(scenario);
-    setCurrentPhase('briefing');
+    setCurrentPhase("briefing");
   };
 
   const startBattle = () => {
     if (!selectedScenario || !user) return;
 
-    const newAttempt = challengeService.startScenarioAttempt(user.uid, selectedScenario.id);
+    const newAttempt = challengeService.startScenarioAttempt(
+      user.uid,
+      selectedScenario.id,
+    );
     if (newAttempt) {
       setAttempt(newAttempt);
       setIsActive(true);
-      setCurrentPhase('execution');
+      setCurrentPhase("execution");
     }
   };
 
@@ -85,13 +91,13 @@ export default function WeeklyBossBattle() {
     const finalAttempt = challengeService.completeScenarioAttempt(
       attempt.attemptId,
       completedObjectives,
-      passed
+      passed,
     );
 
     if (finalAttempt) {
       setAttempt(finalAttempt);
       setIsActive(false);
-      setCurrentPhase('debrief');
+      setCurrentPhase("debrief");
     }
   };
 
@@ -113,7 +119,9 @@ export default function WeeklyBossBattle() {
               <Sword className="w-8 h-8 text-yellow-400" />
               Weekly Boss Battle
             </h1>
-            <p className="text-red-200">2-hour comprehensive scenario mastery</p>
+            <p className="text-red-200">
+              2-hour comprehensive scenario mastery
+            </p>
           </div>
 
           {isActive && attempt && selectedScenario && (
@@ -137,11 +145,13 @@ export default function WeeklyBossBattle() {
 
       <div className="max-w-6xl mx-auto p-6">
         {/* Scenario Selection Phase */}
-        {currentPhase === 'selection' && (
+        {currentPhase === "selection" && (
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-2">Choose Your Battle</h2>
-              <p className="text-gray-400">Select a boss battle scenario to conquer</p>
+              <p className="text-gray-400">
+                Select a boss battle scenario to conquer
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -154,8 +164,12 @@ export default function WeeklyBossBattle() {
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-xl font-bold text-red-400">{scenario.title}</h3>
-                      <p className="text-gray-400 text-sm">{scenario.description}</p>
+                      <h3 className="text-xl font-bold text-red-400">
+                        {scenario.title}
+                      </h3>
+                      <p className="text-gray-400 text-sm">
+                        {scenario.description}
+                      </p>
                     </div>
                     <div className="flex items-center gap-1">
                       {Array.from({ length: 5 }, (_, i) => (
@@ -163,8 +177,8 @@ export default function WeeklyBossBattle() {
                           key={i}
                           className={`w-3 h-3 rounded-full ${
                             i < scenario.estimatedDifficulty
-                              ? 'bg-red-400'
-                              : 'bg-gray-600'
+                              ? "bg-red-400"
+                              : "bg-gray-600"
                           }`}
                         />
                       ))}
@@ -174,7 +188,11 @@ export default function WeeklyBossBattle() {
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm">
                       <Clock className="w-4 h-4 text-blue-400" />
-                      <span>{Math.round(scenario.timeLimitSeconds / 3600 * 10) / 10} hours</span>
+                      <span>
+                        {Math.round((scenario.timeLimitSeconds / 3600) * 10) /
+                          10}{" "}
+                        hours
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Target className="w-4 h-4 text-green-400" />
@@ -199,34 +217,48 @@ export default function WeeklyBossBattle() {
         )}
 
         {/* Briefing Phase */}
-        {currentPhase === 'briefing' && selectedScenario && (
+        {currentPhase === "briefing" && selectedScenario && (
           <div className="space-y-6">
             <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
               <div className="flex items-center gap-3 mb-4">
                 <Shield className="w-8 h-8 text-blue-400" />
                 <div>
                   <h2 className="text-2xl font-bold">Mission Briefing</h2>
-                  <p className="text-gray-400">Review the scenario and prepare your strategy</p>
+                  <p className="text-gray-400">
+                    Review the scenario and prepare your strategy
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-semibold mb-3 text-red-400">{selectedScenario.title}</h3>
-                  <p className="text-gray-300 mb-4">{selectedScenario.scenario}</p>
+                  <h3 className="text-lg font-semibold mb-3 text-red-400">
+                    {selectedScenario.title}
+                  </h3>
+                  <p className="text-gray-300 mb-4">
+                    {selectedScenario.scenario}
+                  </p>
 
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-blue-400" />
-                      <span>Time Limit: {Math.round(selectedScenario.timeLimitSeconds / 60)} minutes</span>
+                      <span>
+                        Time Limit:{" "}
+                        {Math.round(selectedScenario.timeLimitSeconds / 60)}{" "}
+                        minutes
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Target className="w-4 h-4 text-green-400" />
-                      <span>Objectives: {selectedScenario.objectives.length}</span>
+                      <span>
+                        Objectives: {selectedScenario.objectives.length}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Zap className="w-4 h-4 text-yellow-400" />
-                      <span>Difficulty: {selectedScenario.estimatedDifficulty}/5</span>
+                      <span>
+                        Difficulty: {selectedScenario.estimatedDifficulty}/5
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -235,15 +267,19 @@ export default function WeeklyBossBattle() {
                   <h4 className="font-semibold mb-2">Business Impact</h4>
                   <div className="bg-red-900/20 border border-red-500 rounded p-3 mb-4">
                     <p className="text-red-200 text-sm">
-                      <strong>CRITICAL:</strong> This scenario represents a production incident
-                      with significant business impact. Your response time and accuracy matter.
+                      <strong>CRITICAL:</strong> This scenario represents a
+                      production incident with significant business impact. Your
+                      response time and accuracy matter.
                     </p>
                   </div>
 
                   <h4 className="font-semibold mb-2">Prerequisites</h4>
                   <div className="space-y-1">
                     {selectedScenario.prerequisites?.map((prereq) => (
-                      <div key={prereq} className="flex items-center gap-2 text-sm">
+                      <div
+                        key={prereq}
+                        className="flex items-center gap-2 text-sm"
+                      >
                         <CheckCircle className="w-4 h-4 text-green-400" />
                         <span>{prereq}</span>
                       </div>
@@ -254,7 +290,7 @@ export default function WeeklyBossBattle() {
 
               <div className="flex gap-4 mt-6">
                 <button
-                  onClick={() => setCurrentPhase('selection')}
+                  onClick={() => setCurrentPhase("selection")}
                   className="bg-gray-600 hover:bg-gray-500 px-6 py-2 rounded font-semibold transition-colors"
                 >
                   Back to Selection
@@ -272,18 +308,27 @@ export default function WeeklyBossBattle() {
         )}
 
         {/* Execution Phase */}
-        {currentPhase === 'execution' && selectedScenario && attempt && (
+        {currentPhase === "execution" && selectedScenario && attempt && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Execution Area */}
             <div className="lg:col-span-2 space-y-6">
               {/* Current Scenario Status */}
               <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                <h3 className="text-xl font-bold mb-4 text-red-400">Battle Status</h3>
-                <p className="text-gray-300 mb-4">{selectedScenario.scenario}</p>
+                <h3 className="text-xl font-bold mb-4 text-red-400">
+                  Battle Status
+                </h3>
+                <p className="text-gray-300 mb-4">
+                  {selectedScenario.scenario}
+                </p>
 
                 {/* Investigation Notes */}
                 <div className="mb-4">
-                  <label htmlFor="investigation-notes" className="block text-sm font-medium mb-2">Investigation Notes</label>
+                  <label
+                    htmlFor="investigation-notes"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Investigation Notes
+                  </label>
                   <textarea
                     id="investigation-notes"
                     value={investigationNotes}
@@ -296,10 +341,18 @@ export default function WeeklyBossBattle() {
 
                 {/* Resolution Steps */}
                 <div className="mb-4">
-                  <label htmlFor="resolution-step-input" className="block text-sm font-medium mb-2">Resolution Steps</label>
+                  <label
+                    htmlFor="resolution-step-input"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Resolution Steps
+                  </label>
                   <div className="space-y-2">
                     {resolutionSteps.map((step) => (
-                      <div key={step} className="flex items-center gap-2 bg-slate-700 p-2 rounded">
+                      <div
+                        key={step}
+                        className="flex items-center gap-2 bg-slate-700 p-2 rounded"
+                      >
                         <CheckCircle className="w-4 h-4 text-green-400" />
                         <span className="text-sm">{step}</span>
                       </div>
@@ -309,9 +362,9 @@ export default function WeeklyBossBattle() {
                       type="text"
                       placeholder="Add resolution step..."
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                        if (e.key === "Enter" && e.currentTarget.value.trim()) {
                           addResolutionStep(e.currentTarget.value.trim());
-                          e.currentTarget.value = '';
+                          e.currentTarget.value = "";
                         }
                       }}
                       className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
@@ -324,28 +377,30 @@ export default function WeeklyBossBattle() {
               <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <Target className="w-5 h-5 text-green-400" />
-                  Battle Objectives ({completedObjectives.length}/{selectedScenario.objectives.length})
+                  Battle Objectives ({completedObjectives.length}/
+                  {selectedScenario.objectives.length})
                 </h3>
                 <div className="space-y-3">
                   {selectedScenario.objectives.map((objective, index) => {
                     const objectiveId = `obj_${index}`;
-                    const isCompleted = completedObjectives.includes(objectiveId);
+                    const isCompleted =
+                      completedObjectives.includes(objectiveId);
 
                     return (
                       <div
                         key={objective}
                         className={`flex items-start gap-3 p-3 rounded border ${
                           isCompleted
-                            ? 'bg-green-900/20 border-green-500'
-                            : 'bg-slate-700/50 border-slate-600'
+                            ? "bg-green-900/20 border-green-500"
+                            : "bg-slate-700/50 border-slate-600"
                         }`}
                       >
                         <button
                           onClick={() => completeObjective(objectiveId)}
                           className={`mt-0.5 ${
                             isCompleted
-                              ? 'text-green-400'
-                              : 'text-gray-400 hover:text-green-400'
+                              ? "text-green-400"
+                              : "text-gray-400 hover:text-green-400"
                           }`}
                         >
                           {isCompleted ? (
@@ -354,7 +409,11 @@ export default function WeeklyBossBattle() {
                             <div className="w-5 h-5 border-2 border-current rounded" />
                           )}
                         </button>
-                        <span className={isCompleted ? 'line-through text-gray-400' : ''}>
+                        <span
+                          className={
+                            isCompleted ? "line-through text-gray-400" : ""
+                          }
+                        >
                           {objective}
                         </span>
                       </div>
@@ -393,7 +452,10 @@ export default function WeeklyBossBattle() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Objectives:</span>
-                    <span>{completedObjectives.length}/{selectedScenario.objectives.length}</span>
+                    <span>
+                      {completedObjectives.length}/
+                      {selectedScenario.objectives.length}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Investigation:</span>
@@ -414,11 +476,18 @@ export default function WeeklyBossBattle() {
                 </h4>
                 <div className="space-y-2">
                   {selectedScenario.resources
-                    .filter(resource => resource.available)
+                    .filter((resource) => resource.available)
                     .map((resource) => (
-                      <div key={resource.title} className="flex items-center gap-2 text-sm">
-                        {resource.type === 'documentation' && <BookOpen className="w-4 h-4 text-blue-400" />}
-                        {resource.type === 'tool' && <Terminal className="w-4 h-4 text-green-400" />}
+                      <div
+                        key={resource.title}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        {resource.type === "documentation" && (
+                          <BookOpen className="w-4 h-4 text-blue-400" />
+                        )}
+                        {resource.type === "tool" && (
+                          <Terminal className="w-4 h-4 text-green-400" />
+                        )}
                         <span>{resource.title}</span>
                       </div>
                     ))}
@@ -442,13 +511,15 @@ export default function WeeklyBossBattle() {
         )}
 
         {/* Debrief Phase */}
-        {currentPhase === 'debrief' && attempt && selectedScenario && (
+        {currentPhase === "debrief" && attempt && selectedScenario && (
           <div className="space-y-6">
-            <div className={`p-8 rounded-lg border-2 ${
-              attempt.passed
-                ? 'bg-green-900/20 border-green-500'
-                : 'bg-red-900/20 border-red-500'
-            }`}>
+            <div
+              className={`p-8 rounded-lg border-2 ${
+                attempt.passed
+                  ? "bg-green-900/20 border-green-500"
+                  : "bg-red-900/20 border-red-500"
+              }`}
+            >
               <div className="text-center mb-6">
                 {attempt.passed ? (
                   <Award className="w-16 h-16 mx-auto mb-4 text-yellow-400" />
@@ -456,9 +527,11 @@ export default function WeeklyBossBattle() {
                   <XCircle className="w-16 h-16 mx-auto mb-4 text-red-400" />
                 )}
                 <h2 className="text-3xl font-bold mb-2">
-                  {attempt.passed ? 'Boss Defeated!' : 'Battle Lost'}
+                  {attempt.passed ? "Boss Defeated!" : "Battle Lost"}
                 </h2>
-                <p className="text-xl text-gray-400">Score: {attempt.score}/100</p>
+                <p className="text-xl text-gray-400">
+                  Score: {attempt.score}/100
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -472,7 +545,9 @@ export default function WeeklyBossBattle() {
                   <div className="text-2xl font-bold text-green-400">
                     {completedObjectives.length}
                   </div>
-                  <div className="text-sm text-gray-400">Objectives Completed</div>
+                  <div className="text-sm text-gray-400">
+                    Objectives Completed
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-yellow-400">
@@ -489,7 +564,7 @@ export default function WeeklyBossBattle() {
 
               <div className="flex gap-4 justify-center">
                 <button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate("/dashboard")}
                   className="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded font-semibold transition-colors"
                 >
                   Back to Dashboard

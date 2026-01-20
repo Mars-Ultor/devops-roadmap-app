@@ -2,8 +2,8 @@
  * StruggleLogFormComponents - Extracted UI components for StruggleLogForm
  */
 
-import { Plus, X, AlertCircle, CheckCircle, BookOpen } from 'lucide-react';
-import { STRUGGLE_SESSION_CONFIG } from '../../../types/struggle';
+import { Plus, X, AlertCircle, CheckCircle, BookOpen } from "lucide-react";
+import { STRUGGLE_SESSION_CONFIG } from "../../../types/struggle";
 
 type ConfidenceLevel = 1 | 2 | 3 | 4 | 5;
 
@@ -18,7 +18,8 @@ export function StruggleLogFormHeader() {
       <div>
         <h2 className="text-xl font-bold text-white">Document Your Struggle</h2>
         <p className="text-sm text-gray-400">
-          Before accessing hints, you must document your genuine problem-solving attempts
+          Before accessing hints, you must document your genuine problem-solving
+          attempts
         </p>
       </div>
     </div>
@@ -34,10 +35,16 @@ interface ProblemDescriptionFieldProps {
   readonly onChange: (value: string) => void;
 }
 
-export function ProblemDescriptionField({ value, onChange }: ProblemDescriptionFieldProps) {
+export function ProblemDescriptionField({
+  value,
+  onChange,
+}: ProblemDescriptionFieldProps) {
   return (
     <div>
-      <label htmlFor="problem-description" className="block text-sm font-medium text-gray-300 mb-2">
+      <label
+        htmlFor="problem-description"
+        className="block text-sm font-medium text-gray-300 mb-2"
+      >
         What Problem Are You Trying to Solve? *
       </label>
       <textarea
@@ -60,7 +67,12 @@ interface ApproachesTriedFieldProps {
   readonly onUpdate: (index: number, value: string) => void;
 }
 
-export function ApproachesTriedField({ approaches, onAdd, onRemove, onUpdate }: ApproachesTriedFieldProps) {
+export function ApproachesTriedField({
+  approaches,
+  onAdd,
+  onRemove,
+  onUpdate,
+}: ApproachesTriedFieldProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
@@ -78,7 +90,10 @@ export function ApproachesTriedField({ approaches, onAdd, onRemove, onUpdate }: 
       </div>
       <div className="space-y-2">
         {approaches.map((approach, index) => (
-          <div key={approach || `approach-${index}`} className="flex items-center gap-2">
+          <div
+            key={approach || `approach-${index}`}
+            className="flex items-center gap-2"
+          >
             <input
               type="text"
               value={approach}
@@ -110,7 +125,10 @@ interface StuckPointFieldProps {
 export function StuckPointField({ value, onChange }: StuckPointFieldProps) {
   return (
     <div>
-      <label htmlFor="stuck-point" className="block text-sm font-medium text-gray-300 mb-2">
+      <label
+        htmlFor="stuck-point"
+        className="block text-sm font-medium text-gray-300 mb-2"
+      >
         Where Are You Currently Stuck? *
       </label>
       <textarea
@@ -134,7 +152,10 @@ interface TimeSpentFieldProps {
 export function TimeSpentField({ value, onChange }: TimeSpentFieldProps) {
   return (
     <div>
-      <label htmlFor="time-spent" className="block text-sm font-medium text-gray-300 mb-2">
+      <label
+        htmlFor="time-spent"
+        className="block text-sm font-medium text-gray-300 mb-2"
+      >
         Time Spent Struggling (minutes) *
       </label>
       <input
@@ -147,7 +168,8 @@ export function TimeSpentField({ value, onChange }: TimeSpentFieldProps) {
         required
       />
       <p className="text-xs text-gray-500 mt-1">
-        Minimum {STRUGGLE_SESSION_CONFIG.MIN_STRUGGLE_TIME_MINUTES} minutes required
+        Minimum {STRUGGLE_SESSION_CONFIG.MIN_STRUGGLE_TIME_MINUTES} minutes
+        required
       </p>
     </div>
   );
@@ -158,10 +180,16 @@ interface ConfidenceLevelFieldProps {
   readonly onChange: (value: ConfidenceLevel) => void;
 }
 
-export function ConfidenceLevelField({ value, onChange }: ConfidenceLevelFieldProps) {
+export function ConfidenceLevelField({
+  value,
+  onChange,
+}: ConfidenceLevelFieldProps) {
   return (
     <div>
-      <label htmlFor="confidence-level" className="block text-sm font-medium text-gray-300 mb-2">
+      <label
+        htmlFor="confidence-level"
+        className="block text-sm font-medium text-gray-300 mb-2"
+      >
         Confidence Level (1-5)
       </label>
       <div className="flex items-center space-x-2">
@@ -171,12 +199,12 @@ export function ConfidenceLevelField({ value, onChange }: ConfidenceLevelFieldPr
           min="1"
           max="5"
           value={value}
-          onChange={(e) => onChange(Number.parseInt(e.target.value) as ConfidenceLevel)}
+          onChange={(e) =>
+            onChange(Number.parseInt(e.target.value) as ConfidenceLevel)
+          }
           className="flex-1"
         />
-        <span className="text-white font-mono w-8 text-center">
-          {value}
-        </span>
+        <span className="text-white font-mono w-8 text-center">{value}</span>
       </div>
       <div className="flex justify-between text-xs text-gray-500 mt-1">
         <span>Completely Lost</span>
@@ -191,10 +219,16 @@ interface LearningPointsFieldProps {
   readonly onChange: (value: string) => void;
 }
 
-export function LearningPointsField({ value, onChange }: LearningPointsFieldProps) {
+export function LearningPointsField({
+  value,
+  onChange,
+}: LearningPointsFieldProps) {
   return (
     <div>
-      <label htmlFor="learning-points" className="block text-sm font-medium text-gray-300 mb-2">
+      <label
+        htmlFor="learning-points"
+        className="block text-sm font-medium text-gray-300 mb-2"
+      >
         What Have You Learned So Far? (Optional)
       </label>
       <textarea
@@ -249,7 +283,11 @@ interface FormActionsProps {
   readonly isSubmitting: boolean;
 }
 
-export function FormActions({ onCancel, isValid, isSubmitting }: FormActionsProps) {
+export function FormActions({
+  onCancel,
+  isValid,
+  isSubmitting,
+}: FormActionsProps) {
   return (
     <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-700">
       <button
@@ -294,10 +332,11 @@ export function FormHeader({ title, description }: FormHeaderProps) {
   return (
     <div className="border-b border-slate-700 pb-4 mb-4">
       <h3 className="text-xl font-bold text-white">
-        {title || '📝 Struggle Documentation'}
+        {title || "📝 Struggle Documentation"}
       </h3>
       <p className="text-sm text-gray-400 mt-1">
-        {description || 'Document your struggle before requesting a hint. This forces reflection and builds genuine problem-solving skills.'}
+        {description ||
+          "Document your struggle before requesting a hint. This forces reflection and builds genuine problem-solving skills."}
       </p>
     </div>
   );

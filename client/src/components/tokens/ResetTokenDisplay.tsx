@@ -3,8 +3,8 @@
  * Shows remaining tokens with visual indicators
  */
 
-import { RefreshCw } from 'lucide-react';
-import type { TokenAllocation } from '../../types/tokens';
+import { RefreshCw } from "lucide-react";
+import type { TokenAllocation } from "../../types/tokens";
 
 // Import extracted components and utilities
 import {
@@ -13,17 +13,24 @@ import {
   TokenProgressBar,
   NoResetsAlert,
   LastResetAlert,
-  DisciplineAlert
-} from './reset-token/ResetTokenDisplayComponents';
-import { getTokenDisplayInfo, getColorClasses } from './reset-token/ResetTokenUtils';
+  DisciplineAlert,
+} from "./reset-token/ResetTokenDisplayComponents";
+import {
+  getTokenDisplayInfo,
+  getColorClasses,
+} from "./reset-token/ResetTokenUtils";
 
 interface ResetTokenDisplayProps {
   allocation: TokenAllocation | null;
-  type: 'quiz' | 'lab' | 'battleDrill';
+  type: "quiz" | "lab" | "battleDrill";
   compact?: boolean;
 }
 
-export default function ResetTokenDisplay({ allocation, type, compact = false }: ResetTokenDisplayProps) {
+export default function ResetTokenDisplay({
+  allocation,
+  type,
+  compact = false,
+}: ResetTokenDisplayProps) {
   if (!allocation) return <TokenDisplayLoading />;
 
   const info = getTokenDisplayInfo(allocation, type);
@@ -32,7 +39,13 @@ export default function ResetTokenDisplay({ allocation, type, compact = false }:
   const colors = getColorClasses(info.color);
 
   if (compact) {
-    return <CompactTokenDisplay remaining={remaining} total={info.total} colors={colors} />;
+    return (
+      <CompactTokenDisplay
+        remaining={remaining}
+        total={info.total}
+        colors={colors}
+      />
+    );
   }
 
   return (
@@ -40,7 +53,9 @@ export default function ResetTokenDisplay({ allocation, type, compact = false }:
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <RefreshCw className={`w-5 h-5 ${colors.text}`} />
-          <span className="text-sm font-medium text-gray-300">{info.label}</span>
+          <span className="text-sm font-medium text-gray-300">
+            {info.label}
+          </span>
         </div>
         <div className={`text-2xl font-bold ${colors.text}`}>{remaining}</div>
       </div>
