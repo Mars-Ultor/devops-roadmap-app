@@ -11,7 +11,6 @@ import {
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
-import { useAuthStore } from "../store/authStore";
 import { useAnalyticsData, type AnalyticsData } from "../hooks/useAnalyticsData";
 import { useTimeAnalysis, type TimeAnalysisData } from "../hooks/useTimeAnalysis";
 import { useLearningVelocity, type LearningVelocityData } from "../hooks/useLearningVelocity";
@@ -119,7 +118,6 @@ const TABS: Array<{ id: TabId; label: string; icon: LucideIcon }> = [
 ];
 
 export default function Analytics() {
-  const { user } = useAuthStore();
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
   const [activeTab, setActiveTab] = useState<TabId>("overview");
 
