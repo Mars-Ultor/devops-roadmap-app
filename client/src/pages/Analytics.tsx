@@ -124,25 +124,20 @@ export default function Analytics() {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
 
   // Use the refactored analytics data hook
-  const { analytics, progressSnap, failuresSnap, loading: analyticsLoading, loadTimeFilteredData } = useAnalyticsData(timeRange);
+  const { analytics, loading: analyticsLoading } = useAnalyticsData(timeRange);
 
   const {
     analysisData,
     formatHour,
     loading: timeAnalysisLoading,
-  } = useTimeAnalysis(progressSnap);
-  const { predictiveData, loading: predictiveLoading } = usePredictiveAnalytics(
-    progressSnap,
-    failuresSnap,
-  );
-  const { velocityData } = useLearningVelocity(progressSnap);
+  } = useTimeAnalysis();
+  const { predictiveData, loading: predictiveLoading } = usePredictiveAnalytics();
+  const { velocityData } = useLearningVelocity();
 
-  // Reload time-filtered data when time range changes
+  // Reload data when time range changes
   useEffect(() => {
-    if (user?.uid) {
-      loadTimeFilteredData(timeRange);
-    }
-  }, [timeRange, loadTimeFilteredData, user?.uid]);
+    // The hooks will automatically reload data when timeRange changes
+  }, [timeRange]);
 
   const formatDuration = useCallback((seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
