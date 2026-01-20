@@ -4,7 +4,7 @@
  */
 
 import { useState } from "react";
-import type { RecertificationStatus } from "../useRecertification";
+import type { RecertificationStatus } from "./recertificationUtils";
 
 export function useRecertificationState() {
   const [status, setStatus] = useState<RecertificationStatus | null>(null);

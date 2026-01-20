@@ -13,6 +13,14 @@ export interface SkillDecayAlert {
   requiresRecertification: boolean;
 }
 
+export interface RecertificationStatus {
+  lastRecertDate: Date | null;
+  nextRecertDue: Date | null;
+  daysUntilDue: number;
+  isOverdue: boolean;
+  skillsNeedingRecert: SkillDecayAlert[];
+}
+
 /** Calculate decay percentage between historical and recent performance */
 export function calculateDecay(
   historicalPerformance: number,

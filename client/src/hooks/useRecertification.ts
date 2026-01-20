@@ -7,16 +7,7 @@ import { useEffect } from "react";
 import { useAuthStore } from "../store/authStore";
 import { useRecertificationState } from "./recertification/useRecertificationState";
 import { useRecertificationCallbacks } from "./recertification/useRecertificationCallbacks";
-
-interface RecertificationStatus {
-  lastRecertDate: Date | null;
-  nextRecertDue: Date | null;
-  daysUntilDue: number;
-  isOverdue: boolean;
-  skillsNeedingRecert: SkillDecayAlert[];
-}
-
-export type { RecertificationStatus };
+import type { RecertificationStatus } from "./recertification/recertificationUtils";
 
 export function useRecertification() {
   const { user } = useAuthStore();
