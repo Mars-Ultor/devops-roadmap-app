@@ -10,13 +10,57 @@ import {
   Flame, BookOpen, Zap, Code, Trophy, Target, Settings, Brain,
   Users, Award, RefreshCw, AlertTriangle, Shield
 } from 'lucide-react';
-import type { WeeklyCommitment, Commitment } from '../types';
-import type { TokenAllocation } from '../types';
-import type { DifficultySettings } from '../types';
-import type { RecertificationStatus } from '../hooks/useRecertification';
+
+// Define RecertificationStatus type locally
+export interface RecertificationStatus {
+  isOverdue: boolean;
+  skillsNeedingRecert: string[];
+}
+
+// Type definitions for accountability
+export interface Commitment {
+  id: string;
+  description: string;
+  target: number;
+  current: number;
+}
+
+export interface WeeklyCommitment {
+  weekNumber: number;
+  weekStart: Date;
+  weekEnd: Date;
+  commitments: Commitment[];
+  overallStatus: string;
+}
 
 // Temporary local definitions to fix build issue
 type DifficultyLevel = 'recruit' | 'soldier' | 'specialist' | 'elite';
+
+interface TokenAllocation {
+  userId: string;
+  weekStart: Date;
+  weekEnd: Date;
+  quiz: number;
+  lab: number;
+  battleDrill: number;
+  quizResets: number;
+  labResets: number;
+  battleDrillResets: number;
+  quizResetsUsed: number;
+  labResetsUsed: number;
+  battleDrillResetsUsed: number;
+  totalResets: number;
+  lastReset: Date;
+  maxResets: number;
+  isActive: boolean;
+}
+
+interface DifficultySettings {
+  quizPassingScore: number;
+  quizTimeMultiplier: number;
+  labGuidanceLevel: 'full' | 'partial' | 'minimal' | 'none';
+  stressIntensity: number;
+}
 
 const DIFFICULTY_THRESHOLDS = {
   recruit: {
@@ -283,6 +327,9 @@ export const AdaptiveDifficultySection: React.FC<{
 }> = ({ currentLevel, settings, difficultyLoading }) => {
   if (difficultyLoading || !currentLevel || !settings) return null;
 
+  // TypeScript should narrow currentLevel to DifficultyLevel here
+  const level = currentLevel as DifficultyLevel;
+
   return (
     <div className="mb-12">
       <div className="flex items-center justify-between mb-4">
@@ -295,15 +342,15 @@ export const AdaptiveDifficultySection: React.FC<{
         </Link>
       </div>
 
-      <div className={`border rounded-lg p-6 ${getLevelClass(currentLevel)}`}>
+      <div className={`border rounded-lg p-6 ${getLevelClass(level)}`}>
         <div className="flex items-center gap-4 mb-4">
-          <Award className={`w-10 h-10 ${getLevelTextClass(currentLevel)}`} />
+          <Award className={`w-10 h-10 ${getLevelTextClass(level)}`} />
           <div>
             <h3 className="text-xl font-bold text-white">
-              {DIFFICULTY_THRESHOLDS[currentLevel].name}
+              {DIFFICULTY_THRESHOLDS[level].name}
             </h3>
             <p className="text-sm text-gray-300">
-              {DIFFICULTY_THRESHOLDS[currentLevel].description}
+              {DIFFICULTY_THRESHOLDS[level].description}
             </p>
           </div>
         </div>
