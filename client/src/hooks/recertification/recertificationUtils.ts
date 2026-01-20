@@ -3,7 +3,15 @@
  * Helper functions for skill decay analysis
  */
 
-import type { SkillDecayAlert } from '../useRecertification';
+export interface SkillDecayAlert {
+  skill: string;
+  category: string;
+  recentPerformance: number;
+  historicalPerformance: number;
+  decayPercentage: number;
+  lastPracticed: Date;
+  requiresRecertification: boolean;
+}
 
 /** Calculate decay percentage between historical and recent performance */
 export function calculateDecay(historicalPerformance: number, recentPerformance: number): number {

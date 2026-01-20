@@ -10,9 +10,9 @@ import {
   Flame, BookOpen, Zap, Code, Trophy, Target, Settings, Brain,
   Users, Award, RefreshCw, AlertTriangle, Shield
 } from 'lucide-react';
-import type { WeeklyCommitment, Commitment } from '../types/accountability';
-import type { TokenAllocation } from '../types/tokens';
-import type { DifficultySettings } from '../types/adaptiveDifficulty';
+import type { WeeklyCommitment, Commitment } from '../types';
+import type { TokenAllocation } from '../types';
+import type { DifficultySettings } from '../types';
 import type { RecertificationStatus } from '../hooks/useRecertification';
 
 // Temporary local definitions to fix build issue

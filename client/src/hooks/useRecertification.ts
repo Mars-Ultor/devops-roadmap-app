@@ -8,16 +8,7 @@ import { useAuthStore } from '../store/authStore';
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { calculateAverageScore, calculateDecay, calculateNextRecertDue, calculateDaysUntilDue, getDaysAgo, capitalizeFirst, SKILL_CATEGORIES, DECAY_ALERT_THRESHOLD, RECERT_DECAY_THRESHOLD } from './recertification/recertificationUtils';
-
-export interface SkillDecayAlert {
-  skill: string;
-  category: string;
-  recentPerformance: number;
-  historicalPerformance: number;
-  decayPercentage: number;
-  lastPracticed: Date;
-  requiresRecertification: boolean;
-}
+import type { SkillDecayAlert } from './recertification/recertificationUtils';
 
 interface RecertificationStatus {
   lastRecertDate: Date | null;
