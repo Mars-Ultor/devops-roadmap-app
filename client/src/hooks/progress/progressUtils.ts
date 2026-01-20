@@ -178,7 +178,10 @@ export function showBadgeNotification(badge: Badge): void {
 import { curriculumData } from "../../data/curriculumData";
 import {
   doc,
+  setDoc,
   getDoc,
+  updateDoc,
+  increment,
   getDocs,
   query,
   collection,
@@ -225,4 +228,183 @@ export async function checkBadgeRequirementHelper(
     default:
       return false;
   }
+}
+
+// ============================================================================
+// Progress Management Functions
+// ============================================================================
+
+export async function completeLessonInDB(
+  userId: string,
+  lessonId: string,
+  xp: number,
+  quality = 5,
+) {
+  const progressRef = doc(db, "progress", `${userId}_${lessonId}`);
+  const existingProgress = await getDoc(progressRef);
+  const isReview = existingProgress.exists();
+  const sm2Data = isReview
+    ? calculateSM2(
+        quality,
+        existingProgress.data()?.easinessFactor || 2.5,
+        existingProgress.data()?.repetitions || 0,
+        existingProgress.data()?.interval || 0,
+      )
+    : initializeSM2Data();
+
+  await setDoc(progressRef, {
+    userId,
+    lessonId,
+    type: "lesson",
+    completedAt: new Date(),
+    xpEarned: isReview ? 0 : xp,
+    ...sm2Data,
+    lastReviewQuality: quality,
+  });
+
+  if (!isReview) {
+    await updateDoc(doc(db, "users", userId), { totalXP: increment(xp) });
+  }
+
+  return sm2Data;
+}
+
+export async function markRelatedLessonCompleteInDB(
+  userId: string,
+  weekNum: string,
+  labNum: string,
+) {
+  const lessonId = `w${weekNum}-lesson${labNum}`;
+  const lessonRef = doc(db, "progress", `${userId}_${lessonId}`);
+  if (!(await getDoc(lessonRef)).exists()) {
+    await setDoc(lessonRef, {
+      userId,
+      lessonId,
+      type: "lesson",
+      completedAt: new Date(),
+      xpEarned: 0,
+      ...initializeSM2Data(),
+      lastReviewQuality: 5,
+      completedViaLab: true,
+    });
+  }
+}
+
+export async function awardBadgeToUser(userId: string, badge: Badge) {
+  await setDoc(doc(db, "badges", `${userId}_${badge.id}`), {
+    userId,
+    badgeId: badge.id,
+    title: badge.title,
+    description: badge.description,
+    icon: badge.icon,
+    xpEarned: badge.xp,
+    earnedAt: new Date(),
+  });
+  await updateDoc(doc(db, "users", userId), {
+    totalXP: increment(badge.xp),
+  });
+  showBadgeNotification(badge);
+}
+
+export async function checkAndAwardBadgesForUser(userId: string) {
+  const userData = (await getDoc(doc(db, "users", userId))).data();
+  const labsCompleted = (
+    await getDocs(
+      query(
+        collection(db, "progress"),
+        where("userId", "==", userId),
+        where("type", "==", "lab"),
+      ),
+    )
+  ).size;
+
+  for (const badge of BADGES) {
+    if ((await getDoc(doc(db, "badges", `${userId}_${badge.id}`))).exists())
+      continue;
+    if (await checkBadgeRequirementHelper(badge, labsCompleted, userData, userId))
+      await awardBadgeToUser(userId, badge);
+  }
+}
+
+export async function completeLabInDB(
+  userId: string,
+  labId: string,
+  xp: number,
+  tasksCompleted: number,
+  totalTasks: number,
+) {
+  const progressRef = doc(db, "progress", `${userId}_${labId}`);
+  const alreadyCompleted = (await getDoc(progressRef)).exists();
+  await setDoc(progressRef, {
+    userId,
+    labId,
+    type: "lab",
+    completedAt: new Date(),
+    xpEarned: xp,
+    tasksCompleted,
+    totalTasks,
+  });
+
+  if (!alreadyCompleted) {
+    await updateDoc(doc(db, "users", userId), { totalXP: increment(xp) });
+    const parsed = parseLabId(labId);
+    if (parsed) await markRelatedLessonCompleteInDB(userId, parsed.weekNum, parsed.labNum);
+  }
+
+  await checkAndAwardBadgesForUser(userId);
+  return true;
+}
+
+export async function getLabProgressFromDB(
+  userId: string,
+  labId: string,
+): Promise<boolean> {
+  return (await getDoc(doc(db, "progress", `${userId}_${labId}`))).exists();
+}
+
+export async function getLessonProgressFromDB(
+  userId: string,
+  lessonId: string,
+): Promise<LessonProgress | null> {
+  const snap = await getDoc(doc(db, "progress", `${userId}_${lessonId}`));
+  return snap.exists() ? docToLessonProgress(snap.data()) : null;
+}
+
+export async function getLessonsDueForReviewFromDB(
+  userId: string,
+): Promise<LessonProgress[]> {
+  const snap = await getDocs(
+    query(
+      collection(db, "progress"),
+      where("userId", "==", userId),
+      where("type", "==", "lesson"),
+      where("nextReviewDate", "<=", new Date()),
+    ),
+  );
+  return snap.docs.map((d) => docToLessonProgress(d.data()));
+}
+
+export async function getAllLessonProgressFromDB(
+  userId: string,
+): Promise<LessonProgress[]> {
+  const snap = await getDocs(
+    query(
+      collection(db, "progress"),
+      where("userId", "==", userId),
+      where("type", "==", "lesson"),
+    ),
+  );
+  return snap.docs.map((d) => docToLessonProgress(d.data()));
+}
+
+export async function getUserStatsFromDB(userId: string) {
+  const snap = await getDoc(doc(db, "users", userId));
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  return {
+    totalXP: data.totalXP || 0,
+    currentWeek: data.currentWeek || 1,
+    name: data.name,
+    email: data.email,
+  };
 }

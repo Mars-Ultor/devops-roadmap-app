@@ -549,3 +549,156 @@ export function buildAnalytics(params: BuildAnalyticsParams): AnalyticsData {
     skills: buildSkillsData(mastery, progressSize),
   };
 }
+
+// ============================================================================
+// Hook Helper Functions
+// ============================================================================
+
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../../lib/firebase";
+
+export async function loadInitialAnalyticsData(
+  userId: string,
+  timeRange: TimeRange,
+): Promise<AnalyticsData> {
+  const dateFilter = getDateFilter(timeRange);
+
+  // Parallel queries for all data
+  const [
+    sessionsSnap,
+    drillPerfSnap,
+    stressSnap,
+    scenarioSnap,
+    progressSnap,
+    quizSnap,
+    labSnap,
+    failureSnap,
+  ] = await Promise.all([
+    getDocs(
+      query(
+        collection(db, "studySessions"),
+        where("userId", "==", userId),
+        where("completed", "==", true),
+        where("startTime", ">=", dateFilter),
+      ),
+    ),
+    getDocs(
+      query(
+        collection(db, "battleDrillPerformance"),
+        where("userId", "==", userId),
+      ),
+    ),
+    getDocs(
+      query(
+        collection(db, "stressTrainingSessions"),
+        where("userId", "==", userId),
+        where("completed", "==", true),
+      ),
+    ),
+    getDocs(
+      query(
+        collection(db, "scenarioAttempts"),
+        where("userId", "==", userId),
+        where("completed", "==", true),
+      ),
+    ),
+    getDocs(
+      query(collection(db, "progress"), where("userId", "==", userId)),
+    ),
+    getDocs(
+      query(
+        collection(db, "quizAttempts"),
+        where("userId", "==", userId),
+      ),
+    ),
+    getDocs(
+      query(
+        collection(db, "progress"),
+        where("userId", "==", userId),
+        where("type", "==", "lab"),
+      ),
+    ),
+    getDocs(
+      query(collection(db, "failureLogs"), where("userId", "==", userId)),
+    ),
+  ]);
+
+  // Process all data
+  const session = processSessionDocs(sessionsSnap.docs);
+  const drill = processDrillDocs(drillPerfSnap.docs);
+  const mastery = processProgressDocs(progressSnap.docs);
+  const quiz = processQuizDocs(quizSnap.docs);
+  const lab = processLabDocs(labSnap.docs);
+  const failure = processFailureDocs(failureSnap.docs);
+  const streaks = calculateStreaks(sessionsSnap.docs);
+  const weeklyProgress = calculateWeeklyProgress(sessionsSnap.docs);
+  const monthlyTrends = calculateMonthlyTrends(progressSnap.docs);
+
+  // Get token usage
+  const tokenUsage = await getTokenUsage(userId);
+
+  return buildAnalytics({
+    session,
+    drill,
+    stress: stressSnap.size,
+    scenarios: scenarioSnap.size,
+    mastery,
+    progressSize: progressSnap.size,
+    quiz,
+    lab,
+    failure,
+    tokenUsage,
+    streaks,
+    weeklyProgress,
+    monthlyTrends,
+  });
+}
+
+export async function loadTimeFilteredAnalyticsData(
+  userId: string,
+  timeRange: TimeRange,
+): Promise<Partial<AnalyticsData>> {
+  const dateFilter = getDateFilter(timeRange);
+
+  // Only load time-filtered study sessions data
+  const sessionsSnap = await getDocs(
+    query(
+      collection(db, "studySessions"),
+      where("userId", "==", userId),
+      where("completed", "==", true),
+      where("startTime", ">=", dateFilter),
+    ),
+  );
+
+  const session = processSessionDocs(sessionsSnap.docs);
+  const streaks = calculateStreaks(sessionsSnap.docs);
+
+  return {
+    totalStudyTime: session.totalTime,
+    totalSessions: session.count,
+    avgSessionDuration: session.avgDuration,
+    bestStudyHour: session.bestHour,
+    currentStreak: streaks.currentStreak,
+    longestStreak: streaks.longestStreak,
+  };
+}
+
+async function getTokenUsage(userId: string): Promise<number> {
+  try {
+    const tokenSnap = await getDocs(
+      query(
+        collection(db, "resetTokens"),
+        where("userId", "==", userId),
+        where("used", "==", true),
+      ),
+    );
+    return tokenSnap.size;
+  } catch {
+    return 0;
+  }
+}

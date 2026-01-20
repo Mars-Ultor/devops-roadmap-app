@@ -3,7 +3,22 @@
  * Extracted helper functions for ESLint compliance
  */
 
-import type { BattleDrillPerformance } from "../types/training";
+import {
+  doc,
+  setDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { db } from "../../lib/firebase";
+import type { BattleDrill, BattleDrillPerformance, AAR } from "../../types/training";
+import type { ValidationResult } from "../../utils/validation";
+
+interface SessionResult {
+  passed: boolean;
+  completedSteps: number;
+  hintsUsed: number;
+  totalSteps: number;
+}
 
 // ============================================================================
 // Mastery Level Calculation
@@ -109,13 +124,13 @@ export interface SessionResetState {
   completedSteps: Set<number>;
   showHints: Set<number>;
   stepInputs: Record<number, string>;
-  validationResults: Record<number, unknown>;
+  validationResults: Record<number, ValidationResult>;
   validatingStep: number | null;
   sessionComplete: boolean;
-  sessionResult: unknown;
+  sessionResult: SessionResult | null;
   showAARForm: boolean;
   aarSubmitted: boolean;
-  submittedAAR: unknown;
+  submittedAAR: AAR | null;
   showFailureLog: boolean;
 }
 
@@ -169,4 +184,69 @@ export function getTimeColor(
   if (elapsedSeconds <= targetTimeSeconds) return "text-green-400";
   if (elapsedSeconds <= targetTimeSeconds * 1.5) return "text-yellow-400";
   return "text-red-400";
+}
+
+// ============================================================================
+// Attempt Completion Logic
+// ============================================================================
+
+export interface CompleteAttemptData {
+  userId: string;
+  drillId: string;
+  attemptId: string;
+  drill: BattleDrill;
+  passed: boolean;
+  stepsCompleted: number;
+  hintsUsed: number;
+  resetsUsed: number;
+  startTime: number;
+  currentPerformance: BattleDrillPerformance | null;
+}
+
+export async function completeBattleDrillAttempt(data: CompleteAttemptData) {
+  const {
+    userId,
+    drillId,
+    attemptId,
+    drill,
+    passed,
+    stepsCompleted,
+    hintsUsed,
+    resetsUsed,
+    startTime,
+    currentPerformance,
+  } = data;
+  const durationSeconds = Math.floor((Date.now() - startTime) / 1000);
+
+  // Update attempt record
+  await updateDoc(doc(db, "battleDrillAttempts", attemptId), {
+    completedAt: serverTimestamp(),
+    durationSeconds,
+    passed,
+    hintsUsed,
+    resetsUsed,
+    stepsCompleted,
+  });
+
+  // Update performance stats if performance exists
+  if (currentPerformance) {
+    const stats = calculateUpdatedPerformance(
+      currentPerformance,
+      passed,
+      durationSeconds,
+      drill.targetTimeSeconds,
+    );
+    const updatedPerformance: BattleDrillPerformance = {
+      ...currentPerformance,
+      ...stats,
+      lastAttemptDate: new Date(),
+    };
+    await setDoc(
+      doc(db, "battleDrillPerformance", `${userId}_${drillId}`),
+      updatedPerformance,
+    );
+    return { updatedPerformance, durationSeconds };
+  }
+
+  return { updatedPerformance: null, durationSeconds };
 }

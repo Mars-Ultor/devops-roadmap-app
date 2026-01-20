@@ -13,26 +13,32 @@ import type {
 // Types
 // ============================================================================
 
+export interface ChallengeResult {
+  challengeId: string;
+  correct: boolean;
+  selectedOptionId: string;
+}
+
+export type MasterTrainingPhase = "selection" | "path-overview" | "training" | "progress" | "insights";
+
+export interface AdaptiveMetrics {
+  performanceScore: number;
+  difficultyAdjustment: number;
+  timeEfficiency: number;
+  learningVelocity: number;
+}
+
 export interface MasterTrainingState {
   learningPaths: LearningPath[];
   selectedPath: LearningPath | null;
   currentSession: MasterTrainingSession | null;
-  phase: "selection" | "path-overview" | "training" | "progress" | "insights";
+  phase: MasterTrainingPhase;
   trainingActive: boolean;
   sessionStartTime: Date | null;
   currentChallengeIndex: number;
   selectedAnswer: string | null;
-  challengeResults: {
-    challengeId: string;
-    correct: boolean;
-    selectedOptionId: string;
-  }[];
-  adaptiveMetrics: {
-    performanceScore: number;
-    difficultyAdjustment: number;
-    timeEfficiency: number;
-    learningVelocity: number;
-  };
+  challengeResults: ChallengeResult[];
+  adaptiveMetrics: AdaptiveMetrics;
   loading: boolean;
 }
 

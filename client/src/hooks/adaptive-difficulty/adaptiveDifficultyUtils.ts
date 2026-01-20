@@ -3,16 +3,26 @@
  * Extracted metric calculation and helper functions
  */
 
-import type {
-  PerformanceMetrics,
-  DifficultySettings,
-  DifficultyLevel,
-} from "../../types/adaptiveDifficulty";
 import {
   DIFFICULTY_THRESHOLDS,
   PROMOTION_CRITERIA,
   DEMOTION_CRITERIA,
 } from "../../types/adaptiveDifficulty";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  doc,
+  getDoc,
+  updateDoc,
+  setDoc,
+  orderBy,
+  limit,
+} from "firebase/firestore";
+import { db } from "../../lib/firebase";
+import type { DifficultyAdjustment } from "../../types/adaptiveDifficulty";
 
 // ============================================================================
 // Default Metrics
@@ -387,4 +397,159 @@ export function evaluateRecommendationLogic(
   if (reasoning.length === 0)
     reasoning.push(`Performing well at ${currentLevel}`);
   return { type, confidence, reasoning, suggestedLevel };
+}
+
+// ============================================================================
+// Hook Helper Functions
+// ============================================================================
+
+export async function loadDifficultySettingsFromDB(
+  userId: string,
+): Promise<{ currentLevel: DifficultyLevel; settings: DifficultySettings }> {
+  const settingsDoc = await getDoc(doc(db, "difficultySettings", userId));
+  if (settingsDoc.exists()) {
+    const data = settingsDoc.data();
+    return {
+      currentLevel: data.currentLevel,
+      settings: data as DifficultySettings,
+    };
+  } else {
+    const init = createSettingsForLevel("recruit");
+    await setDoc(doc(db, "difficultySettings", userId), init);
+    return { currentLevel: "recruit", settings: init };
+  }
+}
+
+export async function loadRecentAdjustmentsFromDB(
+  userId: string,
+): Promise<DifficultyAdjustment[]> {
+  const snap = await getDocs(
+    query(
+      collection(db, "difficultyAdjustments"),
+      where("userId", "==", userId),
+      orderBy("timestamp", "desc"),
+      limit(10),
+    ),
+  );
+  return snap.docs.map(
+    (d) =>
+      ({
+        id: d.id,
+        ...d.data(),
+        timestamp: d.data().timestamp.toDate(),
+      }) as DifficultyAdjustment,
+  );
+}
+
+export async function calculatePerformanceMetricsFromDB(
+  userId: string,
+): Promise<PerformanceMetrics> {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const [
+      quizSnap,
+      labSnap,
+      drillSnap,
+      progressSnap,
+      failureSnap,
+      tokenSnap,
+      sessionSnap,
+    ] = await Promise.all([
+      getDocs(
+        query(
+          collection(db, "quizAttempts"),
+          where("userId", "==", userId),
+          where("completedAt", ">=", thirtyDaysAgo),
+        ),
+      ),
+      getDocs(
+        query(
+          collection(db, "progress"),
+          where("userId", "==", userId),
+          where("type", "==", "lab"),
+        ),
+      ),
+      getDocs(
+        query(
+          collection(db, "battleDrillPerformance"),
+          where("userId", "==", userId),
+          where("completedAt", ">=", thirtyDaysAgo),
+        ),
+      ),
+      getDocs(
+        query(collection(db, "progress"), where("userId", "==", userId)),
+      ),
+      getDocs(
+        query(
+          collection(db, "failureLogs"),
+          where("userId", "==", userId),
+          where("occurredAt", ">=", thirtyDaysAgo),
+        ),
+      ),
+      getDocs(
+        query(
+          collection(db, "resetTokens"),
+          where("userId", "==", userId),
+          where("usedAt", ">=", thirtyDaysAgo),
+        ),
+      ),
+      getDocs(
+        query(
+          collection(db, "studySessions"),
+          where("userId", "==", userId),
+          orderBy("startTime", "desc"),
+          limit(365),
+        ),
+      ),
+    ]);
+
+    let aarCompleted = 0;
+    failureSnap.forEach((d) => {
+      if (d.data().aarCompleted) aarCompleted++;
+    });
+
+    const sessionDates = new Set<string>();
+    sessionSnap.forEach((d) => {
+      const dt = d.data().startTime.toDate();
+      dt.setHours(0, 0, 0, 0);
+      sessionDates.add(dt.toISOString().split("T")[0]);
+    });
+
+    return buildMetricsFromData({
+      quiz: processQuizDocs(quizSnap.docs),
+      lab: processLabDocs(labSnap.docs),
+      drill: processDrillDocs(drillSnap.docs),
+      ef: processProgressDocs(progressSnap.docs),
+      aarCompleted,
+      failureCount: failureSnap.size,
+      tokenCount: tokenSnap.size,
+      studyStreak: calculateStudyStreak(sessionDates),
+      sessionCount: sessionSnap.size,
+    });
+  } catch {
+    return getDefaultMetrics();
+  }
+}
+
+export async function adjustDifficultyInDB(
+  userId: string,
+  newLevel: DifficultyLevel,
+  currentLevel: DifficultyLevel,
+  reason: string,
+  autoAdjusted: boolean,
+): Promise<{ newSettings: DifficultySettings; metrics: PerformanceMetrics }> {
+  const metrics = await calculatePerformanceMetricsFromDB(userId);
+  const newSettings = createSettingsForLevel(newLevel);
+  await updateDoc(doc(db, "difficultySettings", userId), newSettings);
+  await addDoc(collection(db, "difficultyAdjustments"), {
+    userId,
+    timestamp: new Date(),
+    previousLevel: currentLevel,
+    newLevel,
+    reason,
+    metrics,
+    autoAdjusted,
+  });
+  return { newSettings, metrics };
 }
