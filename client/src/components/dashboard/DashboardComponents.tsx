@@ -6,6 +6,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import ResetTokenDisplay from "../tokens/ResetTokenDisplay";
+import type { RecertificationStatus } from "../../hooks/recertification/recertificationUtils";
 import {
   Flame,
   BookOpen,
@@ -21,12 +22,6 @@ import {
   AlertTriangle,
   Shield,
 } from "lucide-react";
-
-// Define RecertificationStatus type locally
-export interface RecertificationStatus {
-  isOverdue: boolean;
-  skillsNeedingRecert: string[];
-}
 
 // Type definitions for accountability
 export interface Commitment {
