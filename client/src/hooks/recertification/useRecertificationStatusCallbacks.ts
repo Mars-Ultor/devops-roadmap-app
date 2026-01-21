@@ -6,7 +6,7 @@
 import { useCallback } from "react";
 import { db } from "../../lib/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import type { RecertificationStatus } from "../useRecertification";
+import type { RecertificationStatus } from "./recertificationUtils";
 import {
   calculateNextRecertDue,
   calculateDaysUntilDue,

@@ -5,7 +5,7 @@
 
 import { useRecertificationAnalysisCallbacks } from "./useRecertificationAnalysisCallbacks";
 import { useRecertificationStatusCallbacks } from "./useRecertificationStatusCallbacks";
-import type { RecertificationStatus } from "../useRecertification";
+import type { RecertificationStatus } from "./recertificationUtils";
 
 interface RecertificationCallbacksParams {
   userId: string | undefined;
