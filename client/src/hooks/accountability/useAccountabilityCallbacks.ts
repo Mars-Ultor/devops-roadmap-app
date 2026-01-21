@@ -28,7 +28,6 @@ export function useAccountabilityCallbacks(
     setPartners: (partners: AccountabilityPartner[]) => void;
     setPublicCommitments: (commitments: PublicCommitment[]) => void;
     loadCurrentWeekCommitment: () => Promise<void>;
-    loadPublicCommitments: () => Promise<void>;
   }
 ) {
   const createWeeklyCommitment = useCallback(async (
@@ -74,6 +73,11 @@ export function useAccountabilityCallbacks(
     await completeWeeklyCheckInInDB(userId, currentWeekCommitment, reflection, nextWeekFocus);
   }, [userId, currentWeekCommitment]);
 
+  const loadPublicCommitments = useCallback(async (): Promise<void> => {
+    const publicCommitments = await loadPublicCommitmentsFromDB();
+    callbacks.setPublicCommitments(publicCommitments);
+  }, [callbacks]);
+
   const makePublicCommitment = useCallback(async (
     commitment: string,
     targetDate: Date,
@@ -82,18 +86,8 @@ export function useAccountabilityCallbacks(
     if (!userId) throw new Error("Not authenticated");
     const userName = "User"; // Simplified for now
     await makePublicCommitmentInDB(userId, userName, commitment, targetDate, witnesses);
-    await callbacks.loadPublicCommitments();
-  }, [userId, callbacks]);
-
-  const loadPartners = useCallback(async (): Promise<void> => {
-    const partners = await loadPartnersFromDB();
-    callbacks.setPartners(partners);
-  }, [callbacks]);
-
-  const loadPublicCommitments = useCallback(async (): Promise<void> => {
-    const publicCommitments = await loadPublicCommitmentsFromDB();
-    callbacks.setPublicCommitments(publicCommitments);
-  }, [callbacks]);
+    await loadPublicCommitments();
+  }, [userId, loadPublicCommitments]);
 
   return {
     createWeeklyCommitment,

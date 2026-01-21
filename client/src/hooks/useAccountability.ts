@@ -37,18 +37,10 @@ export function useAccountability() {
     }
   }, [user?.uid]);
 
-  useEffect(() => {
-    if (user?.uid) {
-      loadCurrentWeekCommitment();
-      loadPartners();
-      loadPublicCommitments();
-    }
-  }, [
-    user?.uid,
-    loadCurrentWeekCommitment,
-    loadPartners,
-    loadPublicCommitments,
-  ]);
+  // Define placeholder functions to break circular dependency
+  const placeholderLoadPublicCommitments = useCallback(async (): Promise<void> => {
+    // Placeholder - will be replaced
+  }, []);
 
   const {
     createWeeklyCommitment,
@@ -65,8 +57,20 @@ export function useAccountability() {
     setPartners,
     setPublicCommitments,
     loadCurrentWeekCommitment,
-    loadPublicCommitments,
   });
+
+  useEffect(() => {
+    if (user?.uid) {
+      loadCurrentWeekCommitment();
+      loadPartners();
+      loadPublicCommitments();
+    }
+  }, [
+    user?.uid,
+    loadCurrentWeekCommitment,
+    loadPartners,
+    loadPublicCommitments,
+  ]);
 
   return {
     currentWeekCommitment,
