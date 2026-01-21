@@ -38,9 +38,9 @@ export function useAccountability() {
   }, [user?.uid]);
 
   // Define placeholder functions to break circular dependency
-  const placeholderLoadPublicCommitments = useCallback(async (): Promise<void> => {
-    // Placeholder - will be replaced
-  }, []);
+  // const placeholderLoadPublicCommitments = useCallback(async (): Promise<void> => {
+  //   // Placeholder - will be replaced
+  // }, []);
 
   const {
     createWeeklyCommitment,

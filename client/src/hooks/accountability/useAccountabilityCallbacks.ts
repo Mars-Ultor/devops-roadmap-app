@@ -18,7 +18,12 @@ import {
   deleteWeeklyCommitmentFromDB,
   completeWeeklyCheckInInDB,
   makePublicCommitmentInDB,
+  loadPartnersFromDB,
+  loadPublicCommitmentsFromDB,
 } from "./accountabilityOperations";
+import {
+  getDefaultAccountabilityStats,
+} from "./accountabilityUtils";
 
 export function useAccountabilityCallbacks(
   userId: string | undefined,
@@ -74,9 +79,22 @@ export function useAccountabilityCallbacks(
   }, [userId, currentWeekCommitment]);
 
   const loadPublicCommitments = useCallback(async (): Promise<void> => {
-    const publicCommitments = await loadPublicCommitmentsFromDB();
+    if (!userId) return;
+    const publicCommitments = await loadPublicCommitmentsFromDB(userId);
     callbacks.setPublicCommitments(publicCommitments);
-  }, [callbacks]);
+  }, [userId, callbacks]);
+
+  const loadPartners = useCallback(async (): Promise<void> => {
+    if (!userId) return;
+    const partners = await loadPartnersFromDB(userId);
+    callbacks.setPartners(partners);
+  }, [userId, callbacks]);
+
+  const getAccountabilityStats = useCallback(async () => {
+    if (!userId) return getDefaultAccountabilityStats();
+    // For now, return default stats - full implementation would require more data
+    return getDefaultAccountabilityStats();
+  }, [userId]);
 
   const makePublicCommitment = useCallback(async (
     commitment: string,
