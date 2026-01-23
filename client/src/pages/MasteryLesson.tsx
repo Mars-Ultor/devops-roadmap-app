@@ -27,6 +27,8 @@ import { loadLessonContent } from "../utils/lessonContentLoader";
 import type { LeveledLessonContent } from "../types/lessonContent";
 import type { StruggleMetrics } from "../types/aar";
 import { curriculumLoader } from "../utils/curriculumLoader";
+import { initializeLessonMastery } from "../lib/firestoreSchema";
+import { checkIsLevelMastered } from "../hooks/mastery/masteryUtils";
 
 /** Helper to get next level name for display */
 function getNextLevelDisplayName(
@@ -144,11 +146,9 @@ export default function MasteryLesson() {
     // Refresh mastery data and check if level is mastered
     if (user?.uid && lessonId) {
       try {
-        const { initializeLessonMastery } = await import("../lib/firestoreSchema");
         const updatedMastery = await initializeLessonMastery(user.uid, lessonId);
 
         // Check if the current level is now mastered
-        const { checkIsLevelMastered } = await import("../hooks/mastery/masteryUtils");
         const levelMastered = checkIsLevelMastered(updatedMastery, level);
 
         if (levelMastered) {
