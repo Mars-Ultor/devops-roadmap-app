@@ -81,6 +81,10 @@ export function useProgress() {
     return getLessonsDueForReviewFromDB(user.uid);
   };
 
+  const isLessonDueForReview = (progress: LessonProgress): boolean => {
+    return new Date() >= progress.nextReviewDate;
+  };
+
   const getAllLessonProgress = async (): Promise<LessonProgress[]> => {
     if (!user) return [];
     return getAllLessonProgressFromDB(user.uid);
@@ -96,6 +100,7 @@ export function useProgress() {
     completeLab,
     getLabProgress,
     getLessonProgress,
+    isLessonDueForReview,
     getLessonsDueForReview,
     getAllLessonProgress,
     getUserStats,
