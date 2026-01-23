@@ -140,29 +140,41 @@ export default function MasteryLesson() {
   // Handler for AAR completion
   const handleAARComplete = useCallback(async () => {
     setAarSubmitted(true);
-    await refreshMastery();
 
-    if (mastery && isLevelMastered(level)) {
-      const nextLevel = getNextLevelId(level);
-      if (nextLevel) {
-        const userConfirmed = globalThis.confirm(
-          `🎉 You've mastered this level!\n\nWould you like to continue to the next level (${nextLevel})?`,
-        );
-        if (userConfirmed) {
-          navigate(`/lesson/${lessonId}/${nextLevel}`);
-          return;
+    // Refresh mastery data and check if level is mastered
+    if (user?.uid && lessonId) {
+      try {
+        const { initializeLessonMastery } = await import("../lib/firestoreSchema");
+        const updatedMastery = await initializeLessonMastery(user.uid, lessonId);
+
+        // Check if the current level is now mastered
+        const { checkIsLevelMastered } = await import("../hooks/mastery/masteryUtils");
+        const levelMastered = checkIsLevelMastered(updatedMastery, level);
+
+        if (levelMastered) {
+          const nextLevel = getNextLevelId(level);
+          if (nextLevel) {
+            const userConfirmed = globalThis.confirm(
+              `🎉 You've mastered this level!\n\nWould you like to continue to the next level (${nextLevel})?`,
+            );
+            if (userConfirmed) {
+              navigate(`/lesson/${lessonId}/${nextLevel}`);
+              return;
+            }
+          }
         }
+      } catch (error) {
+        console.error("Error checking mastery after AAR:", error);
       }
     }
+
     navigate(weekNumber ? `/week/${weekNumber}` : "/curriculum");
   }, [
-    mastery,
-    isLevelMastered,
-    level,
+    user?.uid,
     lessonId,
+    level,
     weekNumber,
     navigate,
-    refreshMastery,
   ]);
 
   useEffect(() => {
