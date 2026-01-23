@@ -126,8 +126,6 @@ export default function MasteryLesson() {
     recordAttempt,
     getLevelProgress,
     canAccessLevel,
-    isLevelMastered,
-    refreshMastery,
   } = useMastery(lessonId || "");
 
   // Validate level parameter

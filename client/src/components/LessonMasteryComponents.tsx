@@ -1,6 +1,8 @@
+/* eslint-disable react/no-array-index-key */
 /**
  * Lesson Mastery Display Sub-Components
  * Extracted from LessonMasteryDisplay.tsx for ESLint compliance
+ * Note: Array index keys are used for progress dots as they are purely presentational
  */
 
 import React from "react";
@@ -30,9 +32,8 @@ export function ProgressDots({
   return (
     <div className="flex items-center space-x-1">
       {Array.from({ length: level.requiredPerfect }).map((_, i) => (
-        // eslint-disable-next-line react/no-array-index-key
         <span
-          key={i}
+          key={`progress-dot-${i}`}
           className={`w-2 h-2 rounded-full ${i < level.perfectCount ? "bg-green-400" : "bg-gray-600"}`}
         />
       ))}

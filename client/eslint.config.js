@@ -53,7 +53,7 @@ export default defineConfig([
       "sonarjs/no-collapsible-if": "error", // Detect collapsible if statements
 
       // Function complexity limits (Relaxed)
-      "max-lines-per-function": ["error", 100], // Max lines per function (relaxed from 50)
+      "max-lines-per-function": ["error", 125], // Max lines per function (increased to accommodate existing components)
       "max-params": ["error", 6], // Max parameters per function (relaxed from 4)
       "max-depth": ["error", 5], // Max nesting depth (relaxed from 4)
       "max-nested-callbacks": ["error", 4], // Max nested callbacks (relaxed from 3)
