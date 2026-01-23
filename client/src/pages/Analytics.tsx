@@ -27,12 +27,12 @@ import { PredictiveAnalytics } from "../components/analytics/PredictiveAnalytics
 interface TabContentProps {
   activeTab: TabId;
   analytics: AnalyticsData;
-  analysisData: TimeAnalysisData;
+  analysisData: TimeAnalysisData | null;
   timeAnalysisLoading: boolean;
   formatHour: (hour: number) => string;
   formatDuration: (seconds: number) => string;
   formatTime: (seconds: number) => string;
-  velocityData: LearningVelocityData;
+  velocityData: LearningVelocityData | null;
   predictiveData: PredictiveData | null;
   predictiveLoading: boolean;
 }

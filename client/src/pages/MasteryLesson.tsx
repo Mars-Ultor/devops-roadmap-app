@@ -24,7 +24,7 @@ import RunGuidedWorkspace from "../components/lessons/RunGuidedWorkspace";
 import { useMastery } from "../hooks/useMastery";
 import type { MasteryLevel } from "../types/training";
 import { loadLessonContent } from "../utils/lessonContentLoader";
-import type { LeveledLessonContent } from "../types/lessonContent";
+import type { LeveledLessonContent, WalkContent, RunIndependentContent } from "../types/lessonContent";
 import type { StruggleMetrics } from "../types/aar";
 import { curriculumLoader } from "../utils/curriculumLoader";
 import { initializeLessonMastery } from "../lib/firestoreSchema";
@@ -193,10 +193,10 @@ export default function MasteryLesson() {
             "🔍 Checking week",
             week.weekNumber,
             "lessons:",
-            week.lessons.map((l) => ({ id: l.id, lessonId: l.lessonId })),
+            week.lessons.map((l: LeveledLessonContent) => ({ id: l.id, lessonId: l.lessonId })),
           );
           const foundLesson = week.lessons.find(
-            (l) => l.id === lessonId || l.lessonId === lessonId,
+            (l: LeveledLessonContent) => l.id === lessonId || l.lessonId === lessonId,
           );
           if (foundLesson) {
             console.log("✅ Found lesson:", foundLesson);
@@ -493,10 +493,10 @@ export default function MasteryLesson() {
     }
 
     // Walk Level: Exercises with interactive fill-in-the-blank
-    if (level === "walk" && "exercises" in rawContent) {
+    if (level === "walk" && "exercises" in rawContent && rawContent.exercises) {
       return (
         <WalkLevelContent
-          content={rawContent}
+          content={rawContent as WalkContent}
           onExerciseComplete={(exerciseNumber, correct) => {
             if (!completedExercises.includes(exerciseNumber)) {
               setCompletedExercises([...completedExercises, exerciseNumber]);
@@ -517,8 +517,8 @@ export default function MasteryLesson() {
     // Run-Guided Level: Conceptual guidance with workspace (checkpoints are unique to run-guided)
     if (level === "run-guided" && "checkpoints" in rawContent) {
       const handleRunGuidedSubmit = (
-        responses: Record<string, string>,
-        notes: string,
+        _responses: Record<string, string>,
+        _notes: string,
         hintsUsed: number,
       ) => {
         const timeSpent = Math.floor((Date.now() - startTime) / 1000);
@@ -578,7 +578,7 @@ export default function MasteryLesson() {
                   Key Concepts to Apply
                 </h3>
                 <ul className="space-y-2">
-                  {rawContent.keyConcepts.map((concept) => (
+                  {rawContent.keyConceptsToApply?.map((concept: string) => (
                     <li
                       key={`kc-${concept}`}
                       className="text-slate-300 flex items-start"
@@ -655,12 +655,12 @@ export default function MasteryLesson() {
 
           {/* Workspace Component */}
           <RunIndependentWorkspace
-            objective={rawContent.objective}
-            companyProfile={rawContent.companyProfile}
-            successCriteria={rawContent.successCriteria || []}
-            timeTarget={rawContent.timeTarget}
-            minimumRequirements={rawContent.minimumRequirements}
-            evaluationRubric={rawContent.evaluationRubric}
+            objective={(rawContent as RunIndependentContent).objective || ""}
+            companyProfile={(rawContent as RunIndependentContent).companyProfile}
+            successCriteria={(rawContent as RunIndependentContent).successCriteria || []}
+            timeTarget={(rawContent as RunIndependentContent).timeTarget}
+            minimumRequirements={(rawContent as RunIndependentContent).minimumRequirements}
+            evaluationRubric={(rawContent as RunIndependentContent).evaluationRubric}
             onSubmit={handleRunIndependentSubmit}
             onSaveDraft={handleSaveDraft}
             savedDraft={savedDraft}
@@ -680,7 +680,7 @@ export default function MasteryLesson() {
   };
 
   return (
-    <ContentGate contentType="lesson" contentId={lessonId}>
+    <ContentGate>
       <div className="min-h-screen bg-slate-900 text-white">
         {/* Header */}
         <div className="bg-slate-800 border-b border-slate-700 p-6">

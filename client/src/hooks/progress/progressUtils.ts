@@ -4,7 +4,7 @@
  * For ESLint compliance (max-lines-per-function)
  */
 
-import type { Badge, LessonProgress } from "./useProgress";
+import type { Badge, LessonProgress } from "../useProgress";
 
 // ============================================================================
 // Badge Constants

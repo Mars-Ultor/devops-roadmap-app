@@ -5,7 +5,6 @@
  * Note: Array index keys are used for progress dots as they are purely presentational
  */
 
-import React from "react";
 import { CheckCircle, Circle, Lock } from "lucide-react";
 import type { LessonMastery, LessonMasteryLevel } from "./LessonMasteryDisplay";
 import {
