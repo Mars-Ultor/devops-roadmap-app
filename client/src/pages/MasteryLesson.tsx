@@ -597,7 +597,7 @@ export default function MasteryLesson() {
 
     // Run-Independent Level: Objective, criteria, and workspace
     if (level === "run-independent" && "objective" in rawContent) {
-      const handleRunIndependentSubmit = () => {
+      const handleRunIndependentSubmit = async () => {
         // Calculate time spent
         const timeSpent = Math.floor((Date.now() - startTime) / 1000);
         setStruggleMetrics((prev) => ({
@@ -605,6 +605,18 @@ export default function MasteryLesson() {
           timeSpentSeconds: timeSpent,
           isPerfectCompletion: true, // Run-independent is always "perfect" if completed
         }));
+
+        // Record the attempt in mastery system
+        if (mastery) {
+          console.log("🔵 Recording run-independent attempt...");
+          const result = await recordAttempt(
+            level,
+            true, // isPerfect
+            timeSpent,
+          );
+          console.log("🔵 Run-independent attempt recorded:", result);
+        }
+
         setCompleted(true);
       };
 
