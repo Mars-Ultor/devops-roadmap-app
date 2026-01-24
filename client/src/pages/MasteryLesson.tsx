@@ -494,9 +494,12 @@ export default function MasteryLesson() {
 
     // Walk Level: Exercises with interactive fill-in-the-blank
     if (level === "walk" && "exercises" in rawContent && rawContent.exercises) {
+      const walkContent = rawContent as WalkContent;
       return (
         <WalkLevelContent
-          content={rawContent as WalkContent}
+          content={walkContent}
+          terminalEnabled={false}
+          lessonId={lessonId}
           onExerciseComplete={(exerciseNumber, correct) => {
             if (!completedExercises.includes(exerciseNumber)) {
               setCompletedExercises([...completedExercises, exerciseNumber]);
@@ -597,6 +600,7 @@ export default function MasteryLesson() {
               lessonId={lessonId || ""}
               checkpoints={rawContent.checkpoints}
               resourcesAllowed={rawContent.resourcesAllowed}
+              terminalEnabled={rawContent.terminalEnabled}
               onSubmit={handleRunGuidedSubmit}
               onSaveDraft={handleRunGuidedSaveDraft}
             />

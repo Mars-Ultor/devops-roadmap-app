@@ -36,7 +36,24 @@ export function getDirectory(
   return current;
 }
 
-/** Create directory in filesystem */
+/** Create directory recursively (with parents) */
+export function createDirectoryRecursive(
+  fileSystem: Record<string, FileSystemNode>,
+  path: string,
+): void {
+  const parts = path.split("/").filter(Boolean);
+  let currentNode = fileSystem["/"];
+
+  for (const part of parts) {
+    if (!currentNode.children) currentNode.children = {};
+    if (!currentNode.children[part]) {
+      currentNode.children[part] = { type: "dir", children: {} };
+    }
+    currentNode = currentNode.children[part];
+  }
+}
+
+/** Create directory (non-recursive) */
 export function createDirectory(
   fileSystem: Record<string, FileSystemNode>,
   path: string,
@@ -72,7 +89,8 @@ export const HELP_TEXT = [
   "  pwd          - print working directory",
   "  ls [dir]     - list directory contents",
   "  cd <dir>     - change directory",
-  "  mkdir <dir>  - create directory",
+  "  mkdir [-p] <dir> [dir2 ...] - create directory/directories",
+  "    -p         create parent directories as needed",
   "  touch <file> - create empty file",
   "  cat <file>   - display file contents",
   "  echo <text>  - display text",
@@ -159,8 +177,51 @@ export function executeMkdir(
   currentDir: string,
 ): CommandResult {
   if (!targetPath) return { output: "mkdir: missing operand", success: false };
-  createDirectory(fileSystem, resolvePath(targetPath, currentDir));
-  return { success: true };
+
+  // Parse arguments for flags and directories
+  const args = targetPath.split(/\s+/);
+  let createParents = false;
+  const directories: string[] = [];
+
+  for (const arg of args) {
+    if (arg === "-p") {
+      createParents = true;
+    } else if (!arg.startsWith("-")) {
+      directories.push(arg);
+    } else {
+      return { output: `mkdir: invalid option -- '${arg}'`, success: false };
+    }
+  }
+
+  if (directories.length === 0) {
+    return { output: "mkdir: missing operand", success: false };
+  }
+
+  // Create each directory
+  for (const dirPath of directories) {
+    const fullPath = resolvePath(dirPath, currentDir);
+
+    if (createParents) {
+      // Create parent directories as needed
+      createDirectoryRecursive(fileSystem, fullPath);
+    } else {
+      // Check if parent exists
+      const parts = fullPath.split("/").filter(Boolean);
+      const parentPath = "/" + parts.join("/");
+      const parent = getDirectory(fileSystem, parentPath);
+
+      if (!parent) {
+        return {
+          output: `mkdir: cannot create directory '${dirPath}': No such file or directory`,
+          success: false,
+        };
+      }
+
+      createDirectory(fileSystem, fullPath);
+    }
+  }
+
+  return { output: "", success: true };
 }
 
 export function executeTouch(
@@ -208,7 +269,7 @@ export const commandHandlers: Record<
 > = {
   pwd: (_, currentDir) => executePwd(currentDir),
   ls: (args, currentDir, fs) => executeLs(fs, args[0], currentDir),
-  mkdir: (args, currentDir, fs) => executeMkdir(fs, args[0], currentDir),
+  mkdir: (args, currentDir, fs) => executeMkdir(fs, args.join(" "), currentDir),
   touch: (args, currentDir, fs) => executeTouch(fs, args[0], currentDir),
   cat: (args, currentDir, fs) => executeCat(fs, args[0], currentDir),
   echo: (args) => ({ output: args.join(" "), success: true }),

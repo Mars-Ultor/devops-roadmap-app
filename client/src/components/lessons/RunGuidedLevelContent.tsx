@@ -3,7 +3,7 @@
  */
 
 import RunGuidedWorkspace from "./RunGuidedWorkspace";
-import type { RunGuidedContent } from "../types/lessonContent";
+import type { RunGuidedContent } from "../../types/lessonContent";
 
 interface RunGuidedLevelContentProps {
   content: RunGuidedContent;
@@ -70,6 +70,7 @@ export function RunGuidedLevelContent({
           lessonId={lessonId}
           checkpoints={content.checkpoints}
           resourcesAllowed={content.resourcesAllowed}
+          terminalEnabled={content.terminalEnabled}
           onSubmit={onSubmit}
           onSaveDraft={onSaveDraft}
         />

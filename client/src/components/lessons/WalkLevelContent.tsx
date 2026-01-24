@@ -6,10 +6,34 @@
 
 import { type FC, useState } from "react";
 import { CheckCircle, XCircle, HelpCircle, Lightbulb } from "lucide-react";
+import LabTerminal from "../LabTerminal";
 import type { WalkContent } from "../../types/lessonContent";
 
 /** Regex pattern for blank placeholders */
 const BLANK_PATTERN = /__(\w+)__/;
+
+/** Practice Terminal Component */
+function PracticeTerminal({ lessonId }: { lessonId: string }) {
+  return (
+    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 mt-6">
+      <h3 className="text-lg font-semibold mb-4 text-green-400">
+        Linux Terminal Practice
+      </h3>
+      <p className="text-slate-300 mb-4">
+        Use this simulated Linux terminal to practice the commands you'll complete in the exercises above.
+        Available commands: pwd, ls, cd, mkdir, touch, cat, echo, clear, help
+      </p>
+      <div className="bg-slate-900 rounded border border-slate-600 p-2">
+        <LabTerminal
+          labId={`${lessonId}-practice`}
+          tasks={[]} // No specific tasks for practice terminal
+          onTaskComplete={() => {}} // No task completion tracking needed
+          onLabComplete={() => {}} // No lab completion needed
+        />
+      </div>
+    </div>
+  );
+}
 
 /** Get button style class based on exercise state */
 function getExerciseButtonClass(
@@ -30,12 +54,16 @@ interface WalkLevelContentProps {
   content: WalkContent;
   onExerciseComplete: (exerciseNumber: number, correct: boolean) => void;
   completedExercises: number[];
+  terminalEnabled?: boolean;
+  lessonId: string;
 }
 
 export const WalkLevelContent: FC<WalkLevelContentProps> = ({
   content,
   onExerciseComplete,
   completedExercises,
+  terminalEnabled = false,
+  lessonId,
 }) => {
   const [currentExercise, setCurrentExercise] = useState(1);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -106,6 +134,8 @@ export const WalkLevelContent: FC<WalkLevelContentProps> = ({
       showSolution={showSolution}
       completedExercises={completedExercises}
       onExerciseComplete={onExerciseComplete}
+      terminalEnabled={terminalEnabled}
+      lessonId={lessonId}
     />
   );
 };
@@ -336,6 +366,9 @@ const ExerciseContent: FC<ExerciseContentProps> = ({
           Show Solution
         </button>
       </div>
+
+      {/* Practice Terminal */}
+      {terminalEnabled && <PracticeTerminal lessonId={lessonId} />}
     </div>
   );
 };

@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Sparkles, Send } from "lucide-react";
+import LabTerminal from "../LabTerminal";
 import {
   RunGuidedTimerBar,
   CheckpointCard,
@@ -23,6 +24,7 @@ interface RunGuidedWorkspaceProps {
   readonly lessonId: string;
   readonly checkpoints: Checkpoint[];
   readonly resourcesAllowed?: string[];
+  readonly terminalEnabled?: boolean;
   readonly onSubmit: (
     responses: Record<string, string>,
     notes: string,
@@ -46,13 +48,31 @@ function loadSavedData(lessonId: string) {
   return { responses: {}, notes: "", completedCheckpoints: [] };
 }
 
-export default function RunGuidedWorkspace({
-  lessonId,
-  checkpoints,
-  resourcesAllowed,
-  onSubmit,
-  onSaveDraft,
-}: RunGuidedWorkspaceProps) {
+// Extract terminal component to reduce main function length
+function PracticeTerminal({ lessonId }: { lessonId: string }) {
+  return (
+    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+      <h3 className="text-lg font-semibold mb-4 text-green-400">
+        Linux Terminal Practice
+      </h3>
+      <p className="text-slate-300 mb-4">
+        Use this simulated Linux terminal to practice the commands you'll document below.
+        Available commands: pwd, ls, cd, mkdir, touch, cat, echo, clear, help
+      </p>
+      <div className="bg-slate-900 rounded border border-slate-600 p-2">
+        <LabTerminal
+          labId={`${lessonId}-practice`}
+          tasks={[]} // No specific tasks for practice terminal
+          onTaskComplete={() => {}} // No task completion tracking needed
+          onLabComplete={() => {}} // No lab completion needed
+        />
+      </div>
+    </div>
+  );
+}
+
+// Custom hook for RunGuided workspace state management
+function useRunGuidedState(lessonId: string, onSaveDraft: (responses: Record<string, string>, notes: string) => void) {
   const savedData = loadSavedData(lessonId);
 
   const [responses, setResponses] = useState<Record<string, string>>(
@@ -88,6 +108,41 @@ export default function RunGuidedWorkspace({
     return () => clearTimeout(timeout);
   }, [handleSaveDraft]);
 
+  return {
+    responses,
+    setResponses,
+    generalNotes,
+    setGeneralNotes,
+    completedCheckpoints,
+    setCompletedCheckpoints,
+    elapsedTime,
+    hintsUsed,
+    setHintsUsed,
+    handleSaveDraft,
+  };
+}
+
+export default function RunGuidedWorkspace({
+  lessonId,
+  checkpoints,
+  resourcesAllowed,
+  terminalEnabled = false,
+  onSubmit,
+  onSaveDraft,
+}: RunGuidedWorkspaceProps) {
+  const {
+    responses,
+    setResponses,
+    generalNotes,
+    setGeneralNotes,
+    completedCheckpoints,
+    setCompletedCheckpoints,
+    elapsedTime,
+    hintsUsed,
+    setHintsUsed,
+    handleSaveDraft,
+  } = useRunGuidedState(lessonId, onSaveDraft);
+
   const totalWordCount =
     Object.values(responses).join(" ").trim().split(/\s+/).filter(Boolean)
       .length + generalNotes.trim().split(/\s+/).filter(Boolean).length;
@@ -107,6 +162,9 @@ export default function RunGuidedWorkspace({
       {resourcesAllowed && resourcesAllowed.length > 0 && (
         <AllowedResources resources={resourcesAllowed} />
       )}
+
+      {/* Terminal for hands-on practice */}
+      {terminalEnabled && <PracticeTerminal lessonId={lessonId} />}
 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-white">Checkpoints</h3>

@@ -58,6 +58,7 @@ export interface WalkBlank {
 export interface RunGuidedContent {
   introduction?: string; // Optional introduction
   objective?: string; // Optional objective
+  terminalEnabled?: boolean; // Optional terminal access for hands-on practice
   conceptualGuidance?: string[]; // Optional conceptual guidance
   keyConceptsToApply?: string[]; // Optional key concepts
   checkpoints?: RunGuidedCheckpoint[]; // Optional checkpoints

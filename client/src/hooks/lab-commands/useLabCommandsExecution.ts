@@ -72,7 +72,7 @@ export function useLabCommandsExecution({
       return true;
     }
     if (cmd === "mkdir") {
-      const r = executeMkdir(fs, args[0], dir);
+      const r = executeMkdir(fs, args.join(" "), dir);
       if (r.output) term.writeln(r.output);
       return true;
     }

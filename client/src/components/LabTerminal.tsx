@@ -59,7 +59,9 @@ export default function LabTerminal({
 
     writeLabWelcome(term, tasks);
     writeLabPrompt(term, currentDirRef.current);
+    // Focus immediately and also with timeout for safety
     term.focus();
+    setTimeout(() => term.focus(), 100);
 
     let currentCommand = "";
     term.onData((data) => {
@@ -95,9 +97,13 @@ export default function LabTerminal({
     <div className="w-full h-full">
       <div
         ref={terminalRef}
-        className="w-full h-full rounded-lg overflow-hidden"
+        className="w-full h-full rounded-lg overflow-hidden cursor-text"
         style={{ minHeight: "400px" }}
-        onClick={() => terminalInstance.current?.focus()}
+        onClick={(e) => {
+          e.preventDefault();
+          terminalInstance.current?.focus();
+        }}
+        onFocus={() => terminalInstance.current?.focus()}
         tabIndex={0}
       />
     </div>

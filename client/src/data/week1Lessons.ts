@@ -381,6 +381,7 @@ export const week1Lesson2LinuxBasics: LeveledLessonContent = {
   runGuided: {
     objective:
       "Set up a directory structure for a web application with proper permissions",
+    terminalEnabled: true,
     conceptualGuidance: [
       "Create a parent directory for your project",
       "Inside, create subdirectories for: source code, configuration, logs, and backups",
