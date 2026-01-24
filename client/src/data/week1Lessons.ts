@@ -290,7 +290,7 @@ export const week1Lesson2LinuxBasics: LeveledLessonContent = {
         exerciseNumber: 3,
         scenario:
           "List all files including hidden ones with detailed information",
-        template: "__LIST__ __FLAG_LONG____FLAG_ALL__",
+        template: "__LIST__ __FLAG_LONG__ __FLAG_ALL__",
         blanks: [
           {
             id: "__LIST__",
@@ -310,13 +310,13 @@ export const week1Lesson2LinuxBasics: LeveledLessonContent = {
             id: "__FLAG_ALL__",
             label: "FLAG_ALL",
             hint: "Flag to show hidden files",
-            correctValue: "a",
-            validationPattern: "^a$",
+            correctValue: "-a",
+            validationPattern: "^-a$",
           },
         ],
-        solution: "ls -la",
+        solution: "ls -l -a",
         explanation:
-          "ls lists files. -l shows permissions/ownership/size. -a shows hidden files (starting with .). Flags can be combined as -la.",
+          "ls lists files. -l shows permissions/ownership/size in long format. -a shows hidden files (starting with .). Flags can be combined as -la or written separately as -l -a.",
       },
       {
         exerciseNumber: 4,
