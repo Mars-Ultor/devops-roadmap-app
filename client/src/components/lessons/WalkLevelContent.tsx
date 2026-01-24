@@ -238,7 +238,7 @@ const ExerciseContent: FC<ExerciseContentProps> = ({
         {exercise.template.split(/(__\w+__)/).map((part) => {
           const blankMatch = BLANK_PATTERN.exec(part);
           if (blankMatch) {
-            const blankId = blankMatch[1]; // Keep original case
+            const blankId = blankMatch[0]; // Use full match including underscores
             const blank = exercise.blanks.find((b) => b.id === blankId);
             if (!blank)
               return (
