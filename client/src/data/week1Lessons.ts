@@ -380,15 +380,17 @@ export const week1Lesson2LinuxBasics: LeveledLessonContent = {
   // RUN-GUIDED: Conceptual guidance only
   runGuided: {
     objective:
-      "Set up a directory structure for a web application with proper permissions",
+      "Set up a directory structure for a CI/CD pipeline with proper security",
     terminalEnabled: true,
     conceptualGuidance: [
-      "Create a parent directory for your project",
-      "Inside, create subdirectories for: source code, configuration, logs, and backups",
-      "Create a sample config file with application settings",
-      "Set restrictive permissions on config (only owner can read)",
-      "Set permissive permissions on logs directory (anyone can write)",
-      "Verify your structure matches web app best practices",
+      "Create a parent directory for your CI/CD pipeline",
+      "Inside, create subdirectories for: builds, deploy, secrets, artifacts, and logs",
+      "Create sample build artifacts in the artifacts directory",
+      "Create a deployment script in deploy directory with execute permissions",
+      "Set restrictive permissions on secrets (only owner can access)",
+      "Set appropriate permissions on logs (readable by all, writable by owner)",
+      "Create documentation explaining the directory structure",
+      "Verify all paths use relative references from the pipeline root",
     ],
     keyConceptsToApply: [
       "Directory creation (mkdir)",
