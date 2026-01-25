@@ -19,6 +19,16 @@ interface EvaluationCriterion {
   passingThreshold: string;
 }
 
+interface StrategyGuideContent {
+  suggestedStructure?: string[];
+  questionsToConsider?: {
+    section: string;
+    questions: string[];
+  }[];
+  commonPitfalls?: string[];
+  writingTips?: string[];
+}
+
 interface CompanyProfile {
   name: string;
   description: string;
@@ -52,6 +62,7 @@ interface RunIndependentWorkspaceProps {
   readonly timeTarget?: number;
   readonly minimumRequirements?: string[];
   readonly evaluationRubric?: EvaluationCriterion[];
+  readonly strategyGuide?: StrategyGuideContent;
   readonly onSubmit: (submission: string) => void;
   readonly onSaveDraft: (draft: string) => void;
   readonly savedDraft?: string;
@@ -326,6 +337,7 @@ export default function RunIndependentWorkspace({
   timeTarget,
   minimumRequirements,
   evaluationRubric,
+  strategyGuide,
   onSubmit,
   onSaveDraft,
   savedDraft = "",
@@ -380,6 +392,7 @@ export default function RunIndependentWorkspace({
       <StrategyGuide
         minimumRequirements={minimumRequirements}
         evaluationRubric={evaluationRubric}
+        strategyGuide={strategyGuide}
       />
       {companyProfile && <CompanyProfile profile={companyProfile} />}
       <ResponseEditor

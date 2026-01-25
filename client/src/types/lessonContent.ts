@@ -106,6 +106,7 @@ export interface RunIndependentContent {
   timeTarget?: number; // Optional time target
   minimumRequirements?: string[]; // Optional minimum requirements
   evaluationRubric?: RunIndependentRubric[]; // Optional evaluation rubric
+  strategyGuide?: StrategyGuideContent; // Optional strategy guide content
   exercises?: unknown[]; // Optional exercises
 }
 
@@ -113,6 +114,16 @@ export interface RunIndependentRubric {
   criterion: string;
   weight: number; // 0-1, must sum to 1
   passingThreshold: string;
+}
+
+export interface StrategyGuideContent {
+  suggestedStructure?: string[];
+  questionsToConsider?: {
+    section: string;
+    questions: string[];
+  }[];
+  commonPitfalls?: string[];
+  writingTips?: string[];
 }
 
 // Complete lesson with all 4 levels

@@ -487,6 +487,59 @@ export const week1Lesson2LinuxBasics: LeveledLessonContent = {
         passingThreshold: "README.md clearly explains each directory's purpose",
       },
     ],
+    strategyGuide: {
+      suggestedStructure: [
+        "Start by creating the main cicd/ directory",
+        "Create subdirectories in logical order: builds/, deploy/, artifacts/, logs/, secrets/",
+        "Set permissions immediately after creating directories",
+        "Create sample files in artifacts/ and deploy/ directories",
+        "Test permissions by trying to access directories as different users",
+        "Document the structure in README.md last",
+      ],
+      questionsToConsider: [
+        {
+          section: "Directory Organization",
+          questions: [
+            "What should be the permission scheme for each directory?",
+            "Which directories need to be accessible by CI/CD tools?",
+            "How will secrets be protected from unauthorized access?",
+            "What logging strategy fits this pipeline structure?",
+          ],
+        },
+        {
+          section: "Security Considerations",
+          questions: [
+            "How do 700 vs 755 permissions affect access control?",
+            "What happens if deployment scripts aren't executable?",
+            "How can you verify permission settings are correct?",
+            "What security risks exist with improper permissions?",
+          ],
+        },
+        {
+          section: "CI/CD Integration",
+          questions: [
+            "How will build artifacts be stored and accessed?",
+            "What deployment scripts are typically needed?",
+            "How should logs be organized for troubleshooting?",
+            "What directory structure supports automated cleanup?",
+          ],
+        },
+      ],
+      commonPitfalls: [
+        "Creating directories without setting permissions immediately",
+        "Using absolute paths instead of relative paths from cicd/ root",
+        "Forgetting to make deployment scripts executable",
+        "Setting overly permissive permissions on secrets directory",
+        "Not testing directory access after setting permissions",
+        "Creating files before their target directories exist",
+      ],
+      writingTips: [
+        "Use relative paths for all file references within the cicd/ structure",
+        "Test permissions by attempting operations as different users",
+        "Document permission schemes and their security implications",
+        "Consider automation scripts for directory creation and permission setup",
+      ],
+    },
   },
 
   videoUrl: "https://example.com/linux-basics",

@@ -25,10 +25,37 @@ interface EvaluationCriterion {
 interface StrategyGuideProps {
   readonly minimumRequirements?: string[];
   readonly evaluationRubric?: EvaluationCriterion[];
+  readonly strategyGuide?: {
+    suggestedStructure?: string[];
+    questionsToConsider?: {
+      section: string;
+      questions: string[];
+    }[];
+    commonPitfalls?: string[];
+    writingTips?: string[];
+  };
 }
 
-function StructureTemplate() {
+function StructureTemplate({ 
+  suggestedStructure 
+}: { 
+  suggestedStructure?: Array<{ title: string; description: string }> 
+}) {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Default DevOps structure if no custom structure provided
+  const defaultStructure = [
+    { title: "1. Current State Analysis", description: "Document where the company is today with specific metrics" },
+    { title: "2. Pain Points Identification", description: "List problems across culture, process, and technology" },
+    { title: "3. Transformation Roadmap", description: "Phase 1 → Phase 2 → Phase 3 with timelines" },
+    { title: "4. Cultural Changes", description: "How to shift mindsets and behaviors" },
+    { title: "5. Technical Implementation", description: "Tools, pipelines, and infrastructure changes" },
+    { title: "6. Success Metrics", description: "How you'll measure progress using DORA metrics" },
+    { title: "7. Risks & Mitigation", description: "What could go wrong and how to handle it" },
+    { title: "8. Business Case", description: "ROI and value to the organization" },
+  ];
+
+  const structure = suggestedStructure || defaultStructure;
 
   return (
     <div className="border border-slate-600 rounded-lg overflow-hidden">
@@ -55,75 +82,12 @@ function StructureTemplate() {
           </p>
 
           <div className="space-y-3">
-            <div className="border-l-2 border-cyan-600 pl-3">
-              <h5 className="font-semibold text-cyan-400">
-                1. Current State Analysis
-              </h5>
-              <p className="text-slate-400">
-                Document where the company is today with specific metrics
-              </p>
-            </div>
-
-            <div className="border-l-2 border-cyan-600 pl-3">
-              <h5 className="font-semibold text-cyan-400">
-                2. Pain Points Identification
-              </h5>
-              <p className="text-slate-400">
-                List problems across culture, process, and technology
-              </p>
-            </div>
-
-            <div className="border-l-2 border-cyan-600 pl-3">
-              <h5 className="font-semibold text-cyan-400">
-                3. Transformation Roadmap
-              </h5>
-              <p className="text-slate-400">
-                Phase 1 → Phase 2 → Phase 3 with timelines
-              </p>
-            </div>
-
-            <div className="border-l-2 border-cyan-600 pl-3">
-              <h5 className="font-semibold text-cyan-400">
-                4. Cultural Changes
-              </h5>
-              <p className="text-slate-400">
-                How to shift mindsets and behaviors
-              </p>
-            </div>
-
-            <div className="border-l-2 border-cyan-600 pl-3">
-              <h5 className="font-semibold text-cyan-400">
-                5. Technical Implementation
-              </h5>
-              <p className="text-slate-400">
-                Tools, pipelines, and infrastructure changes
-              </p>
-            </div>
-
-            <div className="border-l-2 border-cyan-600 pl-3">
-              <h5 className="font-semibold text-cyan-400">
-                6. Success Metrics
-              </h5>
-              <p className="text-slate-400">
-                How you'll measure progress using DORA metrics
-              </p>
-            </div>
-
-            <div className="border-l-2 border-cyan-600 pl-3">
-              <h5 className="font-semibold text-cyan-400">
-                7. Risks & Mitigation
-              </h5>
-              <p className="text-slate-400">
-                What could go wrong and how to handle it
-              </p>
-            </div>
-
-            <div className="border-l-2 border-cyan-600 pl-3">
-              <h5 className="font-semibold text-cyan-400">8. Business Case</h5>
-              <p className="text-slate-400">
-                ROI and value to the organization
-              </p>
-            </div>
+            {structure.map((item, index) => (
+              <div key={index} className="border-l-2 border-cyan-600 pl-3">
+                <h5 className="font-semibold text-cyan-400">{item.title}</h5>
+                <p className="text-slate-400">{item.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -131,10 +95,15 @@ function StructureTemplate() {
   );
 }
 
-function PromptsToConsider() {
+function PromptsToConsider({ 
+  questionsToConsider 
+}: { 
+  questionsToConsider?: Array<{ category: string; questions: string[] }> 
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const prompts = [
+  // Default DevOps prompts if no custom prompts provided
+  const defaultPrompts = [
     {
       section: "Current State",
       questions: [
@@ -173,6 +142,8 @@ function PromptsToConsider() {
     },
   ];
 
+  const prompts = questionsToConsider || defaultPrompts;
+
   return (
     <div className="border border-slate-600 rounded-lg overflow-hidden">
       <button
@@ -197,14 +168,14 @@ function PromptsToConsider() {
             These questions can help you think through each section.
           </p>
 
-          {prompts.map((section) => (
-            <div key={section.section} className="space-y-2">
+          {prompts.map((section, index) => (
+            <div key={index} className="space-y-2">
               <h5 className="font-semibold text-yellow-400">
                 {section.section}
               </h5>
               <ul className="space-y-1 text-slate-300">
-                {section.questions.map((q) => (
-                  <li key={q} className="flex items-start">
+                {section.questions.map((q, qIndex) => (
+                  <li key={qIndex} className="flex items-start">
                     <span className="text-yellow-500 mr-2">•</span>
                     {q}
                   </li>
@@ -218,41 +189,23 @@ function PromptsToConsider() {
   );
 }
 
-function CommonPitfalls() {
+function CommonPitfalls({ 
+  commonPitfalls 
+}: { 
+  commonPitfalls?: string[] 
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const pitfalls = [
-    {
-      pitfall: "Being too vague with metrics",
-      solution:
-        'Use specific numbers: "Currently deploy once per month" instead of "deploy infrequently"',
-    },
-    {
-      pitfall: "Focusing only on tools",
-      solution:
-        "DevOps is 80% culture, 20% tools. Spend equal time on people and process changes.",
-    },
-    {
-      pitfall: "Trying to change everything at once",
-      solution:
-        "Start with quick wins. Phase 1 should be achievable in 3 months.",
-    },
-    {
-      pitfall: "Ignoring resistance to change",
-      solution:
-        'Address "why change?" and "what\'s in it for me?" for each stakeholder group.',
-    },
-    {
-      pitfall: "No measurement plan",
-      solution:
-        "Define how you'll track progress before starting. Use DORA metrics as your foundation.",
-    },
-    {
-      pitfall: "Underestimating timeline",
-      solution:
-        "Cultural change takes 6-12 months. Technical changes can be faster but need people to adopt them.",
-    },
+  // Default DevOps pitfalls if no custom pitfalls provided
+  const defaultPitfalls = [
+    "Being too vague with metrics - Use specific numbers instead of vague statements",
+    "Focusing only on tools - DevOps is 80% culture, 20% tools",
+    "Trying to change everything at once - Start with quick wins in Phase 1",
+    "Ignoring resistance to change - Address stakeholder concerns upfront",
+    "No measurement plan - Define success metrics before starting",
   ];
+
+  const pitfalls = commonPitfalls || defaultPitfalls;
 
   return (
     <div className="border border-slate-600 rounded-lg overflow-hidden">
@@ -278,15 +231,12 @@ function CommonPitfalls() {
             Learn from others who have attempted DevOps transformations.
           </p>
 
-          {pitfalls.map((item) => (
-            <div key={item.pitfall} className="bg-slate-900/50 rounded-lg p-3">
+          {pitfalls.map((pitfall, index) => (
+            <div key={index} className="bg-slate-900/50 rounded-lg p-3">
               <div className="flex items-start space-x-2">
                 <AlertTriangle className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-orange-300 mb-1">
-                    {item.pitfall}
-                  </p>
-                  <p className="text-slate-400 text-xs">{item.solution}</p>
+                  <p className="text-slate-400 text-sm">{pitfall}</p>
                 </div>
               </div>
             </div>
@@ -297,10 +247,10 @@ function CommonPitfalls() {
   );
 }
 
-function WritingTips() {
+function WritingTips({ writingTips }: { writingTips?: string[] }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const tips = [
+  const tips = writingTips || [
     "Start with the current state - be specific about problems and metrics",
     "Use the suggested structure but adapt it to flow naturally",
     'Include concrete examples: "Replace manual testing with automated tests" not "improve testing"',
@@ -439,6 +389,7 @@ function MinimumRequirementsSection({
 export default function StrategyGuide({
   minimumRequirements,
   evaluationRubric,
+  strategyGuide,
 }: StrategyGuideProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -480,13 +431,13 @@ export default function StrategyGuide({
             <MinimumRequirementsSection requirements={minimumRequirements} />
           )}
 
-          <StructureTemplate />
+          <StructureTemplate suggestedStructure={strategyGuide?.suggestedStructure} />
 
-          <PromptsToConsider />
+          <PromptsToConsider questionsToConsider={strategyGuide?.questionsToConsider} />
 
-          <CommonPitfalls />
+          <CommonPitfalls commonPitfalls={strategyGuide?.commonPitfalls} />
 
-          <WritingTips />
+          <WritingTips writingTips={strategyGuide?.writingTips} />
 
           {evaluationRubric && evaluationRubric.length > 0 && (
             <EvaluationRubricSection rubric={evaluationRubric} />
