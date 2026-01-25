@@ -3,6 +3,7 @@ import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useAuthStore } from "../store/authStore";
 import { useProgress } from "../hooks/useProgress";
+import { useStudySession } from "../hooks/useStudySession";
 import {
   VideoHeader,
   PlayButton,
@@ -25,6 +26,7 @@ export default function VideoPlayer({
 }: VideoPlayerProps) {
   const { user } = useAuthStore();
   const { completeLesson, getLessonProgress } = useProgress();
+  const { logSessionStart, logSessionEnd } = useStudySession(lessonId, "lesson");
   const [isWatched, setIsWatched] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const [awarding, setAwarding] = useState(false);
@@ -46,6 +48,11 @@ export default function VideoPlayer({
     if (!user || isWatched || awarding) return;
     setAwarding(true);
     try {
+      // Log study session for analytics
+      await logSessionStart();
+      const sessionEndTime = new Date(Date.now() + 10 * 60 * 1000); // Assume 10 minutes
+      await logSessionEnd(sessionEndTime);
+
       await completeLesson(lessonId, xpReward, 5);
       await updateDoc(doc(db, "users", user.uid), {
         watchedVideos: arrayUnion(lessonId),

@@ -4,7 +4,7 @@
  * For ESLint compliance (max-lines-per-function)
  */
 
-import type { Drill, AAR, ValidationResult } from "../../types";
+import type { AAR, ValidationResult } from "../../types";
 
 interface SessionResult {
   passed: boolean;

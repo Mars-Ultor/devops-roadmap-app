@@ -4,9 +4,7 @@
  * Refactored to use extracted components for ESLint compliance
  */
 
-import type {
-  FailureLog,
-} from "../../types/training";
+import type { FormData } from "./EnhancedFailureLogFormLogic";
 import {
   copyRunbookToClipboard,
   handleWhatTriedChange as updateWhatTried,
@@ -19,12 +17,7 @@ interface EnhancedFailureLogFormProps {
   contentId: string;
   contentType: "lesson" | "lab" | "drill" | "project";
   contentTitle: string;
-  onSubmit: (
-    failureData: Omit<
-      FailureLog,
-      "id" | "userId" | "timestamp" | "isRecurring" | "previousOccurrences"
-    >,
-  ) => Promise<void>;
+  onSubmit: (data: FormData) => Promise<void>;
   onCancel?: () => void;
   prefilledError?: string;
 }
@@ -101,8 +94,8 @@ export default function EnhancedFailureLogForm({
       generatedRunbook={generatedRunbook}
       runbookCopied={runbookCopied}
       submitting={submitting}
-      onCategoryChange={setCategory}
-      onSeverityChange={setSeverity}
+      onCategoryChange={(category) => setCategory(category)}
+      onSeverityChange={(severity) => setSeverity(severity)}
       onTitleChange={setTitle}
       onDescriptionChange={setDescription}
       onErrorMessageChange={setErrorMessage}

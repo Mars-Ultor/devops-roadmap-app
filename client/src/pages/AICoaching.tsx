@@ -21,35 +21,47 @@ import {
   Settings,
 } from "lucide-react";
 import type { CoachContext } from "../../types/aiCoach";
+import { useAnalyticsData } from "../hooks/useAnalyticsData";
+import { useProgress } from "../hooks/useProgress";
 
 export default function AICoachingPage() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<"coaching" | "models">("coaching");
   const [coachContext, setCoachContext] = useState<CoachContext | undefined>();
+  const { analytics } = useAnalyticsData("all");
+  const { getUserStats } = useProgress();
 
-  // Initialize with sample context - in real app this would come from current lesson/session
+  // Load real context from user data
   useEffect(() => {
-    if (user?.uid) {
-      setCoachContext({
-        contentType: "lesson",
-        contentId: "sample-lesson",
-        userProgress: {
-          attempts: 3,
-          timeSpent: 45,
-          hintsUsed: 1,
-          successRate: 0.75,
-          streakCount: 5,
-        },
-        currentWeek: 6,
-        performanceMetrics: {
-          accuracy: 0.8,
-          speed: 0.7,
-          persistence: 0.9,
-          learningVelocity: 0.85,
-        },
-      });
+    if (user?.uid && analytics) {
+      const loadContext = async () => {
+        try {
+          const userStats = await getUserStats();
+          setCoachContext({
+            contentType: "lesson",
+            contentId: "current-progress",
+            userProgress: {
+              attempts: analytics.totalSessions,
+              timeSpent: analytics.totalStudyTime,
+              hintsUsed: 0, // Could be tracked separately
+              successRate: analytics.battleDrillSuccessRate || 0.8,
+              streakCount: analytics.currentStreak,
+            },
+            currentWeek: userStats?.currentWeek || 1,
+            performanceMetrics: {
+              accuracy: 0.8, // Could calculate from quiz scores
+              speed: 0.7, // Could calculate from completion times
+              persistence: analytics.longestStreak > 0 ? 0.9 : 0.5,
+              learningVelocity: 0.85, // Could calculate from progress rate
+            },
+          });
+        } catch (error) {
+          console.error("Error loading coach context:", error);
+        }
+      };
+      loadContext();
     }
-  }, [user?.uid]);
+  }, [user?.uid, analytics, getUserStats]);
 
   const features = [
     {

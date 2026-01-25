@@ -3,10 +3,10 @@
  * Extracted type definitions for ESLint compliance
  */
 
-import type { Drill, AAR, ValidationResult } from "../../types";
+import type { BattleDrill, AAR, ValidationResult } from "../../types";
 
 export interface BattleDrillSessionState {
-  drill: Drill | null;
+  drill: BattleDrill | null;
   sessionStarted: boolean;
   sessionComplete: boolean;
   elapsedSeconds: number;

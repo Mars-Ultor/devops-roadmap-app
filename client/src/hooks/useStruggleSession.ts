@@ -33,6 +33,7 @@ export function useStruggleSession(lessonId: string): UseStruggleSessionReturn {
   // Use extracted effects hook
   useStruggleSessionEffects({
     lessonId,
+    session: state.session,
     setters: {
       setSession: state.setSession,
       setLoading: state.setLoading,

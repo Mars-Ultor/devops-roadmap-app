@@ -7,7 +7,7 @@ import { useCallback } from "react";
 import type { StressScenario, StressTrainingSession } from "../../types/training";
 
 interface SessionCallbacks {
-  setCurrentSession: (session: StressTrainingSession | null) => void;
+  setCurrentSession: React.Dispatch<React.SetStateAction<StressTrainingSession | null>>;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
 }

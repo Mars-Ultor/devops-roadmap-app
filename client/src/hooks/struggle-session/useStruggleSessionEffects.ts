@@ -8,15 +8,17 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useAuthStore } from "../../store/authStore";
 import { parseStruggleSession } from "./struggleSessionUtils";
-import type { StruggleSessionStateSetters } from "./useStruggleSessionState";
+import type { StruggleSessionStateSetters, StruggleSession } from "./useStruggleSessionState";
 
 interface UseStruggleSessionEffectsProps {
   lessonId: string;
+  session: StruggleSession | null;
   setters: StruggleSessionStateSetters;
 }
 
 export function useStruggleSessionEffects({
   lessonId,
+  session,
   setters,
 }: UseStruggleSessionEffectsProps) {
   const { user } = useAuthStore();
@@ -44,12 +46,12 @@ export function useStruggleSessionEffects({
   }, [user?.uid, lessonId, setSession, setLoading]);
 
   useEffect(() => {
-    if (!setters.session || setters.session.endedAt) return;
+    if (!session || session.endedAt) return;
     const interval = setInterval(() => {
       setElapsedSeconds(
-        Math.floor((Date.now() - setters.session!.startedAt.getTime()) / 1000),
+        Math.floor((Date.now() - session.startedAt.getTime()) / 1000),
       );
     }, 1000);
     return () => clearInterval(interval);
-  }, [setters.session, setElapsedSeconds]);
+  }, [session, setElapsedSeconds]);
 }

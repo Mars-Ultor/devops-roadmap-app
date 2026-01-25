@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from "react";
-import type { AAR } from "../../types/training";
+import type { AAR, ValidationResult } from "../../types/training";
 
 interface SessionResult {
   passed: boolean;
@@ -19,7 +19,7 @@ interface SessionCallbacks {
   setCompletedSteps: React.Dispatch<React.SetStateAction<Set<number>>>;
   setShowHints: React.Dispatch<React.SetStateAction<Set<number>>>;
   setStepInputs: React.Dispatch<React.SetStateAction<Record<number, string>>>;
-  setValidationResults: React.Dispatch<React.SetStateAction<Record<number, unknown>>>;
+  setValidationResults: React.Dispatch<React.SetStateAction<Record<number, ValidationResult>>>;
   setValidatingStep: (step: number | null) => void;
   setSessionComplete: (complete: boolean) => void;
   setSessionResult: (result: SessionResult | null) => void;

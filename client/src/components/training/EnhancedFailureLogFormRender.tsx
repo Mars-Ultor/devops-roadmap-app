@@ -5,6 +5,7 @@
  */
 
 import { wordCount } from "./EnhancedFailureLogFormUtils";
+import type { FailureCategory, FailureSeverity } from "../../types/training";
 import {
   FormHeader,
   PatternAlert,
@@ -36,8 +37,8 @@ interface FormRenderProps {
   generatedRunbook: string;
   runbookCopied: boolean;
   submitting: boolean;
-  onCategoryChange: (category: string) => void;
-  onSeverityChange: (severity: string) => void;
+  onCategoryChange: (category: FailureCategory) => void;
+  onSeverityChange: (severity: FailureSeverity) => void;
   onTitleChange: (title: string) => void;
   onDescriptionChange: (description: string) => void;
   onErrorMessageChange: (errorMessage: string) => void;

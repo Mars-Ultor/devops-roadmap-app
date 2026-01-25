@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { doc, updateDoc, arrayUnion, increment } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, increment, setDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useAuthStore } from "../store/authStore";
 import { QuizResults, QuizQuestionView } from "./quiz/QuizComponents";
@@ -66,6 +66,16 @@ export default function Quiz({
 
     setAwarding(true);
     try {
+      // Log quiz attempt for analytics
+      await setDoc(doc(db, "quizAttempts", `${user.uid}_${quizId}_${Date.now()}`), {
+        userId: user.uid,
+        quizId,
+        score,
+        passed: true,
+        completedAt: new Date(),
+        xpEarned: xpReward,
+      });
+
       const userRef = doc(db, "users", user.uid);
       await updateDoc(userRef, {
         completedQuizzes: arrayUnion(quizId),

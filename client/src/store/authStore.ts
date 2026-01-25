@@ -10,7 +10,7 @@ import {
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 
-interface UserProfile {
+export interface UserProfile {
   uid: string;
   email: string;
   name: string;

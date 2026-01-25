@@ -4,8 +4,10 @@
  */
 
 import { useCallback } from "react";
-import { completeAttempt, submitAAR, logFailure } from "../../services/drillService";
-import type { Drill, AAR } from "../../types";
+import { completeBattleDrillAttempt as completeAttempt } from "../../hooks/battle-drill/battleDrillUtils";
+import { submitAAR } from "../../hooks/useAAR";
+import { logFailure } from "../../hooks/useFailureLog";
+import type { AAR } from "../../types";
 
 interface SessionResult {
   passed: boolean;

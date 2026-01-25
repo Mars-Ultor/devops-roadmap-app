@@ -83,10 +83,8 @@ export const useMasterTrainingStorage = (userId: string | undefined) => {
           updatedAt: new Date(),
         });
         console.log("Saved master training progress to Firestore");
-        return true;
       } catch {
         // Silent fail - localStorage is primary storage
-        return false;
       }
     },
     [userId],

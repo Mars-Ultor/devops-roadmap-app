@@ -12,7 +12,7 @@ import {
 } from "../../data/stressScenarios";
 
 interface MetricsCallbacks {
-  setCurrentSession: (session: StressTrainingSession | null) => void;
+  setCurrentSession: React.Dispatch<React.SetStateAction<StressTrainingSession | null>>;
 }
 
 export function useStressTrainingMetricsCallbacks(

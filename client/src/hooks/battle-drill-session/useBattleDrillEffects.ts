@@ -6,13 +6,13 @@
 import { useEffect } from "react";
 import { getDrill } from "../../services/drillService";
 import { buildCoachContext } from "../../services/aiCoach";
-import type { Drill } from "../../types";
+import type { BattleDrill } from "../../types";
 import type { UserProfile } from "../../store/authStore";
 import type { BattleDrillPerformance } from "../../types/training";
 import type { CoachContext } from "../../services/aiCoach";
 
 interface DrillEffectsState {
-  drill: Drill | null;
+  drill: BattleDrill | null;
   sessionStarted: boolean;
   sessionComplete: boolean;
   completedSteps: Set<number>;
@@ -21,9 +21,9 @@ interface DrillEffectsState {
 }
 
 interface DrillEffectsCallbacks {
-  setDrill: (drill: Drill | null) => void;
+  setDrill: (drill: BattleDrill | null) => void;
   setPerformance: (performance: BattleDrillPerformance | null) => void;
-  setElapsedSeconds: (seconds: number) => void;
+  setElapsedSeconds: React.Dispatch<React.SetStateAction<number>>;
   setCoachContext: (context: CoachContext | null) => void;
 }
 

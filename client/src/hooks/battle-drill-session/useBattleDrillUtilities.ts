@@ -8,11 +8,11 @@ import {
   formatTime as formatTimeFn,
   getTimeColor as getTimeColorFn,
 } from "../battle-drill/battleDrillUtils";
-import type { Drill } from "../../types";
+import type { BattleDrill } from "../../types";
 
 interface UtilityState {
   elapsedSeconds: number;
-  drill: Drill | null;
+  drill: BattleDrill | null;
 }
 
 export function useBattleDrillUtilities(state: UtilityState) {

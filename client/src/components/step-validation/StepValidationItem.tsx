@@ -13,8 +13,8 @@ import {
 import {
   getStepStatusColor,
   getValidationStatus,
+  type ValidationResult,
 } from "./StepValidationUtils";
-import type { ValidationResult } from "./StepValidation";
 
 interface StepValidationItemProps {
   step: LabStep;

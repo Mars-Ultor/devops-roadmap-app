@@ -17,7 +17,7 @@ export interface StudySessionRefs {
   sessionStartTimeRef: React.MutableRefObject<Date | null>;
 }
 
-export function useStudySessionState(): StudySessionState & StudySessionRefs {
+export function useStudySessionState(): StudySessionState & StudySessionRefs & { setElapsedTime: React.Dispatch<React.SetStateAction<number>> } {
   const [elapsedTime, setElapsedTime] = useState(0);
   const intervalRef = useRef<number | null>(null);
   const sessionIdRef = useRef<string | null>(null);

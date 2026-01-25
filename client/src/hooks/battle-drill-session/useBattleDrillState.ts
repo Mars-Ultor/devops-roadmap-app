@@ -4,7 +4,7 @@
  */
 
 import { useState } from "react";
-import type { Drill, AAR, ValidationResult } from "../../types";
+import type { AAR, ValidationResult } from "../../types";
 import type { BattleDrillSessionState } from "./battleDrillSessionTypes";
 
 export function useBattleDrillState() {

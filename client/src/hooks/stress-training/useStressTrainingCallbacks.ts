@@ -4,7 +4,7 @@
  * For ESLint compliance (max-lines-per-function)
  */
 
-import type { StressTrainingSession, StressMetrics } from "../../types/scenarios";
+import type { StressTrainingSession, StressMetrics } from "../../types/training";
 import { useStressTrainingSessionCallbacks } from "./useStressTrainingSessionCallbacks";
 import { useStressTrainingMetricsCallbacks } from "./useStressTrainingMetricsCallbacks";
 import { useStressTrainingCompletionCallbacks } from "./useStressTrainingCompletionCallbacks";

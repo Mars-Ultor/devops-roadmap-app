@@ -11,6 +11,8 @@ import {
   updateDoc,
   doc,
   serverTimestamp,
+  collection,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import type { FailureLog } from "../../types/training";
@@ -48,7 +50,7 @@ export function useFailureLogUpdateCallbacks({ userId, setLoading }: FailureLogU
             ),
           );
           if (!failureDoc.empty) {
-            const failureData = failureDoc.docs[0].data();
+            const failureData = failureDoc.docs[0].data() as { timestamp?: Timestamp };
             const timestamp = failureData.timestamp?.toDate() || new Date();
             updateData.timeToResolveMinutes = Math.floor(
               (updates.resolvedAt.getTime() - timestamp.getTime()) / 60000,

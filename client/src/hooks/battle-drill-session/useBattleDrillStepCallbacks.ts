@@ -4,8 +4,8 @@
  */
 
 import { useCallback } from "react";
-import { validateStep } from "../../utils/stepValidation";
-import type { Drill, ValidationResult } from "../../types";
+import { validateStep } from "../../utils/validation";
+import type { ValidationResult } from "../../types";
 
 interface StepCallbacks {
   setStepInputs: React.Dispatch<React.SetStateAction<Record<number, string>>>;

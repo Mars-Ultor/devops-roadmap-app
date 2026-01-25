@@ -83,7 +83,7 @@ export function useProductionScenarioManagementCallbacks(
             prev.get(completedAttempt.scenarioId)?.bestScore ?? 0,
             completedAttempt.score,
           ),
-          averageTime: 0, // Will be calculated properly in utils
+          averageTimeToResolve: 0, // Will be calculated properly in utils
           successRate: 0, // Will be calculated properly in utils
           lastAttempted: completedAt,
         }),

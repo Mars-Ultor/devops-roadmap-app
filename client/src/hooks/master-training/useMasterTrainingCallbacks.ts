@@ -97,6 +97,7 @@ export function useMasterTrainingCallbacks(
 
   return {
     loadProgress,
+    saveProgress: storage.saveProgress,
     ...sessionCallbacks,
     ...challengeCallbacks,
     ...completionCallbacks,

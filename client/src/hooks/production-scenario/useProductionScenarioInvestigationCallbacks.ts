@@ -7,7 +7,7 @@ import { useCallback } from "react";
 import type { ScenarioAttempt } from "../../types/scenarios";
 
 interface InvestigationCallbacks {
-  setCurrentAttempt: (attempt: ScenarioAttempt | null) => void;
+  setCurrentAttempt: React.Dispatch<React.SetStateAction<ScenarioAttempt | null>>;
 }
 
 export function useProductionScenarioInvestigationCallbacks(

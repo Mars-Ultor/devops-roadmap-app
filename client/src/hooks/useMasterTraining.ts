@@ -12,6 +12,7 @@ import { useMasterTrainingCallbacks } from "./master-training/useMasterTrainingC
 import { useMasterTrainingState } from "./master-training/useMasterTrainingState";
 import type {
   MasterTrainingActions,
+  MasterTrainingState,
 } from "./master-training/masterTrainingUtils";
 
 export type { MasterTrainingState, MasterTrainingActions };

@@ -2,7 +2,7 @@
  * Step Validation Utility Functions
  */
 
-import type { ValidationResult, LabStep } from "../../types";
+export type { ValidationResult, LabStep } from "../../types";
 
 // Utility functions
 export function getStepStatusColor(status: LabStep["status"]): string {
