@@ -3,7 +3,7 @@
  * Extracted UI components for the run-guided level workspace
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Clock,
   Save,
@@ -257,5 +257,49 @@ export function GeneralNotesEditor({ notes, onChange }: EditorProps) {
         className="w-full h-48 p-4 bg-slate-900 text-white resize-none focus:outline-none font-mono text-sm"
       />
     </div>
+  );
+}
+
+interface PracticeTerminalProps {
+  readonly lessonId: string;
+}
+
+export function PracticeTerminal({ lessonId }: PracticeTerminalProps) {
+  // Import LabTerminal dynamically to avoid circular imports
+  const [LabTerminal, setLabTerminal] = useState<React.ComponentType<any> | null>(null);
+
+  useEffect(() => {
+    import('../LabTerminal').then(module => {
+      setLabTerminal(() => module.default);
+    });
+  }, []);
+
+  if (!LabTerminal) {
+    return (
+      <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+        <div className="px-4 py-3 border-b border-slate-700 bg-slate-900">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <span className="text-sm text-gray-400 ml-4">
+              Loading Terminal...
+            </span>
+          </div>
+        </div>
+        <div className="h-[400px] p-4 flex items-center justify-center">
+          <div className="text-slate-400">Loading terminal...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <LabTerminal
+      labId={lessonId}
+      tasks={[]} // Empty tasks for practice mode
+      onTaskComplete={() => {}} // No task completion tracking needed
+      onLabComplete={() => {}} // No lab completion needed
+    />
   );
 }
