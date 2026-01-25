@@ -19,7 +19,6 @@ import {
 // Import utility functions
 import {
   generateSampleInput,
-  generateSampleTrainingData,
   generateRealTrainingData,
   MODEL_IDS,
 } from "./ml-model/MLModelUtils";

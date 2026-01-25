@@ -167,99 +167,14 @@ export class MLModelService {
    * Create fallback model for development/testing
    */
   private createFallbackModel(modelId: string): MLModel {
-    const fallbackConfigs: Record<string, Partial<MLModel>> = {
-      "learning-path-predictor": {
-        name: "Learning Path Predictor (Fallback)",
-        inputShape: [50],
-        outputShape: [10],
-        metadata: {
-          accuracy: 0.75,
-          trainingDataSize: 1000,
-          lastTrained: new Date(),
-          features: [
-            "current_week",
-            "performance_score",
-            "time_spent",
-            "hints_used",
-            "error_rate",
-          ],
-          target: "optimal_next_topic",
-        },
-      },
-      "performance-predictor": {
-        name: "Performance Predictor (Fallback)",
-        inputShape: [30],
-        outputShape: [1],
-        metadata: {
-          accuracy: 0.8,
-          trainingDataSize: 500,
-          lastTrained: new Date(),
-          features: [
-            "study_streak",
-            "avg_score",
-            "completion_rate",
-            "struggle_time",
-          ],
-          target: "completion_probability",
-        },
-      },
-      "learning-style-detector": {
-        name: "Learning Style Detector (Fallback)",
-        inputShape: [20],
-        outputShape: [4],
-        metadata: {
-          accuracy: 0.7,
-          trainingDataSize: 300,
-          lastTrained: new Date(),
-          features: [
-            "visual_preference",
-            "hands_on_preference",
-            "theory_preference",
-            "practice_preference",
-          ],
-          target: "learning_style",
-        },
-      },
-      "skill-gap-analyzer": {
-        name: "Skill Gap Analyzer (Fallback)",
-        inputShape: [100],
-        outputShape: [50],
-        metadata: {
-          accuracy: 0.75,
-          trainingDataSize: 800,
-          lastTrained: new Date(),
-          features: [
-            "topic_scores",
-            "attempt_counts",
-            "time_spent_per_topic",
-            "error_patterns",
-          ],
-          target: "skill_gaps",
-        },
-      },
-      "motivational-analyzer": {
-        name: "Motivational Analyzer (Fallback)",
-        inputShape: [15],
-        outputShape: [3],
-        metadata: {
-          accuracy: 0.72,
-          trainingDataSize: 600,
-          lastTrained: new Date(),
-          features: [
-            "engagement_score",
-            "consistency_score",
-            "progress_rate",
-            "feedback_sentiment",
-          ],
-          target: "motivation_level",
-        },
-      },
-    };
-
-    const config = fallbackConfigs[modelId] || {
+    return {
+      id: modelId,
       name: `${modelId} (Fallback)`,
+      version: "fallback",
+      type: "custom",
       inputShape: [10],
       outputShape: [1],
+      model: null,
       metadata: {
         accuracy: 0.5,
         trainingDataSize: 100,
@@ -268,14 +183,6 @@ export class MLModelService {
         target: "prediction",
       },
     };
-
-    return {
-      id: modelId,
-      version: "fallback",
-      type: "custom",
-      model: null,
-      ...config,
-    } as MLModel;
   }
 
   /**
@@ -285,48 +192,17 @@ export class MLModelService {
     modelId: string,
     input: MLInput,
   ): MLPrediction {
-    // Generate reasonable defaults based on input features
+    // Generate basic fallback prediction
     const avgFeature =
       input.features.length > 0
         ? input.features.reduce((a, b) => a + b, 0) / input.features.length
         : 0.5;
 
-    let prediction: number[];
-    let explanation: string;
-
-    switch (modelId) {
-      case "learning-path-predictor":
-        prediction = [avgFeature, avgFeature * 0.9, avgFeature * 0.8];
-        explanation =
-          "Fallback: Recommended basic to intermediate topics based on current performance";
-        break;
-      case "performance-predictor":
-        prediction = [Math.min(0.9, Math.max(0.1, avgFeature))];
-        explanation =
-          "Fallback: Performance prediction based on historical patterns";
-        break;
-      case "learning-style-detector":
-        prediction = [0.4, 0.3, 0.2, 0.1]; // Visual, Kinesthetic, Reading, Auditory
-        explanation = "Fallback: Mixed learning style preferences detected";
-        break;
-      case "skill-gap-analyzer":
-        prediction = input.features.slice(0, 8).map((f) => Math.max(0, 1 - f)); // Inverse of scores
-        explanation = "Fallback: Skill gaps identified in lower-scoring topics";
-        break;
-      case "motivational-analyzer":
-        prediction = [0.5, 0.3, 0.2]; // High, Medium, Low motivation
-        explanation = "Fallback: Moderate motivation level detected";
-        break;
-      default:
-        prediction = [avgFeature];
-        explanation = "Fallback prediction generated";
-    }
-
     return {
-      prediction,
-      confidence: 0.6,
+      prediction: [avgFeature],
+      confidence: 0.5,
       probabilities: undefined,
-      explanation,
+      explanation: "Fallback prediction generated",
       featureImportance: undefined,
     };
   }

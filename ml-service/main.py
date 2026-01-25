@@ -20,12 +20,41 @@ except ImportError:
     print("Database module not available, running in mock mode")
     DB_AVAILABLE = False
 
-# Import ML models
-from models.learning_path_predictor import LearningPathPredictor
-from models.performance_predictor import PerformancePredictor
-from models.learning_style_detector import LearningStyleDetector
-from models.skill_gap_analyzer import SkillGapAnalyzer
-from models.motivational_analyzer import MotivationalAnalyzer
+# Import ML models (import individually to avoid potential import conflicts)
+try:
+    from models.learning_path_predictor import LearningPathPredictor
+    LEARNING_PATH_AVAILABLE = True
+except ImportError as e:
+    print(f"Learning path predictor not available: {e}")
+    LEARNING_PATH_AVAILABLE = False
+
+try:
+    from models.performance_predictor import PerformancePredictor
+    PERFORMANCE_AVAILABLE = True
+except ImportError as e:
+    print(f"Performance predictor not available: {e}")
+    PERFORMANCE_AVAILABLE = False
+
+try:
+    from models.learning_style_detector import LearningStyleDetector
+    LEARNING_STYLE_AVAILABLE = True
+except ImportError as e:
+    print(f"Learning style detector not available: {e}")
+    LEARNING_STYLE_AVAILABLE = False
+
+try:
+    from models.skill_gap_analyzer import SkillGapAnalyzer
+    SKILL_GAP_AVAILABLE = True
+except ImportError as e:
+    print(f"Skill gap analyzer not available: {e}")
+    SKILL_GAP_AVAILABLE = False
+
+try:
+    from models.motivational_analyzer import MotivationalAnalyzer
+    MOTIVATIONAL_AVAILABLE = True
+except ImportError as e:
+    print(f"Motivational analyzer not available: {e}")
+    MOTIVATIONAL_AVAILABLE = False
 
 # Import Redis cache (optional)
 try:
@@ -80,14 +109,20 @@ app.add_middleware(
 
 # Initialize ML models with correct naming (hyphens to match client expectations)
 try:
-    models = {
-        'learning-path-predictor': LearningPathPredictor(),
-        'performance-predictor': PerformancePredictor(),
-        'learning-style-detector': LearningStyleDetector(),
-        'skill-gap-analyzer': SkillGapAnalyzer(),
-        'motivational-analyzer': MotivationalAnalyzer(),
-    }
-    print("Models initialized successfully")
+    models = {}
+    
+    if LEARNING_PATH_AVAILABLE:
+        models['learning-path-predictor'] = LearningPathPredictor()
+    if PERFORMANCE_AVAILABLE:
+        models['performance-predictor'] = PerformancePredictor()
+    if LEARNING_STYLE_AVAILABLE:
+        models['learning-style-detector'] = LearningStyleDetector()
+    if SKILL_GAP_AVAILABLE:
+        models['skill-gap-analyzer'] = SkillGapAnalyzer()
+    if MOTIVATIONAL_AVAILABLE:
+        models['motivational-analyzer'] = MotivationalAnalyzer()
+    
+    print(f"Models initialized successfully: {len(models)} models loaded")
 except Exception as e:
     print(f"Failed to initialize models: {e}")
     raise
@@ -249,10 +284,8 @@ async def get_coach_insights(context: CoachContext):
         user_data = db_manager.get_user_data(context.userId)
 
         if not user_data:
-            # Fallback to context-based insights if no database data
-            result = await get_fallback_insights(context)
-            redis_cache.set(cache_key, result, 600)  # Cache for 10 minutes
-            return result
+            # Return error when no database data available
+            raise HTTPException(status_code=404, detail="User data not found")
 
         # Extract ML features from real data
         features = db_manager.extract_ml_features(user_data)
@@ -291,9 +324,7 @@ async def get_coach_insights(context: CoachContext):
 
     except Exception as e:
         print(f"Error generating insights: {e}")
-        # Fallback to context-based insights
-        result = await get_fallback_insights(context)
-        return result
+        raise HTTPException(status_code=500, detail="Failed to generate coaching insights")
 
 
 def _process_skill_gaps(skill_gap_result):
@@ -402,43 +433,6 @@ def _determine_motivation_profile(user_data):
         'motivation_level': motivation_level,
         'study_streak': study_streak,
         'recommended_actions': recommendations
-    }
-
-
-async def get_fallback_insights(context: CoachContext):
-    """Fallback insights when database is unavailable"""
-    return {
-        'learningStyle': {
-            'primary_style': 'visual' if context.hintsUsed < 3 else 'hands_on',
-            'confidence': 0.7,
-            'recommendations': ['practice coding exercises', 'watch video tutorials']
-        },
-        'skillGaps': [
-            {
-                'topic': topic,
-                'gap_score': max(0, 1.0 - score),
-                'priority': 'high' if score < 0.6 else 'medium'
-            }
-            for topic, score in context.topicScores.items()
-            if score < 0.8
-        ][:5],
-        'optimalPath': {
-            'recommended_topics': [
-                {'topic': 'docker_fundamentals', 'score': 0.9, 'confidence': 85.0},
-                {'topic': 'kubernetes_basics', 'score': 0.8, 'confidence': 80.0}
-            ],
-            'reasoning': 'Based on current progress data'
-        },
-        'performancePrediction': {
-            'completion_probability': context.performanceScore,
-            'estimated_time_to_completion': max(1, 12 - context.currentWeek),
-            'confidence': 0.7
-        },
-        'motivationalProfile': {
-            'motivation_level': 'high' if context.studyStreak > 5 else 'medium',
-            'study_streak': context.studyStreak,
-            'recommended_actions': ['set daily goals', 'track progress', 'celebrate milestones']
-        }
     }
 
 @app.get("/models")

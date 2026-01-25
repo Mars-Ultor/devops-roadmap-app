@@ -3,23 +3,59 @@ Database connection and queries for ML service
 """
 
 import os
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
-from typing import Dict, List, Any, Optional
-from dotenv import load_dotenv
+import importlib
+from typing import Dict, List, Any, Optional, TYPE_CHECKING
 from datetime import datetime
 
-# Load environment variables
-load_dotenv()
+# Type checking imports for when dependencies are available
+if TYPE_CHECKING:
+    from sqlalchemy import create_engine, text  # type: ignore[import]
+    from sqlalchemy.orm import sessionmaker  # type: ignore[import]
+    from dotenv import load_dotenv  # type: ignore[import]
+
+# Try to import database dependencies (may not be available in all environments)
+DB_DEPENDENCIES_AVAILABLE = False
+create_engine = None
+text = None
+sessionmaker = None
+load_dotenv = None
+
+try:
+    sqlalchemy = importlib.import_module('sqlalchemy')  # type: ignore[import]
+    sqlalchemy_orm = importlib.import_module('sqlalchemy.orm')  # type: ignore[import]
+    dotenv = importlib.import_module('dotenv')  # type: ignore[import]
+    
+    create_engine = sqlalchemy.create_engine
+    text = sqlalchemy.text
+    sessionmaker = sqlalchemy_orm.sessionmaker
+    load_dotenv = dotenv.load_dotenv
+    DB_DEPENDENCIES_AVAILABLE = True
+except ImportError:
+    print("Database dependencies not available, running in limited mode")
+
+# Load environment variables if dotenv is available
+if DB_DEPENDENCIES_AVAILABLE and load_dotenv is not None:
+    load_dotenv()
 
 class DatabaseManager:
     """Manages database connections and queries for ML service"""
 
     def __init__(self):
+        if not DB_DEPENDENCIES_AVAILABLE:
+            print("Database dependencies not available")
+            self.engine = None
+            return
+
         # Get database URL from environment (same as server)
         database_url = os.getenv("DATABASE_URL")
         if not database_url:
             print("Warning: DATABASE_URL not set, using mock data mode")
+            self.engine = None
+            return
+
+        # Check if required functions are available
+        if create_engine is None or sessionmaker is None:
+            print("Warning: SQLAlchemy functions not available, using mock data mode")
             self.engine = None
             return
 
@@ -35,9 +71,10 @@ class DatabaseManager:
 
     def get_user_data(self, user_id: str) -> Dict[str, Any]:
         """Get comprehensive user data for ML analysis"""
-        if not self.engine:
-            # Return mock data when database is not available
-            return self._get_mock_user_data(user_id)
+        if not DB_DEPENDENCIES_AVAILABLE or not self.engine or self.SessionLocal is None or text is None:
+            # Return empty data when database dependencies are not available
+            print("Database dependencies not available, returning empty data")
+            return {}
 
         with self.SessionLocal() as session:
             try:
@@ -49,7 +86,7 @@ class DatabaseManager:
                 user_result = session.execute(user_query, {"user_id": user_id}).fetchone()
 
                 if not user_result:
-                    return self._get_mock_user_data(user_id)
+                    return {}
 
                 # Get progress data
                 progress_query = text("""
@@ -145,103 +182,18 @@ class DatabaseManager:
 
             except Exception as e:
                 print(f"Error fetching user data from database: {e}")
-                print("Falling back to mock data")
-                return self._get_mock_user_data(user_id)
-
-    def _get_mock_user_data(self, user_id: str) -> Dict[str, Any]:
-        """Generate mock user data for development/testing"""
-        import random
-        random.seed(hash(user_id) % 1000)  # Deterministic mock data based on user_id
-
-        current_week = random.randint(1, 12)
-        total_xp = random.randint(0, 5000)
-
-        # Generate mock progress
-        progress = []
-        completed_lessons = 0
-        for week in range(1, current_week + 1):
-            for lesson_num in range(1, 6):  # Assume 5 lessons per week
-                lesson_id = f"week{week}-lesson{lesson_num}"
-                completed = random.random() < 0.8  # 80% completion rate
-                if completed:
-                    completed_lessons += 1
-                    score = random.randint(70, 100)
-                    completed_at = datetime.now()
-                else:
-                    score = None
-                    completed_at = None
-
-                progress.append({
-                    "week_id": week,
-                    "lesson_id": lesson_id,
-                    "completed": completed,
-                    "score": score,
-                    "completed_at": completed_at
-                })
-
-        # Generate mock lab sessions
-        lab_sessions = []
-        for i in range(random.randint(5, 20)):
-            lab_sessions.append({
-                "exercise_id": f"lab-{i+1}",
-                "passed": random.random() < 0.7,  # 70% pass rate
-                "submitted_at": datetime.now()
-            })
-
-        # Generate mock AARs
-        aars = []
-        for i in range(random.randint(2, 10)):
-            aars.append({
-                "lesson_id": f"week{random.randint(1, current_week)}-lesson{random.randint(1, 5)}",
-                "level": random.choice(["crawl", "walk-guided", "run-independent"]),
-                "completed_at": datetime.now(),
-                "quality_score": random.uniform(3.0, 9.0),
-                "what_worked_well": ["Good examples", "Clear instructions"],
-                "what_did_not_work": ["Too fast pace"],
-                "word_counts": {"total": random.randint(50, 200)}
-            })
-
-        # Generate mock badges
-        badges = []
-        badge_types = ["linux-explorer", "git-master", "docker-expert", "k8s-specialist"]
-        for badge_type in random.sample(badge_types, random.randint(0, 3)):
-            badges.append({
-                "badge_type": badge_type,
-                "earned_at": datetime.now()
-            })
-
-        # Generate mock projects
-        projects = []
-        project_ids = ["project-1", "project-2", "project-3"]
-        for project_id in random.sample(project_ids, random.randint(0, 2)):
-            projects.append({
-                "project_id": project_id,
-                "completed": random.random() < 0.6,  # 60% completion rate
-                "completed_at": datetime.now() if random.random() < 0.6 else None
-            })
-
-        return {
-            "user_id": user_id,
-            "current_week": current_week,
-            "total_xp": total_xp,
-            "created_at": datetime.now(),
-            "progress": progress,
-            "lab_sessions": lab_sessions,
-            "aars": aars,
-            "badges": badges,
-            "projects": projects
-        }
+                return {}
 
     def extract_ml_features(self, user_data: Dict[str, Any]) -> Dict[str, List[float]]:
         """Extract ML features from user data for different models"""
         if not user_data:
-            # Return default features for each model
+            # Return default features for each model when no data available
             return {
-                'learning_path': [1.0, 0.5, 2.0, 3.0, 0.2] + [0.5] * 16,  # 21 features
-                'performance': [5.0, 0.7, 0.8, 1.0, 0.6, 0.3, 0.8, 0.2],  # 8 features
-                'learning_style': [0.7, 0.8, 0.6, 0.9, 0.5, 0.4, 0.3, 0.2],  # 8 features
-                'skill_gap': [0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1],  # 8 features
-                'motivation': [0.7, 0.8, 0.6, 0.5, 0.9]  # 5 features
+                'learning_path': [0.0] * 21,  # 21 features
+                'performance': [0.0] * 8,     # 8 features
+                'learning_style': [0.0] * 8,  # 8 features
+                'skill_gap': [0.0] * 8,       # 8 features
+                'motivation': [0.0] * 5       # 5 features
             }
 
         features = {}
