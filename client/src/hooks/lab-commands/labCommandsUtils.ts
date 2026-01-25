@@ -269,17 +269,20 @@ export function executeLs(
   
   const items = Object.entries(dir.children || {});
   
+  // Filter out hidden files unless -a flag is used
+  const filteredItems = showAll ? items : items.filter(([name]) => !name.startsWith('.'));
+  
   if (showDetails) {
-    const lines = items.map(([name, node]) => {
+    const lines = filteredItems.map(([name, node]) => {
       const perms = permissionsToSymbolic(node.permissions || (node.type === "dir" ? "755" : "644"), node.type);
       const size = node.type === "file" ? (node.content?.length || 0) : 4096;
       return `${perms}  1 user user  ${size.toString().padStart(4)} Jan 25 12:00 ${name}`;
     });
-    console.log("ls found items:", items.map(([name]) => name));
+    console.log("ls found items:", filteredItems.map(([name]) => name));
     return { output: lines.join("\n"), success: true };
   }
   
-  const names = items.map(([name]) => name);
+  const names = filteredItems.map(([name]) => name);
   console.log("ls found items:", names);
   return { output: names.length > 0 ? names.join("  ") : "", success: true };
 }

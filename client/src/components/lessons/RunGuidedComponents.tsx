@@ -266,7 +266,12 @@ interface PracticeTerminalProps {
 
 export function PracticeTerminal({ lessonId }: PracticeTerminalProps) {
   // Import LabTerminal dynamically to avoid circular imports
-  const [LabTerminal, setLabTerminal] = useState<React.ComponentType<any> | null>(null);
+  const [LabTerminal, setLabTerminal] = useState<React.ComponentType<{
+    labId: string;
+    tasks: string[];
+    onTaskComplete?: (taskIndex: number) => void;
+    onLabComplete?: () => void;
+  }> | null>(null);
 
   useEffect(() => {
     import('../LabTerminal').then(module => {
