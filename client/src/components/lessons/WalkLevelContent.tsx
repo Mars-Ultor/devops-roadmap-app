@@ -21,7 +21,7 @@ function PracticeTerminal({ lessonId }: { lessonId: string }) {
       </h3>
       <p className="text-slate-300 mb-4">
         Use this simulated Linux terminal to practice the commands you'll complete in the exercises above.
-        Available commands: pwd, ls, cd, mkdir, touch, cat, echo, clear, help
+        Available commands: pwd, ls, cd, mkdir, touch, cat, chmod, echo, clear, help
       </p>
       <div className="bg-slate-900 rounded border border-slate-600 p-2">
         <LabTerminal

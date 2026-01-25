@@ -11,12 +11,14 @@ import {
   executeMkdir,
   executeTouch,
   executeCat,
+  executeChmod,
 } from "./labCommandsUtils";
 
 interface FileSystemNode {
   type: "dir" | "file";
   children?: Record<string, FileSystemNode>;
   content?: string;
+  permissions?: string;
 }
 
 interface UseLabCommandsExecutionProps {
@@ -61,7 +63,7 @@ export function useLabCommandsExecution({
     const fs = fileSystemRef.current,
       dir = currentDirRef.current;
     if (cmd === "ls") {
-      const r = executeLs(fs, args[0], dir);
+      const r = executeLs(fs, args.join(" "), dir);
       if (r.output) term.writeln(r.output);
       return true;
     }
@@ -86,6 +88,11 @@ export function useLabCommandsExecution({
     if (cmd === "cat") {
       const r = executeCat(fs, args[0], dir);
       if (r.output !== undefined) term.writeln(r.output);
+      return true;
+    }
+    if (cmd === "chmod") {
+      const r = executeChmod(fs, args.join(" "), dir);
+      if (r.output) term.writeln(r.output);
       return true;
     }
     return false;

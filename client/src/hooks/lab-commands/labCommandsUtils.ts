@@ -7,6 +7,7 @@ interface FileSystemNode {
   type: "dir" | "file";
   children?: Record<string, FileSystemNode>;
   content?: string;
+  permissions?: string; // e.g., "755" or "644"
 }
 
 /** Resolve path relative to current directory */
@@ -47,7 +48,7 @@ export function createDirectoryRecursive(
   for (const part of parts) {
     if (!currentNode.children) currentNode.children = {};
     if (!currentNode.children[part]) {
-      currentNode.children[part] = { type: "dir", children: {} };
+      currentNode.children[part] = { type: "dir", children: {}, permissions: "755" };
     }
     currentNode = currentNode.children[part];
   }
@@ -64,7 +65,7 @@ export function createDirectory(
   const parent = getDirectory(fileSystem, parentPath);
   if (parent && parent.type === "dir" && dirName) {
     if (!parent.children) parent.children = {};
-    parent.children[dirName] = { type: "dir", children: {} };
+    parent.children[dirName] = { type: "dir", children: {}, permissions: "755" };
   }
 }
 
@@ -79,7 +80,7 @@ export function createFile(
   const parent = getDirectory(fileSystem, parentPath);
   if (parent && parent.type === "dir" && fileName) {
     if (!parent.children) parent.children = {};
-    parent.children[fileName] = { type: "file", content: "" };
+    parent.children[fileName] = { type: "file", content: "", permissions: "644" };
   }
 }
 
@@ -87,12 +88,15 @@ export function createFile(
 export const HELP_TEXT = [
   "Available commands:",
   "  pwd          - print working directory",
-  "  ls [dir]     - list directory contents",
+  "  ls [-la|-ld] [dir] - list directory contents",
+  "    -la        list all files with details",
+  "    -ld        list directory itself with details",
   "  cd <dir>     - change directory",
   "  mkdir [-p] <dir> [dir2 ...] - create directory/directories",
   "    -p         create parent directories as needed",
   "  touch <file> - create empty file",
   "  cat <file>   - display file contents",
+  "  chmod <mode> <file> - change file permissions",
   "  echo <text>  - display text",
   "  clear        - clear screen",
   "  help         - show this help",
@@ -137,26 +141,147 @@ export function executePwd(currentDir: string): CommandResult {
   return { output: currentDir, success: true };
 }
 
-export function executeLs(
+export function executeChmod(
   fileSystem: Record<string, FileSystemNode>,
-  targetPath: string | undefined,
+  args: string,
   currentDir: string,
 ): CommandResult {
-  console.log("executeLs called with:", { targetPath, currentDir });
-  console.log("Current filesystem:", JSON.stringify(fileSystem, null, 2));
-  const targetDir = targetPath
-    ? resolvePath(targetPath, currentDir)
-    : currentDir;
-  const dir = getDirectory(fileSystem, targetDir);
-  if (dir && dir.type === "dir") {
-    const items = Object.keys(dir.children || {});
-    console.log("ls found items:", items);
-    return { output: items.length > 0 ? items.join("  ") : "", success: true };
+  if (!args) return { output: "chmod: missing operand", success: false };
+  
+  const parts = args.split(/\s+/).filter(Boolean);
+  if (parts.length < 2) {
+    return { output: "chmod: missing operand\nTry 'chmod MODE FILE'", success: false };
   }
-  return {
-    output: `ls: cannot access '${targetDir}': No such file or directory`,
-    success: false,
-  };
+  
+  const [mode, ...filePaths] = parts;
+  
+  // Validate mode (accept numeric like 755 or symbolic like u+x)
+  const numericMode = /^[0-7]{3,4}$/;
+  const symbolicMode = /^[ugoa]*[+-=][rwx]+$/;
+  
+  if (!numericMode.test(mode) && !symbolicMode.test(mode)) {
+    return { output: `chmod: invalid mode: '${mode}'`, success: false };
+  }
+  
+  // Apply chmod to each file
+  for (const filePath of filePaths) {
+    const fullPath = resolvePath(filePath, currentDir);
+    const node = getDirectory(fileSystem, fullPath);
+    
+    if (!node) {
+      return {
+        output: `chmod: cannot access '${filePath}': No such file or directory`,
+        success: false,
+      };
+    }
+    
+    // For simplicity, just store numeric mode (convert symbolic to numeric if needed)
+    if (numericMode.test(mode)) {
+      node.permissions = mode.slice(-3); // Take last 3 digits
+    } else {
+      // Simple symbolic mode handling (u+x -> add execute for user)
+      const currentPerms = node.permissions || (node.type === "dir" ? "755" : "644");
+      let perms = parseInt(currentPerms, 8);
+      
+      if (mode.includes("+x")) {
+        perms |= 0o111; // Add execute for all
+      } else if (mode.includes("-x")) {
+        perms &= ~0o111; // Remove execute for all
+      } else if (mode.includes("+w")) {
+        perms |= 0o222; // Add write for all
+      } else if (mode.includes("-w")) {
+        perms &= ~0o222; // Remove write for all
+      } else if (mode.includes("+r")) {
+        perms |= 0o444; // Add read for all
+      } else if (mode.includes("-r")) {
+        perms &= ~0o444; // Remove read for all
+      }
+      
+      node.permissions = perms.toString(8).slice(-3);
+    }
+  }
+  
+  return { success: true };
+}
+
+/** Convert numeric permissions to symbolic format */
+function permissionsToSymbolic(perms: string, type: "dir" | "file"): string {
+  const typeChar = type === "dir" ? "d" : "-";
+  const octal = perms.padStart(3, "0");
+  let result = typeChar;
+  
+  for (const digit of octal) {
+    const n = parseInt(digit);
+    result += (n & 4 ? "r" : "-") + (n & 2 ? "w" : "-") + (n & 1 ? "x" : "-");
+  }
+  return result;
+}
+
+export function executeLs(
+  fileSystem: Record<string, FileSystemNode>,
+  args: string,
+  currentDir: string,
+): CommandResult {
+  console.log("executeLs called with:", { args, currentDir });
+  console.log("Current filesystem:", JSON.stringify(fileSystem, null, 2));
+  
+  // Parse arguments for flags
+  const argParts = args ? args.split(/\s+/).filter(Boolean) : [];
+  let showDetails = false;
+  let showAll = false;
+  let dirOnly = false;
+  let targetPath = currentDir;
+  
+  for (const arg of argParts) {
+    if (arg === "-la" || arg === "-al") {
+      showDetails = true;
+      showAll = true;
+    } else if (arg === "-ld" || arg === "-dl") {
+      showDetails = true;
+      dirOnly = true;
+    } else if (arg === "-l") {
+      showDetails = true;
+    } else if (arg === "-a") {
+      showAll = true;
+    } else if (!arg.startsWith("-")) {
+      targetPath = resolvePath(arg, currentDir);
+    }
+  }
+  
+  const dir = getDirectory(fileSystem, targetPath);
+  if (!dir) {
+    return {
+      output: `ls: cannot access '${targetPath}': No such file or directory`,
+      success: false,
+    };
+  }
+  
+  // If -ld flag, show directory itself
+  if (dirOnly) {
+    const perms = permissionsToSymbolic(dir.permissions || "755", dir.type);
+    const output = `${perms}  1 user user  4096 Jan 25 12:00 ${targetPath.split("/").filter(Boolean).pop() || "/"}`;
+    return { output, success: true };
+  }
+  
+  if (dir.type !== "dir") {
+    return { output: `ls: ${targetPath}: Not a directory`, success: false };
+  }
+  
+  const items = Object.entries(dir.children || {});
+  
+  if (showDetails) {
+    const lines = items.map(([name, node]) => {
+      const perms = permissionsToSymbolic(node.permissions || (node.type === "dir" ? "755" : "644"), node.type);
+      const size = node.type === "file" ? (node.content?.length || 0) : 4096;
+      return `${perms}  1 user user  ${size.toString().padStart(4)} Jan 25 12:00 ${name}`;
+    });
+    console.log("ls found items:", items.map(([name]) => name));
+    return { output: lines.join("\n"), success: true };
+  }
+  
+  const names = items.map(([name]) => name);
+  console.log("ls found items:", names);
+  return { output: names.length > 0 ? names.join("  ") : "", success: true };
 }
 
 export function executeCd(
@@ -212,6 +337,7 @@ export function executeMkdir(
     } else {
       // Check if parent exists
       const parts = fullPath.split("/").filter(Boolean);
+      parts.pop(); // Remove the directory name to get parent path
       const parentPath = "/" + parts.join("/");
       const parent = getDirectory(fileSystem, parentPath);
 
@@ -275,9 +401,10 @@ export const commandHandlers: Record<
   ) => CommandResult | { newDir: string; error?: string }
 > = {
   pwd: (_, currentDir) => executePwd(currentDir),
-  ls: (args, currentDir, fs) => executeLs(fs, args[0], currentDir),
+  ls: (args, currentDir, fs) => executeLs(fs, args.join(" "), currentDir),
   mkdir: (args, currentDir, fs) => executeMkdir(fs, args.join(" "), currentDir),
   touch: (args, currentDir, fs) => executeTouch(fs, args[0], currentDir),
   cat: (args, currentDir, fs) => executeCat(fs, args[0], currentDir),
+  chmod: (args, currentDir, fs) => executeChmod(fs, args.join(" "), currentDir),
   echo: (args) => ({ output: args.join(" "), success: true }),
 };
