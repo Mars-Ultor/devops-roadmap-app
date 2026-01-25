@@ -12,8 +12,13 @@ from datetime import datetime
 import os
 from pathlib import Path
 
-# Import database manager
-from database import db_manager
+# Import database manager (optional)
+try:
+    from database import db_manager
+    DB_AVAILABLE = True
+except ImportError:
+    print("Database module not available, running in mock mode")
+    DB_AVAILABLE = False
 
 # Import ML models
 from models.learning_path_predictor import LearningPathPredictor
@@ -22,27 +27,40 @@ from models.learning_style_detector import LearningStyleDetector
 from models.skill_gap_analyzer import SkillGapAnalyzer
 from models.motivational_analyzer import MotivationalAnalyzer
 
-# Import Redis cache
-from cache import redis_cache
+# Import Redis cache (optional)
+try:
+    from cache import redis_cache
+    REDIS_AVAILABLE = True
+except ImportError:
+    print("Redis cache not available, running without caching")
+    REDIS_AVAILABLE = False
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     print("Application startup event triggered")
     try:
-        # Test database connection
-        test_user = db_manager.get_user_data("test")
-        print("Database/mock data connection successful")
+        if DB_AVAILABLE:
+            # Test database connection
+            test_user = db_manager.get_user_data("test")
+            print("Database connection successful")
+        else:
+            print("Running in mock mode (no database)")
 
-        # Initialize Redis connection
-        redis_cache.connect()
+        if REDIS_AVAILABLE:
+            # Initialize Redis connection
+            redis_cache.connect()
+            print("Redis cache initialized")
+        else:
+            print("Running without Redis cache")
 
     except Exception as e:
-        print(f"Warning: Database connection issue: {e}")
-        print("Continuing with mock data mode")
+        print(f"Warning: Service initialization issue: {e}")
+        print("Continuing with limited functionality")
     yield
     # Shutdown
-    redis_cache.disconnect()
+    if REDIS_AVAILABLE:
+        redis_cache.disconnect()
 
 app = FastAPI(
     title="DevOps Roadmap ML Service",

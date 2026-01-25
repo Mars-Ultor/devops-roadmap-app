@@ -381,19 +381,7 @@ export function ModelInformationPanel() {
             </p>
           </div>
 
-          <div className="bg-yellow-900/20 p-4 rounded-lg">
-            <div className="flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-yellow-400">Note:</p>
-                <p className="text-sm text-yellow-300">
-                  This is a demonstration of ML-powered coaching. In a
-                  production environment, models would be trained on real user
-                  data and hosted on dedicated ML infrastructure.
-                </p>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>

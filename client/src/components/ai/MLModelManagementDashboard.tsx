@@ -20,8 +20,12 @@ import {
 import {
   generateSampleInput,
   generateSampleTrainingData,
+  generateRealTrainingData,
   MODEL_IDS,
 } from "./ml-model/MLModelUtils";
+
+// Import analytics hook
+import { useAnalyticsData } from "../../hooks/useAnalyticsData";
 
 export function MLModelManagementDashboard() {
   const [models, setModels] = useState<MLModel[]>([]);
@@ -34,6 +38,7 @@ export function MLModelManagementDashboard() {
   const [error, setError] = useState<string | null>(null);
 
   const mlService = MLModelService.getInstance();
+  const { analytics, loading: analyticsLoading } = useAnalyticsData("all");
 
   const loadModels = useCallback(async () => {
     setLoading(true);
@@ -81,11 +86,17 @@ export function MLModelManagementDashboard() {
   };
 
   const trainModel = async (modelId: string) => {
+    if (!analytics || analyticsLoading) {
+      setError("Analytics data not available for training");
+      return;
+    }
+
     setTraining(modelId);
     setError(null);
 
     try {
-      const trainingData = generateSampleTrainingData(modelId);
+      // Use real analytics data for training instead of sample data
+      const trainingData = generateRealTrainingData(modelId, analytics);
       await mlService.trainModel(modelId, trainingData);
       await loadModels();
     } catch (err) {
