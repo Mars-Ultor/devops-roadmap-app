@@ -41,7 +41,7 @@ export interface MLPrediction {
 export interface MLTrainingData {
   inputs: number[][];
   outputs: number[][];
-  metadata?: Record<string, unknown>[];
+  metadata?: Record<string, unknown>;
 }
 
 const ML_SERVICE_URL =

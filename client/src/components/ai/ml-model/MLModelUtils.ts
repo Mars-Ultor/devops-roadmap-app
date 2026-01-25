@@ -54,23 +54,46 @@ export function generateSampleTrainingData(modelId: string) {
     case "learning-path-predictor":
       for (let i = 0; i < 10; i++) {
         inputs.push([
-          Math.floor(Math.random() * 12) + 1, // week 1-12
-          Math.random(), // score 0-1
-          Math.random() * 300, // time 0-300 min
-          Math.floor(Math.random() * 5), // hints 0-4
-          Math.random(), // accuracy 0-1
-          Math.random(), // velocity 0-1
+          Math.floor(Math.random() * 12) + 1, // current_week
+          Math.random(), // performance_score
+          Math.random() * 10, // time_spent_hours
+          Math.floor(Math.random() * 5), // hints_used
+          Math.random(), // error_rate
+          Math.random(), // git_score
+          Math.random(), // linux_score
+          Math.random(), // docker_score
+          Math.random(), // k8s_score
+          Math.random(), // aws_score
+          Math.random(), // terraform_score
+          Math.random(), // jenkins_score
+          Math.random(), // monitoring_score
+          Math.floor(Math.random() * 10), // git_attempts
+          Math.floor(Math.random() * 10), // linux_attempts
+          Math.floor(Math.random() * 10), // docker_attempts
+          Math.floor(Math.random() * 10), // k8s_attempts
+          Math.floor(Math.random() * 10), // aws_attempts
+          Math.floor(Math.random() * 10), // terraform_attempts
+          Math.floor(Math.random() * 10), // jenkins_attempts
+          Math.floor(Math.random() * 10), // monitoring_attempts
         ]);
-        outputs.push([Math.floor(Math.random() * 10)]); // next topic index 0-9
+        // One-hot encoded output for 15 topics
+        const topicIndex = Math.floor(Math.random() * 15);
+        const output = new Array(15).fill(0);
+        output[topicIndex] = 1;
+        outputs.push(output);
       }
       break;
     case "performance-predictor":
       for (let i = 0; i < 10; i++) {
         inputs.push([
-          Math.floor(Math.random() * 30), // streak 0-29
-          Math.random(), // score 0-1
-          Math.random(), // completion 0-1
-          Math.random(), // persistence 0-1
+          Math.floor(Math.random() * 30), // study_streak
+          Math.random(), // avg_score
+          Math.random(), // completion_rate
+          Math.random() * 5, // struggle_time_hours
+          Math.random(), // learning_style_visual
+          Math.random(), // learning_style_kinesthetic
+          Math.random(), // learning_style_reading
+          Math.random(), // learning_style_auditory
         ]);
         outputs.push([Math.random()]); // completion probability 0-1
       }
@@ -78,10 +101,11 @@ export function generateSampleTrainingData(modelId: string) {
     case "learning-style-detector":
       for (let i = 0; i < 10; i++) {
         inputs.push([
-          Math.random(), // visual
-          Math.random(), // kinesthetic
-          Math.random(), // reading
-          Math.random(), // auditory
+          Math.random(), // performance_score
+          Math.random() * 10, // time_spent_hours
+          Math.floor(Math.random() * 5), // hints_used
+          Math.random(), // error_rate
+          Math.floor(Math.random() * 30), // study_streak
         ]);
         // One-hot encoded output for 4 learning styles
         const styleIndex = Math.floor(Math.random() * 4);
@@ -93,12 +117,38 @@ export function generateSampleTrainingData(modelId: string) {
     case "skill-gap-analyzer":
       for (let i = 0; i < 10; i++) {
         const input: number[] = [];
-        const output: number[] = [];
-        for (let j = 0; j < 50; j++) {
-          input.push(Math.random()); // skill score
-          output.push(Math.random() < 0.3 ? 1 : 0); // gap indicator
+        // 8 topics × 4 features each = 32 features
+        for (let j = 0; j < 8; j++) {
+          input.push(Math.random()); // score
+          input.push(Math.floor(Math.random() * 10)); // attempts
+          input.push(Math.random() * 5); // time_spent
+          input.push(Math.floor(Math.random() * 5)); // errors
         }
         inputs.push(input);
+        // Output: gap indicators for each topic (0 or 1)
+        const output: number[] = [];
+        for (let j = 0; j < 8; j++) {
+          output.push(Math.random() < 0.3 ? 1 : 0);
+        }
+        outputs.push(output);
+      }
+      break;
+    case "motivational-analyzer":
+      for (let i = 0; i < 10; i++) {
+        inputs.push([
+          Math.floor(Math.random() * 30), // study_streak
+          Math.random(), // avg_score
+          Math.random(), // completion_rate
+          Math.random() * 5, // struggle_time_hours
+          Math.random(), // performance_score
+          Math.random() * 10, // time_spent_hours
+          Math.floor(Math.random() * 5), // hints_used
+          Math.random(), // error_rate
+        ]);
+        // One-hot encoded output for 4 motivation types
+        const motivationIndex = Math.floor(Math.random() * 4);
+        const output = [0, 0, 0, 0];
+        output[motivationIndex] = 1;
         outputs.push(output);
       }
       break;
@@ -107,13 +157,11 @@ export function generateSampleTrainingData(modelId: string) {
   return {
     inputs,
     outputs,
-    metadata: [
-      {
-        generated: new Date().toISOString(),
-        sampleSize: inputs.length,
-        modelId,
-      },
-    ],
+    metadata: {
+      generated: new Date().toISOString(),
+      sampleSize: inputs.length,
+      modelId,
+    },
   };
 }
 
