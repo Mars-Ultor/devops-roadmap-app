@@ -2,8 +2,8 @@
 
 ## Prerequisites
 
-1. **Railway Account**: Sign up at https://railway.app
-2. **Railway CLI**: `npm install -g @railway/cli`
+1. **Fly.io/Render Account**: Sign up at https://fly.io or https://render.com
+2. **Fly.io CLI**: `curl -L https://fly.io/install.sh | sh` (optional)
 3. **Firebase CLI**: `npm install -g firebase-tools`
 
 ## One-Command Deployment
@@ -39,15 +39,38 @@ npm run build
 firebase deploy --only hosting
 ```
 
-### 2. Deploy Server to Railway
+### 2. Deploy Server to Fly.io/Render
+
+**For Fly.io:**
 ```bash
 cd server
-railway login
-railway deploy
+fly launch
+fly deploy
 ```
 
-### 3. Deploy ML Service to Railway
+**For Render:**
+- Go to Render dashboard
+- Create new Web Service
+- Connect your GitHub repo
+- Set build command: `./build.sh`
+- Set start command: `npm start`
+- Add environment variables
+
+### 3. Deploy ML Service to Fly.io/Render
+
+**For Fly.io:**
 ```bash
+cd ml-service
+fly launch
+fly deploy
+```
+
+**For Render:**
+- Create new Web Service in Render
+- Connect your GitHub repo (ml-service folder)
+- Set build command: `pip install -r requirements.txt`
+- Set start command: `python main.py`
+- Add environment variables
 cd ml-service
 railway deploy
 ```

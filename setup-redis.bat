@@ -5,15 +5,20 @@ REM This script helps set up Redis for caching in development
 echo 🚀 Setting up Redis for DevOps Roadmap App...
 
 REM Check if running on Railway (production)
-if defined RAILWAY_ENVIRONMENT (
-    echo 📦 Railway environment detected
+if defined FLY_APP_NAME (
+    echo 📦 Fly.io environment detected
 
     if "%REDIS_URL%"=="" (
-        echo ⚠️  Redis plugin not detected. Please add Redis to your Railway project:
-        echo    1. Go to your Railway project dashboard
-        echo    2. Click 'Add Plugin'
-        echo    3. Search for 'Redis' and add it
-        echo    4. The REDIS_URL environment variable will be automatically set
+        echo ⚠️  Redis not detected. Please add Redis to your project:
+        echo    For Fly.io:
+        echo    1. Go to your Fly.io project dashboard
+        echo    2. Click 'Add Machine' or use 'fly redis create'
+        echo    3. Set REDIS_URL environment variable
+        echo.
+        echo    For Render:
+        echo    1. Go to your Render project dashboard
+        echo    2. Add Redis service
+        echo    3. Set REDIS_URL environment variable
         exit /b 1
     ) else (
         echo ✅ Redis is configured (REDIS_URL found)

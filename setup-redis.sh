@@ -6,17 +6,22 @@ set -e
 
 echo "🚀 Setting up Redis for DevOps Roadmap App..."
 
-# Check if running on Railway (production)
-if [ -n "$RAILWAY_ENVIRONMENT" ]; then
-    echo "📦 Railway environment detected"
+# Check if running on Fly.io or Render (production)
+if [ -n "$FLY_APP_NAME" ] || [ -n "$RENDER_SERVICE_ID" ]; then
+    echo "📦 Fly.io/Render environment detected"
 
-    # Check if Redis plugin is already added
+    # Check if Redis is already configured
     if [ -z "$REDIS_URL" ]; then
-        echo "⚠️  Redis plugin not detected. Please add Redis to your Railway project:"
-        echo "   1. Go to your Railway project dashboard"
-        echo "   2. Click 'Add Plugin'"
-        echo "   3. Search for 'Redis' and add it"
-        echo "   4. The REDIS_URL environment variable will be automatically set"
+        echo "⚠️  Redis not detected. Please add Redis to your project:"
+        echo "   For Fly.io:"
+        echo "   1. Go to your Fly.io project dashboard"
+        echo "   2. Click 'Add Machine' or use 'fly redis create'"
+        echo "   3. Set REDIS_URL environment variable"
+        echo ""
+        echo "   For Render:"
+        echo "   1. Go to your Render project dashboard"
+        echo "   2. Add Redis service"
+        echo "   3. Set REDIS_URL environment variable"
         exit 1
     else
         echo "✅ Redis is configured (REDIS_URL found)"
@@ -111,7 +116,8 @@ echo "🎉 Redis setup complete!"
 echo ""
 echo "📋 Next steps:"
 echo "1. Update your .env files with: REDIS_URL=\"$REDIS_URL\""
-echo "2. Restart your applications to pick up the Redis configuration"
+echo "2. For Fly.io/Render: Set REDIS_URL in your platform dashboard"
+echo "3. Restart your applications to pick up the Redis configuration"
 echo "3. Monitor Redis performance with: redis-cli --stat"
 echo ""
 echo "📊 Redis will cache:"

@@ -12,6 +12,7 @@ primary_region = 'lax'
 [env]
   NODE_ENV = 'production'
   PORT = '8080'
+  REDIS_URL = 'redis://your-redis-instance-url'
 
 [processes]
   app = 'npm start'

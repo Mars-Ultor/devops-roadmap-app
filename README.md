@@ -18,8 +18,8 @@ A comprehensive learning platform for DevOps engineers with interactive lessons,
 ### Services
 
 - **Client**: React/Vite frontend (Firebase Hosting)
-- **Server**: Node.js/Express API with PostgreSQL (Railway)
-- **ML Service**: Python ML models for learning analytics (Railway)
+- **Server**: Node.js/Express API with PostgreSQL (Fly.io/Render)
+- **ML Service**: Python ML models for learning analytics (Fly.io/Render)
 - **Redis**: High-performance caching layer (optional)
 
 ### Tech Stack
@@ -29,7 +29,7 @@ A comprehensive learning platform for DevOps engineers with interactive lessons,
 - **Database**: PostgreSQL
 - **ML Service**: Python, scikit-learn, TensorFlow
 - **Caching**: Redis (optional, improves performance)
-- **Hosting**: Firebase (Client), Railway (Server/ML)
+- **Hosting**: Firebase (Client), Fly.io/Render (Server/ML)
 - **CI/CD**: GitHub Actions
 
 ## 🛠️ Development
@@ -129,7 +129,7 @@ See `AUTO-COMMIT-README.md` for detailed usage instructions.
 # Deploy client to Firebase
 cd client && firebase deploy --only hosting
 
-# Deploy server/ML services via Railway dashboard
+# Deploy server/ML services via Fly.io/Render dashboard
 # Or use the deployment scripts
 ```
 

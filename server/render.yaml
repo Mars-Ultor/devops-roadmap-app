@@ -13,6 +13,6 @@ services:
         fromDatabase:
           name: devops-db
           property: connectionString
-      - key: JWT_SECRET
-        generateValue: true
+      - key: REDIS_URL
+        sync: false  # Set manually in Render dashboard
     healthCheckPath: /api/health

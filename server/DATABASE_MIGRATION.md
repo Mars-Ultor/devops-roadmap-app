@@ -237,9 +237,9 @@ The `render.yaml` configuration already includes PostgreSQL database service. Wh
 2. Set the `DATABASE_URL` environment variable
 3. Run the migration script during deployment
 
-### Railway Deployment
+### Fly.io/Render Deployment
 
-Similar to Render, Railway supports PostgreSQL databases. Update the `railway.json` if needed.
+Similar to Railway, Fly.io and Render support PostgreSQL databases. Update the deployment configurations as needed.
 
 ## Troubleshooting
 

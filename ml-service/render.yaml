@@ -12,6 +12,6 @@ services:
       - key: DATABASE_URL
         fromSecret: database-url  # Reference to a secret containing your database URL
         value: "1"
-      - key: OPENAI_API_KEY
-        sync: false  # Set manually in dashboard
+      - key: REDIS_URL
+        sync: false  # Set manually in Render dashboard
     healthCheckPath: /health
