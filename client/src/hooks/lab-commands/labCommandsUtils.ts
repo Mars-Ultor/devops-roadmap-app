@@ -176,6 +176,7 @@ export function executeMkdir(
   targetPath: string | undefined,
   currentDir: string,
 ): CommandResult {
+  console.log("executeMkdir called with:", { targetPath, currentDir });
   if (!targetPath) return { output: "mkdir: missing operand", success: false };
 
   // Parse arguments for flags and directories
@@ -221,7 +222,8 @@ export function executeMkdir(
     }
   }
 
-  return { output: "", success: true };
+  console.log("executeMkdir returning success");
+  return { success: true };
 }
 
 export function executeTouch(
@@ -232,7 +234,7 @@ export function executeTouch(
   if (!targetPath)
     return { output: "touch: missing file operand", success: false };
   createFile(fileSystem, resolvePath(targetPath, currentDir));
-  return { success: true };
+  return { output: "", success: true };
 }
 
 export function executeCat(

@@ -77,6 +77,7 @@ export default function Lab() {
 
   useEffect(() => {
     async function fetchLabData() {
+      console.log("Fetching lab data for labId:", labId);
       if (!labId) return;
 
       try {
@@ -98,6 +99,7 @@ export default function Lab() {
             (l: unknown) => (l as { id: string }).id === labId,
           );
           if (lab) {
+            console.log("Lab data found:", lab);
             setLabData(lab);
 
             // Initialize TCS standards if they exist
@@ -497,6 +499,7 @@ export default function Lab() {
                 </div>
               </div>
               <div className="h-[600px]">
+                {console.log("Rendering terminal, tcsEnabled:", labData.tcsEnabled)}
                 {labData.tcsEnabled ? (
                   <EnhancedTerminal
                     tasks={createTcsTasks(labData)}

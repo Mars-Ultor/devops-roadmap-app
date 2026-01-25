@@ -72,7 +72,9 @@ export function useLabCommandsExecution({
       return true;
     }
     if (cmd === "mkdir") {
+      console.log("Handling mkdir command with args:", args);
       const r = executeMkdir(fs, args.join(" "), dir);
+      console.log("mkdir result:", r);
       if (r.output) term.writeln(r.output);
       return true;
     }
@@ -90,9 +92,11 @@ export function useLabCommandsExecution({
   };
 
   const executeCommand = (command: string, term: Terminal) => {
+    console.log("Executing command:", command);
     const parts = command.split(" ");
     const cmd = parts[0],
       args = parts.slice(1);
+    console.log("Command parts:", { cmd, args });
     if (handleSimpleCommand(cmd, args, term)) return;
     if (handleFileSystemCommand(cmd, args, term)) return;
     term.writeln(`${cmd}: command not found`);

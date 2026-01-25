@@ -43,7 +43,12 @@ export default function LabTerminal({
   });
 
   useEffect(() => {
-    if (!terminalRef.current) return;
+    console.log("LabTerminal useEffect running, labId:", labId);
+    if (!terminalRef.current) {
+      console.log("No terminal ref, returning");
+      return;
+    }
+    console.log("Terminal ref found, initializing terminal");
     const term = new Terminal({
       cursorBlink: true,
       fontSize: 14,
@@ -53,6 +58,7 @@ export default function LabTerminal({
     const fit = new FitAddon();
     term.loadAddon(fit);
     term.open(terminalRef.current);
+    console.log("Terminal opened successfully");
     fit.fit();
     terminalInstance.current = term;
     fitAddon.current = fit;
@@ -65,10 +71,17 @@ export default function LabTerminal({
 
     let currentCommand = "";
     term.onData((data) => {
+      console.log("Terminal onData received:", data, "charCode:", data.charCodeAt(0));
       const code = data.charCodeAt(0);
       if (code === 13) {
+        console.log("Enter pressed, currentCommand:", currentCommand);
         term.writeln("");
-        if (currentCommand.trim()) executeCommand(currentCommand.trim(), term);
+        if (currentCommand.trim()) {
+          console.log("Executing command:", currentCommand.trim());
+          executeCommand(currentCommand.trim(), term);
+        } else {
+          console.log("Empty command, not executing");
+        }
         currentCommand = "";
         writeLabPrompt(term, currentDirRef.current);
       } else if (code === 127) {
@@ -79,10 +92,13 @@ export default function LabTerminal({
       } else if (data === "\x1b[A") {
         /* handle history up */
       } else if (code >= 32) {
+        console.log("Adding character to command:", data);
         currentCommand += data;
         term.write(data);
       }
     });
+
+    console.log("Terminal onData handler set up");
 
     const handleResize = () => fit.fit();
     window.addEventListener("resize", handleResize);
@@ -100,6 +116,7 @@ export default function LabTerminal({
         className="w-full h-full rounded-lg overflow-hidden cursor-text"
         style={{ minHeight: "400px" }}
         onClick={(e) => {
+          console.log("Terminal clicked, focusing...");
           e.preventDefault();
           terminalInstance.current?.focus();
         }}
