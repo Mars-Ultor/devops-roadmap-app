@@ -142,12 +142,15 @@ export function executeLs(
   targetPath: string | undefined,
   currentDir: string,
 ): CommandResult {
+  console.log("executeLs called with:", { targetPath, currentDir });
+  console.log("Current filesystem:", JSON.stringify(fileSystem, null, 2));
   const targetDir = targetPath
     ? resolvePath(targetPath, currentDir)
     : currentDir;
   const dir = getDirectory(fileSystem, targetDir);
   if (dir && dir.type === "dir") {
     const items = Object.keys(dir.children || {});
+    console.log("ls found items:", items);
     return { output: items.length > 0 ? items.join("  ") : "", success: true };
   }
   return {
@@ -177,6 +180,7 @@ export function executeMkdir(
   currentDir: string,
 ): CommandResult {
   console.log("executeMkdir called with:", { targetPath, currentDir });
+  console.log("Filesystem before mkdir:", JSON.stringify(fileSystem, null, 2));
   if (!targetPath) return { output: "mkdir: missing operand", success: false };
 
   // Parse arguments for flags and directories
@@ -223,6 +227,7 @@ export function executeMkdir(
   }
 
   console.log("executeMkdir returning success");
+  console.log("Filesystem after mkdir:", JSON.stringify(fileSystem, null, 2));
   return { success: true };
 }
 
